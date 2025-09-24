@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{afea18ab-a8a1-4f4c-b7cb-b61d1db7c846}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{255ca603-ac79-4a2f-818e-a546ec0e808a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4bb2e0f8-e892-497a-b3d0-a752e79c20fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\DirectX">
+      <UniqueIdentifier>{081c13db-b90f-4b43-b874-c0bfeb26c614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game">
+      <UniqueIdentifier>{fcb3b083-99fb-44f6-91af-df2cd2d5a15f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject">
+      <UniqueIdentifier>{e3b58cda-250f-4d6b-a528-a24abe9aba64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Main">
+      <UniqueIdentifier>{e8b421b4-b595-4d12-a5bb-c9d77af68932}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sprite3D">
+      <UniqueIdentifier>{12745241-d010-4d17-becc-c603257bfadb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sprite2D">
+      <UniqueIdentifier>{0b436677-f236-4418-8f8a-6d2d08aceb65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\UIObject">
+      <UniqueIdentifier>{110137ba-2a60-4ce0-b7fd-8edf61fe7ac6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\DebugText">
+      <UniqueIdentifier>{e4284e5a-1c13-4bbc-916a-1ab5190917d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\StaticMesh">
+      <UniqueIdentifier>{04a8d26e-26e7-4270-a99d-489d6083f939}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject">
+      <UniqueIdentifier>{c115b3d2-026a-40be-b5a2-02f83decb695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SpriteObject">
+      <UniqueIdentifier>{cca73fca-1a9b-4392-8b37-bffb05ad32a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SpriteObject\Explosion">
+      <UniqueIdentifier>{cbec0bf5-4a7d-4751-8519-c9a6ffc6721d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Character">
+      <UniqueIdentifier>{dcd0ea19-724e-4625-8448-3d91af7dbd22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Character\Player">
+      <UniqueIdentifier>{040bd5ec-7ee6-45f0-ad0b-b09e571c4f23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Ground">
+      <UniqueIdentifier>{c0909161-a275-4022-abee-68c4d2751ed4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Character\Enemy">
+      <UniqueIdentifier>{f66a17ed-2bb7-41ce-a5f2-6bcc4aaf4f2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\BoundingSphere">
+      <UniqueIdentifier>{fed4633c-ed5b-4e9f-ba05-83315a3f326f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Shot">
+      <UniqueIdentifier>{e2fb0f87-92e3-486c-b646-f236537f419a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sound">
+      <UniqueIdentifier>{270f52a2-ef4a-4c46-ad63-45ddea695be2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Effect">
+      <UniqueIdentifier>{e40c6298-c0aa-4516-93c4-44ff036cc619}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SkinMesh">
+      <UniqueIdentifier>{7772785f-4812-48b4-a2c0-c8e86f9204a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SkinMeshObject">
+      <UniqueIdentifier>{d80e67ff-b793-45c4-87c9-2da8a23887d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SkinMeshObject\Zako">
+      <UniqueIdentifier>{49a075e4-f16c-41b1-af3f-ba30558ab264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Ray">
+      <UniqueIdentifier>{0e6bb0f7-e448-43fd-a433-9d5e15a472b0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\CDirectX11.cpp">
+      <Filter>Source\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\stdafx.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WinMain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CGame.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSpriteObject.cpp">
+      <Filter>Source\GameObject\SpriteObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CGameObject.cpp">
+      <Filter>Source\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CMain.cpp">
+      <Filter>Source\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSprite3D.cpp">
+      <Filter>Source\Sprite3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CPlayer.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CExplosion.cpp">
+      <Filter>Source\GameObject\SpriteObject\Explosion</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSprite2D.cpp">
+      <Filter>Source\Sprite2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUIObject.cpp">
+      <Filter>Source\GameObject\UIObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CDebugText.cpp">
+      <Filter>Source\DebugText</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CDirectX9.cpp">
+      <Filter>Source\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CStaticMesh.cpp">
+      <Filter>Source\StaticMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CStaticMeshObject.cpp">
+      <Filter>Source\GameObject\StaticMeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CCharacter.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CGround.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CEnemy.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CBoundingSphere.cpp">
+      <Filter>Source\BoundingSphere</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CShot.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSound.cpp">
+      <Filter>Source\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSoundManager.cpp">
+      <Filter>Source\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CEffect.cpp">
+      <Filter>Source\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSkinMesh.cpp">
+      <Filter>Source\SkinMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSkinMeshParser.cpp">
+      <Filter>Source\SkinMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CSkinMeshObject.cpp">
+      <Filter>Source\GameObject\SkinMeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CZako.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\Zako</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CRay.cpp">
+      <Filter>Source\Ray</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\CDirectX11.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Global.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyMacro.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\stdafx.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CGame.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSpriteObject.h">
+      <Filter>Source\GameObject\SpriteObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CGameObject.h">
+      <Filter>Source\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CMain.h">
+      <Filter>Source\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSprite3D.h">
+      <Filter>Source\Sprite3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CPlayer.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CExplosion.h">
+      <Filter>Source\GameObject\SpriteObject\Explosion</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSprite2D.h">
+      <Filter>Source\Sprite2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUIObject.h">
+      <Filter>Source\GameObject\UIObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CDebugText.h">
+      <Filter>Source\DebugText</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CDirectX9.h">
+      <Filter>Source\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CStaticMesh.h">
+      <Filter>Source\StaticMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CStaticMeshObject.h">
+      <Filter>Source\GameObject\StaticMeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CCharacter.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CGround.h">
+      <Filter>Source\GameObject\StaticMeshObject\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CEnemy.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CBoundingSphere.h">
+      <Filter>Source\BoundingSphere</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CShot.h">
+      <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSound.h">
+      <Filter>Source\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSoundManager.h">
+      <Filter>Source\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CEffect.h">
+      <Filter>Source\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSkinMesh.h">
+      <Filter>Source\SkinMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSkinMeshParser.h">
+      <Filter>Source\SkinMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CSkinMeshObject.h">
+      <Filter>Source\GameObject\SkinMeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CZako.h">
+      <Filter>Source\GameObject\SkinMeshObject\Zako</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CRay.h">
+      <Filter>Source\Ray</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Data\Shader\Sprite3D.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\Sprite2D.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\DebugText.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\StaticMesh.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\SkinMesh.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\Ray.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
