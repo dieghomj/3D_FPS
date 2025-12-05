@@ -1,107 +1,97 @@
 #pragma once
-#include "CStaticMeshObject.h"
-#include "CAnimCharacter.h"
+#include "CCharacter.h"
 #include "CInput.h"
 
-
-class CPlayer 
-	: public CAnimCharacter
+class CPlayer :
+    public CCharacter
 {
 
-
-
 public:
 
-	const float MAX_LIGHT_INT = 3.0f;	//懐中電灯の最大明るさ
+	const float WALK_SPEED = 0.2f;
+	const float DASH_SPEED = 0.5f;
+	const float DASH_DISTANCE = 1.5f;
+	const float JUMP_STRENGTH = 0.18f;
+	const float GRAVITY = 0.0098f;
+	const float FRICTION = 0.090f;
+	const float SHOOT_COOLDOWN = 0.5f; // seconds
+	const float DASH_DURATION = 0.03f; // seconds
+	const float HEALTH_MAX = 100.0f;
+	const float PLAYERSIZE = 2.0f;
 
-	enum MoveState {
-		Forward,
-		Left,
-		Right,
-		Backward,
-		Up,
-		Down,
-		Stop
+    enum PlayerState {
+        Idle,
+        Dashing,
+        Walking,
+        Jumping,
+        Attacking
 	};
 
-	enum PlayerState {
-		Idle = 0,
-		Attacking = 1,
-		Running = 3,
-		Jumping = 2,
-		Damaged = 4,
-	};
-
-	//アニメーション状態
-	//プレイヤーモデルによる修正が必要
-	enum AnimationState {
-		AnimDamaged = 0 ,
-		AnimIdle = 3,
-		AnimAttack = 1,
-		AnimJump = 4,
-		AnimRun = 2,
-	};
-
-public:
-	CPlayer();
-	virtual ~CPlayer() override;
-	virtual void Update() override;
+    CPlayer();
+    virtual ~CPlayer() override;
+    virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
-	bool IsFlashOn() const {
-		return m_bIsFlashOn;
-	}
+	void SetFloorY(float y) { m_FloorY = y; }
 
-	void SetTankControlMode(bool mode) {
-		m_bTankControlMode = mode;
-	}
-	void SetPlayerState(PlayerState state) {
-		m_PlayerState = state;
-	}
-	int GetPlayerState() const {
-		return m_PlayerState;
-	}
+	bool IsAlive() const { return m_Health > 0.0f; }
+	bool CanShoot() const { return m_CanShoot; }
+	bool IsJumping() const { return m_IsJumping; }
+	bool IsDashing() const { return m_IsDashing; }
 
-	float GetPlayerHealth() const {
-		return m_PlayerHealth;
-	}
+	D3DXVECTOR3 GetForwardVector() const { return m_Forward; }
+	D3DXVECTOR3 GetRightVector() const { return m_Right; }
+	D3DXVECTOR3 GetVelocity() const { return m_Velocity; }
+	D3DXVECTOR3 GetAcceleration() const { return m_Acceleration; }
 
-	float GetLightIntensity() const {
-		return m_LightIntensity;
-	}
+	int GetCurrentWeapon() const { return m_currWeapon; }
+	int GetState() const { return m_State; }
 
-	D3DXVECTOR3 GetVelocity() const {
-		return m_vVelocity;
-	}
-
-	D3DXVECTOR3 GetDirection() const {
-		return m_vDirection;
-	}
-
-	void ApplyDamage(float damage);
-	void ApplyHeal(float heal);
-	void ApplyLightEffect(float amount);
+	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
+	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; } // Assuming 3 weapons
 
 private:
-	void AnimControl();
-	void RadioControl();
+	
 	void HandleInput();
+	void CalculateVectors();
+	void CalculateInertia();
+	void ApplyForce(const D3DXVECTOR3& force);
+	
+	void Move();
 
-protected:
 
-	D3DXVECTOR3		m_vVelocity;				//速度ベクトル
-	D3DXVECTOR3		m_vDirection;				//移動方向ベクトル
-	float			m_PlayerHealth;				//プレイヤーの体力
-	float			m_LightIntensity;			//懐中電灯の明るさ
+    void Shoot();
+	void Jump();
+	void Dash();
 
-	float			m_TurnSpeed;				//回転速度
-	float			m_MoveSpeed;				//移動速度
-	MoveState		m_MoveState;				//移動状態
-	PlayerState		m_PlayerState;				//プレイヤー状態
-	AnimationState	m_AnimationState;			//アニメーション状態
-	CInput*			m_pInput;					//入力管理クラス
-	bool			m_bTankControlMode = false;	//タンク操作モードかどうか
-	bool			m_bIsFlashOn = false;		//懐中電灯が点いているかどうか
+
+
+	bool IsGrounded() const { return m_IsOnGround; };
+
+private:
+	
+	D3DXVECTOR3 m_Velocity;
+	D3DXVECTOR3 m_Inertia;
+	D3DXVECTOR3 m_Acceleration;
+	D3DXVECTOR3 m_Forward;
+	D3DXVECTOR3 m_Right;
+
+	PlayerState m_State;
+    float m_MoveSpeed;
+	float m_JumpStrength;
+	float m_Health;
+	int m_currWeapon;
+	CInput* m_pInputHandler;
+
+	float m_ShootCooldownTimer = 0.f;
+	float m_DashTimer = 0.f;
+
+	bool m_IsOnGround = true;
+	bool m_CanShoot = true;
+	bool m_IsJumping = false;
+	bool m_IsDashing = false;
+	
+	float m_FloorY = 0.f;
 
 };
 

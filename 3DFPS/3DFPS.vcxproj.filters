@@ -76,9 +76,6 @@
     <Filter Include="Source\Common">
       <UniqueIdentifier>{1941b590-46a5-44f9-a55f-0e96abf1a92a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene\SceneManager">
-      <UniqueIdentifier>{75555713-448e-47e4-98b7-3517313ec4e7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Input">
       <UniqueIdentifier>{1937b783-58c0-4b6e-8c3a-a30256dca726}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,9 @@
     </Filter>
     <Filter Include="Source\GameStats">
       <UniqueIdentifier>{a620b757-e756-4dbc-aa81-dae0f490b885}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SceneManager">
+      <UniqueIdentifier>{75555713-448e-47e4-98b7-3517313ec4e7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -190,10 +190,10 @@
       <Filter>Source\Camera</Filter>
     </ClCompile>
     <ClCompile Include="CScene.cpp">
-      <Filter>Source\Scene\SceneManager</Filter>
+      <Filter>Source\SceneManager</Filter>
     </ClCompile>
     <ClCompile Include="CSceneManager.cpp">
-      <Filter>Source\Scene\SceneManager</Filter>
+      <Filter>Source\SceneManager</Filter>
     </ClCompile>
     <ClCompile Include="CInput.cpp">
       <Filter>Source\Input</Filter>
@@ -201,7 +201,7 @@
     <ClCompile Include="CXInput.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayer.cpp">
+    <ClCompile Include="CAnimPlayer.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
     </ClCompile>
     <ClCompile Include="CSpotLight.cpp">
@@ -210,7 +210,7 @@
     <ClCompile Include="CResult.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameOver.cpp">
+    <ClCompile Include="CGameOver.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="CGameStats.cpp">
@@ -219,6 +219,11 @@
     <ClCompile Include="Util.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
+    <ClCompile Include="CGame.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="CStage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -324,10 +329,10 @@
       <Filter>Source\Camera</Filter>
     </ClInclude>
     <ClInclude Include="CScene.h">
-      <Filter>Source\Scene\SceneManager</Filter>
+      <Filter>Source\SceneManager</Filter>
     </ClInclude>
     <ClInclude Include="CSceneManager.h">
-      <Filter>Source\Scene\SceneManager</Filter>
+      <Filter>Source\SceneManager</Filter>
     </ClInclude>
     <ClInclude Include="CInput.h">
       <Filter>Source\Input</Filter>
@@ -335,7 +340,7 @@
     <ClInclude Include="CXInput.h">
       <Filter>Source\Input</Filter>
     </ClInclude>
-    <ClInclude Include="CPlayer.h">
+    <ClInclude Include="CAnimPlayer.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Player</Filter>
     </ClInclude>
     <ClInclude Include="CSpotLight.h">
@@ -344,7 +349,7 @@
     <ClInclude Include="CResult.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameOver.h">
+    <ClInclude Include="CGameOver.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="CGameStats.h">
@@ -353,6 +358,11 @@
     <ClInclude Include="Util.h">
       <Filter>Source\Common</Filter>
     </ClInclude>
+    <ClInclude Include="CGame.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h" />
+    <ClInclude Include="CStage.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

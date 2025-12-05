@@ -3,7 +3,8 @@
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 #include "CMenu.h"
-#include "GameOver.h"
+#include "CGame.h"
+#include "CGameOver.h"
 #include "CResult.h"
 
 
@@ -97,16 +98,18 @@ HRESULT CMain::Create()
 	m_pSceneManager = new CSceneManager();
 
 	m_pMenu = new CMenu(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
-	m_pGameOver = new CGameOverScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pGame = new CGame(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
+	m_pGameOver = new CGameOver(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 	m_pResult = new CResultScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
 	//ゲームシーンクラスのインスタンス生成.
 	m_pSceneManager->AddScene(m_pMenu, "MENU");
-	m_pSceneManager->AddScene(m_pGameOver,"GAME OVER");
+	m_pSceneManager->AddScene(m_pGame, "GAME");
 	m_pSceneManager->AddScene(m_pResult, "RESULT");
+	m_pSceneManager->AddScene(m_pGameOver,"GAME OVER");
 
 	//シーン変更.
-	m_pSceneManager->ChangeScene("MENU");
+	m_pSceneManager->ChangeScene("GAME");
 
 	return S_OK;
 }

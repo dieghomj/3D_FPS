@@ -30,14 +30,12 @@ public:
 
 	int AddSpotLight(CSpotLight* spotlight);
 	void UpdateSpotLight(CSpotLight* spotlight);
-
 	bool IsPause() const { return m_IsPause; }
-
 	POINT GetMouseSeudoPos();
-
 	static const TCHAR* DifficultyToText(CGameStats::DIFFICULTY d);
 
 private :
+
 	void UpdateMousePos();
 
 protected:

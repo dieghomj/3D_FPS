@@ -3,12 +3,12 @@
 #include "CFont.h"
 #include "CUIObject.h"
 
-class CGameOverScene : public CScene
+class CGameOver : public CScene
 {
 public:
-	CGameOverScene(CDirectX9& dx9, CDirectX11& dx11, HWND hWnd, CTime& time, CSceneManager& manager);
+	CGameOver(CDirectX9& dx9, CDirectX11& dx11, HWND hWnd, CTime& time, CSceneManager& manager);
 
-	virtual ~CGameOverScene();
+	virtual ~CGameOver();
 
 	void Release() override;
 

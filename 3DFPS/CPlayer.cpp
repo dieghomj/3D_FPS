@@ -2,251 +2,229 @@
 #include "CPlayer.h"
 
 CPlayer::CPlayer()
-	: CAnimCharacter()
-	, m_vVelocity	(0.f, 0.f, 0.f)
-	, m_PlayerHealth(100.f)
-	, m_TurnSpeed	(0.05f)
-	, m_MoveSpeed	(0.06f)
-	, m_MoveState	(Stop)
-	, m_PlayerState (Idle)
-	, m_pInput		(nullptr)
-	, m_bTankControlMode(true)
-	, m_AnimationState(AnimIdle)
-	, m_bIsFlashOn(false)
-	, m_vDirection(0.f, 0.f, 1.f)
+	: CCharacter()
+	, m_State(Idle)
+	, m_MoveSpeed(WALK_SPEED)
+	, m_JumpStrength(JUMP_STRENGTH)
+	, m_Health(HEALTH_MAX)
+	, m_currWeapon(0)
+	, m_Forward(0.f, 0.f, 1.f)
+	, m_Right(1.f, 0.f, 0.f)
+	, m_Velocity(0.f, 0.f, 0.f)
+	, m_Acceleration(0.f, 0.f, 0.f)
+	, m_Inertia(0.f, 0.f, 0.f)
+	, m_pInputHandler(nullptr)
+	, m_IsOnGround(true)
+	, m_CanShoot(true)
+	, m_IsJumping(false)
+	, m_IsDashing(false)
+	, m_ShootCooldownTimer(0.f)
+	, m_DashTimer(0.f)
+	, m_FloorY(0.f)
 {
-	m_pInput = new CInput();
+	m_pInputHandler = new CInput();
 }
 
 CPlayer::~CPlayer()
 {
-	SAFE_DELETE(m_pInput);
 }
 
 void CPlayer::Update()
 {
-	bool animFin = false;
-	if (m_PlayerState == Damaged)
-	{
-		animFin = SetAnimNo(m_AnimationState, FORCE_CHANGE);
-		if (animFin)
-			m_PlayerState = Idle;
-	}
-	else
-	if (m_PlayerState == Attacking)
-	{
-		animFin = SetAnimNo(m_AnimationState, FORCE_CHANGE);
-		if (animFin)
-			m_PlayerState = Idle;
-	}
-	else
-	SetAnimNo(m_AnimationState);
-
+	m_pInputHandler->Update();
 	HandleInput();
+	CalculateInertia();
 
-	if (!IsFlashOn())
+	FLOAT WSPACE = 0.5f;	//
+	if (m_vPosition.y < m_FloorY + PLAYERSIZE)
 	{
-		m_LightIntensity += 0.001f;
-		if (m_LightIntensity > MAX_LIGHT_INT)
-			m_LightIntensity = MAX_LIGHT_INT;
+		m_vPosition.y = m_FloorY + PLAYERSIZE;
+		m_Velocity.y = 0.f;
+	}
+	else if( abs(m_vPosition.y - (m_FloorY + PLAYERSIZE) <= WSPACE))
+	{
+		m_IsOnGround = true;
 	}
 	else
 	{
-		m_LightIntensity -= 0.005f;
-		if (m_LightIntensity < 0.f)
-			m_LightIntensity = 0.f;
+		m_IsOnGround = false;
 	}
 
-	//m_bTankControlMode = false;
+
+	if (IsGrounded())
+	{
+
+		if(m_IsJumping && m_Velocity.y <= 0.f)
+		{
+			m_IsJumping = false;
+		}
+
+	}
+	else
+	{
+		m_Velocity.y -= GRAVITY;
+	}
+
+	Move();
+
+	
+}
+
+void CPlayer::Draw(SCENE_DATA& sceneData)
+{
+}
+
+void CPlayer::HandleInput()
+{
+
+	CalculateVectors();
+
+	D3DXVECTOR3 vecVel = D3DXVECTOR3(m_Inertia.x, m_Velocity.y, m_Inertia.z);
+
+	if (m_pInputHandler->GetKey('W'))
+	{
+		vecVel += m_Forward * m_MoveSpeed;
+	}
+	else vecVel += m_Forward * 0;
+
+	if (m_pInputHandler->GetKey('S'))
+	{
+		vecVel += -m_Forward * m_MoveSpeed;
+	}
+	else vecVel += m_Forward * 0;
+
+	if (m_pInputHandler->GetKey('A'))
+	{
+		vecVel += -m_Right * m_MoveSpeed;
+	}
+	else vecVel += m_Right * 0;
+
+	if (m_pInputHandler->GetKey('D'))
+	{
+		vecVel += m_Right * m_MoveSpeed;
+	}
+	else vecVel += m_Right * 0;
+
+	float length = D3DXVec3Length(&vecVel);
+	
+	if (length <= 0.f)
+	{
+		m_State = Idle;
+	}
+	else if ( !m_IsJumping )
+	{
+		m_State = Walking;
+	}
+	m_Velocity = vecVel;
+
+	if (m_pInputHandler->GetKeyDown(VK_LBUTTON))
+	{
+		Shoot();
+	}
+
+	if (m_pInputHandler->GetKeyDown(VK_SPACE))
+	{
+		Jump();
+	}
+
+	//if (m_pInputHandler->GetKeyDown('Q'))
+	//{
+	//	NextWeapon();
+	//}
+
+	//if (m_pInputHandler->GetKeyDown('E'))
+	//{
+	//	NextWeapon();
+	//}
+
+	if (m_pInputHandler->GetKeyDown(VK_SHIFT))
+	{
+		Dash();
+	}
+
+}
+
+void CPlayer::CalculateVectors()
+{
+	D3DXVECTOR3 vecZ = D3DXVECTOR3(0.f, 0.f, 1.f);
+	D3DXVECTOR3 vecX = D3DXVECTOR3(1.f, 0.f, 0.f);
+
+	D3DXMATRIX rotY;
+	D3DXMatrixRotationY(&rotY, m_vRotation.y);
+
+	D3DXVec3TransformCoord(&m_Forward, &m_Forward, &rotY);
+	D3DXVec3TransformCoord(&m_Right, &m_Right, &rotY);
+
+	D3DXVec3Normalize(&m_Forward, &m_Forward);
+	D3DXVec3Normalize(&m_Right, &m_Right);
+}
+
+void CPlayer::ApplyForce(const D3DXVECTOR3& force)
+{
+
+	m_Acceleration += force;
+
+}
+
+void CPlayer::Move()
+{
+	m_vPosition += m_Velocity ;
+
 	//レイの位置をプレイヤーの座標にそろえる
-	m_pRayY->Position = m_vPosition;
+	m_pRayY->Position = m_vPosition ;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y += 0.2f;
+	m_pRayY->Position.y = m_FloorY + 0.1f;
 	m_pRayY->RotationY = m_vRotation.y;
 
 	//十字（前後左右に伸ばした）レイの設定	
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y += 0.1f;
+		m_pCrossRay->Ray[dir].Position.y = m_FloorY + 0.1f;
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
 	}
+}
 
-	CAnimCharacter::Update();
+void CPlayer::Shoot()
+{
+
+}
+
+void CPlayer::Jump()
+{
+
+	if (IsGrounded())
+	{
+		m_State = Jumping;
+		m_Velocity.y = m_JumpStrength;
+		m_IsOnGround = false;
+		m_IsJumping = true;
+		return;
+	}
+
+}
+
+void CPlayer::Dash()
+{
+
+	D3DXVECTOR3 dashDirection = GetForwardVector();
+	D3DXVec3Normalize(&dashDirection, &dashDirection);
+
+	m_Velocity += dashDirection * DASH_SPEED;
+	m_Inertia += dashDirection * DASH_SPEED;
 	
 }
 
-void CPlayer::Draw(SCENE_DATA& sceneData)
+void CPlayer::CalculateInertia()
 {
-	CAnimCharacter::Draw(sceneData);
-}
-
-void CPlayer::ApplyDamage(float damage)
-{
-	m_PlayerHealth -= damage;
-	if (m_PlayerHealth < 0.f)
-		m_PlayerHealth = 0.f;
-	m_PlayerState = Damaged;
-}
-
-void CPlayer::ApplyHeal(float heal)
-{
-	m_PlayerHealth += heal;
-	if (m_PlayerHealth > 100.f)
-		m_PlayerHealth = 100.f;
-}
-
-void CPlayer::ApplyLightEffect(float amount)
-{
-	m_LightIntensity += amount;
-}
-
-void CPlayer::AnimControl()
-{
-
-	switch (m_PlayerState) {
-	
-		case Idle:
-			//待機
-			m_AnimationState = AnimIdle;
-			break;
-		case Attacking:
-			//攻撃
-			m_AnimationState = AnimAttack;
-			break;
-		case Running:
-			//走る
-			m_AnimationState = AnimRun;
-			break;
-		case Jumping:
-			//ジャンプ
-			m_AnimationState = AnimJump;
-			break;
-		case Damaged:
-			//ダメージ
-			m_AnimationState = AnimDamaged;
-			break;
-	}
-	
-}
-
-void CPlayer::RadioControl()
-{
-	//Z軸ベクトル(Z+方向への単位ベクトル)
-	//※大きさ（長さ）が１のベクトルを単位ベクトルという
-	D3DXVECTOR3 vecAxisZ(0.f, 0.f, 1.f);
-	D3DXMATRIX mRotY;
-
-	D3DXMatrixRotationY(
-		&mRotY,
-		m_vRotation.y);
-	D3DXVec3TransformCoord(
-		&m_vDirection,
-		&vecAxisZ,
-		&mRotY);
-
-	/*m_vDirection *= -1.f;*/
-
-	D3DXVECTOR3 vecAxisX(1.f, 0.f, 0.f);
-
-	//Y方向の回転行列
-	D3DXMATRIX mRotationY;
-	//Y軸回転行列を作成
-	D3DXMatrixRotationY(
-		&mRotationY,		//(out)行列
-		m_vRotation.y);		//プレイヤーのY方向の回転値
-
-	//Y軸回転行列を使ってZ軸ベクトルを座標変換する
-	D3DXVec3TransformCoord(
-		&vecAxisZ,		//(out)Z軸ベクトル
-		&vecAxisZ,		//(in)Z軸ベクトル
-		&mRotationY);	//Y軸回転行列
-
-	D3DXVec3TransformCoord(
-		&vecAxisX,		//(out)Z軸ベクトル
-		&vecAxisX,		//(in)Z軸ベクトル
-		&mRotationY);	//Y軸回転行列
-
-	//移動状態によって処理を分ける
-	switch (m_MoveState) {
-		case MoveState::Forward:	//前進
-			m_vPosition += vecAxisZ * m_MoveSpeed;
-			break;
-		case MoveState::Backward:	//後退
-			m_vPosition -= vecAxisZ * m_MoveSpeed;
-			break;
-		case MoveState::Left:	//左移動
-			m_vPosition -= vecAxisX * m_MoveSpeed;
-			break;
-		case MoveState::Right:	//右移動
-			m_vPosition += vecAxisX * m_MoveSpeed;
-			break;
-		case MoveState::Up:	//上昇
-			m_vPosition.y += m_MoveSpeed;
-			break;
-		case MoveState::Down:	//下降
-			m_vPosition.y -= m_MoveSpeed;
- 			break;
-		default:
-			break;
-	}
-
-	if (m_MoveState != MoveState::Stop)
+	m_Inertia = (m_Inertia - (m_Inertia * FRICTION));
+	if (m_Inertia.x < 0.01f && m_Inertia.x > -0.01f)
 	{
-		SetAnimSpeed(0.04f);
-		m_PlayerState = Running;
+		m_Inertia.x = 0.f;
 	}
-	else
+
+	if (m_Inertia.z < 0.01f && m_Inertia.z > -0.01f)
 	{
-		if ((m_PlayerState != Attacking) && (m_PlayerState != Jumping))
-		{
-			m_PlayerState = Idle;
-			SetAnimSpeed(0.01f);
-		}
+		m_Inertia.z = 0.f;
 	}
-
-	//上記の移動処理が終われば停止状態にしておく
-	m_MoveState = MoveState::Stop;
 }
-
-void CPlayer::HandleInput()
-{ 
-	m_pInput->Update();
-
-	if (m_pInput->GetKeyUp(VK_LBUTTON))
-	{
-		m_bIsFlashOn = !m_bIsFlashOn;
-	}
-	if (m_pInput->GetKeyDown(VK_UP) || m_pInput->GetKeyDown('W')) {
-		m_MoveState = MoveState::Forward;
-	}
-	//後退
-	if (m_pInput->GetKeyDown(VK_DOWN) || m_pInput->GetKeyDown('S')) {
-		m_MoveState = MoveState::Backward;
-	}
-	if (m_pInput->GetKeyDown(VK_LEFT) || m_pInput->GetKeyDown('A')) {
-		if(m_bTankControlMode)
-			m_vRotation.y -= m_TurnSpeed;
-		else
-			m_MoveState = MoveState::Left;
-	}
-	if (m_pInput->GetKeyDown(VK_RIGHT) || m_pInput->GetKeyDown('D')) {
-		if (m_bTankControlMode)
-			m_vRotation.y += m_TurnSpeed;
-		else
-			m_MoveState = MoveState::Right;
-	}
-	if (m_pInput->GetKeyDown(VK_SPACE)) {
-		m_MoveState = MoveState::Up;
-	}
-	if (m_pInput->GetKeyDown(VK_LCONTROL)) {
-		m_MoveState = MoveState::Down;
-	}
-
-	RadioControl();
-	AnimControl();
-}
-
-
-
-

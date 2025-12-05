@@ -6,11 +6,11 @@
 //クラスの前方宣言.
 class CDirectX9;
 class CDirectX11;
-class CTest;
 class CMenu;
-class CGameTest;
+class CGame;
 class CGameOverScene;
 class CResultScene;
+class CTest;
 
 /**************************************************
 *	メインクラス.

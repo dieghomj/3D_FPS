@@ -32,7 +32,7 @@ void CInput::Update()
 bool CInput::GetKeyDown(int key)
 {
 
-	if(m_KeyState[key])
+	if(!m_KeyPrevState[key] && m_KeyState[key])
 	{
 		return true;
 	}

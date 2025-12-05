@@ -16,6 +16,7 @@ class CCameraController
 		const D3DXVECTOR3& TargetPos, float distance, POINT delta, float sense);
 
 	void FirstPersonCamera(POINT delta, float sense);
+	void FirstPersonCamera(CGameObject* target, POINT delta, float sense);
 
 	void StaticCamera(const D3DXVECTOR3& TargetPos, POINT delta, float sense);
 
