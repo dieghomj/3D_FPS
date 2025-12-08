@@ -6,7 +6,7 @@
 //アプリ側と同じバッファサイズになっている必要がある
 cbuffer per_mesh : register(b0) //レジスタ番号
 {
-    matrix g_mWVP;  //ワールド,ビュー,プロジェクションの変換合成行列
+    float4x4 g_mWVP;  //ワールド,ビュー,プロジェクションの変換合成行列
     float4 g_Color; //色(RGBA:xyzw)
 };
 

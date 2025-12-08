@@ -12,6 +12,20 @@ CStage::~CStage()
 void CStage::Update()
 {
 
+
+
+	//-------------------------
+	// 十字のレイ処理
+	//-------------------------	
+	CROSSRAY CrossRay = m_pPlayer->GetCrossRay();
+
+	//壁との当たり判定
+	CalculatePositionFromWall(&CrossRay);
+	D3DXVECTOR3 Pos = m_pPlayer->GetPosition();
+	Pos.x = CrossRay.Ray[CROSSRAY::XL].Position.x;
+	Pos.z = CrossRay.Ray[CROSSRAY::XL].Position.z;
+	m_pPlayer->SetPosition(Pos);
+
 	//-------------------------
 	// Y軸のレイ処理
 	//-------------------------
@@ -26,17 +40,6 @@ void CStage::Update()
 	}
 	else m_pPlayer->SetFloorY(-1000.f); //床が無い場所にいる場合
 
-	//-------------------------
-	// 十字のレイ処理
-	//-------------------------	
-	CROSSRAY CrossRay = m_pPlayer->GetCrossRay();
-	
-	//壁との当たり判定
-	CalculatePositionFromWall(&CrossRay);
-	D3DXVECTOR3 Pos = m_pPlayer->GetPosition();
-	Pos.x = CrossRay.Ray[CROSSRAY::XL].Position.x;
-	Pos.z = CrossRay.Ray[CROSSRAY::XL].Position.z;
-	m_pPlayer->SetPosition(Pos);
 
 	CStaticMeshObject::Update();
 }

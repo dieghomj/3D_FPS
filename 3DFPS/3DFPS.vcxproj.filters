@@ -222,8 +222,12 @@
     <ClCompile Include="CGame.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayer.cpp" />
-    <ClCompile Include="CStage.cpp" />
+    <ClCompile Include="CStage.cpp">
+      <Filter>Source\GameObject\StaticMeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -361,8 +365,12 @@
     <ClInclude Include="CGame.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="CPlayer.h" />
-    <ClInclude Include="CStage.h" />
+    <ClInclude Include="CStage.h">
+      <Filter>Source\GameObject\StaticMeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

@@ -31,6 +31,8 @@ CPlayer::~CPlayer()
 
 void CPlayer::Update()
 {
+
+
 	m_pInputHandler->Update();
 	HandleInput();
 	CalculateInertia();
@@ -171,16 +173,16 @@ void CPlayer::Move()
 	m_vPosition += m_Velocity ;
 
 	//レイの位置をプレイヤーの座標にそろえる
-	m_pRayY->Position = m_vPosition ;
+	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y = m_FloorY + 0.1f;
+	m_pRayY->Position.y = m_vPosition.y - 0.2f;
 	m_pRayY->RotationY = m_vRotation.y;
 
 	//十字（前後左右に伸ばした）レイの設定	
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y = m_FloorY + 0.1f;
+		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - 0.1f;
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
 	}
 }

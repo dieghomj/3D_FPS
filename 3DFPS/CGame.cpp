@@ -79,7 +79,6 @@ HRESULT CGame::LoadData()
 	m_pGround->AttachMesh(*m_pGroundMesh);
 	m_pStage->AttachMesh(*m_pBaseStageMesh);
 	m_pStage->SetPlayer(*m_pPlayer);
-	
 
 	CROSSRAY crossRay = m_pPlayer->GetCrossRay();
 	for(int i=0; i<4; ++i)
@@ -152,8 +151,6 @@ void CGame::Update()
 	m_pCameraController->FirstPersonCamera(m_pPlayer,m_mouseDelta, m_mouseSense);
 	m_pPlayer->Update();
 	
-
-
 	m_pStage->Update();
 	CScene::Update();
 }
@@ -167,7 +164,7 @@ void CGame::Draw()
 
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {
 		m_pCrossRay[dir]->Render(
-			m_mView, m_mProj, m_pPlayer->GetCrossRay().Ray[dir]);
+			m_SceneInfo.mView, m_SceneInfo.mProj, m_pPlayer->GetCrossRay().Ray[dir]);
 	}
 
 	m_pFont->Render(_T("3D FPS Sample"), 10, 10, 24.0f);
