@@ -36,6 +36,7 @@ private:
 	CPlayer* m_pPlayer;
 
 	CRay* m_pCrossRay[4];
-
+	CRay* m_pPrevCrossRay[4];
+	CROSSRAY m_prevCrossRay;
 };
 

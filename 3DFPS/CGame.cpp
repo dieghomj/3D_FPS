@@ -42,6 +42,11 @@ void CGame::Create()
 	{
 		m_pCrossRay[i] = new CRay();
 	}
+	
+	for (int i = 0; i < 4; ++i)
+	{
+		m_pPrevCrossRay[i] = new CRay();
+	}
 
 	m_pFont = new CFont();
 }
@@ -85,6 +90,15 @@ HRESULT CGame::LoadData()
 	{
 		auto ray = crossRay.Ray[i];
 		if(FAILED(m_pCrossRay[i]->Init(*m_pDx11, ray)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	for (int i = 0; i < 4; ++i)
+	{
+		auto ray = crossRay.Ray[i];
+		if (FAILED(m_pPrevCrossRay[i]->Init(*m_pDx11, ray)))
 		{
 			return E_FAIL;
 		}
@@ -149,9 +163,10 @@ void CGame::Update()
 	m_pEnemy->Update();
 
 	m_pCameraController->FirstPersonCamera(m_pPlayer,m_mouseDelta, m_mouseSense);
+	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pPlayer->Update();
-	
 	m_pStage->Update();
+	
 	CScene::Update();
 }
 
@@ -165,6 +180,21 @@ void CGame::Draw()
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {
 		m_pCrossRay[dir]->Render(
 			m_SceneInfo.mView, m_SceneInfo.mProj, m_pPlayer->GetCrossRay().Ray[dir]);
+		D3DXVECTOR3 rayPos = m_pPlayer->GetCrossRay().Ray[dir].Position;
+		TCHAR buff[256] = _T("");
+
+		_stprintf_s(buff, _T("RayY Pos: (%.2f, %.2f, %.2f)"), rayPos.x, rayPos.y, rayPos.z);
+		m_pFont->Render(buff, WND_W - 500, dir * 50, 32.0f);
+	}
+
+	for (int dir = 0; dir < CROSSRAY::max; dir++) {
+		m_pPrevCrossRay[dir]->Render(
+			m_SceneInfo.mView, m_SceneInfo.mProj, m_prevCrossRay.Ray[dir], D3DXVECTOR4(1.0f, 0.f, 0.f, 1.f));
+		//D3DXVECTOR3 rayPos = m_pPlayer->GetCrossRay().Ray[dir].Position;
+		//TCHAR buff[256] = _T("");
+
+		//_stprintf_s(buff, _T("RayY Pos: (%.2f, %.2f, %.2f)"), rayPos.x, rayPos.y, rayPos.z);
+		//m_pFont->Render(buff, WND_W - 500, dir * 50, 32.0f);
 	}
 
 	m_pFont->Render(_T("3D FPS Sample"), 10, 10, 24.0f);
@@ -174,6 +204,8 @@ void CGame::Draw()
 
 	_stprintf_s(buff, _T("Player Pos: (%.2f, %.2f, %.2f)"), m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z);
 	m_pFont->Render(buff, 10, 100, 32.0f);
+
+	
 
 	_stprintf_s(buff, _T("Camera Pos: (%.2f, %.2f, %.2f)"), m_pCamera->GetPosition().x, m_pCamera->GetPosition().y, m_pCamera->GetPosition().z);
 	m_pFont->Render(buff, 10, 150, 32.0f);

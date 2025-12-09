@@ -74,7 +74,7 @@ public:
 	HRESULT CreateModel();
 
 	//ƒŒƒ“ƒ_ƒŠƒ“ƒO—p.
-	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj, RAY Ray);
+	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj, RAY Ray, D3DXVECTOR4 Color = D3DXVECTOR4(1.f, 1.f, 1.f, 1.f));
 
 private:
 	CDirectX11*				m_pDx11;

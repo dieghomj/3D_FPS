@@ -31,46 +31,13 @@ CPlayer::~CPlayer()
 
 void CPlayer::Update()
 {
-
-
 	m_pInputHandler->Update();
 	HandleInput();
+	HandleJumpPhys();
 	CalculateInertia();
-
-	FLOAT WSPACE = 0.5f;	//
-	if (m_vPosition.y < m_FloorY + PLAYERSIZE)
-	{
-		m_vPosition.y = m_FloorY + PLAYERSIZE;
-		m_Velocity.y = 0.f;
-	}
-	else if( abs(m_vPosition.y - (m_FloorY + PLAYERSIZE) <= WSPACE))
-	{
-		m_IsOnGround = true;
-	}
-	else
-	{
-		m_IsOnGround = false;
-	}
-
-
-	if (IsGrounded())
-	{
-
-		if(m_IsJumping && m_Velocity.y <= 0.f)
-		{
-			m_IsJumping = false;
-		}
-
-	}
-	else
-	{
-		m_Velocity.y -= GRAVITY;
-	}
-
 	Move();
-
-	
 }
+
 
 void CPlayer::Draw(SCENE_DATA& sceneData)
 {
@@ -81,37 +48,46 @@ void CPlayer::HandleInput()
 
 	CalculateVectors();
 
-	D3DXVECTOR3 vecVel = D3DXVECTOR3(m_Inertia.x, m_Velocity.y, m_Inertia.z);
+	D3DXVECTOR3 vecVel = D3DXVECTOR3(m_Inertia.x, m_Velocity.y, m_Inertia.z );
 
 	if (m_pInputHandler->GetKey('W'))
 	{
 		vecVel += m_Forward * m_MoveSpeed;
+		m_DashDirection = GetForwardVector();
+
 	}
-	else vecVel += m_Forward * 0;
+	//else vecVel += m_Forward * 0;
 
 	if (m_pInputHandler->GetKey('S'))
 	{
 		vecVel += -m_Forward * m_MoveSpeed;
+		m_DashDirection = -GetForwardVector();
+
 	}
-	else vecVel += m_Forward * 0;
+	//else vecVel += m_Forward * 0;
 
 	if (m_pInputHandler->GetKey('A'))
 	{
 		vecVel += -m_Right * m_MoveSpeed;
+		m_DashDirection = -GetRightVector();
+
 	}
-	else vecVel += m_Right * 0;
+	//else vecVel += m_Right * 0;
 
 	if (m_pInputHandler->GetKey('D'))
 	{
 		vecVel += m_Right * m_MoveSpeed;
+		m_DashDirection = GetRightVector();
+
 	}
-	else vecVel += m_Right * 0;
+	//else vecVel += m_Right * 0;
 
 	float length = D3DXVec3Length(&vecVel);
 	
 	if (length <= 0.f)
 	{
 		m_State = Idle;
+		m_DashDirection = GetForwardVector();
 	}
 	else if ( !m_IsJumping )
 	{
@@ -176,15 +152,18 @@ void CPlayer::Move()
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
 	m_pRayY->Position.y = m_vPosition.y - 0.2f;
-	m_pRayY->RotationY = m_vRotation.y;
+	m_pRayY->RotationY += m_vRotation.y;
+
+	float len = D3DXVec3Length(&m_Velocity);
 
 	//十字（前後左右に伸ばした）レイの設定	
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - 0.1f;
-		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
+		m_pCrossRay->Ray[dir].Position.y = m_FloorY + 0.1f;
+		m_pCrossRay->Ray[dir].RotationY += m_vRotation.y;
 	}
+
 }
 
 void CPlayer::Shoot()
@@ -209,11 +188,11 @@ void CPlayer::Jump()
 void CPlayer::Dash()
 {
 
-	D3DXVECTOR3 dashDirection = GetForwardVector();
+	D3DXVECTOR3 dashDirection = m_DashDirection;
 	D3DXVec3Normalize(&dashDirection, &dashDirection);
 
 	m_Velocity += dashDirection * DASH_SPEED;
-	m_Inertia += dashDirection * DASH_SPEED;
+	m_Inertia = dashDirection * DASH_SPEED;
 	
 }
 
@@ -228,5 +207,38 @@ void CPlayer::CalculateInertia()
 	if (m_Inertia.z < 0.01f && m_Inertia.z > -0.01f)
 	{
 		m_Inertia.z = 0.f;
+	}
+}
+
+void CPlayer::HandleJumpPhys()
+{
+	float WSPACE = 0.1f;	//
+	if (m_vPosition.y < m_FloorY + PLAYERSIZE)
+	{
+		m_vPosition.y = m_FloorY + PLAYERSIZE;
+		m_Velocity.y = 0.f;
+	}
+	
+	if (abs(m_vPosition.y - (m_FloorY + PLAYERSIZE)) <= WSPACE)
+	{
+		m_IsOnGround = true;
+	}
+	else
+	{
+		m_IsOnGround = false;
+	}
+
+ 	if (IsGrounded())
+	{
+
+		if (m_IsJumping && m_Velocity.y <= 0.00f)
+		{
+			m_IsJumping = false;
+		}
+
+	}
+	else
+	{
+		m_Velocity.y -= GRAVITY;
 	}
 }

@@ -242,7 +242,7 @@ HRESULT CRay::CreateModel()
 
 //レンダリング用.
 void CRay::Render(
-	D3DXMATRIX& mView,D3DXMATRIX& mProj, RAY Ray)
+	D3DXMATRIX& mView,D3DXMATRIX& mProj, RAY Ray, D3DXVECTOR4 Color)
 {
 	//ワールド行列.
 	D3DXMATRIX	mWorld;
@@ -286,7 +286,7 @@ void CRay::Render(
 		cb.mWVP = m;
 
 		//カラー.
-		cb.vColor = D3DXVECTOR4( 1.0f, 1.0f, 1.0f, 1.0f );
+		cb.vColor = Color;
 
 		memcpy_s(pData.pData, pData.RowPitch,
 			(void*)( &cb ), sizeof( cb ) );

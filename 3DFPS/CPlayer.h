@@ -53,18 +53,15 @@ public:
 private:
 	
 	void HandleInput();
+	void HandleJumpPhys();
 	void CalculateVectors();
 	void CalculateInertia();
 	void ApplyForce(const D3DXVECTOR3& force);
 	
 	void Move();
-
-
     void Shoot();
 	void Jump();
 	void Dash();
-
-
 
 	bool IsGrounded() const { return m_IsOnGround; };
 
@@ -75,6 +72,7 @@ private:
 	D3DXVECTOR3 m_Acceleration;
 	D3DXVECTOR3 m_Forward;
 	D3DXVECTOR3 m_Right;
+	D3DXVECTOR3 m_DashDirection;
 
 	PlayerState m_State;
     float m_MoveSpeed;
