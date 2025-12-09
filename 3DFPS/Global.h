@@ -44,7 +44,6 @@ const float AFFINE_INTENSITY = 1.f;	//アフィン変換の強度.
 const float VERTEX_SNAPPING = 32.f;		//頂点スナッピングの強度.
 const int	MAX_LIGHT = 4;	//最大ライト数.
 const double PI = 3.14159265358979323846;
-const float GRAVITY = 0.0098f; //重力加速度.
 
 //=================================	================
 //	構造体

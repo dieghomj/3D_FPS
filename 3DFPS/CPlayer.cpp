@@ -1,5 +1,24 @@
-#include "stdafx.h"
 #include "CPlayer.h"
+
+static constexpr float GRAVITY = 0.0098f;
+static constexpr float FRICTION = 0.090f;
+static constexpr float SLIDE_FRICTION = 0.020f;
+
+static constexpr float HEALTH_MAX = 100.0f;
+
+static constexpr float PLAYERSIZE = 2.0f;
+static constexpr float CROUCHSIZE = 1.0f;
+
+static constexpr float CROUCH_SPEED = 0.1f;
+static constexpr float WALK_SPEED = 0.2f;
+
+static constexpr float JUMP_STRENGTH = 0.18f;
+
+static constexpr float SHOOT_COOLDOWN = 0.5f; // seconds
+
+static constexpr float DASH_SPEED = 0.5f;
+static constexpr float DASH_DISTANCE = 1.5f;
+static constexpr float DASH_DURATION = 0.03f; // seconds
 
 CPlayer::CPlayer()
 	: CCharacter()
@@ -21,6 +40,10 @@ CPlayer::CPlayer()
 	, m_ShootCooldownTimer(0.f)
 	, m_DashTimer(0.f)
 	, m_FloorY(0.f)
+	, m_Height(PLAYERSIZE)
+	, m_IsCrouching(false)
+	, m_DashDirection(0.f, 0.f, 1.f)
+	, m_IsSliding(false)
 {
 	m_pInputHandler = new CInput();
 }
@@ -33,6 +56,16 @@ void CPlayer::Update()
 {
 	m_pInputHandler->Update();
 	HandleInput();
+
+	if (!m_IsCrouching)
+	{
+		m_Height = PLAYERSIZE;
+	}
+	else
+	{
+		m_Height = CROUCHSIZE;
+	}
+
 	HandleJumpPhys();
 	CalculateInertia();
 	Move();
@@ -47,6 +80,7 @@ void CPlayer::HandleInput()
 {
 
 	CalculateVectors();
+	m_DashDirection = GetForwardVector();
 
 	D3DXVECTOR3 vecVel = D3DXVECTOR3(m_Inertia.x, m_Velocity.y, m_Inertia.z );
 
@@ -87,7 +121,6 @@ void CPlayer::HandleInput()
 	if (length <= 0.f)
 	{
 		m_State = Idle;
-		m_DashDirection = GetForwardVector();
 	}
 	else if ( !m_IsJumping )
 	{
@@ -118,6 +151,15 @@ void CPlayer::HandleInput()
 	if (m_pInputHandler->GetKeyDown(VK_SHIFT))
 	{
 		Dash();
+	}
+
+	if (m_pInputHandler->GetKeyDown(VK_CONTROL))
+	{
+		Crouch();
+	}
+	else
+	{
+		m_IsCrouching = false;
 	}
 
 }
@@ -151,16 +193,14 @@ void CPlayer::Move()
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y = m_vPosition.y - 0.2f;
+	m_pRayY->Position.y = m_vPosition.y - m_Height + 0.2f;
 	m_pRayY->RotationY += m_vRotation.y;
-
-	float len = D3DXVec3Length(&m_Velocity);
 
 	//十字（前後左右に伸ばした）レイの設定	
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y = m_FloorY + 0.1f;
+		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height + 0.2f;
 		m_pCrossRay->Ray[dir].RotationY += m_vRotation.y;
 	}
 
@@ -196,6 +236,10 @@ void CPlayer::Dash()
 	
 }
 
+void CPlayer::Crouch()
+{
+}
+
 void CPlayer::CalculateInertia()
 {
 	m_Inertia = (m_Inertia - (m_Inertia * FRICTION));
@@ -213,14 +257,15 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleJumpPhys()
 {
 	float WSPACE = 0.1f;	//
-	if (m_vPosition.y < m_FloorY + PLAYERSIZE)
+	if (m_vPosition.y < m_FloorY + m_Height)
 	{
-		m_vPosition.y = m_FloorY + PLAYERSIZE;
-		m_Velocity.y = 0.f;
+		m_vPosition.y = m_FloorY + m_Height;
+		m_Inertia.y = 0.f;
 	}
 	
-	if (abs(m_vPosition.y - (m_FloorY + PLAYERSIZE)) <= WSPACE)
+	if (abs(m_vPosition.y - (m_FloorY + m_Height)) <= WSPACE)
 	{
+		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
 	}
 	else
