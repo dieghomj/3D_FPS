@@ -193,14 +193,14 @@ void CPlayer::Move()
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y = m_vPosition.y - 0.2f;
+	m_pRayY->Position.y = m_vPosition.y - m_Height + 0.2f;
 	m_pRayY->RotationY += m_vRotation.y;
 
 	//十字（前後左右に伸ばした）レイの設定	
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y = m_FloorY + 0.1f;
+		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height + 0.2f;
 		m_pCrossRay->Ray[dir].RotationY += m_vRotation.y;
 	}
 
@@ -257,14 +257,15 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleJumpPhys()
 {
 	float WSPACE = 0.1f;	//
-	if (m_vPosition.y < m_FloorY + PLAYERSIZE)
+	if (m_vPosition.y < m_FloorY + m_Height)
 	{
-		m_vPosition.y = m_FloorY + PLAYERSIZE;
-		m_Velocity.y = 0.f;
+		m_vPosition.y = m_FloorY + m_Height;
+		m_Inertia.y = 0.f;
 	}
 	
-	if (abs(m_vPosition.y - (m_FloorY + PLAYERSIZE)) <= WSPACE)
+	if (abs(m_vPosition.y - (m_FloorY + m_Height)) <= WSPACE)
 	{
+		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
 	}
 	else
