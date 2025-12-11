@@ -8,16 +8,7 @@ class CPlayer :
 
 public:
 
-	const float WALK_SPEED = 0.2f;
-	const float DASH_SPEED = 0.5f;
-	const float DASH_DISTANCE = 1.5f;
-	const float JUMP_STRENGTH = 0.18f;
-	const float GRAVITY = 0.0098f;
-	const float FRICTION = 0.090f;
-	const float SHOOT_COOLDOWN = 0.5f; // seconds
-	const float DASH_DURATION = 0.03f; // seconds
-	const float HEALTH_MAX = 100.0f;
-	const float PLAYERSIZE = 2.0f;
+	
 
     enum PlayerState {
         Idle,
@@ -62,6 +53,7 @@ private:
     void Shoot();
 	void Jump();
 	void Dash();
+	void Crouch();
 
 	bool IsGrounded() const { return m_IsOnGround; };
 
@@ -78,6 +70,7 @@ private:
     float m_MoveSpeed;
 	float m_JumpStrength;
 	float m_Health;
+	float m_Height;
 	int m_currWeapon;
 	CInput* m_pInputHandler;
 
@@ -88,6 +81,8 @@ private:
 	bool m_CanShoot = true;
 	bool m_IsJumping = false;
 	bool m_IsDashing = false;
+	bool m_IsCrouching = false;
+	bool m_IsSliding = false;
 	
 	float m_FloorY = 0.f;
 
