@@ -47,6 +47,7 @@ public:
 		SpriteEffect,		//‰¼‚Åİ’è
 		AttackEffect,		//‰¼‚Åİ’è
 		BloodEffect,		//‰¼‚Åİ’è
+		DashEffect,			//‰¼‚Åİ’è
 		Max			//Å‘å”
 	};
 

@@ -1,19 +1,31 @@
 #include "CGame.h"
+#include "CEffect.h"
 
 int currStage = 0;
+::EsHandle dashHandle = -1;
 
 CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, m_pManager)
+	, m_pFont(nullptr)
+	, m_pStaminaBarSprite(nullptr)
+	, m_pStaminaBarUI(nullptr)
+	, m_pCrossHairSprite(nullptr)
+	, m_pCrossHairUI(nullptr)
+
 	, m_pGround(nullptr)
 	, m_pGroundMesh(nullptr)
-	, m_pEnemy(nullptr)
-	, m_pEnemyMesh(nullptr)
-	, m_pPlayer(nullptr)
-	, m_pFont(nullptr)
 	, m_pStage(nullptr)
 	, m_pBaseStageMesh(nullptr)
 	, m_pBridStageMesh(nullptr)
+	
+	, m_pEnemy(nullptr)
+	, m_pEnemyMesh(nullptr)
+	
+	, m_pPlayer(nullptr)
 	, m_pCrossRay()
+	, m_pPrevCrossRay()
+	, m_prevCrossRay()
+
 {
 }
 
@@ -26,15 +38,22 @@ void CGame::Create()
 	m_pCamera = new CCamera();
 	m_pCameraController = new CCameraController(m_pCamera);
 
-	m_pEnemyMesh = new CStaticMesh();
-	m_pEnemy = new CAnimCharacter();
+	m_pFont = new CFont();
+	
+	m_pStaminaBarSprite = new CSprite2D();
+	m_pStaminaBarUI = new CUIObject();
+	m_pCrossHairSprite = new CSprite2D();
+	m_pCrossHairUI = new CUIObject();
 
 	m_pGroundMesh = new CStaticMesh();
 	m_pGround = new CStaticMeshObject();
-
 	m_pBaseStageMesh = new CStaticMesh();
 	m_pBridStageMesh = new CStaticMesh();
 	m_pStage = new CStage();
+
+
+	m_pEnemyMesh = new CStaticMesh();
+	m_pEnemy = new CAnimCharacter();
 
 	m_pPlayer = new CPlayer();
 
@@ -48,7 +67,10 @@ void CGame::Create()
 		m_pPrevCrossRay[i] = new CRay();
 	}
 
-	m_pFont = new CFont();
+	CEffect::GetInstance()->Create(
+		m_pDx11->GetDevice(),
+		m_pDx11->GetContext());
+
 }
 
 HRESULT CGame::LoadData()
@@ -58,6 +80,19 @@ HRESULT CGame::LoadData()
 	{
 		return E_FAIL;
 	}
+
+	CSprite2D::SPRITE_STATE staminaBarState = {};
+	staminaBarState.Disp = { 300.f, 90.6f };
+	staminaBarState.Base = { 128.f, 43.0f };
+	staminaBarState.Stride = { 128.f, 43.0f };
+
+	if (FAILED(m_pStaminaBarSprite->Init(*m_pDx11, L"Data\\Texture\\dash.png", staminaBarState)))
+	{
+		return E_FAIL;
+	}
+
+	m_pStaminaBarUI->AttachSprite(*m_pStaminaBarSprite);
+	m_pStaminaBarUI->SetPosition(D3DXVECTOR3(20.0f, WND_H - 100.0f, 0.0f));
 
 	if (FAILED(m_pGroundMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ground\\ground.x")))
 	{
@@ -70,7 +105,7 @@ HRESULT CGame::LoadData()
 	}
 
 
-	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Bridge\\baseBridge.x")))
+	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\stage.x")))
 	{
 		return E_FAIL;
 	}
@@ -167,6 +202,24 @@ void CGame::Update()
 	m_pPlayer->Update();
 	m_pStage->Update();
 	
+	if (m_pPlayer->IsDashing())
+	{
+		//if(dashHandle != -1 || !CEffect::IsPlaying(dashHandle))
+		//{
+
+		//	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+		//	playerPos.y -= 1.0f; // Adjust Y position to be at player's feet
+
+		//	dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
+		//	CEffect::SetScale(dashHandle, D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+		//}
+		//else CEffect::SetLocation(dashHandle, m_pPlayer->GetPosition());
+		
+		D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+		dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
+		CEffect::SetScale(dashHandle, D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+	}
+
 	CScene::Update();
 }
 
@@ -197,6 +250,16 @@ void CGame::Draw()
 		//m_pFont->Render(buff, WND_W - 500, dir * 50, 32.0f);
 	}
 
+
+
+	m_pStaminaBarSprite->SetFillPercent(m_pPlayer->GetDashTimer()/3.f, true);
+	m_pStaminaBarUI->Draw();
+
+
+
+
+
+
 	m_pFont->Render(_T("3D FPS Sample"), 10, 10, 24.0f);
 	TCHAR buff[256] = _T("");
 	_stprintf_s(buff, _T("FPS: %.2f"), m_pTime->GetFramePerSec());
@@ -205,10 +268,17 @@ void CGame::Draw()
 	_stprintf_s(buff, _T("Player Pos: (%.2f, %.2f, %.2f)"), m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z);
 	m_pFont->Render(buff, 10, 100, 32.0f);
 
-	
+	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
+	_stprintf_s(buff, _T("Player Vel: (%.2f, %.2f, %.2f)"), playerVel.x, playerVel.y, playerVel.z);
+	m_pFont->Render(buff, 10, 150, 32.0f);
+
+	char groundText[20] = "";
+	groundText[0] = m_pPlayer->IsGrounded() ? 'T' : 'F';
+	_stprintf_s(buff, _T("Player Is Grounded: %s"), groundText);
+	m_pFont->Render(buff, 10, 180, 32.0f);
 
 	_stprintf_s(buff, _T("Camera Pos: (%.2f, %.2f, %.2f)"), m_pCamera->GetPosition().x, m_pCamera->GetPosition().y, m_pCamera->GetPosition().z);
-	m_pFont->Render(buff, 10, 150, 32.0f);
+	m_pFont->Render(buff, 10, 210, 32.0f);
 
 	switch (m_pPlayer->GetState())
 	{
@@ -227,11 +297,14 @@ void CGame::Draw()
 		case CPlayer::PlayerState::Attacking:
 			_stprintf_s(buff, _T("Player State: Attacking"));
 			break;
+		case CPlayer::PlayerState::Sliding:
+			_stprintf_s(buff, _T("Player State: Sliding"));
+			break;
 		default:
 			_stprintf_s(buff, _T("Player State: Unknown"));
 			break;
 	}	
 
-	m_pFont->Render(buff, 10, 180, 32.0f);	
+	m_pFont->Render(buff, 10, 260, 32.0f);	
 
 }

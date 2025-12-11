@@ -22,19 +22,43 @@ public:
 
 private:
 
-	CFont* m_pFont;
+	//----------------
+	//----UI----------
+	//----------------
+	//FONT
+		CFont* m_pFont;
+	//STAMINAR BAR
+		CSprite2D* m_pStaminaBarSprite;
+		CUIObject* m_pStaminaBarUI;
+	//CROSSHAIR
+		CSprite2D* m_pCrossHairSprite;
+		CUIObject* m_pCrossHairUI;
+	//
+	
+	
+	//--------------------
+	//---SCENE OBJECTS---
+	//--------------------
+	//GROUND
+		CStaticMesh* m_pGroundMesh;
+		CStaticMeshObject* m_pGround;
+		
+	//STAGE
+		CStaticMesh* m_pBaseStageMesh;
+		CStaticMesh* m_pBridStageMesh;
+		CStage* m_pStage;
 
-	CStaticMesh* m_pGroundMesh;
-	CStaticMeshObject* m_pGround;
 
-	CStaticMesh* m_pBaseStageMesh;
-	CStaticMesh* m_pBridStageMesh;
-	CStage* m_pStage;
-
+	//----------------
+	//-----ENEMY------
+	//----------------
 	CStaticMesh* m_pEnemyMesh;
 	CAnimCharacter* m_pEnemy;
-	CPlayer* m_pPlayer;
 
+	//----------------
+	//-----PLAYER-----
+	//----------------
+	CPlayer* m_pPlayer;
 	CRay* m_pCrossRay[4];
 	CRay* m_pPrevCrossRay[4];
 	CROSSRAY m_prevCrossRay;

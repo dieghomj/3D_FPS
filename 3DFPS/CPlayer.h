@@ -8,13 +8,12 @@ class CPlayer :
 
 public:
 
-	
-
     enum PlayerState {
         Idle,
         Dashing,
         Walking,
         Jumping,
+		Sliding,
         Attacking
 	};
 
@@ -29,6 +28,8 @@ public:
 	bool CanShoot() const { return m_CanShoot; }
 	bool IsJumping() const { return m_IsJumping; }
 	bool IsDashing() const { return m_IsDashing; }
+	bool IsGrounded() const { return m_IsOnGround; };	//デバッグ用
+
 
 	D3DXVECTOR3 GetForwardVector() const { return m_Forward; }
 	D3DXVECTOR3 GetRightVector() const { return m_Right; }
@@ -38,24 +39,30 @@ public:
 	int GetCurrentWeapon() const { return m_currWeapon; }
 	int GetState() const { return m_State; }
 
+	float GetHealth() const { return m_Health; }
+	float GetMoveSpeed() const { return m_MoveSpeed; }
+	float GetJumpStrength() const { return m_JumpStrength; }
+	float GetHeight() const { return m_Height; }
+	float GetDashTimer() const { return m_DashTimer; }
+
 	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
 	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; } // Assuming 3 weapons
 
 private:
 	
 	void HandleInput();
-	void HandleJumpPhys();
+	void HandleAirPhys();
 	void CalculateVectors();
 	void CalculateInertia();
-	void ApplyForce(const D3DXVECTOR3& force);
+	void ApplyForce(const D3DXVECTOR3& force, float mass);
 	
 	void Move();
+	void UpdateAxis();
     void Shoot();
 	void Jump();
 	void Dash();
-	void Crouch();
+	void Slide();
 
-	bool IsGrounded() const { return m_IsOnGround; };
 
 private:
 	
@@ -74,8 +81,8 @@ private:
 	int m_currWeapon;
 	CInput* m_pInputHandler;
 
-	float m_ShootCooldownTimer = 0.f;
-	float m_DashTimer = 0.f;
+	float m_ShootCooldownTimer;
+	float m_DashTimer;
 
 	bool m_IsOnGround = true;
 	bool m_CanShoot = true;

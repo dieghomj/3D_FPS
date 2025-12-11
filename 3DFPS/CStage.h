@@ -17,7 +17,6 @@ class CStage :
    
 private:
 	CPlayer* m_pPlayer;
-	CROSSRAY m_prevCrossRay;
 	D3DXVECTOR3 m_prevPlayerPos;
 };
 

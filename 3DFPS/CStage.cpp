@@ -3,7 +3,6 @@
 
 CStage::CStage()
 	: m_pPlayer(nullptr)
-	, m_prevCrossRay()
 {
 }
 
