@@ -64,7 +64,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pBaseStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\stage.x")))
+	if (FAILED(m_pBaseStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Stage1\\stage1.x")))
 	{
 		return E_FAIL;
 	}
