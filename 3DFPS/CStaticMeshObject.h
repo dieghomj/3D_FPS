@@ -54,6 +54,13 @@ public:
 	//壁からの位置を計算する
 	void CalculatePositionFromWall(CROSSRAY* pCrossRay);
 
+	void ScaleAnim(float dt, float speed);
+	void RotateAnim(float dt, float speed);
+	void VibrateAnim(float dt, float amp, float speed);
+
+protected:
+
+
 private:
 	//交差位置のポリゴンの頂点を見つける
 	HRESULT FindVerticesOnPoly(

@@ -300,6 +300,17 @@ void CPlayer::CalculateInertia()
 	{
 		m_Inertia.z = 0.f;
 	}
+
+	D3DXVECTOR3 inertia = m_Inertia;
+	inertia.y = 0.f;
+	float len = D3DXVec3Length(&inertia);
+
+	if(len <= RUN_SPEED)
+	{
+		m_IsDashing = false;
+	}
+
+
 }
 
 void CPlayer::HandleAirPhys()

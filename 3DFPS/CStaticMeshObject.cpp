@@ -1,4 +1,5 @@
 #include "CStaticMeshObject.h"
+#include "Util.h"
 
 CStaticMeshObject::CStaticMeshObject()
 	: m_pMesh			( nullptr )
@@ -361,6 +362,19 @@ void CStaticMeshObject::CalculatePositionFromWall(CROSSRAY* pCrossRay)
 		pCrossRay->Ray[dir].Position = TrgPos;
 	}
 #endif
+}
+
+void CStaticMeshObject::RotateAnim(float dt, float speed)
+{
+}
+
+void CStaticMeshObject::VibrateAnim(float dt, float amp, float speed)
+{
+	m_vPosition += Util::CalcVibrationOffset(dt, amp, speed, m_vForward);
+}
+
+void CStaticMeshObject::ScaleAnim(float dt, float speed)
+{
 }
 
 //Œğ·ˆÊ’u‚Ìƒ|ƒŠƒSƒ“‚Ì’¸“_‚ğŒ©‚Â‚¯‚é

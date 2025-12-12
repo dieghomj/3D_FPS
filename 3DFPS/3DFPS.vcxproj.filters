@@ -228,6 +228,7 @@
     <ClCompile Include="CPlayer.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
     </ClCompile>
+    <ClCompile Include="CItem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -359,9 +360,6 @@
     <ClInclude Include="CGameStats.h">
       <Filter>Source\GameStats</Filter>
     </ClInclude>
-    <ClInclude Include="Util.h">
-      <Filter>Source\Common</Filter>
-    </ClInclude>
     <ClInclude Include="CGame.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
@@ -370,6 +368,10 @@
     </ClInclude>
     <ClInclude Include="CPlayer.h">
       <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="CItem.h" />
+    <ClInclude Include="Util.h">
+      <Filter>Source\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

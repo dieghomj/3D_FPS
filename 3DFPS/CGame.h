@@ -5,6 +5,7 @@
 #include "CPlayer.h"
 #include "CStage.h"
 #include "CFont.h"
+#include "CItem.h"
 
 class CGame :
     public CScene
@@ -62,5 +63,14 @@ private:
 	CRay* m_pCrossRay[4];
 	CRay* m_pPrevCrossRay[4];
 	CROSSRAY m_prevCrossRay;
+	
+	//----------------
+	//---ITEMS--------
+	//----------------	
+
+	CStaticMesh* m_pItemMesh;
+	std::vector<CItem*> m_pItemList;
+
+
 };
 

@@ -170,6 +170,7 @@
     <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGameObject.cpp" />
     <ClCompile Include="CGameStats.cpp" />
+    <ClCompile Include="CItem.cpp" />
     <ClCompile Include="CMain.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CRay.cpp" />
@@ -221,6 +222,7 @@
     <ClInclude Include="CFont.h" />
     <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CGameStats.h" />
+    <ClInclude Include="CItem.h" />
     <ClInclude Include="CMain.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CRay.h" />

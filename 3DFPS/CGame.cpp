@@ -139,6 +139,11 @@ HRESULT CGame::LoadData()
 		}
 	}
 
+	if (FAILED(CEffect::GetInstance()->LoadData()))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -197,28 +202,63 @@ void CGame::Update()
 
 	m_pEnemy->Update();
 
-	m_pCameraController->FirstPersonCamera(m_pPlayer,m_mouseDelta, m_mouseSense);
-	m_prevCrossRay = m_pPlayer->GetCrossRay();
+	m_pEnemy->VibrateAnim(m_pTime->GetTotalTime(), 0.12f, 0.0001f);
+
+	float mSense = 0.f;
+	if(m_pPlayer->IsDashing())
+	{
+		mSense = 0.045f; // Lower sensitivity when dashing
+	}
+	else
+	{
+		mSense = 0.0f; // Normal sensitivity
+	}
+
+	m_pCameraController->FirstPersonCamera(m_pPlayer,m_mouseDelta, m_mouseSense - mSense);
+
 	m_pPlayer->Update();
+	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pStage->Update();
-	
+
+	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
+	float playerVelLen = D3DXVec3Length(&playerVel);
+
 	if (m_pPlayer->IsDashing())
 	{
-		//if(dashHandle != -1 || !CEffect::IsPlaying(dashHandle))
-		//{
-
-		//	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-		//	playerPos.y -= 1.0f; // Adjust Y position to be at player's feet
-
-		//	dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
-		//	CEffect::SetScale(dashHandle, D3DXVECTOR3(10.0f, 10.0f, 10.0f));
-		//}
-		//else CEffect::SetLocation(dashHandle, m_pPlayer->GetPosition());
+		D3DXVECTOR3 playerPos = m_pCamera->GetPosition();
+		D3DXVECTOR3 forward = m_pPlayer->GetForwardVector();
+		//playerPos.y -= 0.02f; // Adjust Y position to be at player's feet
+		//playerPos -= forward * 0.3f; // Offset backward a bit
 		
-		D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-		dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
-		CEffect::SetScale(dashHandle, D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+		//
+		D3DXVec3Normalize(&forward, &forward);
+
+		//
+		float angleY = atan2f(forward.x, forward.z);
+
+		if (!CEffect::IsPlaying(dashHandle))
+		{
+			dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
+			CEffect::SetScale(dashHandle, D3DXVECTOR3(1.0f, 1.0f, 1.0f));
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ + angleY);
+			CEffect::SetSpeed(dashHandle, 1.0f);
+		}
+		else
+		{
+			// Keep the effect attached and rotated with the current forward
+			CEffect::SetLocation(dashHandle, playerPos);
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ + angleY);
+		}
 	}
+	else
+	{
+		if (CEffect::IsPlaying(dashHandle))
+		{
+			CEffect::Stop(dashHandle);
+			dashHandle = -1;
+		}
+	}
+
 
 	CScene::Update();
 }
@@ -237,7 +277,7 @@ void CGame::Draw()
 		TCHAR buff[256] = _T("");
 
 		_stprintf_s(buff, _T("RayY Pos: (%.2f, %.2f, %.2f)"), rayPos.x, rayPos.y, rayPos.z);
-		m_pFont->Render(buff, WND_W - 500, dir * 50, 32.0f);
+		m_pFont->Render(buff, WND_W - 500, dir * 50, 18.f);
 	}
 
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {
@@ -250,35 +290,31 @@ void CGame::Draw()
 		//m_pFont->Render(buff, WND_W - 500, dir * 50, 32.0f);
 	}
 
-
+	CEffect::GetInstance()->Draw(m_SceneInfo);
 
 	m_pStaminaBarSprite->SetFillPercent(m_pPlayer->GetDashTimer()/3.f, true);
 	m_pStaminaBarUI->Draw();
 
 
-
-
-
-
-	m_pFont->Render(_T("3D FPS Sample"), 10, 10, 24.0f);
+	m_pFont->Render(_T("3D FPS Sample"), 10, 10, 12.f);
 	TCHAR buff[256] = _T("");
 	_stprintf_s(buff, _T("FPS: %.2f"), m_pTime->GetFramePerSec());
-	m_pFont->Render(buff, 10, 40, 32.0f);
+	m_pFont->Render(buff, 10, 40, 18.f);
 
 	_stprintf_s(buff, _T("Player Pos: (%.2f, %.2f, %.2f)"), m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z);
-	m_pFont->Render(buff, 10, 100, 32.0f);
+	m_pFont->Render(buff, 10, 100, 18.f);
 
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
 	_stprintf_s(buff, _T("Player Vel: (%.2f, %.2f, %.2f)"), playerVel.x, playerVel.y, playerVel.z);
-	m_pFont->Render(buff, 10, 150, 32.0f);
+	m_pFont->Render(buff, 10, 150, 18.f);
 
 	char groundText[20] = "";
 	groundText[0] = m_pPlayer->IsGrounded() ? 'T' : 'F';
 	_stprintf_s(buff, _T("Player Is Grounded: %s"), groundText);
-	m_pFont->Render(buff, 10, 180, 32.0f);
+	m_pFont->Render(buff, 10, 180, 18.f);
 
 	_stprintf_s(buff, _T("Camera Pos: (%.2f, %.2f, %.2f)"), m_pCamera->GetPosition().x, m_pCamera->GetPosition().y, m_pCamera->GetPosition().z);
-	m_pFont->Render(buff, 10, 210, 32.0f);
+	m_pFont->Render(buff, 10, 210, 18.f);
 
 	switch (m_pPlayer->GetState())
 	{
@@ -305,6 +341,6 @@ void CGame::Draw()
 			break;
 	}	
 
-	m_pFont->Render(buff, 10, 260, 32.0f);	
+	m_pFont->Render(buff, 10, 260, 18.f);
 
 }

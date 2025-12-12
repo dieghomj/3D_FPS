@@ -1,0 +1,1 @@
+./msdf-atlas-gen.exe -font ".\RoadRage-Regular.ttf" -charset base-charset.txt -type msdf -format png -imageout ascii_msdf.png -csv atlas.csv -dimensions 320 320 -size 32 -pxrange 4 -yorigin top
