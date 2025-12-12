@@ -105,7 +105,7 @@ HRESULT CGame::LoadData()
 	}
 
 
-	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\stage.x")))
+	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\TestStage\\TestMap.x")))
 	{
 		return E_FAIL;
 	}
