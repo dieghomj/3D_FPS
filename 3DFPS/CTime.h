@@ -41,5 +41,8 @@ protected:
     // Fixed Time Step Variables
     double m_fixedStepDuration; // The target time for a single fixed update (e.g., 16.666 ms)
     double m_timeAccumulator;   // Time accumulated since the last fixed update
+
+	int m_frameCount;      // Frame count for FPS calculation
+	double m_timerFPS;        // Timer for FPS calculation
 	double m_framePerSec;       // Actual frames per second
 };

@@ -9,6 +9,8 @@ CTime::CTime()
 	, m_lastTime			()
 	, m_qpFreq				()
 	, m_framePerSec			(0)
+	, m_frameCount			(0)
+	, m_timerFPS			(0.f)
 {
 }
 
@@ -32,18 +34,16 @@ bool CTime::FixedTick(double& fixedDeltaTime)
 {
 	if (m_timeAccumulator >= m_fixedStepDuration)
 	{
-		m_framePerSec /= 1000.f;
 		m_timeAccumulator = 0;
 		fixedDeltaTime = m_fixedStepDuration;
+		m_frameCount++;
 		return true;
 	}
-
 	return false;
 }
 
 void CTime::Tick()
 {
-	m_framePerSec++;
 	VariableTick();
 }
 
@@ -62,6 +62,15 @@ void CTime::VariableTick()
 	m_timeAccumulator += elapsedMs;
 
 	m_lastTime = now;
+	
+	m_timerFPS += elapsedMs / 1000.f;
+
+	if (m_timerFPS >= 1.f)
+	{
+		m_framePerSec = m_frameCount / m_timerFPS;
+		m_timerFPS = 0.0;
+		m_frameCount = 0;
+	}
 }
 
 void CTime::StartTimer()
