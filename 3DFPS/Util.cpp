@@ -44,6 +44,5 @@ D3DXVECTOR3 Util::CalcUpDownOffset(float dt, float amp, float speed, const D3DXV
 
 	
 
-
 	return D3DXVECTOR3();
 }

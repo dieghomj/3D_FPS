@@ -270,7 +270,8 @@ void CGame::Update()
 	}
 
 	m_pEnemy->Update();
-	m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(1.f));
+	m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
+	m_pEnemy->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
 
 	float mSense = 0.f;
 	if(m_pPlayer->IsDashing())
@@ -329,7 +330,7 @@ void CGame::Update()
 	}
 
 	m_pHealthItem->Update();
-
+	m_pHealthItem->UpDownAnim(m_pTime->GetTotalTime(), 0.005f, 0.009);
 
 	CScene::Update();
 }
@@ -444,8 +445,8 @@ void CGame::HandleWeaponPosition()
 	camUp = m_pCamera->GetUp();
 
 	D3DXVECTOR3 localOffset =
-		camRight * 0.25f +   // move to the right
-		camUp * -0.15f +  // move a bit down
+		camRight * 0.15f +   // move to the right
+		camUp * -0.25f +  // move a bit down
 		camForward * 0.4f;     // move a bit forward
 	weaponPos += localOffset;
 
@@ -454,12 +455,13 @@ void CGame::HandleWeaponPosition()
 
 	D3DXMATRIX gunOffset;
 	D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
+	
 	if (playerVelLen > 0.2f)
 	{
 
 		//Add effects to gun when moving here!!!
 		//
-		weaponPos += camUp * 0.02f * sinf(playerVelLen); // Bobbing effect when moving
+		weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.009); // Bobbing effect when moving
 		
 	}
 

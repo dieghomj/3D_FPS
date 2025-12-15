@@ -379,6 +379,7 @@ void CStaticMeshObject::RotateAnim(float dt, float speed)
 void CStaticMeshObject::UpDownAnim(float dt, float amp, float speed)
 {
 	m_vPosition.y += amp * sinf(dt * speed);
+
 }
 
 void CStaticMeshObject::VibrateAnim(float dt, float amp, float speed)

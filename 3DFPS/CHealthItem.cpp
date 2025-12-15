@@ -11,7 +11,7 @@ CHealthItem::~CHealthItem()
 
 void CHealthItem::Update()
 {
-	RotateAnim(1000.f/FPS, D3DXToRadian(0.25f));
+	RotateAnim(1000.f/FPS, D3DXToRadian(0.15f));
 
 }
 
