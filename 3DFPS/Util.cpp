@@ -38,3 +38,12 @@ D3DXVECTOR3 Util::CalcVibrationOffset(float time, float amplitude, float frequen
 	D3DXVECTOR3 offset = right * (amplitude * s) + up * (amplitude * 0.5f * c);
 	return offset;
 }
+
+D3DXVECTOR3 Util::CalcUpDownOffset(float dt, float amp, float speed, const D3DXVECTOR3& forward)
+{
+
+	
+
+
+	return D3DXVECTOR3();
+}

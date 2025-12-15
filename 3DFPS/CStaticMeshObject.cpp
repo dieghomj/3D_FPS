@@ -37,10 +37,14 @@ void CStaticMeshObject::Draw(
 		return;
 	}
 
-	//描画直前で座標や回転情報などを更新.
-	m_pMesh->SetPosition( m_vPosition );
-	m_pMesh->SetRotation( m_vRotation );
-	m_pMesh->SetScale( m_vScale );
+	if (m_mWorld._44 != 0.0f) {
+		m_pMesh->SetWorldMatrix(m_mWorld);
+	}
+	else {
+		m_pMesh->SetPosition(m_vPosition);
+		m_pMesh->SetRotation(m_vRotation);
+		m_pMesh->SetScale(m_vScale);
+	}
 
 	//レンダリング.
 	m_pMesh->Render( View, Proj, Light, Camera.vPosition, Fog, pSpotLightArr, SpotLightNo);
@@ -366,6 +370,15 @@ void CStaticMeshObject::CalculatePositionFromWall(CROSSRAY* pCrossRay)
 
 void CStaticMeshObject::RotateAnim(float dt, float speed)
 {
+
+	m_vRotation.y += speed * dt;
+	ClampDirection(&m_vRotation.y);
+
+}
+
+void CStaticMeshObject::UpDownAnim(float dt, float amp, float speed)
+{
+	m_vPosition.y += amp * sinf(dt * speed);
 }
 
 void CStaticMeshObject::VibrateAnim(float dt, float amp, float speed)
@@ -375,6 +388,7 @@ void CStaticMeshObject::VibrateAnim(float dt, float amp, float speed)
 
 void CStaticMeshObject::ScaleAnim(float dt, float speed)
 {
+	m_vScale += Util::CalcVibrationOffset(dt, 1.f, speed, m_vForward);
 }
 
 //交差位置のポリゴンの頂点を見つける

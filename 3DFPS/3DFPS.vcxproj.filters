@@ -88,6 +88,21 @@
     <Filter Include="Source\SceneManager">
       <UniqueIdentifier>{75555713-448e-47e4-98b7-3517313ec4e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Item">
+      <UniqueIdentifier>{2da36e2f-873e-4f0c-83f1-be0014a30fbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Enviroment">
+      <UniqueIdentifier>{47bb67af-63bd-4318-a8f2-60d46f926a2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Character\Player">
+      <UniqueIdentifier>{414a29c6-d30c-4ce9-b5a5-3d817f5094ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Item\HealthItem">
+      <UniqueIdentifier>{9563cf2b-7fb1-429a-8c69-67037d9dd5fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Item\AmmoItem">
+      <UniqueIdentifier>{8451fe5e-b1ba-4c4c-9aa0-c82e54a5faaf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMenu.cpp">
@@ -222,13 +237,18 @@
     <ClCompile Include="CGame.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="CItem.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Item</Filter>
+    </ClCompile>
     <ClCompile Include="CStage.cpp">
-      <Filter>Source\GameObject\StaticMeshObject</Filter>
+      <Filter>Source\GameObject\StaticMeshObject\Enviroment</Filter>
     </ClCompile>
     <ClCompile Include="CPlayer.cpp">
-      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
+      <Filter>Source\GameObject\StaticMeshObject\Character\Player</Filter>
     </ClCompile>
-    <ClCompile Include="CItem.cpp" />
+    <ClCompile Include="CHealthItem.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Item\HealthItem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -363,15 +383,20 @@
     <ClInclude Include="CGame.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="CStage.h">
-      <Filter>Source\GameObject\StaticMeshObject</Filter>
-    </ClInclude>
-    <ClInclude Include="CPlayer.h">
-      <Filter>Source\GameObject\StaticMeshObject\Character</Filter>
-    </ClInclude>
-    <ClInclude Include="CItem.h" />
     <ClInclude Include="Util.h">
       <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CItem.h">
+      <Filter>Source\GameObject\StaticMeshObject\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="CStage.h">
+      <Filter>Source\GameObject\StaticMeshObject\Enviroment</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayer.h">
+      <Filter>Source\GameObject\StaticMeshObject\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CHealthItem.h">
+      <Filter>Source\GameObject\StaticMeshObject\Item\HealthItem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

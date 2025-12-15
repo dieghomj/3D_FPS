@@ -71,21 +71,7 @@ public:
 
 private:
 
-	void CalculateVectors()
-	{
-		D3DXVECTOR3 vecZ = D3DXVECTOR3(0.f, 0.f, 1.f);
-		D3DXVECTOR3 vecX = D3DXVECTOR3(1.f, 0.f, 0.f);
-
-		D3DXMATRIX rotY;
-		D3DXMatrixRotationY(&rotY, m_vRotation.y);
-
-		D3DXVec3TransformCoord(&m_vForward, &m_vForward, &rotY);
-		D3DXVec3TransformCoord(&m_vRight, &m_vRight, &rotY);
-
-		D3DXVec3Normalize(&m_vForward, &m_vForward);
-		D3DXVec3Normalize(&m_vRight, &m_vRight);
-	}
-	;
+	void CalculateVectors();
 
 protected://protectedは子クラスのみアクセス可能.
 

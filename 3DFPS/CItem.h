@@ -8,9 +8,9 @@ class CItem :
 public:
 
     CItem();
-	~CItem();
+	virtual ~CItem() override;
 
-	virtual void Update() = 0;
+	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData);
 	
 	virtual void ActivateEffect() = 0;
@@ -20,7 +20,8 @@ public:
 
 private:
 
-
+	float m_UseTimer;
+	float m_UseTimerMax;
 
 };
 

@@ -4,7 +4,7 @@ static constexpr float GRAVITY = 0.0098f;
 static constexpr float FRICTION = 0.060f;
 
 
-static constexpr float HEALTH_MAX = 100.0f;
+static constexpr float HEALTH_MAX = 100.f;
 
 static constexpr float PLAYERSIZE = 2.0f;
 static constexpr float CROUCHSIZE = 0.7f;

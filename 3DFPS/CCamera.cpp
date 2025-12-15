@@ -126,6 +126,9 @@ void CCamera::Pitch(float pitch)
 	D3DXMatrixRotationAxis(&mRot, &m_vRight, pitch);
 	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
 	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
+
+	m_Pitch += pitch;
+	m_vRotation.x = m_Pitch;
 }
 
 void CCamera::Yaw(float yaw)
@@ -136,6 +139,9 @@ void CCamera::Yaw(float yaw)
 	D3DXVec3TransformNormal(&m_vRight, &m_vRight, &mRot);
 	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
 	D3DXVec3TransformNormal(&m_vLook, &m_vLook, &mRot);
+
+	m_Yaw += yaw;
+	m_vRotation.y = m_Yaw;
 }
 
 void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)

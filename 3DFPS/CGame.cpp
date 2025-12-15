@@ -1,8 +1,5 @@
 #include "CGame.h"
-#include "CEffect.h"
 
-int currStage = 0;
-::EsHandle dashHandle = -1;
 
 CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, m_pManager)
@@ -25,6 +22,14 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pCrossRay()
 	, m_pPrevCrossRay()
 	, m_prevCrossRay()
+	, dashHandle(-1)
+
+	, m_pItemList()
+	, m_pItemMesh(nullptr)
+	, m_pHealthItem(nullptr)
+	, m_pAmmoItemMesh(nullptr)
+	, m_pHealthItemMesh(nullptr)
+	, m_pDashItemMesh(nullptr)
 
 {
 }
@@ -44,6 +49,8 @@ void CGame::Create()
 	m_pStaminaBarUI = new CUIObject();
 	m_pCrossHairSprite = new CSprite2D();
 	m_pCrossHairUI = new CUIObject();
+	m_pHealthBarSprite = new CSprite2D();
+	m_pHealthBarUI = new CUIObject();
 
 	m_pGroundMesh = new CStaticMesh();
 	m_pGround = new CStaticMeshObject();
@@ -51,11 +58,14 @@ void CGame::Create()
 	m_pBridStageMesh = new CStaticMesh();
 	m_pStage = new CStage();
 
-
 	m_pEnemyMesh = new CStaticMesh();
 	m_pEnemy = new CAnimCharacter();
 
 	m_pPlayer = new CPlayer();
+
+	m_pPistolMesh = new CStaticMesh();
+	m_pShotgunMesh = new CStaticMesh();
+	m_pPlayerWeapon = new CStaticMeshObject();
 
 	for ( int i = 0; i < 4; ++i )
 	{
@@ -65,6 +75,19 @@ void CGame::Create()
 	for (int i = 0; i < 4; ++i)
 	{
 		m_pPrevCrossRay[i] = new CRay();
+	}
+
+
+	m_pHealthItemMesh = new CStaticMesh();
+	m_pHealthItem = new CHealthItem();
+
+
+	m_pItemMesh = new CStaticMesh();
+
+	for (int i = 0; i < 10; ++i)
+	{
+		CItem* pItem = new CHealthItem();
+		m_pItemList.push_back(pItem);
 	}
 
 	CEffect::GetInstance()->Create(
@@ -81,8 +104,21 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
+	CSprite2D::SPRITE_STATE healthBarState = {};
+	healthBarState.Disp = { 350.f, 45.6f };
+	healthBarState.Base = { 361.f, 79.f };
+	healthBarState.Stride = { 361.f, 79.f };
+
+	if(FAILED(m_pHealthBarSprite->Init(*m_pDx11, L"Data\\Texture\\Health.png", healthBarState)))
+	{
+		return E_FAIL;
+	}
+
+	m_pHealthBarUI->AttachSprite(*m_pHealthBarSprite);
+	m_pHealthBarUI->SetPosition(D3DXVECTOR3(20.0f, WND_H - 150.0f, 0.0f));
+
 	CSprite2D::SPRITE_STATE staminaBarState = {};
-	staminaBarState.Disp = { 300.f, 90.6f };
+	staminaBarState.Disp = { 300.f, 45.6f };
 	staminaBarState.Base = { 128.f, 43.0f };
 	staminaBarState.Stride = { 128.f, 43.0f };
 
@@ -93,6 +129,20 @@ HRESULT CGame::LoadData()
 
 	m_pStaminaBarUI->AttachSprite(*m_pStaminaBarSprite);
 	m_pStaminaBarUI->SetPosition(D3DXVECTOR3(20.0f, WND_H - 100.0f, 0.0f));
+
+	CSprite2D::SPRITE_STATE crossHairState = {};
+	crossHairState.Disp = { 32.f, 32.f };
+	crossHairState.Base = { 32.f, 32.f };
+	crossHairState.Stride = { 32.f, 32.f };
+
+	if (FAILED(m_pCrossHairSprite->Init(*m_pDx11, L"Data\\Texture\\Cross.png", crossHairState)))
+	{
+		return E_FAIL;
+	}
+
+	m_pCrossHairUI->AttachSprite(*m_pCrossHairSprite);
+	m_pCrossHairUI->SetPosition(D3DXVECTOR3((WND_W / 2) - 16.0f, (WND_H / 2) - 16.0f, 0.0f));
+	m_pCrossHairUI->SetAlpha(0.7f);
 
 	if (FAILED(m_pGroundMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ground\\ground.x")))
 	{
@@ -120,6 +170,14 @@ HRESULT CGame::LoadData()
 	m_pStage->AttachMesh(*m_pBaseStageMesh);
 	m_pStage->SetPlayer(*m_pPlayer);
 
+	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
+	{
+		return E_FAIL;
+	}
+
+	m_pPlayerWeapon->AttachMesh(*m_pPistolMesh);
+	m_pPlayerWeapon->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
+
 	CROSSRAY crossRay = m_pPlayer->GetCrossRay();
 	for(int i=0; i<4; ++i)
 	{
@@ -138,6 +196,15 @@ HRESULT CGame::LoadData()
 			return E_FAIL;
 		}
 	}
+
+	if (FAILED(m_pHealthItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Health\\HP_Play.x")))
+	{
+		return E_FAIL;
+	}
+
+	m_pHealthItem->AttachMesh(*m_pHealthItemMesh);
+
+	m_pHealthItem->SetPosition(2.0f, 2.0f, 2.0f);
 
 	if (FAILED(CEffect::GetInstance()->LoadData()))
 	{
@@ -166,6 +233,8 @@ void CGame::Start()
 	m_pGround->SetPosition(0.0f, 0.0f, 0.0f);
 	m_pEnemy->SetPosition(0.0f, 0.0f, 5.0f);
 	m_pPlayer->SetPosition(0.0f, 2.0f, -5.0f);
+
+	//m_pPlayerWeapon->SetPosition(0.f, D3DXToRadian(180.f), 0.f);
 
 }
 
@@ -201,8 +270,7 @@ void CGame::Update()
 	}
 
 	m_pEnemy->Update();
-
-	m_pEnemy->VibrateAnim(m_pTime->GetTotalTime(), 0.12f, 0.0001f);
+	m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(1.f));
 
 	float mSense = 0.f;
 	if(m_pPlayer->IsDashing())
@@ -215,8 +283,9 @@ void CGame::Update()
 	}
 
 	m_pCameraController->FirstPersonCamera(m_pPlayer,m_mouseDelta, m_mouseSense - mSense);
-
 	m_pPlayer->Update();
+	HandleWeaponPosition();
+
 	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pStage->Update();
 
@@ -259,9 +328,12 @@ void CGame::Update()
 		}
 	}
 
+	m_pHealthItem->Update();
+
 
 	CScene::Update();
 }
+
 
 void CGame::Draw()
 {
@@ -269,6 +341,7 @@ void CGame::Draw()
 	m_pStage->Draw(m_SceneInfo);
 
 	m_pEnemy->RenderStatic(m_SceneInfo);
+	m_pPlayerWeapon->Draw(m_SceneInfo);
 
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {
 		m_pCrossRay[dir]->Render(
@@ -290,11 +363,28 @@ void CGame::Draw()
 		//m_pFont->Render(buff, WND_W - 500, dir * 50, 32.0f);
 	}
 
+
+	m_pHealthItem->Draw(m_SceneInfo);
+
 	CEffect::GetInstance()->Draw(m_SceneInfo);
+
+	m_pDx11->SetDepth(false);
+
+	m_pHealthBarUI->SetAlpha(0.5f);
+	m_pHealthBarSprite->SetFillPercent(1.f, true);
+	m_pHealthBarUI->Draw();
+
+	m_pHealthBarUI->SetAlpha(1.f);
+
+	m_pHealthBarSprite->SetFillPercent(m_pPlayer->GetHealth()/100.f, true);
+	m_pHealthBarUI->Draw();
 
 	m_pStaminaBarSprite->SetFillPercent(m_pPlayer->GetDashTimer()/3.f, true);
 	m_pStaminaBarUI->Draw();
 
+	m_pCrossHairUI->Draw();
+
+	m_pDx11->SetDepth(true);
 
 	m_pFont->Render(_T("3D FPS Sample"), 10, 10, 12.f);
 	TCHAR buff[256] = _T("");
@@ -343,4 +433,38 @@ void CGame::Draw()
 
 	m_pFont->Render(buff, 10, 260, 18.f);
 
+}
+
+void CGame::HandleWeaponPosition()
+{
+	D3DXVECTOR3 weaponPos = m_pCamera->GetPosition();
+	D3DXVECTOR3 weaponRot = D3DXVECTOR3(
+		m_pCamera->GetPitch(),
+		m_pCamera->GetYaw(),
+		0.f
+	);
+
+	D3DXVECTOR3 camForward, camRight, camUp;
+	camForward = m_pCamera->GetForward();
+	camRight = m_pCamera->GetRight();
+	camUp = m_pCamera->GetUp();
+
+	D3DXVECTOR3 localOffset =
+		camRight * 0.25f +   // move to the right
+		camUp * -0.15f +  // move a bit down
+		camForward * 0.4f;     // move a bit forward
+	weaponPos += localOffset;
+
+	D3DXMATRIX weaponWorld;
+	// left-handed, row-major: Right, Up, Forward, Position
+	weaponWorld._11 = camRight.x;   weaponWorld._12 = camRight.y;   weaponWorld._13 = camRight.z;   weaponWorld._14 = 0.f;
+	weaponWorld._21 = camUp.x;      weaponWorld._22 = camUp.y;      weaponWorld._23 = camUp.z;      weaponWorld._24 = 0.f;
+	weaponWorld._31 = camForward.x; weaponWorld._32 = camForward.y; weaponWorld._33 = camForward.z; weaponWorld._34 = 0.f;
+	weaponWorld._41 = weaponPos.x;  weaponWorld._42 = weaponPos.y;  weaponWorld._43 = weaponPos.z;  weaponWorld._44 = 1.f;
+
+	D3DXMATRIX gunOffset;
+	D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
+	weaponWorld = gunOffset * weaponWorld;
+
+	m_pPlayerWeapon->SetWorldMatrix(weaponWorld);
 }

@@ -41,6 +41,7 @@ CStaticMesh::CStaticMesh()
 	, m_Position()
 	, m_Rotation()
 	, m_Scale(1.0f, 1.0f, 1.0f)
+	, m_mWorld()
 {
 }
 
@@ -630,31 +631,18 @@ void CStaticMesh::Render(
 	FOG& Fog, const SPOT_LIGHT* pSpotLightArr, 
 	int SpotLightNo)
 {
-	//ワールド行列、スケール行列、回転行列、平行移動行列.
-	D3DXMATRIX mWorld, mScale, mRot, mTran;
-	D3DXMATRIX mYaw, mPitch, mRoll;
 
-	//拡大縮小行列作成.
-	D3DXMatrixScaling(
-		&mScale,	//(out)計算結果.
-		m_Scale.x, m_Scale.y, m_Scale.z);	//x,y,zそれぞれの拡縮値.
-	//Y軸回転行列作成.
-	D3DXMatrixRotationY(&mYaw, m_Rotation.y);
-	//X軸回転行列作成.
-	D3DXMatrixRotationX(&mPitch, m_Rotation.x);
-	//Z軸回転行列作成.
-	D3DXMatrixRotationZ(&mRoll, m_Rotation.z);
-	//平行移動行列作成.
-	D3DXMatrixTranslation(
-		&mTran,	//(out)計算結果.
-		m_Position.x, m_Position.y, m_Position.z);	//x,y,z座標.
+	D3DXMATRIX mWorld;
 
-	//回転行列を作成.
-	mRot = mYaw * mPitch * mRoll;
-
-	//ワールド行列作成.
-	//拡縮×回転×移動 ※順番がとても大切！！.
-	mWorld = mScale * mRot * mTran;
+	if (m_mWorld._44 != 0.0f)
+	{
+		mWorld = m_mWorld;
+	}
+	else
+	{
+		//ワールド行列作成.
+		BuildWorldMatrix(mWorld);
+	}
 
 	//使用するシェーダのセット.
 	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);	//頂点シェーダ.
@@ -747,6 +735,8 @@ void CStaticMesh::Render(
 	//メッシュのレンダリング.
 	RenderMesh(mWorld, mView, mProj);
 }
+
+
 //レンダリング関数(クラス内でのみ使用する).
 void CStaticMesh::RenderMesh(
 	D3DXMATRIX& mWorld, D3DXMATRIX& mView, D3DXMATRIX& mProj)
@@ -847,4 +837,35 @@ void CStaticMesh::RenderMesh(
 		m_pContext11->DrawIndexed(
 			m_pMaterials[m_AttrID[No]].dwNumFace * 3, 0, 0);
 	}
+}
+
+D3DXMATRIX CStaticMesh::BuildWorldMatrix(D3DXMATRIX& mWorld)
+{
+	//ワールド行列、スケール行列、回転行列、平行移動行列.
+	D3DXMATRIX mScale, mRot, mTran;
+	D3DXMATRIX mYaw, mPitch, mRoll;
+
+	//拡大縮小行列作成.
+	D3DXMatrixScaling(
+		&mScale,	//(out)計算結果.
+		m_Scale.x, m_Scale.y, m_Scale.z);	//x,y,zそれぞれの拡縮値.
+	//Y軸回転行列作成.
+	D3DXMatrixRotationY(&mYaw, m_Rotation.y);
+	//X軸回転行列作成.
+	D3DXMatrixRotationX(&mPitch, m_Rotation.x);
+	//Z軸回転行列作成.
+	D3DXMatrixRotationZ(&mRoll, m_Rotation.z);
+	//平行移動行列作成.
+	D3DXMatrixTranslation(
+		&mTran,	//(out)計算結果.
+		m_Position.x, m_Position.y, m_Position.z);	//x,y,z座標.
+
+	//回転行列を作成.
+	mRot = mYaw * mPitch * mRoll;
+
+	//ワールド行列作成.
+	//拡縮×回転×移動 ※順番がとても大切！！.
+	mWorld = mScale * mRot * mTran;
+
+	return mWorld;
 }

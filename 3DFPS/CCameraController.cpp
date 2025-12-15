@@ -83,12 +83,12 @@ void CCameraController::FirstPersonCamera(CGameObject* target,POINT delta, float
 	//if (m_vRotation.x + pitch > m_maxLookUp) pitch = m_maxLookUp;
 	//if (m_vRotation.x + pitch < m_maxLookDown) pitch = m_maxLookDown;
 
-	m_pCamera->Pitch(pitch);
 	m_pCamera->Yaw(yaw);
+	m_pCamera->Pitch(pitch);
 	m_pCamera->SetRotation(pitch, yaw, 0);
 	m_pCamera->SetPosition(target->GetPosition() + m_FP_offset);
 
-	target->SetRotation(0.f, m_pCamera->GetYaw(), 0.f);
+	target->SetRotation(0.f, m_pCamera->GetRotation().y, 0.f);
 }
 
 void CCameraController::StaticCamera(const D3DXVECTOR3& TargetPos, POINT delta, float sense)

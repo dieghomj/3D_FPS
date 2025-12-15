@@ -56,7 +56,10 @@ public:
 
 	void ScaleAnim(float dt, float speed);
 	void RotateAnim(float dt, float speed);
+	void UpDownAnim(float dt, float amp, float speed);
 	void VibrateAnim(float dt, float amp, float speed);
+
+	void SetWorldMatrix(D3DXMATRIX mWorld) { m_mWorld = mWorld;};
 
 protected:
 
@@ -74,4 +77,5 @@ private:
 protected:
 	CStaticMesh*		m_pMesh;
 	CCollider*			m_pCollider;
+	D3DXMATRIX			m_mWorld;
 };

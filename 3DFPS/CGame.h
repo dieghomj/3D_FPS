@@ -6,6 +6,9 @@
 #include "CStage.h"
 #include "CFont.h"
 #include "CItem.h"
+#include "CHealthItem.h"
+#include "CEffect.h"
+
 
 class CGame :
     public CScene
@@ -21,6 +24,8 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 
+	void HandleWeaponPosition();
+
 private:
 
 	//----------------
@@ -34,7 +39,9 @@ private:
 	//CROSSHAIR
 		CSprite2D* m_pCrossHairSprite;
 		CUIObject* m_pCrossHairUI;
-	//
+	//HEALTH BAR
+		CSprite2D* m_pHealthBarSprite;
+		CUIObject* m_pHealthBarUI;
 	
 	
 	//--------------------
@@ -63,6 +70,13 @@ private:
 	CRay* m_pCrossRay[4];
 	CRay* m_pPrevCrossRay[4];
 	CROSSRAY m_prevCrossRay;
+
+	CStaticMesh* m_pPistolMesh;
+	CStaticMesh* m_pShotgunMesh;
+
+	CStaticMeshObject* m_pPlayerWeapon;
+
+	::EsHandle dashHandle = -1;
 	
 	//----------------
 	//---ITEMS--------
@@ -71,6 +85,13 @@ private:
 	CStaticMesh* m_pItemMesh;
 	std::vector<CItem*> m_pItemList;
 
+	CHealthItem* m_pHealthItem;
+
+	CStaticMesh* m_pAmmoItemMesh;
+	CStaticMesh* m_pHealthItemMesh;
+	CStaticMesh* m_pDashItemMesh;
+
+	int currStage = 0;
 
 };
 

@@ -143,6 +143,7 @@ public:
 	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj,
 		LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog, const SPOT_LIGHT* pSpotLightArr, int SpotLightNo);
 
+
 	//座標情報を設定.
 	void SetPosition( const D3DXVECTOR3& Pos ) { m_Position = Pos; }
 	//座標xを設定.
@@ -169,6 +170,9 @@ public:
 		m_Scale.z = scale;
 	}
 
+	D3DXMATRIX GetWorldMatrix() const { return m_mWorld; };
+	void SetWorldMatrix(D3DXMATRIX mWorld) { m_mWorld = mWorld; };
+
 	//メッシュを取得.
 	LPD3DXMESH GetMesh() const { return m_Model.pMesh; }
 	//レイとの当たり判定用のメッシュを取得.
@@ -192,6 +196,8 @@ private:
 	HRESULT CreateConstantBuffer();
 	//サンプラ作成.
 	HRESULT CreateSampler();
+
+	D3DXMATRIX BuildWorldMatrix(D3DXMATRIX& mWorld);
 
 	//レンダリング関数(クラス内でのみ使用する).
 	void RenderMesh( D3DXMATRIX& mWorld, D3DXMATRIX& mView, D3DXMATRIX& mProj );
@@ -232,4 +238,7 @@ private:
 	D3DXVECTOR3		m_Rotation;	//回転値(x,y,z).
 								//※x=Pitch, y=Yaw, z=Roll.
 	D3DXVECTOR3		m_Scale;	//拡大縮小値(x,y,z等倍).
+
+	D3DXMATRIX		m_mWorld;
+
  };
