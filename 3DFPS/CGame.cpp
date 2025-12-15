@@ -438,12 +438,6 @@ void CGame::Draw()
 void CGame::HandleWeaponPosition()
 {
 	D3DXVECTOR3 weaponPos = m_pCamera->GetPosition();
-	D3DXVECTOR3 weaponRot = D3DXVECTOR3(
-		m_pCamera->GetPitch(),
-		m_pCamera->GetYaw(),
-		0.f
-	);
-
 	D3DXVECTOR3 camForward, camRight, camUp;
 	camForward = m_pCamera->GetForward();
 	camRight = m_pCamera->GetRight();
@@ -455,6 +449,20 @@ void CGame::HandleWeaponPosition()
 		camForward * 0.4f;     // move a bit forward
 	weaponPos += localOffset;
 
+	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
+	float playerVelLen = D3DXVec3Length(&playerVel);
+
+	D3DXMATRIX gunOffset;
+	D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
+	if (playerVelLen > 0.2f)
+	{
+
+		//Add effects to gun when moving here!!!
+		//
+		weaponPos += camUp * 0.02f * sinf(playerVelLen); // Bobbing effect when moving
+		
+	}
+
 	D3DXMATRIX weaponWorld;
 	// left-handed, row-major: Right, Up, Forward, Position
 	weaponWorld._11 = camRight.x;   weaponWorld._12 = camRight.y;   weaponWorld._13 = camRight.z;   weaponWorld._14 = 0.f;
@@ -462,8 +470,6 @@ void CGame::HandleWeaponPosition()
 	weaponWorld._31 = camForward.x; weaponWorld._32 = camForward.y; weaponWorld._33 = camForward.z; weaponWorld._34 = 0.f;
 	weaponWorld._41 = weaponPos.x;  weaponWorld._42 = weaponPos.y;  weaponWorld._43 = weaponPos.z;  weaponWorld._44 = 1.f;
 
-	D3DXMATRIX gunOffset;
-	D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
 	weaponWorld = gunOffset * weaponWorld;
 
 	m_pPlayerWeapon->SetWorldMatrix(weaponWorld);
