@@ -17416,7 +17416,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "MODEL\\Conrad_Gun_D.png";
+    "Conrad_Gun_D.png";
    }
   }
   Material {
@@ -17425,7 +17425,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "MODEL\\Conrad_Gun_Laser_D.png";
+    "Conrad_Gun_Laser_D.png";
    }
   }
   Material {
@@ -17434,7 +17434,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "MODEL\\Conrad_Gun_Light_D.png";
+    "Conrad_Gun_Light_D.png";
    }
   }
   Material {
@@ -17443,7 +17443,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "MODEL\\Conrad_Gun_Plug_D.png";
+    "Conrad_Gun_Plug_D.png";
    }
   }
  }
