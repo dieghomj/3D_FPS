@@ -116,23 +116,22 @@ void CPlayer::HandleInput()
 	{
 		inputVel += m_Right * m_MoveSpeed;
 		m_DashDirection = GetRightVector();
-		hasInput = true;
-	}
 
-	if (!m_IsJumping && !m_IsDashing && !m_IsSliding)
+	}
+	//else vecVel += m_Right * 0;
+
+	float length = D3DXVec3Length(&vecVel);
+	
+	if (length <= 0.f)
 	{
-		if (hasInput && m_IsOnGround)
-		{
-			m_State = Walking;
-		}
-		else if (m_IsOnGround)
-		{
-			m_State = Idle;
-		}
+		m_State = Idle;
+	}
+	else if ( !m_IsJumping )
+	{
+		m_State = Walking;
 	}
 
-	inputVel.x += m_Inertia.x;
-	inputVel.z += m_Inertia.z;
+	m_Velocity = vecVel;
 
 	m_Velocity = inputVel;
 
@@ -317,47 +316,40 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleAirPhys()
 {
 	float feetY = m_vPosition.y - m_Height;
-	const float GROUND_SNAP_DISTANCE = 0.03f;
-	const float GROUND_PENETRATION = 0.03f;
+	float WSPACE = 0.1f;	//
 
-	float distanceToFloor = feetY - m_FloorY;
-
-	if (distanceToFloor >= -GROUND_PENETRATION && distanceToFloor <= GROUND_SNAP_DISTANCE && m_Velocity.y <= 0.f)
+	if (fabsf((feetY)-(m_FloorY)) <= WSPACE)
 	{
 		// We're on the ground
 		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
-		m_Velocity.y = 0.f;
-		m_Inertia.y = 0.f;
-
-		// End jump when we touch ground going down
-		if (m_IsJumping && m_Velocity.y <= 0.0f)
-		{
-			m_IsJumping = false;
-		}
 	}
-	else if (distanceToFloor < -GROUND_PENETRATION)
+	else
+	{
+		m_IsOnGround = false;
+	}
+
+	if ( (feetY) < m_FloorY )
 	{
 		// Player somehow went below ground - force correction
 		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
 		m_Velocity.y = 0.f;
 		m_Inertia.y = 0.f;
-		m_IsJumping = false;
+	}
+	
+ 	if (IsGrounded())
+	{
+
+		if (m_IsJumping && m_Velocity.y <= 0.00f)
+		{
+			m_IsJumping = false;
+		}
+
 	}
 	else
 	{
-		// Player is in the air
-		m_IsOnGround = false;
 		m_Velocity.y -= GRAVITY;
-
-		if (m_vPosition.y <= -50.f)
-		{
-			//// Fell out of the world
-			m_Health = 0.f;
-		}
-
-
 	}
 }
 
