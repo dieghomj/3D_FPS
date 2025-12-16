@@ -85,10 +85,10 @@ private:
 	CInput* m_pInputHandler;
 
 	float m_ShootCooldownTimer;
+	bool m_CanShoot = true;
 	float m_DashTimer;
 
 	bool m_IsOnGround = true;
-	bool m_CanShoot = true;
 	bool m_IsJumping = false;
 	bool m_IsDashing = false;
 	bool m_IsCrouching = false;

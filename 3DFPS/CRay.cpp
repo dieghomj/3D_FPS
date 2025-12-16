@@ -250,6 +250,7 @@ void CRay::Render(
 
 	//外部のレイ構造体を反映
 	m_vPosition = Ray.Position;
+
 	m_vRotation.y = Ray.RotationY;
 
 	//回転行列.

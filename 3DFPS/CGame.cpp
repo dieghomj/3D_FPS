@@ -106,7 +106,7 @@ void CGame::Create()
 	m_pPlayerRayY = new CRay();
 	debugPathMesh = new CStaticMesh();
 	debugRay = new CRay();
-
+	debugShotRay = new CRay();
 }
 
 HRESULT CGame::LoadData()
@@ -230,6 +230,15 @@ HRESULT CGame::LoadData()
 	m_pPlayerRayY->Init(*m_pDx11, rayY);
 	debugPathMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
+
+	RAY shotRay;
+	shotRay.Position = m_pCamera->GetPosition();
+	shotRay.Axis = D3DXVECTOR3(0.f,0.f,1.f);
+	D3DXVec3Normalize(&shotRay.Axis, &shotRay.Axis);
+	shotRay.Length = 100.f;
+	shotRay.RotationY = 0.f;
+
+	debugShotRay->Init(*m_pDx11, shotRay);
 	return S_OK;
 }
 
@@ -287,6 +296,7 @@ void CGame::Update()
 	{
 		m_pPlayer->SetPosition(0.0f, 10.0f, -5.0f);
 		m_pPlayer->SetFloorY(0.0f);
+		debugHitShotList.clear();
 	}
 
 #endif
@@ -307,13 +317,14 @@ void CGame::Update()
 
 	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pPlayer->Update();
+
 	m_pStage->Update();
 
 	m_pCameraController->FirstPersonCamera(m_pPlayer, m_mouseDelta, m_mouseSense - mSense);
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
 
-	HandleWeaponPosition();
+	HandleWeapon();
 
 
 
@@ -419,6 +430,23 @@ void CGame::Draw()
 		debugPathMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 	}
 
+	for (auto hitPos : debugHitShotList)
+	{
+		
+		debugPathMesh->SetPosition(hitPos);
+		debugPathMesh->SetScale(D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+
+		D3DXMATRIX& mView = m_SceneInfo.mView;
+		D3DXMATRIX& mProj = m_SceneInfo.mProj;
+		LIGHT globalLight = m_SceneInfo.Light;
+		D3DXVECTOR3 camPos = m_SceneInfo.Camera.vPosition;
+		FOG fog = m_SceneInfo.Fog;
+		SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
+		int lightCount = m_SceneInfo.SpotLightNum;
+
+		debugPathMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+
+	}
 
 	D3DXVECTOR4 color = D3DXVECTOR4(1.f, 0.f, 0.f, 1.f);
 
@@ -445,9 +473,6 @@ void CGame::Draw()
 			m_SceneInfo.mView, m_SceneInfo.mProj, m_prevCrossRay.Ray[dir], D3DXVECTOR4(1.0f, 0.f, 0.f, 1.f));
 	}
 
-	m_pPlayerRayY->Render(
-		m_SceneInfo.mView, m_SceneInfo.mProj, m_pPlayer->GetRayY(), D3DXVECTOR4(0.f, 1.f, 0.f, 1.f));
-
 #endif
 
 
@@ -471,8 +496,21 @@ void CGame::Draw()
 	_stprintf_s(buff, _T("Player Is Grounded: %s"), groundText);
 	m_pFont->Render(buff, 10, 180, 18.f);
 
+	groundText[0] = m_pPlayer->IsShot() ? 'T' : 'F';
+	_stprintf_s(buff, _T("Player Is Shot: %s"), groundText);
+	m_pFont->Render(buff, 10, 200, 18.f);
+
 	_stprintf_s(buff, _T("Camera Pos: (%.2f, %.2f, %.2f)"), m_pCamera->GetPosition().x, m_pCamera->GetPosition().y, m_pCamera->GetPosition().z);
-	m_pFont->Render(buff, 10, 210, 18.f);
+	m_pFont->Render(buff, 10, 230, 18.f);
+
+	if (!debugHitShotList.empty())
+	{
+		_stprintf_s(buff, _T("Shot Ray Axis: (%.2f, %.2f, %.2f) "),
+			debugHitShotList[debugHitShotList.size() - 1].x,
+			debugHitShotList[debugHitShotList.size() - 1].y,
+			debugHitShotList[debugHitShotList.size() - 1].z);
+		m_pFont->Render(buff, 10, 260, 18.f);
+	}
 
 	switch (m_pPlayer->GetState())
 	{
@@ -499,13 +537,40 @@ void CGame::Draw()
 			break;
 	}	
 
-	m_pFont->Render(buff, 10, 260, 18.f);
+	m_pFont->Render(buff, 10, 360, 18.f);
 
 #endif
 
 }
 
-void CGame::HandleWeaponPosition()
+void CGame::HandleWeapon()
+{
+	HandleWeaponPos();
+
+	if (m_pPlayer->IsShot())
+	{
+		RAY shotRay;
+		shotRay.Position = m_pPlayer->GetPosition();;
+		D3DXVECTOR3 camForward = m_pCamera->GetForward();
+		shotRay.Axis = camForward;
+		shotRay.Length = 100.f;
+		shotRay.RotationY = 0;
+
+		float hitDist = 0.f;
+		D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
+
+		if(m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos))
+		{
+			// Hit detected
+			debugHitShotList.push_back(hitPos);
+		}
+
+		if(m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos))
+			debugHitShotList.push_back(hitPos);
+	}
+}
+
+void CGame::HandleWeaponPos()
 {
 	D3DXVECTOR3 weaponPos = m_pCamera->GetPosition();
 	D3DXVECTOR3 camForward, camRight, camUp;
@@ -514,7 +579,7 @@ void CGame::HandleWeaponPosition()
 	camUp = m_pCamera->GetUp();
 
 	D3DXVECTOR3 localOffset =
-		camRight * 0.15f +   // move to the right
+		camRight * 0.25f +   // move to the right
 		camUp * -0.25f +  // move a bit down
 		camForward * 0.4f;     // move a bit forward
 	weaponPos += localOffset;
@@ -524,17 +589,26 @@ void CGame::HandleWeaponPosition()
 
 	D3DXMATRIX gunOffset;
 	D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
-	
-	if (playerVelLen > 0.2f)
-	{
 
-		//Add effects to gun when moving here!!!
-		weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.009); // Bobbing effect when moving
-		
+	if (!m_pPlayer->CanShoot())
+	{
+		weaponPos += -camForward * 0.04f; // Recoil effect
+		weaponPos += camUp * 0.04f * 0.5f; // Slight upward kick
+		weaponPos += Util::CalcVibrationOffset(m_pTime->GetTotalTime(), 0.002, 0.07f, m_pPlayerWeapon->GetForward());
 	}
 	else
 	{
-		weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.005); // Bobbing effect when moving
+		if (playerVelLen > 0.2f)
+		{
+
+			//Add effects to gun when moving here!!!
+			weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.009); // Bobbing effect when moving
+
+		}
+		else
+		{
+			weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.005); // Bobbing effect when moving
+		}
 	}
 
 	D3DXMATRIX weaponWorld;

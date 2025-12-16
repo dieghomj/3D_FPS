@@ -16,7 +16,7 @@ static constexpr float CROUCH_SPEED = 0.035f;
 
 static constexpr float JUMP_STRENGTH = 0.65f;
 
-static constexpr float SHOOT_COOLDOWN = 0.5f; // seconds
+static constexpr float SHOOT_COOLDOWN = 0.15f; // seconds
 
 static constexpr float DASH_SPEED = 0.8f;
 static constexpr float DASH_DISTANCE = 2.5f;
@@ -28,28 +28,34 @@ static constexpr float SLIDE_START_SPEED = 0.3f;
 
 CPlayer::CPlayer()
 	: CCharacter()
+	
+	, m_pInputHandler(nullptr)
 	, m_State(Idle)
+	, m_Height(PLAYERSIZE)
 	, m_MoveSpeed(RUN_SPEED)
 	, m_JumpStrength(JUMP_STRENGTH)
 	, m_Health(HEALTH_MAX)
+	
+	, m_DashTimer(DASH_MAX)
+	
 	, m_currWeapon(0)
+	, m_ShootCooldownTimer(0.f)
+	, m_CanShoot(true)
+	
+	, m_FloorY(0.f)
 	, m_Forward(0.f, 0.f, 1.f)
 	, m_Right(1.f, 0.f, 0.f)
 	, m_Velocity(0.f, 0.f, 0.f)
 	, m_Acceleration(0.f, 0.f, 0.f)
 	, m_Inertia(0.f, 0.f, 0.f)
-	, m_pInputHandler(nullptr)
+	, m_DashDirection(0.f, 0.f, 1.f)
+
 	, m_IsOnGround(true)
-	, m_CanShoot(true)
 	, m_IsJumping(false)
 	, m_IsDashing(false)
-	, m_ShootCooldownTimer(0.f)
-	, m_DashTimer(DASH_MAX)
-	, m_FloorY(0.f)
-	, m_Height(PLAYERSIZE)
 	, m_IsCrouching(false)
-	, m_DashDirection(0.f, 0.f, 1.f)
 	, m_IsSliding(false)
+
 {
 	m_pInputHandler = new CInput();
 }
@@ -60,8 +66,21 @@ CPlayer::~CPlayer()
 
 void CPlayer::Update()
 {
+	m_Shot = false;
+
 	if(m_DashTimer < DASH_MAX)
 		m_DashTimer += 0.006f; 
+
+	if (!m_CanShoot && (m_ShootCooldownTimer < SHOOT_COOLDOWN))
+	{
+		m_CanShoot = false;
+		m_ShootCooldownTimer += 0.016f;
+	}
+	else
+	{
+		m_CanShoot = true;
+		m_ShootCooldownTimer = 0.f;
+	}
 
 	m_pInputHandler->Update();
 	HandleInput();
@@ -217,6 +236,13 @@ void CPlayer::Move()
 
 void CPlayer::Shoot()
 {
+	if( !m_CanShoot || m_ShootCooldownTimer > 0.f )
+	{
+		return;
+	}
+
+	m_Shot = true;
+	m_CanShoot = false;
 
 }
 
@@ -350,6 +376,12 @@ void CPlayer::HandleAirPhys()
 		// Player is in the air
 		m_IsOnGround = false;
 		m_Velocity.y -= GRAVITY;
+		if (m_vPosition.y <= -55.f)
+		{
+			m_vPosition.x = 0.f;
+			m_vPosition.z = 0.f;
+			m_vPosition.y = 160.f;
+		}
 	}
 }
 

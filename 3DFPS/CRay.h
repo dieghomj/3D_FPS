@@ -13,8 +13,10 @@ struct RAY
 	D3DXVECTOR3	Position;	//位置
 	float		Length;		//長さ
 	float		RotationY;	//Y軸回転
+	float		RotationX = 0.f;	//X軸回転
 
 	RAY() : Axis(), Position(), Length(), RotationY() {}
+	//RAY() : Axis(), Position(), Length(), RotationY(), RotationX() {}
 };
 
 //レイ構造体（十字）

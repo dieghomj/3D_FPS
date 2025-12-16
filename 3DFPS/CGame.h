@@ -24,7 +24,9 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 
-	void HandleWeaponPosition();
+	void HandleWeapon();
+
+	void HandleWeaponPos();
 
 private:
 
@@ -92,10 +94,13 @@ private:
 	
 	CRay* debugRay;
 	CStaticMesh* debugPathMesh;
+	CStaticMesh* debugShotMesh;
+	std::vector<D3DXVECTOR3> debugShotMark;
 	CROSSRAY m_prevCrossRay;
 	CRay* m_pCrossRay[4];
 	CRay* m_pPrevCrossRay[4];
 	CRay* m_pPlayerRayY;
-
+	CRay* debugShotRay;
+	std::vector<D3DXVECTOR3> debugHitShotList;
 };
 

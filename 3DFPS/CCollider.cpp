@@ -67,6 +67,13 @@ HRESULT CCollider::CreateBoxForMesh(const CStaticMesh& pMesh)
 	return S_OK;
 }
 
+HRESULT CCollider::CreateColMesh()
+{
+
+	return E_NOTIMPL;
+
+}
+
 void CCollider::SetPosition(const D3DXVECTOR3& pos)
 {
 	m_vPosition = pos;

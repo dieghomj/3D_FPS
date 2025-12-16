@@ -70,6 +70,10 @@ HRESULT CStaticMeshObject::CreateCollider(CCollider::COLLIDER_SHAPE shape)
 	case CCollider::COLLIDER_SHAPE_BOX:
 		hr = m_pCollider->CreateBoxForMesh(*m_pMesh);
 		break;
+	case CCollider::COLLIDER_SHAPE_MESH:
+		// Mesh collider creation not implemented
+		hr = m_pCollider->CreateColMesh();
+		break;
 	default:
 		return E_FAIL;
 	}

@@ -14,6 +14,8 @@ public:
 	{
 		COLLIDER_SHAPE_SPHERE,
 		COLLIDER_SHAPE_BOX,
+		COLLIDER_SHAPE_MESH,
+		COLLIDER_SHAPE_MAX
 	};
 
 public:
@@ -24,6 +26,7 @@ public:
 
 	HRESULT CreateSphereForMesh(const CStaticMesh& pMesh);
 	HRESULT CreateBoxForMesh(const CStaticMesh& pMesh);
+	HRESULT CreateColMesh(); // Mesh collider creation not implemented
 
 	void UpdateCollider() { SetPosition(m_vPosition); SetRotation(m_vRotation); SetScale(m_vScale);  }
 
