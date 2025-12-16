@@ -14,7 +14,7 @@ static constexpr float MAX_RUN_SPEED = 0.5f;
 
 static constexpr float CROUCH_SPEED = 0.035f;
 
-static constexpr float JUMP_STRENGTH = 0.65f;
+static constexpr float JUMP_STRENGTH = 0.35f;
 
 static constexpr float SHOOT_COOLDOWN = 0.5f; // seconds
 
@@ -317,8 +317,8 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleAirPhys()
 {
 	float feetY = m_vPosition.y - m_Height;
-	const float GROUND_SNAP_DISTANCE = 0.09f;
-	const float GROUND_PENETRATION = 0.05f;
+	const float GROUND_SNAP_DISTANCE = 0.03f;
+	const float GROUND_PENETRATION = 0.03f;
 
 	float distanceToFloor = feetY - m_FloorY;
 
@@ -350,6 +350,14 @@ void CPlayer::HandleAirPhys()
 		// Player is in the air
 		m_IsOnGround = false;
 		m_Velocity.y -= GRAVITY;
+
+		if (m_vPosition.y <= -50.f)
+		{
+			//// Fell out of the world
+			m_Health = 0.f;
+		}
+
+
 	}
 }
 
