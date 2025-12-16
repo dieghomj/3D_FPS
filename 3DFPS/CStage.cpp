@@ -16,7 +16,6 @@ void CStage::Update()
 
     // Save position before collision correction
     m_prevPlayerPos = m_pPlayer->GetPosition();
-
 	//debugPlayerPath.push_back(m_prevPlayerPos);
 
 	HandleWallCollisions();

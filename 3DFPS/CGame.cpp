@@ -36,7 +36,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_prevCrossRay()
 	, m_pPlayerRayY(nullptr)
 	, debugRay(nullptr)
-	, debugPathMesh(nullptr)
+	, debugSphereMesh(nullptr)
 
 {
 }
@@ -104,7 +104,7 @@ void CGame::Create()
 		m_pPrevCrossRay[i] = new CRay();
 	}
 	m_pPlayerRayY = new CRay();
-	debugPathMesh = new CStaticMesh();
+	debugSphereMesh = new CStaticMesh();
 	debugRay = new CRay();
 	debugShotRay = new CRay();
 }
@@ -228,7 +228,7 @@ HRESULT CGame::LoadData()
 
 	RAY rayY = m_pPlayer->GetRayY();
 	m_pPlayerRayY->Init(*m_pDx11, rayY);
-	debugPathMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
+	debugSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
 
 	RAY shotRay;
@@ -302,8 +302,8 @@ void CGame::Update()
 #endif
 
 	m_pEnemy->Update();
-	m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
-	m_pEnemy->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
+	//m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
+	//m_pEnemy->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
 
 	float mSense = 0.f;
 	if(m_pPlayer->IsDashing())
@@ -416,8 +416,8 @@ void CGame::Draw()
 
 	for(auto point : playerPath)
 	{
-		debugPathMesh->SetPosition(point + D3DXVECTOR3(0.f,-0.5f, 0.f));
-		debugPathMesh->SetScale(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
+		debugSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-0.5f, 0.f));
+		debugSphereMesh->SetScale(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
 
 		D3DXMATRIX& mView = m_SceneInfo.mView;
 		D3DXMATRIX& mProj = m_SceneInfo.mProj;
@@ -427,14 +427,14 @@ void CGame::Draw()
 		SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
 		int lightCount = m_SceneInfo.SpotLightNum;
 
-		debugPathMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+		debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 	}
 
 	for (auto hitPos : debugHitShotList)
 	{
 		
-		debugPathMesh->SetPosition(hitPos);
-		debugPathMesh->SetScale(D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+		debugSphereMesh->SetPosition(hitPos);
+		debugSphereMesh->SetScale(D3DXVECTOR3(0.1f, 0.1f, 0.1f));
 
 		D3DXMATRIX& mView = m_SceneInfo.mView;
 		D3DXMATRIX& mProj = m_SceneInfo.mProj;
@@ -444,7 +444,7 @@ void CGame::Draw()
 		SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
 		int lightCount = m_SceneInfo.SpotLightNum;
 
-		debugPathMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+		debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 
 	}
 

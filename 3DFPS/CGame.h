@@ -93,7 +93,7 @@ private:
 	//DEBUG
 	
 	CRay* debugRay;
-	CStaticMesh* debugPathMesh;
+	CStaticMesh* debugSphereMesh;
 	CStaticMesh* debugShotMesh;
 	std::vector<D3DXVECTOR3> debugShotMark;
 	CROSSRAY m_prevCrossRay;
