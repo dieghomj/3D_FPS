@@ -67,13 +67,8 @@ private:
 	//-----PLAYER-----
 	//----------------
 	CPlayer* m_pPlayer;
-	CRay* m_pCrossRay[4];
-	CRay* m_pPrevCrossRay[4];
-	CROSSRAY m_prevCrossRay;
-
 	CStaticMesh* m_pPistolMesh;
 	CStaticMesh* m_pShotgunMesh;
-
 	CStaticMeshObject* m_pPlayerWeapon;
 
 	::EsHandle dashHandle = -1;
@@ -92,6 +87,15 @@ private:
 	CStaticMesh* m_pDashItemMesh;
 
 	int currStage = 0;
+
+	//DEBUG
+	
+	CRay* debugRay;
+	CStaticMesh* debugPathMesh;
+	CROSSRAY m_prevCrossRay;
+	CRay* m_pCrossRay[4];
+	CRay* m_pPrevCrossRay[4];
+	CRay* m_pPlayerRayY;
 
 };
 

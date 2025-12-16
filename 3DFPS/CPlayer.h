@@ -23,6 +23,8 @@ public:
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
 	void SetFloorY(float y) { m_FloorY = y; }
+	void SetVelocity(const D3DXVECTOR3& vel) { m_Velocity = vel; }
+	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
 
 	bool IsAlive() const { return m_Health > 0.0f; }
 	bool CanShoot() const { return m_CanShoot; }
@@ -45,8 +47,10 @@ public:
 	float GetHeight() const { return m_Height; }
 	float GetDashTimer() const { return m_DashTimer; }
 
-	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
 	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; } // Assuming 3 weapons
+	void UpdateAxis();
+
+	void UpdateCrossRay();
 
 private:
 	
@@ -57,7 +61,6 @@ private:
 	void ApplyForce(const D3DXVECTOR3& force, float mass);
 	
 	void Move();
-	void UpdateAxis();
     void Shoot();
 	void Jump();
 	void Dash();

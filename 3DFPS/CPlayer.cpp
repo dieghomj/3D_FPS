@@ -1,6 +1,6 @@
 #include "CPlayer.h"
 
-static constexpr float GRAVITY = 0.0098f;
+static constexpr float GRAVITY = 0.0128f;
 static constexpr float FRICTION = 0.060f;
 
 
@@ -14,7 +14,7 @@ static constexpr float MAX_RUN_SPEED = 0.5f;
 
 static constexpr float CROUCH_SPEED = 0.035f;
 
-static constexpr float JUMP_STRENGTH = 0.2f;
+static constexpr float JUMP_STRENGTH = 0.65f;
 
 static constexpr float SHOOT_COOLDOWN = 0.5f; // seconds
 
@@ -88,52 +88,53 @@ void CPlayer::HandleInput()
 	CalculateVectors();
 	m_DashDirection = GetForwardVector();
 
-	D3DXVECTOR3 vecVel = D3DXVECTOR3(m_Inertia.x, m_Velocity.y, m_Inertia.z );
+	D3DXVECTOR3 inputVel = D3DXVECTOR3(0.f, m_Velocity.y, 0.f );
+	bool hasInput = false;
 
 	if (m_pInputHandler->GetKey('W'))
 	{
-		vecVel += m_Forward * m_MoveSpeed;
+		inputVel += m_Forward * m_MoveSpeed;
 		m_DashDirection = GetForwardVector();
-
+		hasInput = true;
 	}
-	//else vecVel += m_Forward * 0;
 
 	if (m_pInputHandler->GetKey('S'))
 	{
-		vecVel += -m_Forward * m_MoveSpeed;
+		inputVel += -m_Forward * m_MoveSpeed;
 		m_DashDirection = -GetForwardVector();
-
+		hasInput = true;
 	}
-	//else vecVel += m_Forward * 0;
 
 	if (m_pInputHandler->GetKey('A'))
 	{
-		vecVel += -m_Right * m_MoveSpeed;
+		inputVel += -m_Right * m_MoveSpeed;
 		m_DashDirection = -GetRightVector();
-
+		hasInput = true;
 	}
-	//else vecVel += m_Right * 0;
 
 	if (m_pInputHandler->GetKey('D'))
 	{
-		vecVel += m_Right * m_MoveSpeed;
+		inputVel += m_Right * m_MoveSpeed;
 		m_DashDirection = GetRightVector();
-
+		hasInput = true;
 	}
-	//else vecVel += m_Right * 0;
 
-	float length = D3DXVec3Length(&vecVel);
-	
-	if (length <= 0.f)
+	if (!m_IsJumping && !m_IsDashing && !m_IsSliding)
 	{
-		m_State = Idle;
-	}
-	else if ( !m_IsJumping )
-	{
-		m_State = Walking;
+		if (hasInput && m_IsOnGround)
+		{
+			m_State = Walking;
+		}
+		else if (m_IsOnGround)
+		{
+			m_State = Idle;
+		}
 	}
 
-	m_Velocity = vecVel;
+	inputVel.x += m_Inertia.x;
+	inputVel.z += m_Inertia.z;
+
+	m_Velocity = inputVel;
 
 	if (m_pInputHandler->GetKeyDown(VK_LBUTTON))
 	{
@@ -222,7 +223,7 @@ void CPlayer::Shoot()
 void CPlayer::Jump()
 {
 
-	if (IsGrounded())
+	if (m_IsOnGround && !m_IsJumping)
 	{
 		m_State = Jumping;
 		m_Velocity.y = m_JumpStrength;
@@ -316,37 +317,38 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleAirPhys()
 {
 	float feetY = m_vPosition.y - m_Height;
-	float WSPACE = 0.1f;	//
+	const float GROUND_SNAP_DISTANCE = 0.09f;
+	const float GROUND_PENETRATION = 0.05f;
 
-	if (fabsf((feetY)-(m_FloorY)) <= WSPACE)
-	{
-		m_vPosition.y = m_FloorY + m_Height;
-		m_IsOnGround = true;
-	}
-	else
-	{
-		m_IsOnGround = false;
-	}
+	float distanceToFloor = feetY - m_FloorY;
 
-	if ( (feetY) < m_FloorY )
+	if (distanceToFloor >= -GROUND_PENETRATION && distanceToFloor <= GROUND_SNAP_DISTANCE && m_Velocity.y <= 0.f)
 	{
+		// We're on the ground
 		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
 		m_Velocity.y = 0.f;
 		m_Inertia.y = 0.f;
-	}
-	
- 	if (IsGrounded())
-	{
 
-		if (m_IsJumping && m_Velocity.y <= 0.00f)
+		// End jump when we touch ground going down
+		if (m_IsJumping && m_Velocity.y <= 0.0f)
 		{
 			m_IsJumping = false;
 		}
-
+	}
+	else if (distanceToFloor < -GROUND_PENETRATION)
+	{
+		// Player somehow went below ground - force correction
+		m_vPosition.y = m_FloorY + m_Height;
+		m_IsOnGround = true;
+		m_Velocity.y = 0.f;
+		m_Inertia.y = 0.f;
+		m_IsJumping = false;
 	}
 	else
 	{
+		// Player is in the air
+		m_IsOnGround = false;
 		m_Velocity.y -= GRAVITY;
 	}
 }
@@ -356,14 +358,27 @@ void CPlayer::UpdateAxis()
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y = m_vPosition.y - m_Height + 0.2f;
-	m_pRayY->RotationY += m_vRotation.y;
+	m_pRayY->Position.y = m_vPosition.y - m_Height*0.00f;
+	m_pRayY->RotationY = m_vRotation.y;
+	m_pRayY->Length = m_Height + 0.5f;
 
-	//十字（前後左右に伸ばした）レイの設定	
+	UpdateCrossRay();
+}
+
+void CPlayer::UpdateCrossRay()
+{
+	D3DXVECTOR3 horizontalVel(m_Velocity.x, 0.f, m_Velocity.z);
+	float speed = D3DXVec3Length(&horizontalVel);
+
+	// Ray length = base distance + velocity buffer
+	float rayLength = 0.5f + (speed * 5.0f);
+
+	// Update all collision rays
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height + 0.2f;
-		m_pCrossRay->Ray[dir].RotationY += m_vRotation.y;
+		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height * 0.65f;
+		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
+		m_pCrossRay->Ray[dir].Length = rayLength;  // Dynamic length!
 	}
 }

@@ -14,6 +14,21 @@ class CStage :
         void SetPlayer(CPlayer& player) { 
             m_pPlayer = &player; 
         };
+
+#if _DEBUG
+public:
+
+	std::vector<D3DXVECTOR3> debugPlayerPath;
+	RAY						 debugSweptRay;
+	bool					 debugSweptHit = false;
+
+#endif // 0
+private:
+
+	void HandleWallCollisions();
+	void HandleFloorCollisions();
+	void HandleStepUp();
+	void HandleSweptCollisions();
    
 private:
 	CPlayer* m_pPlayer;
