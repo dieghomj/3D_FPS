@@ -218,7 +218,7 @@ float4 PS_NoTex(PS_INPUT input) : SV_Target
     // Final Color Calculation
     float3 diffuse = g_Diffuse.rgb * g_LightColor.rgb * NdotL;
     float3 ambient = g_AmbientColor.rgb;
-    float3 finalColor = ambient + diffuse;
+    float3 finalColor = float3(1.f, 0.f, 1.f);
 
     return float4(finalColor, g_Diffuse.a);
 }
