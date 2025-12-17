@@ -165,15 +165,15 @@ void CPlayer::HandleInput()
 		Jump();
 	}
 
-	//if (m_pInputHandler->GetKeyDown('Q'))
-	//{
-	//	NextWeapon();
-	//}
+	if (m_pInputHandler->GetKeyDown('Q'))
+	{
+		PrevWeapon();
+	}
 
-	//if (m_pInputHandler->GetKeyDown('E'))
-	//{
-	//	NextWeapon();
-	//}
+	if (m_pInputHandler->GetKeyDown('E'))
+	{
+		NextWeapon();
+	}
 
 	if (m_pInputHandler->GetKeyDown(VK_SHIFT))
 	{

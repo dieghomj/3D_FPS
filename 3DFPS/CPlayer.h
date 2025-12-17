@@ -47,7 +47,8 @@ public:
 	float GetHeight() const { return m_Height; }
 	float GetDashTimer() const { return m_DashTimer; }
 
-	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; } // Assuming 3 weapons
+	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; }					// 0,1,2
+	int PrevWeapon() { return m_currWeapon = ((m_currWeapon - 1) < 0 ? (4 + (m_currWeapon - 1) * -1) : (m_currWeapon - 1)) % 3; } // 0,1,2
 	void UpdateAxis();
 
 	void UpdateCrossRay();

@@ -8,6 +8,7 @@
 #include "CItem.h"
 #include "CHealthItem.h"
 #include "CEffect.h"
+#include "CShot.h"
 
 
 class CGame :
@@ -27,6 +28,11 @@ public:
 	void HandleWeapon();
 
 	void HandleWeaponPos();
+
+private:
+
+	int NextBullet();
+
 
 private:
 
@@ -71,7 +77,14 @@ private:
 	CPlayer* m_pPlayer;
 	CStaticMesh* m_pPistolMesh;
 	CStaticMesh* m_pShotgunMesh;
+
 	CStaticMeshObject* m_pPlayerWeapon;
+
+	int m_bulletIndex = 0;
+
+	::EsHandle m_shotHandle = -1;
+	CStaticMesh* m_pBulletMesh;
+	std::vector<CShot*> m_pBulletList;
 
 	::EsHandle dashHandle = -1;
 	

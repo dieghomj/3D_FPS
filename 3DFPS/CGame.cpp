@@ -1,5 +1,9 @@
 #include "CGame.h"
 
+constexpr int PLAYER_AMMO_MAX = 999;
+constexpr int ENEMY_COUNT_MAX = 50;
+constexpr int ENEMY_COUNT_PER_ROOM = 5;
+
 
 CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, m_pManager)
@@ -19,6 +23,11 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pEnemyMesh(nullptr)
 	
 	, m_pPlayer(nullptr)
+	
+	, m_pPistolMesh(nullptr)
+	, m_pPlayerWeapon(nullptr)
+	, m_pBulletMesh(nullptr)
+	, m_pBulletList()
 
 	, dashHandle(-1)
 
@@ -31,12 +40,15 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 
 	, currStage(0)
 
+	, m_pPlayerRayY(nullptr)
 	, m_pCrossRay()
 	, m_pPrevCrossRay()
 	, m_prevCrossRay()
-	, m_pPlayerRayY(nullptr)
 	, debugRay(nullptr)
 	, debugSphereMesh(nullptr)
+	, debugShotRay(nullptr)
+	, debugShotMark()
+	, debugHitShotList()
 
 {
 }
@@ -73,13 +85,15 @@ void CGame::Create()
 	m_pPistolMesh = new CStaticMesh();
 	m_pShotgunMesh = new CStaticMesh();
 	m_pPlayerWeapon = new CStaticMeshObject();
-
-
-
+	m_pBulletMesh = new CStaticMesh();
+	for (int i = 0; i < PLAYER_AMMO_MAX; ++i)
+	{
+		CShot* pBullet = new CShot();
+		m_pBulletList.push_back(pBullet);
+	}
 
 	m_pHealthItemMesh = new CStaticMesh();
 	m_pHealthItem = new CHealthItem();
-
 
 	m_pItemMesh = new CStaticMesh();
 
@@ -191,6 +205,15 @@ HRESULT CGame::LoadData()
 	m_pPlayerWeapon->AttachMesh(*m_pPistolMesh);
 	m_pPlayerWeapon->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
 
+	if (FAILED(m_pBulletMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Bullet\\bullet.x")))
+	{
+		return E_FAIL;
+	}
+
+	for (auto pBullet : m_pBulletList)
+	{
+		pBullet->AttachMesh(*m_pBulletMesh);
+	}
 
 
 	if (FAILED(m_pHealthItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Health\\HP_Play.x")))
@@ -326,7 +349,10 @@ void CGame::Update()
 
 	HandleWeapon();
 
-
+	for(auto pBullet : m_pBulletList)
+	{
+		pBullet->Update();
+	}
 
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
 	float playerVelLen = D3DXVec3Length(&playerVel);
@@ -385,6 +411,11 @@ void CGame::Draw()
 	m_pEnemy->RenderStatic(m_SceneInfo);
 	m_pPlayerWeapon->Draw(m_SceneInfo);
 
+	for (auto pBullet : m_pBulletList)
+	{
+		pBullet->Draw(m_SceneInfo);
+	}
+
 	m_pHealthItem->Draw(m_SceneInfo);
 
 	CEffect::GetInstance()->Draw(m_SceneInfo);
@@ -416,8 +447,8 @@ void CGame::Draw()
 
 	for(auto point : playerPath)
 	{
-		debugSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-0.5f, 0.f));
-		debugSphereMesh->SetScale(D3DXVECTOR3(0.2f, 0.2f, 0.2f));
+		debugSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-1.f, 0.f));
+		debugSphereMesh->SetScale(D3DXVECTOR3(0.1f, 0.1f, 0.1f));
 
 		D3DXMATRIX& mView = m_SceneInfo.mView;
 		D3DXMATRIX& mProj = m_SceneInfo.mProj;
@@ -512,6 +543,22 @@ void CGame::Draw()
 		m_pFont->Render(buff, 10, 260, 18.f);
 	}
 
+	switch (m_pPlayer->GetCurrentWeapon())
+	{
+
+	case 0:
+		_stprintf_s(buff, _T("Current Weapon: Pistol"));
+		break;
+	case 1:
+		_stprintf_s(buff, _T("Current Weapon: Shotgun"));
+		break;
+	default:
+		_stprintf_s(buff, _T("Current Weapon: Empty"));
+		break;
+	}
+
+	m_pFont->Render(buff, 10, 300, 18.f);
+
 	switch (m_pPlayer->GetState())
 	{
 		case CPlayer::PlayerState::Idle:
@@ -547,11 +594,19 @@ void CGame::HandleWeapon()
 {
 	HandleWeaponPos();
 
+	D3DXVECTOR3 camForward = m_pCamera->GetForward();
+	D3DXVECTOR3 bulletDir = camForward;
+	D3DXVec3Normalize(&bulletDir, &bulletDir);
+	D3DXVECTOR3 shotEffPos = m_pPlayerWeapon->GetPosition() + bulletDir * 0.3f + D3DXVECTOR3(0.f, 0.1f, 0.f);
+	CEffect::SetLocation(m_shotHandle, shotEffPos);
+
 	if (m_pPlayer->IsShot())
 	{
+		int currWeapon = m_pPlayer->GetCurrentWeapon();
+
 		RAY shotRay;
 		shotRay.Position = m_pPlayer->GetPosition();;
-		D3DXVECTOR3 camForward = m_pCamera->GetForward();
+	
 		shotRay.Axis = camForward;
 		shotRay.Length = 100.f;
 		shotRay.RotationY = 0;
@@ -559,14 +614,73 @@ void CGame::HandleWeapon()
 		float hitDist = 0.f;
 		D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
 
-		if(m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos))
+		const int PELLET_COUNT = 8;
+		const float SPREAD_ANGLE = D3DXToRadian(5.0f);
+		switch (currWeapon)
 		{
-			// Hit detected
-			debugHitShotList.push_back(hitPos);
-		}
+		case 0: // Pistol
 
-		if(m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos))
-			debugHitShotList.push_back(hitPos);
+			if(m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos))
+			{
+				// Hit detected
+				debugHitShotList.push_back(hitPos);
+			}
+
+			if(m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos))
+				debugHitShotList.push_back(hitPos);
+			m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), camForward, m_pCamera->GetYaw());
+			break;
+		
+		case 1: // Shotgun
+
+			for (int i = 0; i < PELLET_COUNT; ++i)
+			{
+				// Generate random spread
+				float randomX = ((rand() % 200 - 100) / 100.0f) * SPREAD_ANGLE;
+				float randomY = ((rand() % 200 - 100) / 100.0f) * SPREAD_ANGLE;
+
+				// Apply rotation to camera forward vector
+				D3DXVECTOR3 spreadDir = camForward;
+				D3DXMATRIX rotMatrix;
+				D3DXMatrixRotationYawPitchRoll(&rotMatrix, randomX, randomY, 0.0f);
+				D3DXVec3TransformNormal(&spreadDir, &camForward, &rotMatrix);
+				D3DXVec3Normalize(&spreadDir, &spreadDir);
+
+				// Create ray for each pellet
+				RAY pelletRay;
+				pelletRay.Position = m_pPlayer->GetPosition();
+				pelletRay.Axis = spreadDir;
+				pelletRay.Length = 100.f;
+				pelletRay.RotationY = 0;
+
+				float hitDist = 0.f;
+				D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
+
+				// Check for hits
+				if (m_pStage->IsHitForRay(pelletRay, &hitDist, &hitPos))
+				{
+					debugHitShotList.push_back(hitPos);
+				}
+
+				if (m_pEnemy->IsHitForRay(pelletRay, &hitDist, &hitPos))
+				{
+					debugHitShotList.push_back(hitPos);
+					// Add damage application here
+				}
+			}
+
+			break;
+
+		default:
+			break;
+		}
+		
+		m_shotHandle = CEffect::Play(CEffect::PistolShotEffect, shotEffPos);
+		CEffect::SetSpeed(m_shotHandle, 2.5f);
+		CEffect::SetRotation(m_shotHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
+		CEffect::SetScale(m_shotHandle, D3DXVECTOR3(0.03f, 0.03, 0.03));
+
+	
 	}
 }
 
@@ -620,5 +734,23 @@ void CGame::HandleWeaponPos()
 
 	weaponWorld = gunOffset * weaponWorld;
 
+
+	m_pPlayerWeapon->SetPosition(weaponPos);
+	m_pPlayerWeapon->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
+
 	m_pPlayerWeapon->SetWorldMatrix(weaponWorld);
+}
+
+int CGame::NextBullet()
+{
+	if(m_bulletIndex >= PLAYER_AMMO_MAX - 1)
+	{
+		m_bulletIndex = 0;
+		return m_bulletIndex;
+	}
+	else
+	{
+		return m_bulletIndex++;
+	}
+
 }

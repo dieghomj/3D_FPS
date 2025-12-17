@@ -178,6 +178,7 @@
     <ClCompile Include="CResult.cpp" />
     <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
+    <ClCompile Include="CShot.cpp" />
     <ClCompile Include="CSkinMesh.cpp" />
     <ClCompile Include="CSkinMeshObject.cpp" />
     <ClCompile Include="CSkinMeshParser.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="CResult.h" />
     <ClInclude Include="CScene.h" />
     <ClInclude Include="CSceneManager.h" />
+    <ClInclude Include="CShot.h" />
     <ClInclude Include="CSkinMesh.h" />
     <ClInclude Include="CSkinMeshObject.h" />
     <ClInclude Include="CSkinMeshParser.h" />

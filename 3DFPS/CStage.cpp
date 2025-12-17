@@ -16,7 +16,7 @@ void CStage::Update()
 
     // Save position before collision correction
     m_prevPlayerPos = m_pPlayer->GetPosition();
-	//debugPlayerPath.push_back(m_prevPlayerPos);
+	debugPlayerPath.push_back(m_prevPlayerPos);
 
 	HandleWallCollisions();
 
@@ -144,18 +144,11 @@ void CStage::HandleSweptCollisions()
     movementRay.Length = moveDistance + 0.5f;  // Add buffer for player radius
     movementRay.RotationY = 0.f;                    //ˆÚ“®‹——£
 
-#if _DEBUG
-	debugSweptRay = movementRay;
-#endif
-
     FLOAT hitDistance;
     D3DXVECTOR3 hitPoint, hitNormal;
 
     if (IsHitForRay(movementRay, &hitDistance, &hitPoint, &hitNormal))
     {
-#if _DEBUG
-		debugSweptHit = true;
-#endif
         float safeDistance = max(0.0f, hitDistance - 0.4f);
         D3DXVECTOR3 safePos = m_prevPlayerPos + movement * (safeDistance / moveDistance);
         safePos += hitNormal * 0.4f; 
@@ -167,20 +160,10 @@ void CStage::HandleSweptCollisions()
             velocity -= hitNormal * velDotNormal;  // Remove velocity component toward wall
 			m_pPlayer->SetVelocity(velocity);
         }
-
-#if _DEBUG
-		debugPlayerPath.push_back(m_prevPlayerPos);
-		debugPlayerPath.push_back(safePos);
-#endif
-
         m_pPlayer->SetPosition(safePos.x, safePos.y, safePos.z);
     }
     else
     {
-
-#if _DEBUG
-        debugSweptHit = false;
-#endif
 
     }
 }

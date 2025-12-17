@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CSpriteObject.h"
+#include "CStaticMeshObject.h"
 
 /**************************************************
 *	弾クラス
 **/
 class CShot
-	: public CSpriteObject
+	: public CStaticMeshObject
 {
 public:
 
@@ -17,10 +18,10 @@ public:
 	virtual ~CShot() override;
 
 	virtual void Update() override;
-	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj) override;
+	virtual void Draw(SCENE_DATA& sceneData) override;
 
 	//弾を再設定
-	void Reload(const D3DXVECTOR3& Pos, float RotY);
+	void Reload(const D3DXVECTOR3& Pos, const D3DXVECTOR3& Direction, float RotY);
 
 	void SetDisplay(bool disp) { m_Display = disp; }
 
@@ -39,3 +40,4 @@ protected:
 	float		m_Cadence;			//連射速度
 	
 };
+
