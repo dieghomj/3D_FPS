@@ -54,29 +54,36 @@ HRESULT CSprite3D::Init(
 
 	m_SpriteState = pSs;
 
+	return Init(pDx11, lpFileName, pSs, SHADER_NAME);
+
+}
+
+HRESULT CSprite3D::Init(CDirectX11& pDx11, LPCTSTR lpFileName, SPRITE_STATE& pSs, LPCTSTR shaderFileName)
+{
 	//シェーダ作成.
-	if( FAILED( CreateShader() ))
+	if (FAILED(CreateShader(shaderFileName)))
 	{
 		return E_FAIL;
 	}
 	//板ポリゴン作成.
-	if( FAILED( CreateModel() ))
+	if (FAILED(CreateModel()))
 	{
 		return E_FAIL;
 	}
 	//テクスチャ作成.
-	if( FAILED( CreateTexture( lpFileName ) ) )
+	if (FAILED(CreateTexture(lpFileName)))
 	{
 		return E_FAIL;
 	}
 	//サンプラ作成.
-	if( FAILED( CreateSampler() ) )
+	if (FAILED(CreateSampler()))
 	{
 		return E_FAIL;
 	}
 
 	return S_OK;
 }
+
 
 //解放.
 void CSprite3D::Release()
@@ -97,7 +104,7 @@ void CSprite3D::Release()
 //	HLSLファイルを読み込みシェーダを作成する.
 //	HLSL: High Level Shading Language の略.
 //===========================================================
-HRESULT CSprite3D::CreateShader()
+HRESULT CSprite3D::CreateShader(LPCTSTR lpFileName)
 {
 	ID3DBlob* pCompiledShader = nullptr;
 	ID3DBlob* pErrors = nullptr;
@@ -110,7 +117,7 @@ HRESULT CSprite3D::CreateShader()
 	//HLSLからバーテックスシェーダのブロブを作成.
 	if (FAILED(
 		D3DX11CompileFromFile(
-			SHADER_NAME,	//シェーダファイル名（HLSLファイル）.
+			lpFileName,	//シェーダファイル名（HLSLファイル）.
 			nullptr,		//マクロ定義の配列へのポインタ（未使用）.
 			nullptr,		//インクルードファイルを扱うインターフェイスへのポインタ（未使用）.
 			"VS_Main",		//シェーダエントリーポイント関数の名前.
@@ -179,7 +186,7 @@ HRESULT CSprite3D::CreateShader()
 	//HLSLからピクセルシェーダのブロブを作成.
 	if (FAILED(
 		D3DX11CompileFromFile(
-			SHADER_NAME,		//シェーダファイル名（HLSLファイル）.
+			lpFileName,		//シェーダファイル名（HLSLファイル）.
 			nullptr,			//マクロ定義の配列へのポインタ（未使用）.
 			nullptr,			//インクルードファイルを扱うインターフェイスへのポインタ（未使用）.
 			"PS_Main",			//シェーダエントリーポイント関数の名前.
@@ -443,5 +450,57 @@ void CSprite3D::Render(
 
 	//アルファブレンド無効にする.
 	m_pDx11->SetAlphaBlend( false );
+
+}
+
+void CSprite3D::SetRotationFromNormal(const D3DXVECTOR3& normal)
+{
+
+	// Normalize the input normal
+	D3DXVECTOR3 forward;
+	D3DXVec3Normalize(&forward, &normal);
+
+	// Choose an arbitrary up vector
+	// If normal is nearly parallel to world up (0,1,0), use a different reference
+	D3DXVECTOR3 worldUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXVECTOR3 right;
+	D3DXVec3Cross(&right, &worldUp, &forward);
+
+	// If the cross product is too small, the normal is parallel to up
+	if (D3DXVec3Length(&right) < 0.001f)
+	{
+		// Use a different reference vector
+		worldUp = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+		D3DXVec3Cross(&right, &worldUp, &forward);
+	}
+
+	D3DXVec3Normalize(&right, &right);
+
+	// Recalculate the up vector to ensure orthogonality
+	D3DXVECTOR3 up;
+	D3DXVec3Cross(&up, &forward, &right);
+	D3DXVec3Normalize(&up, &up);
+
+	// Extract rotation angles from the rotation matrix
+	// This is a simplified approach - extracting Euler angles from a rotation matrix
+	// Note: The sprite's local space has Z as forward
+
+	// For a more accurate approach, we can calculate the angles directly
+	// Pitch (X rotation) - rotation around X axis
+	m_vRotation.x = asinf(-forward.y);
+
+	// Yaw (Y rotation) - rotation around Y axis
+	if (cosf(m_vRotation.x) > 0.001f)
+	{
+		m_vRotation.y = atan2f(forward.x, forward.z);
+	}
+	else
+	{
+		m_vRotation.y = atan2f(-right.z, right.x);
+	}
+
+	// Roll (Z rotation) - typically 0 for decals, but can be calculated if needed
+	// For decals facing surfaces, we usually don't need roll
+	m_vRotation.z = 0.0f;
 
 }

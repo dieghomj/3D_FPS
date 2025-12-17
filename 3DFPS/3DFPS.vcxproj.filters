@@ -249,6 +249,8 @@
     <ClCompile Include="CHealthItem.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Item\HealthItem</Filter>
     </ClCompile>
+    <ClCompile Include="CShot.cpp" />
+    <ClCompile Include="CDecal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -398,6 +400,8 @@
     <ClInclude Include="CHealthItem.h">
       <Filter>Source\GameObject\StaticMeshObject\Item\HealthItem</Filter>
     </ClInclude>
+    <ClInclude Include="CShot.h" />
+    <ClInclude Include="CDecal.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">
@@ -425,6 +429,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="Data\Shader\DebugLine.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Decal.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

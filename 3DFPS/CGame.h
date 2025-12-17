@@ -9,12 +9,21 @@
 #include "CHealthItem.h"
 #include "CEffect.h"
 #include "CShot.h"
+#include "CDecal.h"
 
 
 class CGame :
     public CScene
 {
 public:
+
+	struct BULLET_IMPACT {
+		D3DXVECTOR3 position;
+		D3DXVECTOR3 normal;
+		float lifeTime;
+	};
+
+
 	CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager);
 	virtual ~CGame();
 
@@ -87,7 +96,9 @@ private:
 	::EsHandle m_shotHandle = -1;
 	CStaticMesh* m_pBulletMesh;
 	std::vector<CShot*> m_pBulletList;
-	CSprite3D* m_pShotDecalSprite;
+	std::vector<BULLET_IMPACT> m_bulletImpactList;
+	CDecal* m_pShotDecalSprite;
+	CDecal* m_pEnemyHitDecalSprite;
 
 	::EsHandle dashHandle = -1;
 	

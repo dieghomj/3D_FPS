@@ -164,6 +164,7 @@
     <ClCompile Include="CDebugBSphere.cpp" />
     <ClCompile Include="CDebugColliderRender.cpp" />
     <ClCompile Include="CDebugText.cpp" />
+    <ClCompile Include="CDecal.cpp" />
     <ClCompile Include="CDirectX11.cpp" />
     <ClCompile Include="CDirectX9.cpp" />
     <ClCompile Include="CEffect.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="CDebugBSphere.h" />
     <ClInclude Include="CDebugColliderRender.h" />
     <ClInclude Include="CDebugText.h" />
+    <ClInclude Include="CDecal.h" />
     <ClInclude Include="CDirectX11.h" />
     <ClInclude Include="CDirectX9.h" />
     <ClInclude Include="CEffect.h" />
@@ -330,6 +332,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_Main</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Decal.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_Main</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

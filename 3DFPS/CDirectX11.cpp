@@ -322,6 +322,22 @@ void CDirectX11::SetAlphaBlend( bool flag )
 	m_pContext11->OMSetBlendState( pTmp, nullptr, mask );
 }
 
+void CDirectX11::SetDepthBias(bool enable, float bias, float slopeBias)
+{
+	D3D11_RASTERIZER_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.CullMode = D3D11_CULL_BACK;
+	desc.DepthBias = enable ? static_cast<INT>(bias * 100000.0f) : 0;
+	desc.SlopeScaledDepthBias = enable ? slopeBias : 0.0f;
+	desc.DepthClipEnable = TRUE;
+
+	ID3D11RasterizerState* pRasterState = nullptr;
+	m_pDevice11->CreateRasterizerState(&desc, &pRasterState);
+	m_pContext11->RSSetState(pRasterState);
+	SAFE_RELEASE(pRasterState);
+}
+
 
 //深度（Ｚ）テストON/OFF切り替え.
 void CDirectX11::SetDepth(bool flag)

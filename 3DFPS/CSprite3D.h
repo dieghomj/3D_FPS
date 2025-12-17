@@ -60,13 +60,15 @@ public:
 	~CSprite3D();	//デストラクタ.
 
 	//初期化.
-	HRESULT Init(CDirectX11& pDx11, LPCTSTR lpFileName, SPRITE_STATE& pSs );
+	virtual HRESULT Init(CDirectX11& pDx11, LPCTSTR lpFileName, SPRITE_STATE& pSs );
+	virtual HRESULT Init(CDirectX11& pDx11, LPCTSTR lpFileName, SPRITE_STATE& pSs, LPCTSTR shaderFileName);
+
 
 	//解放.
 	void Release();
 
 	//シェーダ作成.
-	HRESULT CreateShader();
+	HRESULT CreateShader(LPCTSTR lpFileName);
 	//モデル作成.
 	HRESULT CreateModel();
 	//テクスチャ作成.
@@ -95,6 +97,8 @@ public:
 	//回転軸Zを設定(Roll).
 	void SetRotationZ(float z){	m_vRotation.z = z;	}
 
+	void SetRotationFromNormal(const D3DXVECTOR3& normal);
+
 	//拡大縮小情報を設定.
 	void SetScale(const D3DXVECTOR3& vScale) { m_vScale = vScale; }
 
@@ -115,7 +119,8 @@ public:
 	void SetBillboard(bool flag) { m_Billboard = flag ? BILLBOARD_FULL : BILLBOARD_OFF; }
 	void SetBillboardMode(BILBOARD_MODE mode) { m_Billboard = mode; }
 
-private:
+protected:
+
 	CDirectX11*				m_pDx11;
 	ID3D11Device*			m_pDevice11;
 	ID3D11DeviceContext*	m_pContext11;

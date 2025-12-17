@@ -36,6 +36,8 @@ public:
 	//アルファブレンドON/OFF切り替え.
 	void SetAlphaBlend( bool flag );
 
+	void SetDepthBias(bool enable, float bias = 0.0001f, float slopeBias = 1.0f);
+
 	//バックバッファクリア関数.
 	void ClearBackBuffer();
 	//表示.

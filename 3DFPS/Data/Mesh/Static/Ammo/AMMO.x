@@ -4492,7 +4492,7 @@ Frame Root {
             0.000000;
            0.000000; 0.000000; 0.000000;;
            0.000000; 0.000000; 0.000000;;
-          TextureFilename {"MODEL\\Ammo_DEF.png";}
+          TextureFilename {"Ammo_DEF.png";}
         }
       } // End of ChamferBox003 material list
     } // End of ChamferBox003 mesh
