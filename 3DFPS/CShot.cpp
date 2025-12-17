@@ -50,7 +50,7 @@ void CShot::Reload(const D3DXVECTOR3& Pos, const D3DXVECTOR3& Direction, float R
 	
 	m_vPosition		= Pos;
 	m_Display		= true;
-	m_MoveSpeed		= 1.5f;								//移動速度　※とりあえず0.2fを設定
+	m_MoveSpeed		= 2.5f;								//移動速度　※とりあえず0.2fを設定
 	m_vRotation.y	= RotY;								//Y軸回転値
 	m_DisplayTime	= FPS * 2;							//約3秒くらい表示する
 

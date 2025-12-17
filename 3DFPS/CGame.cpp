@@ -49,6 +49,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, debugShotRay(nullptr)
 	, debugShotMark()
 	, debugHitShotList()
+	, debugShotMesh(nullptr)
 
 {
 }
@@ -159,12 +160,12 @@ HRESULT CGame::LoadData()
 
 	CSprite2D::SPRITE_STATE crossHairState = {};
 	crossHairState.Disp = { 32.f, 32.f };
-	crossHairState.Base = { 32.f, 32.f };
-	crossHairState.Stride = { 32.f, 32.f };
+	crossHairState.Base = { 512.f, 512.f };
+	crossHairState.Stride = { 512.f, 512.f };
 
 	if (FAILED(m_pCrossHairSprite->Init(*m_pDx11, L"Data\\Texture\\Cross.png", crossHairState)))
 	{
-		return E_FAIL;
+		return E_FAIL;	
 	}
 
 	m_pCrossHairUI->AttachSprite(*m_pCrossHairSprite);
@@ -176,11 +177,10 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pBaseStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Stage1\\stage1.x")))
+	if (FAILED(m_pBaseStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Small\\smallMap.x")))
 	{
 		return E_FAIL;
 	}
-
 
 	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\TestStage\\TestMap.x")))
 	{
@@ -195,9 +195,15 @@ HRESULT CGame::LoadData()
 	m_pEnemy->AttachMesh(*m_pEnemyMesh);
 	m_pGround->AttachMesh(*m_pGroundMesh);
 	m_pStage->AttachMesh(*m_pBaseStageMesh);
+	m_pStage->SetScale(3.f);
 	m_pStage->SetPlayer(*m_pPlayer);
 
-	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
+	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Pistol\\pistol.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShotgunMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Shotgun\\shotgun.x")))
 	{
 		return E_FAIL;
 	}
@@ -448,7 +454,7 @@ void CGame::Draw()
 	for(auto point : playerPath)
 	{
 		debugSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-1.f, 0.f));
-		debugSphereMesh->SetScale(D3DXVECTOR3(0.1f, 0.1f, 0.1f));
+		debugSphereMesh->SetScale(D3DXVECTOR3(0.05f, 0.05f, 0.05f));
 
 		D3DXMATRIX& mView = m_SceneInfo.mView;
 		D3DXMATRIX& mProj = m_SceneInfo.mProj;
@@ -458,6 +464,12 @@ void CGame::Draw()
 		SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
 		int lightCount = m_SceneInfo.SpotLightNum;
 
+		D3DXVECTOR3 dir = point - m_pPlayer->GetPosition();
+		float dist = D3DXVec3Length(&dir);
+		if(dist <= 0.8f)
+		{
+			debugSphereMesh->SetScale(dist/0.8f * 0.05f);
+		}
 		debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 	}
 
@@ -693,20 +705,21 @@ void CGame::HandleWeaponPos()
 	camUp = m_pCamera->GetUp();
 
 	D3DXVECTOR3 localOffset =
-		camRight * 0.25f +   // move to the right
+		camRight * 0.12f +   // move to the right
 		camUp * -0.25f +  // move a bit down
-		camForward * 0.4f;     // move a bit forward
+		camForward * 0.75f;     // move a bit forward
 	weaponPos += localOffset;
 
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
 	float playerVelLen = D3DXVec3Length(&playerVel);
 
-	D3DXMATRIX gunOffset;
+	D3DXMATRIX gunOffset, gunScale;
 	D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
+	D3DXMatrixScaling(&gunScale, 0.2, 0.2, 0.2);
 
 	if (!m_pPlayer->CanShoot())
 	{
-		weaponPos += -camForward * 0.04f; // Recoil effect
+		weaponPos += -camForward * 0.05f; // Recoil effect
 		weaponPos += camUp * 0.04f * 0.5f; // Slight upward kick
 		weaponPos += Util::CalcVibrationOffset(m_pTime->GetTotalTime(), 0.002, 0.07f, m_pPlayerWeapon->GetForward());
 	}
@@ -732,7 +745,7 @@ void CGame::HandleWeaponPos()
 	weaponWorld._31 = camForward.x; weaponWorld._32 = camForward.y; weaponWorld._33 = camForward.z; weaponWorld._34 = 0.f;
 	weaponWorld._41 = weaponPos.x;  weaponWorld._42 = weaponPos.y;  weaponWorld._43 = weaponPos.z;  weaponWorld._44 = 1.f;
 
-	weaponWorld = gunOffset * weaponWorld;
+	weaponWorld = gunScale * gunOffset * weaponWorld;
 
 
 	m_pPlayerWeapon->SetPosition(weaponPos);

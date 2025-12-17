@@ -50,6 +50,8 @@ private:
 	//HEALTH BAR
 		CSprite2D* m_pHealthBarSprite;
 		CUIObject* m_pHealthBarUI;
+		CSprite2D* m_pPainSprite;
+		CUIObject* m_pPainUI;
 	
 	
 	//--------------------
@@ -85,6 +87,7 @@ private:
 	::EsHandle m_shotHandle = -1;
 	CStaticMesh* m_pBulletMesh;
 	std::vector<CShot*> m_pBulletList;
+	CSprite3D* m_pShotDecalSprite;
 
 	::EsHandle dashHandle = -1;
 	
