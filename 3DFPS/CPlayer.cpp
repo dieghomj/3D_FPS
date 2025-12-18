@@ -1,7 +1,7 @@
 #include "CPlayer.h"
 
-static constexpr float GRAVITY = 0.0138f;
-static constexpr float FRICTION = 0.060f;
+static constexpr float GRAVITY = 0.0198f;
+static constexpr float FRICTION = 0.050f;
 
 
 static constexpr float HEALTH_MAX = 100.f;
@@ -14,51 +14,58 @@ static constexpr float MAX_RUN_SPEED = 0.5f;
 
 static constexpr float CROUCH_SPEED = 0.025f;
 
-static constexpr float JUMP_STRENGTH = 0.65f;
+static constexpr float JUMP_STRENGTH = 0.55f;
 
 static constexpr float PISTOL_CD = 0.15f; // seconds
-static constexpr float SHOTGUN_CD = 1.f; // seconds
+static constexpr float SHOTGUN_CD = 0.15f; // seconds
 
-static constexpr float DASH_SPEED = 0.8f;
-static constexpr float DASH_DISTANCE = 2.5f;
+static constexpr float DASH_SPEED = 0.95f;
+static constexpr float DASH_DISTANCE = 5.5f;
 static constexpr float DASH_COOLDOWN = 0.05f; // seconds
 static constexpr float DASH_MAX = 3.f; // seconds
 
-static constexpr float SLIDE_FRICTION = 0.020f;
+static constexpr float SLIDE_FRICTION = 0.010f;
 static constexpr float SLIDE_START_SPEED = 0.3f;
 
 CPlayer::CPlayer()
 	: CCharacter()
+	, m_pInputHandler			(nullptr)
 	
-	, m_pInputHandler(nullptr)
-	, m_State(Idle)
-	, m_Height(PLAYERSIZE)
-	, m_MoveSpeed(RUN_SPEED)
-	, m_JumpStrength(JUMP_STRENGTH)
-	, m_Health(HEALTH_MAX)
+	, m_State					(Idle)
 	
-	, m_DashTimer(DASH_MAX)
+	, m_Height					(PLAYERSIZE)
+	, m_MoveSpeed				(RUN_SPEED)
+	, m_JumpStrength			(JUMP_STRENGTH)
+	, m_Health					(HEALTH_MAX)
+	, m_DashTimer				(DASH_MAX)
 	
-	, m_currWeapon(0)
-	, m_ShootCooldownTimer(0.f)
-	, m_CanShoot(true)
+	, m_currWeapon				(0)
+	, m_ShootCooldownTimer		(0.f)
+	, m_CanShoot				(true)
 	
-	, m_FloorY(0.f)
-	, m_Forward(0.f, 0.f, 1.f)
-	, m_Right(1.f, 0.f, 0.f)
-	, m_Velocity(0.f, 0.f, 0.f)
-	, m_Acceleration(0.f, 0.f, 0.f)
-	, m_Inertia(0.f, 0.f, 0.f)
-	, m_DashDirection(0.f, 0.f, 1.f)
+	, m_FloorY					(0.f)
+	, m_Right					(1.f, 0.f, 0.f)
+	, m_Forward					(0.f, 0.f, 1.f)
+	, m_Velocity				(0.f, 0.f, 0.f)
+	, m_Acceleration			(0.f, 0.f, 0.f)
+	, m_Inertia					(0.f, 0.f, 0.f)
+	, m_DashDirection			(0.f, 0.f, 1.f)
 
-	, m_IsOnGround(true)
-	, m_IsJumping(false)
-	, m_IsDashing(false)
-	, m_IsCrouching(false)
-	, m_IsSliding(false)
+	, m_IsOnGround				(true)
+	, m_IsJumping				(false)
+	, m_IsDashing				(false)
+	, m_IsCrouching				(false)
+	, m_IsSliding				(false)
 
+	, m_CanDash					(true)
+	, m_CanJump					(true)
+	, m_CanCrouch				(true)
+	, m_CanSlide				(true)
+	, m_CanMove					(true)
+	, m_IsGravityEnabled		(true)
 {
 	m_pInputHandler = new CInput();
+	m_pHeadCrossRay = new CROSSRAY();
 }
 
 CPlayer::~CPlayer()
@@ -110,7 +117,6 @@ void CPlayer::Update()
 	}
 
 	HandleAirPhys();
-	CalculateInertia();
 	Move();
 }
 
@@ -123,37 +129,41 @@ void CPlayer::HandleInput()
 {
 
 	CalculateVectors();
+	CalculateInertia();
 	m_DashDirection = GetForwardVector();
 
 	D3DXVECTOR3 inputVel = D3DXVECTOR3(0.f, m_Velocity.y, 0.f );
 	bool hasInput = false;
 
-	if (m_pInputHandler->GetKey('W'))
+	if(!m_IsSliding)
 	{
-		inputVel += m_Forward * m_MoveSpeed;
-		m_DashDirection = GetForwardVector();
-		hasInput = true;
-	}
+		if (m_pInputHandler->GetKey('W'))
+		{
+			inputVel += m_Forward * m_MoveSpeed;
+			m_DashDirection = GetForwardVector();
+			hasInput = true;
+		}
 
-	if (m_pInputHandler->GetKey('S'))
-	{
-		inputVel += -m_Forward * m_MoveSpeed;
-		m_DashDirection = -GetForwardVector();
-		hasInput = true;
-	}
+		if (m_pInputHandler->GetKey('S'))
+		{
+			inputVel += -m_Forward * m_MoveSpeed;
+			m_DashDirection = -GetForwardVector();
+			hasInput = true;
+		}
 
-	if (m_pInputHandler->GetKey('A'))
-	{
-		inputVel += -m_Right * m_MoveSpeed;
-		m_DashDirection = -GetRightVector();
-		hasInput = true;
-	}
+		if (m_pInputHandler->GetKey('A'))
+		{
+			inputVel += -m_Right * m_MoveSpeed;
+			m_DashDirection = -GetRightVector();
+			hasInput = true;
+		}
 
-	if (m_pInputHandler->GetKey('D'))
-	{
-		inputVel += m_Right * m_MoveSpeed;
-		m_DashDirection = GetRightVector();
-		hasInput = true;
+		if (m_pInputHandler->GetKey('D'))
+		{
+			inputVel += m_Right * m_MoveSpeed;
+			m_DashDirection = GetRightVector();
+			hasInput = true;
+		}
 	}
 
 	if (!m_IsJumping && !m_IsDashing && !m_IsSliding)
@@ -168,8 +178,11 @@ void CPlayer::HandleInput()
 		}
 	}
 
-	//inputVel.x += m_Inertia.x;
-	//inputVel.z += m_Inertia.z;
+	if (m_IsInertiaEnabled)
+	{
+		inputVel.x += m_Inertia.x;
+		inputVel.z += m_Inertia.z;
+	}
 
 	m_Velocity = inputVel;
 
@@ -193,7 +206,7 @@ void CPlayer::HandleInput()
 		NextWeapon();
 	}
 
-	if (m_pInputHandler->GetKeyDown(VK_SHIFT))
+	if (m_pInputHandler->GetKeyDown(VK_SHIFT) && !m_IsSliding)
 	{
 		Dash();
 	}
@@ -236,16 +249,15 @@ void CPlayer::Move()
 
 	if (!m_IsSliding)
 	{
-		float length = D3DXVec3Length(&m_Velocity);
-		if (length > MAX_RUN_SPEED)
-		{
-			D3DXVec3Normalize(&m_Velocity, &m_Velocity);
-			m_Velocity = m_Velocity * MAX_RUN_SPEED;
-		}
+		//float length = D3DXVec3Length(&m_Velocity);
+		//if (length > MAX_RUN_SPEED)
+		//{
+		//	D3DXVec3Normalize(&m_Velocity, &m_Velocity);
+		//	m_Velocity = m_Velocity * MAX_RUN_SPEED;
+		//}
 	}
 
 	m_vPosition += m_Velocity ;
-	m_Inertia += m_Velocity * 0.015f;
 
 	UpdateAxis();
 
@@ -288,20 +300,24 @@ void CPlayer::Dash()
 
 	m_DashTimer -= 1.0f;
 
-	D3DXVECTOR3 dashDirection = m_DashDirection;
-	D3DXVec3Normalize(&dashDirection, &dashDirection);
-
 	m_IsDashing = true;
 	m_State = Dashing;
 
-	m_Velocity += dashDirection * ( RUN_SPEED + DASH_SPEED);
-	m_Inertia += dashDirection * DASH_SPEED;
-	
+	{
+
+		D3DXVECTOR3 dashDirection = m_DashDirection;
+		D3DXVec3Normalize(&dashDirection, &dashDirection);
+
+		m_Velocity += dashDirection * (RUN_SPEED + DASH_SPEED);
+		m_Inertia += dashDirection * (RUN_SPEED + DASH_SPEED) * 0.5f;
+	}
+
 }
 
 void CPlayer::Slide()
 {
 
+	D3DXVECTOR3 horizontalVel = D3DXVECTOR3( m_Velocity.x, 0.f, m_Velocity.z);
 	float vel = D3DXVec3Length(&m_Velocity);
 
 	if (vel < SLIDE_START_SPEED && !m_IsSliding)
@@ -312,6 +328,8 @@ void CPlayer::Slide()
 	if(vel < 0.1f)
 	{
 		m_IsSliding = false;
+		m_Inertia.x = 0.f;
+		m_Inertia.z = 0.f;
 		return;
 	}
 
@@ -329,12 +347,13 @@ void CPlayer::CalculateInertia()
 	// 摩擦による慣性の減衰を計算
 	if( m_IsSliding )
 	{
-		m_Inertia = (m_Inertia - (m_Inertia * SLIDE_FRICTION));
+		m_Inertia.x = (m_Inertia.x - (m_Inertia.x * SLIDE_FRICTION));
+		m_Inertia.z = (m_Inertia.z - (m_Inertia.z * SLIDE_FRICTION));
 	}
 	else
 	{
-		m_Inertia = (m_Inertia - (m_Inertia * FRICTION));
-
+		m_Inertia.x = (m_Inertia.x - (m_Inertia.x * FRICTION));
+		m_Inertia.z = (m_Inertia.z - (m_Inertia.z * FRICTION));
 	}
 
 	// 慣性が非常に小さくなったら0にする
@@ -367,7 +386,7 @@ void CPlayer::HandleAirPhys()
 
 	const float GROUND_SNAP_DISTANCE = 0.15f;		//地面に吸着する距離
 	const float GROUND_PENETRATION = 0.1f;			//地面にめり込んだと見なす距離
-	const float CEILING_BUFFER = 0.2f;				//天井に当たったと見なす距離
+	const float CEILING_BUFFER = 0.02f;				//天井に当たったと見なす距離
 
 	float distanceToFloor = feetY - m_FloorY;		//プレイヤーの足元と地面の距離
 
@@ -453,8 +472,13 @@ void CPlayer::UpdateCrossRay()
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height * 0.65f;
+		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height * 0.55f;
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
 		m_pCrossRay->Ray[dir].Length = rayLength;
+
+		m_pHeadCrossRay->Ray[dir].Position = m_vPosition;
+		m_pHeadCrossRay->Ray[dir].Position.y = m_vPosition.y + m_Height * 0.1f;
+		m_pHeadCrossRay->Ray[dir].RotationY = m_vRotation.y;
+		m_pHeadCrossRay->Ray[dir].Length = rayLength;
 	}
 }

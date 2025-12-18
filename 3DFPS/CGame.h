@@ -20,6 +20,7 @@ public:
 	struct BULLET_IMPACT {
 		D3DXVECTOR3 position;
 		D3DXVECTOR3 normal;
+		bool isEnemyHit;
 		float lifeTime;
 	};
 

@@ -436,9 +436,9 @@ void CGame::Draw()
 {
 	m_pCamera->Draw(m_SceneInfo);
 	m_pStage->Draw(m_SceneInfo);
+	m_pPlayerWeapon->Draw(m_SceneInfo);
 
 	m_pEnemy->RenderStatic(m_SceneInfo);
-	m_pPlayerWeapon->Draw(m_SceneInfo);
 
 	for (auto pBullet : m_pBulletList)
 	{
@@ -456,19 +456,42 @@ void CGame::Draw()
 	FOG fog = m_SceneInfo.Fog;
 	SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
 	int lightCount = m_SceneInfo.SpotLightNum;
-	for (auto mark : m_bulletImpactList)
+
+
+	int count = 2;
+	for (auto& mark : m_bulletImpactList)
 	{
-		// Offset position slightly along normal to prevent z-fighting
-		D3DXVECTOR3 decalPos = mark.position + mark.normal * 0.01f;
+		if(mark.lifeTime<=0)
+		{
+			m_bulletImpactList.erase(m_bulletImpactList.begin() );
+			continue;
+		}
+
+		mark.lifeTime -= FPS;
+
+		if (mark.isEnemyHit)
+		{
+			D3DXVECTOR3 decalPos = mark.position + mark.normal * count * 0.0001f;
+			m_pEnemyHitDecalSprite->SetPosition(decalPos);
+			m_pEnemyHitDecalSprite->SetRotationFromNormal(mark.normal);
+			m_pEnemyHitDecalSprite->SetScale(D3DXVECTOR3(0.003f, 0.003f, 0.003f));
+			m_pEnemyHitDecalSprite->RenderDecal(mView, mProj, mark.normal);
+			
+			count++;
+			continue;
+
+		}
+
+		D3DXVECTOR3 decalPos = mark.position + mark.normal * count * 0.0001f;
 		m_pShotDecalSprite->SetPosition(decalPos);
 		m_pShotDecalSprite->SetRotationFromNormal(mark.normal);
 		m_pShotDecalSprite->SetScale(D3DXVECTOR3(0.015f, 0.015f, 0.015f));
 		m_pShotDecalSprite->RenderDecal(mView, mProj, mark.normal);
+
+		count++;
 	}
 
-
 	m_pDx11->SetDepth(false);
-
 	m_pHealthBarUI->SetAlpha(0.5f);
 	m_pHealthBarSprite->SetFillPercent(1.f, true);
 	m_pHealthBarUI->Draw();
@@ -511,7 +534,7 @@ void CGame::Draw()
 		
 		debugSphereMesh->SetPosition(hitPos);
 		debugSphereMesh->SetScale(D3DXVECTOR3(0.02f, 0.02f, 0.02f));
-		debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+		//debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 
 	}
 
@@ -638,6 +661,8 @@ void CGame::HandleWeapon()
 	D3DXVECTOR3 shotEffPos = m_pPlayerWeapon->GetPosition() + bulletDir * 0.3f + D3DXVECTOR3(0.f, 0.1f, 0.f);
 	CEffect::SetLocation(m_shotHandle, shotEffPos);
 	BULLET_IMPACT impact;
+
+	impact.lifeTime = FPS * 1000; // 5 seconds
 
 	if (m_pPlayer->IsShot())
 	{
@@ -772,8 +797,11 @@ void CGame::HandleWeaponPos()
 
 void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact)
 {
-	if (m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos))
+	if (m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 	{
+		impact.position = hitPos;
+		impact.normal = normal;
+		impact.isEnemyHit = true;
 		debugHitShotList.push_back(hitPos);
 		m_bulletImpactList.push_back(impact);
 	}
@@ -781,11 +809,11 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 	{
 		impact.position = hitPos;
 		impact.normal = normal;
+		impact.isEnemyHit = false;
 		// Hit detected
 		debugHitShotList.push_back(hitPos);
 		m_bulletImpactList.push_back(impact);
 	}
-
 	
 }
 

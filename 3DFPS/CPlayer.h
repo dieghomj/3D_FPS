@@ -27,6 +27,13 @@ public:
 	void SetVelocity(const D3DXVECTOR3& vel) { m_Velocity = vel; }
 	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
 
+	void SetShooting(bool value) { m_CanShoot = value; }
+	void SetDash(bool value) { m_CanDash = value; }
+	void SetJump(bool value) { m_CanJump = value; }
+	void SetCrouch(bool value) { m_CanCrouch = value; }
+	void SetGravity(bool value) { m_IsGravityEnabled = value; }
+	void SetInertia(bool value) { m_IsInertiaEnabled = value; }
+
 	bool IsAlive() const { return m_Health > 0.0f; }
 	bool CanShoot() const { return m_CanShoot; }
 	bool IsJumping() const { return m_IsJumping; }
@@ -48,8 +55,22 @@ public:
 	float GetHeight() const { return m_Height; }
 	float GetDashTimer() const { return m_DashTimer; }
 
-	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; }					// 0,1,2
-	int PrevWeapon() { return m_currWeapon = ((m_currWeapon - 1) < 0 ? (4 + (m_currWeapon - 1) * -1) : (m_currWeapon - 1)) % 3; } // 0,1,2
+	CROSSRAY GetHeadCrossRay() const { return *m_pHeadCrossRay; }
+
+	void ApplyDamage(float damage) { m_Health -= damage; }
+	void ApplyHeal(float heal) { m_Health += heal;  }
+	void ApplyStamina(float stamina) { m_DashTimer += stamina; }
+	void ApplyAmmo(int ammo) { return; };
+
+	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; }	// 0,1,2
+	int PrevWeapon() 
+	{
+		return m_currWeapon = 
+			((m_currWeapon - 1) < 0 ? 
+				(4 + (m_currWeapon - 1) * -1) : 
+				(m_currWeapon - 1)) % 3; 
+	}
+
 	void UpdateAxis();
 
 	void UpdateCrossRay();
@@ -90,6 +111,15 @@ private:
 	bool m_CanShoot = true;
 	float m_DashTimer;
 
+	bool m_CanDash = true;
+	bool m_CanJump = true;
+	bool m_CanCrouch = true;
+	bool m_CanSlide = true;
+	bool m_CanMove = true;
+	
+	bool m_IsGravityEnabled = true;
+	bool m_IsInertiaEnabled = true;
+	
 	bool m_IsOnGround = true;
 	bool m_IsJumping = false;
 	bool m_IsDashing = false;
@@ -99,5 +129,6 @@ private:
 	float m_FloorY = 0.f;
 	float m_CeilingY = FLT_MAX;
 
+	CROSSRAY* m_pHeadCrossRay;
 };
 

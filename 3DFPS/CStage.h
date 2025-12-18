@@ -26,9 +26,15 @@ public:
 private:
 
 	void HandleWallCollisions();
+	
+	void HandleWallCollisions(CROSSRAY* cross);
+	
 	void HandleFloorCollisions();
+	
 	void HandleCeilingCollisions();
+	
 	void HandleStepUp();
+
 	void HandleSweptCollisions();
    
 private:
