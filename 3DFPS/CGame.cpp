@@ -181,7 +181,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pBaseStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Small\\smallMap.x")))
+	if (FAILED(m_pBaseStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\stage.x")))
 	{
 		return E_FAIL;
 	}
@@ -199,10 +199,10 @@ HRESULT CGame::LoadData()
 	m_pEnemy->AttachMesh(*m_pEnemyMesh);
 	m_pGround->AttachMesh(*m_pGroundMesh);
 	m_pStage->AttachMesh(*m_pBaseStageMesh);
-	m_pStage->SetScale(3.f);
+	//m_pStage->SetScale(3.f);
 	m_pStage->SetPlayer(*m_pPlayer);
 
-	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Pistol\\pistol.x")))
+	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
 	{
 		return E_FAIL;
 	}
@@ -462,7 +462,7 @@ void CGame::Draw()
 		D3DXVECTOR3 decalPos = mark.position + mark.normal * 0.01f;
 		m_pShotDecalSprite->SetPosition(decalPos);
 		m_pShotDecalSprite->SetRotationFromNormal(mark.normal);
-		m_pShotDecalSprite->SetScale(D3DXVECTOR3(0.01f, 0.01f, 0.01f));
+		m_pShotDecalSprite->SetScale(D3DXVECTOR3(0.015f, 0.015f, 0.015f));
 		m_pShotDecalSprite->RenderDecal(mView, mProj, mark.normal);
 	}
 
@@ -510,9 +510,8 @@ void CGame::Draw()
 	{
 		
 		debugSphereMesh->SetPosition(hitPos);
-		debugSphereMesh->SetScale(D3DXVECTOR3(0.1f, 0.1f, 0.1f));
-
-		//debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+		debugSphereMesh->SetScale(D3DXVECTOR3(0.02f, 0.02f, 0.02f));
+		debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 
 	}
 
@@ -660,17 +659,7 @@ void CGame::HandleWeapon()
 		switch (currWeapon)
 		{
 		case 0: // Pistol
-			if(m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
-			{
-				impact.position = hitPos;
-				impact.normal = normal;
-				// Hit detected
-				debugHitShotList.push_back(hitPos);
-				m_bulletImpactList.push_back(impact);
-			}
-
-			if(m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos))
-				debugHitShotList.push_back(hitPos);
+			IsShotHit(shotRay, hitDist, hitPos, normal, impact);
 			m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), camForward, m_pCamera->GetYaw());
 			break;
 		
@@ -701,20 +690,9 @@ void CGame::HandleWeapon()
 				D3DXVECTOR3 normal = D3DXVECTOR3(0.f, 0.f, 0.f);
 
 				// Check for hits
-				if (m_pStage->IsHitForRay(pelletRay, &hitDist, &hitPos, &normal))
-				{
-					impact.position = hitPos;
-					impact.normal = normal;
-					debugHitShotList.push_back(hitPos);
-					m_bulletImpactList.push_back(impact);
-				}
-
-				if (m_pEnemy->IsHitForRay(pelletRay, &hitDist, &hitPos))
-				{
-					debugHitShotList.push_back(hitPos);
-
-					// Add damage application here
-				}
+				IsShotHit(pelletRay, hitDist, hitPos, normal, impact);
+				// Spawn bullet visual for each pellet
+				m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), spreadDir, m_pCamera->GetYaw());
 			}
 
 			break;
@@ -731,6 +709,8 @@ void CGame::HandleWeapon()
 	
 	}
 }
+
+
 
 void CGame::HandleWeaponPos()
 {
@@ -751,7 +731,7 @@ void CGame::HandleWeaponPos()
 
 	D3DXMATRIX gunOffset, gunScale;
 	D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
-	D3DXMatrixScaling(&gunScale, 0.2, 0.2, 0.2);
+	D3DXMatrixScaling(&gunScale,1.f, 1.f, 1.f);
 
 	if (!m_pPlayer->CanShoot())
 	{
@@ -788,6 +768,25 @@ void CGame::HandleWeaponPos()
 	m_pPlayerWeapon->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
 
 	m_pPlayerWeapon->SetWorldMatrix(weaponWorld);
+}
+
+void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact)
+{
+	if (m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos))
+	{
+		debugHitShotList.push_back(hitPos);
+		m_bulletImpactList.push_back(impact);
+	}
+	else if (m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
+	{
+		impact.position = hitPos;
+		impact.normal = normal;
+		// Hit detected
+		debugHitShotList.push_back(hitPos);
+		m_bulletImpactList.push_back(impact);
+	}
+
+	
 }
 
 int CGame::NextBullet()

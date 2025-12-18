@@ -36,6 +36,8 @@ public:
 
 	void HandleWeapon();
 
+	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
+
 	void HandleWeaponPos();
 
 private:

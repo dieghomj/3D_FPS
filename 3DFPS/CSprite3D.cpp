@@ -455,19 +455,14 @@ void CSprite3D::Render(
 
 void CSprite3D::SetRotationFromNormal(const D3DXVECTOR3& normal)
 {
-
 	// –@ü‚ğ³‹K‰»
 	D3DXVECTOR3 n;
 	D3DXVec3Normalize(&n, &normal);
 
-	// Pitch (X²‰ñ“]) ‚ğŒvZ
 	float pitch = asinf(-n.y);
-
-	// Yaw (Y²‰ñ“]) ‚ğŒvZ
 	float yaw = atan2f(n.x, n.z);
 
 	m_vRotation.x = pitch;
 	m_vRotation.y = yaw;
-	m_vRotation.z = 0.0f; // Roll ‚Í0‚Éİ’è
-
+	m_vRotation.z = 0.0f; 
 }

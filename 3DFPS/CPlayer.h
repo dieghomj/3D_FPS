@@ -23,6 +23,7 @@ public:
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
 	void SetFloorY(float y) { m_FloorY = y; }
+	void SetCeilingY(float y) { m_CeilingY = y; }
 	void SetVelocity(const D3DXVECTOR3& vel) { m_Velocity = vel; }
 	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
 
@@ -96,6 +97,7 @@ private:
 	bool m_IsSliding = false;
 	
 	float m_FloorY = 0.f;
+	float m_CeilingY = FLT_MAX;
 
 };
 

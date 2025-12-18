@@ -1,6 +1,6 @@
 #include "CPlayer.h"
 
-static constexpr float GRAVITY = 0.0128f;
+static constexpr float GRAVITY = 0.0138f;
 static constexpr float FRICTION = 0.060f;
 
 
@@ -9,19 +9,20 @@ static constexpr float HEALTH_MAX = 100.f;
 static constexpr float PLAYERSIZE = 2.0f;
 static constexpr float CROUCHSIZE = 0.7f;
 
-static constexpr float RUN_SPEED = 0.2f;
+static constexpr float RUN_SPEED = 0.3f;
 static constexpr float MAX_RUN_SPEED = 0.5f;
 
-static constexpr float CROUCH_SPEED = 0.035f;
+static constexpr float CROUCH_SPEED = 0.025f;
 
 static constexpr float JUMP_STRENGTH = 0.65f;
 
-static constexpr float SHOOT_COOLDOWN = 0.15f; // seconds
+static constexpr float PISTOL_CD = 0.15f; // seconds
+static constexpr float SHOTGUN_CD = 1.f; // seconds
 
 static constexpr float DASH_SPEED = 0.8f;
 static constexpr float DASH_DISTANCE = 2.5f;
 static constexpr float DASH_COOLDOWN = 0.05f; // seconds
-static constexpr float DASH_MAX = 3; // seconds
+static constexpr float DASH_MAX = 3.f; // seconds
 
 static constexpr float SLIDE_FRICTION = 0.020f;
 static constexpr float SLIDE_START_SPEED = 0.3f;
@@ -66,12 +67,29 @@ CPlayer::~CPlayer()
 
 void CPlayer::Update()
 {
+	float weaponCD = 0.f;
+	switch (m_currWeapon)
+	{
+		case 0: // Pistol
+			weaponCD = PISTOL_CD;
+			break;
+		case 1: // Shotgun
+			weaponCD = SHOTGUN_CD;
+			break;
+		case 2: // Empty
+			weaponCD = 0.f;
+			break;
+		default:
+			weaponCD = 0.f;
+			break;
+	}
+
 	m_Shot = false;
 
 	if(m_DashTimer < DASH_MAX)
 		m_DashTimer += 0.006f; 
 
-	if (!m_CanShoot && (m_ShootCooldownTimer < SHOOT_COOLDOWN))
+	if (!m_CanShoot && (m_ShootCooldownTimer < weaponCD))
 	{
 		m_CanShoot = false;
 		m_ShootCooldownTimer += 0.016f;
@@ -150,8 +168,8 @@ void CPlayer::HandleInput()
 		}
 	}
 
-	inputVel.x += m_Inertia.x;
-	inputVel.z += m_Inertia.z;
+	//inputVel.x += m_Inertia.x;
+	//inputVel.z += m_Inertia.z;
 
 	m_Velocity = inputVel;
 
@@ -276,7 +294,7 @@ void CPlayer::Dash()
 	m_IsDashing = true;
 	m_State = Dashing;
 
-	m_Velocity += dashDirection * DASH_SPEED;
+	m_Velocity += dashDirection * ( RUN_SPEED + DASH_SPEED);
 	m_Inertia += dashDirection * DASH_SPEED;
 	
 }
@@ -291,7 +309,7 @@ void CPlayer::Slide()
 		return;
 	}
 
-	if(vel < 0.08f)
+	if(vel < 0.1f)
 	{
 		m_IsSliding = false;
 		return;
@@ -304,9 +322,11 @@ void CPlayer::Slide()
 
 }
 
+
+// 摩擦による慣性の減衰を計算
 void CPlayer::CalculateInertia()
 {
-
+	// 摩擦による慣性の減衰を計算
 	if( m_IsSliding )
 	{
 		m_Inertia = (m_Inertia - (m_Inertia * SLIDE_FRICTION));
@@ -317,7 +337,7 @@ void CPlayer::CalculateInertia()
 
 	}
 
-	
+	// 慣性が非常に小さくなったら0にする
 	if (m_Inertia.x < 0.0f && m_Inertia.x > -0.00f)
 	{
 		m_Inertia.x = 0.f;
@@ -342,29 +362,35 @@ void CPlayer::CalculateInertia()
 
 void CPlayer::HandleAirPhys()
 {
-	float feetY = m_vPosition.y - m_Height;
-	const float GROUND_SNAP_DISTANCE = 0.09f;
-	const float GROUND_PENETRATION = 0.05f;
+	float feetY = m_vPosition.y - m_Height;			//プレイヤーの足元のY座標
+	float headY = m_vPosition.y + m_Height * 0.3f;	//プレイヤーの頭のY座標
 
-	float distanceToFloor = feetY - m_FloorY;
+	const float GROUND_SNAP_DISTANCE = 0.15f;		//地面に吸着する距離
+	const float GROUND_PENETRATION = 0.1f;			//地面にめり込んだと見なす距離
+	const float CEILING_BUFFER = 0.2f;				//天井に当たったと見なす距離
 
-	if (distanceToFloor >= -GROUND_PENETRATION && distanceToFloor <= GROUND_SNAP_DISTANCE && m_Velocity.y <= 0.f)
+	float distanceToFloor = feetY - m_FloorY;		//プレイヤーの足元と地面の距離
+
+
+	if (distanceToFloor >= -GROUND_PENETRATION &&
+		fabsf(distanceToFloor) <= GROUND_SNAP_DISTANCE &&
+		m_Velocity.y <= 0.f)
 	{
-		// We're on the ground
+		// On ground - snap to floor
 		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
 		m_Velocity.y = 0.f;
 		m_Inertia.y = 0.f;
 
-		// End jump when we touch ground going down
+		// End jump when touching ground while falling
 		if (m_IsJumping && m_Velocity.y <= 0.0f)
 		{
 			m_IsJumping = false;
 		}
 	}
+	//地面にめり込んだと見なす距離よりも下にある場合
 	else if (distanceToFloor < -GROUND_PENETRATION)
 	{
-		// Player somehow went below ground - force correction
 		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
 		m_Velocity.y = 0.f;
@@ -373,14 +399,31 @@ void CPlayer::HandleAirPhys()
 	}
 	else
 	{
-		// Player is in the air
+		//空中にいる場合の処理
 		m_IsOnGround = false;
 		m_Velocity.y -= GRAVITY;
+
 		if (m_vPosition.y <= -55.f)
 		{
 			m_vPosition.x = 0.f;
 			m_vPosition.z = 0.f;
 			m_vPosition.y = 160.f;
+			m_Velocity = D3DXVECTOR3(0.f, 0.f, 0.f);
+			m_Inertia = D3DXVECTOR3(0.f, 0.f, 0.f);
+		}
+	}
+
+	//天井判定
+	if (m_Velocity.y > 0.f)  
+	{
+		float distanceToCeiling = m_CeilingY - headY;
+
+		if (distanceToCeiling < CEILING_BUFFER)
+		{
+			m_vPosition.y = m_CeilingY - m_Height - 0.05f; 
+			m_Velocity.y = 0.f;
+			m_Inertia.y = 0.f;
+			m_IsJumping = false;
 		}
 	}
 }
@@ -399,18 +442,19 @@ void CPlayer::UpdateAxis()
 
 void CPlayer::UpdateCrossRay()
 {
+	// 水平方向の速度ベクトルを取得
 	D3DXVECTOR3 horizontalVel(m_Velocity.x, 0.f, m_Velocity.z);
 	float speed = D3DXVec3Length(&horizontalVel);
 
-	// Ray length = base distance + velocity buffer
+	// レイの長さを速度に応じて変化させる
 	float rayLength = 0.5f + (speed * 5.0f);
 
-	// Update all collision rays
+	// 前後左右のレイの位置をプレイヤーの座標にそろえる
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
 		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height * 0.65f;
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
-		m_pCrossRay->Ray[dir].Length = rayLength;  // Dynamic length!
+		m_pCrossRay->Ray[dir].Length = rayLength;
 	}
 }

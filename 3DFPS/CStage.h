@@ -27,6 +27,7 @@ private:
 
 	void HandleWallCollisions();
 	void HandleFloorCollisions();
+	void HandleCeilingCollisions();
 	void HandleStepUp();
 	void HandleSweptCollisions();
    
