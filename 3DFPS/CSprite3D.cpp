@@ -456,51 +456,18 @@ void CSprite3D::Render(
 void CSprite3D::SetRotationFromNormal(const D3DXVECTOR3& normal)
 {
 
-	// Normalize the input normal
-	D3DXVECTOR3 forward;
-	D3DXVec3Normalize(&forward, &normal);
+	// ñ@ê¸Çê≥ãKâª
+	D3DXVECTOR3 n;
+	D3DXVec3Normalize(&n, &normal);
 
-	// Choose an arbitrary up vector
-	// If normal is nearly parallel to world up (0,1,0), use a different reference
-	D3DXVECTOR3 worldUp = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	D3DXVECTOR3 right;
-	D3DXVec3Cross(&right, &worldUp, &forward);
+	// Pitch (Xé≤âÒì]) ÇåvéZ
+	float pitch = asinf(-n.y);
 
-	// If the cross product is too small, the normal is parallel to up
-	if (D3DXVec3Length(&right) < 0.001f)
-	{
-		// Use a different reference vector
-		worldUp = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
-		D3DXVec3Cross(&right, &worldUp, &forward);
-	}
+	// Yaw (Yé≤âÒì]) ÇåvéZ
+	float yaw = atan2f(n.x, n.z);
 
-	D3DXVec3Normalize(&right, &right);
-
-	// Recalculate the up vector to ensure orthogonality
-	D3DXVECTOR3 up;
-	D3DXVec3Cross(&up, &forward, &right);
-	D3DXVec3Normalize(&up, &up);
-
-	// Extract rotation angles from the rotation matrix
-	// This is a simplified approach - extracting Euler angles from a rotation matrix
-	// Note: The sprite's local space has Z as forward
-
-	// For a more accurate approach, we can calculate the angles directly
-	// Pitch (X rotation) - rotation around X axis
-	m_vRotation.x = asinf(-forward.y);
-
-	// Yaw (Y rotation) - rotation around Y axis
-	if (cosf(m_vRotation.x) > 0.001f)
-	{
-		m_vRotation.y = atan2f(forward.x, forward.z);
-	}
-	else
-	{
-		m_vRotation.y = atan2f(-right.z, right.x);
-	}
-
-	// Roll (Z rotation) - typically 0 for decals, but can be calculated if needed
-	// For decals facing surfaces, we usually don't need roll
-	m_vRotation.z = 0.0f;
+	m_vRotation.x = pitch;
+	m_vRotation.y = yaw;
+	m_vRotation.z = 0.0f; // Roll ÇÕ0Ç…ê›íË
 
 }

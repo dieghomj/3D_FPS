@@ -41,7 +41,7 @@ void CStage::Draw(SCENE_DATA& sceneData)
 void CStage::HandleWallCollisions()
 {
 
-    const int MAX_ITERATIONS = 1;  // Multiple passes for strong collision
+    const int MAX_ITERATIONS = 3;  // Multiple passes for strong collision
 
     for (int iteration = 0; iteration < MAX_ITERATIONS; ++iteration)
     {
@@ -95,7 +95,7 @@ void CStage::HandleFloorCollisions()
 void CStage::HandleStepUp()
 {
 
-    const float MAX_STEP_HEIGHT = 0.5f; // Maximum climbable step
+    const float MAX_STEP_HEIGHT = 0.2f; // Maximum climbable step
 
     // Check if there's a wall in front
     CROSSRAY rays = m_pPlayer->GetCrossRay();
@@ -107,7 +107,7 @@ void CStage::HandleStepUp()
 
         if (IsHitForRay(rays.Ray[dir], &wallDist, &wallHit, &wallNormal))
         {
-            if (wallDist < 0.3f) // Wall is close
+            if (wallDist < 0.1f) // Wall is close
             {
                 // Check if there's empty space above the wall
                 RAY upRay = rays.Ray[dir];

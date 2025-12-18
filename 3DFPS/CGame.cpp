@@ -463,7 +463,7 @@ void CGame::Draw()
 		m_pShotDecalSprite->SetPosition(decalPos);
 		m_pShotDecalSprite->SetRotationFromNormal(mark.normal);
 		m_pShotDecalSprite->SetScale(D3DXVECTOR3(0.01f, 0.01f, 0.01f));
-		m_pShotDecalSprite->Render(mView, mProj);
+		m_pShotDecalSprite->RenderDecal(mView, mProj, mark.normal);
 	}
 
 
@@ -653,16 +653,17 @@ void CGame::HandleWeapon()
 
 		float hitDist = 0.f;
 		D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
+		D3DXVECTOR3 normal = D3DXVECTOR3(0.f, 0.f, 0.f);
 
 		const int PELLET_COUNT = 8;
 		const float SPREAD_ANGLE = D3DXToRadian(5.0f);
 		switch (currWeapon)
 		{
 		case 0: // Pistol
-			if(m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos))
+			if(m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 			{
 				impact.position = hitPos;
-				impact.normal = -shotRay.Axis;
+				impact.normal = normal;
 				// Hit detected
 				debugHitShotList.push_back(hitPos);
 				m_bulletImpactList.push_back(impact);
@@ -697,12 +698,13 @@ void CGame::HandleWeapon()
 				pelletRay.RotationY = 0;
 				float hitDist = 0.f;
 				D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
+				D3DXVECTOR3 normal = D3DXVECTOR3(0.f, 0.f, 0.f);
 
 				// Check for hits
-				if (m_pStage->IsHitForRay(pelletRay, &hitDist, &hitPos))
+				if (m_pStage->IsHitForRay(pelletRay, &hitDist, &hitPos, &normal))
 				{
 					impact.position = hitPos;
-					impact.normal = -pelletRay.Axis; // Assuming normal is opposite to ray direction
+					impact.normal = normal;
 					debugHitShotList.push_back(hitPos);
 					m_bulletImpactList.push_back(impact);
 				}

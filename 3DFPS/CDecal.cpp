@@ -83,7 +83,7 @@ HRESULT CDecal::CreateShader()
 			OutputDebugStringA((char*)pErrors->GetBufferPointer());
 			SAFE_RELEASE(pErrors);
 		}
-		_ASSERT_EXPR(false, _T("Decal vertex shader compilation failed"));
+		_ASSERT_EXPR(false, _T("hlsl読み込み失敗"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pErrors);
@@ -97,7 +97,7 @@ HRESULT CDecal::CreateShader()
 			&m_pVertexShader)))
 	{
 		SAFE_RELEASE(pCompiledShader);
-		_ASSERT_EXPR(false, _T("Decal vertex shader creation failed"));
+		_ASSERT_EXPR(false, _T("バーテックスシェーダ作成失敗"));
 		return E_FAIL;
 	}
 
@@ -201,7 +201,7 @@ HRESULT CDecal::CreateShader()
 
 void CDecal::RenderDecal(D3DXMATRIX& mView, D3DXMATRIX& mProj, const D3DXVECTOR3& normal)
 {
-	// Use the base class Render method
-	// It handles all the rendering logic properly
-	Render(mView, mProj);
+
+
+	CSprite3D::Render(mView, mProj);
 }

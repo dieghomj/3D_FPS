@@ -431,7 +431,7 @@
     <FxCompile Include="Data\Shader\DebugLine.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="Decal.hlsl">
+    <FxCompile Include="Data\Shader\Decal.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
