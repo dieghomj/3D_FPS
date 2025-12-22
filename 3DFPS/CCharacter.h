@@ -20,12 +20,16 @@ public:
 	//弾を飛ばしたいか確認
 	bool IsShot() const { return m_Shot; }
 
+	//キャラクターの半径を取得
+	float GetRadius() const { return m_Radius; }
 	//Y軸方向へ伸ばしたレイを取得
 	RAY GetRayY() const { return *m_pRayY; }
 	//前後左右に伸ばしたレイを取得
 	CROSSRAY GetCrossRay() { return *m_pCrossRay; }
 protected:
 	bool	m_Shot;		//弾を飛ばすフラグ
+
+	float m_Radius;	//キャラクターの半径
 
 	RAY*		m_pRayY;		//Y方向へ伸ばしたレイ
 	CROSSRAY*	m_pCrossRay;	//前後左右に伸ばしたレイ

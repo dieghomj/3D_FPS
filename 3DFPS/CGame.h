@@ -1,7 +1,7 @@
 #pragma once
 #include "CScene.h"
 #include "CUIObject.h"
-#include "CAnimCharacter.h"
+#include "CAnimEnemy.h"
 #include "CPlayer.h"
 #include "CStage.h"
 #include "CFont.h"
@@ -16,6 +16,13 @@ class CGame :
     public CScene
 {
 public:
+
+	struct GOAL
+	{
+		D3DXVECTOR3 position;
+		float radius;
+		bool isReached;
+	};
 
 	struct BULLET_IMPACT {
 		D3DXVECTOR3 position;
@@ -35,15 +42,27 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 
-	void HandleWeapon();
-
-	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
-
-	void HandleWeaponPos();
 
 private:
 
 	int NextBullet();
+	void HandleWeaponPos();
+	void HandleWeapon();
+	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
+
+	bool HandleCollision(CCharacter* objA, CCharacter* objB, bool doubleCollision = true);
+	void HandlePlayerEnemyCollision();
+	void HandleEnemyEnemyCollision();
+	void HandleEnemySpawning();
+
+	//void HandlePlayerBulletCollision();
+	//void HandleEnemyBulletCollision();
+	//void HandlePlayerItemCollision();
+	//void HandleEnemyAI();
+	//void HandleEnemyItemDrop(CAnimEnemy* enemy);
+	//void HandleBulletImpacts(float deltaTime);
+	//void HandlePlayerDeath();
+	//void HandleStageProgression();
 
 
 private:
@@ -84,6 +103,12 @@ private:
 	//----------------
 	CStaticMesh* m_pEnemyMesh;
 	CAnimCharacter* m_pEnemy;
+
+	CSkinMesh* m_pSpiderSkinMesh;
+	CSkinMesh* m_pRoboSkinMesh;
+	CSkinMesh* m_pBossSkinMesh;
+	CAnimCharacter* m_pBossEnemy;
+	std::vector<CAnimEnemy*> m_pEnemyList;
 
 	//----------------
 	//-----PLAYER-----

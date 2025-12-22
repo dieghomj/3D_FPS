@@ -1,0 +1,97 @@
+#include "CAnimEnemy.h"
+
+CAnimEnemy::CAnimEnemy()
+	: CAnimCharacter()
+	, m_PlayerPos(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
+	, m_IsAlive(true)
+	, m_State(Idle)
+	, m_FloorY(0.0f)
+	, m_FloorNormal(D3DXVECTOR3(0.0f, 1.0f, 0.0f))
+	, m_pHeadCrossRay(nullptr)
+{
+}
+
+CAnimEnemy::~CAnimEnemy()
+{
+}
+
+void CAnimEnemy::InitEnemy()
+{
+	m_Radius = 0.5f;
+	m_FloorY = 0.0f;
+	m_FloorNormal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	// 頭部の衝突レイを初期化
+	if (!m_pHeadCrossRay)
+	{
+		m_pHeadCrossRay = new CROSSRAY();
+	}
+
+	// クロスレイを更新
+	UpdateCrossRay();
+}
+
+void CAnimEnemy::Update()
+{
+	D3DXVECTOR3 pos = GetPosition();
+	const float GRAVITY = 0.21f;
+	const float SNAP_DISTANCE = 0.05f;  // 床にスナップする距離
+
+	// 床との距離を計算
+	float distanceToFloor = pos.y - m_FloorY;
+
+	if (distanceToFloor > SNAP_DISTANCE)
+	{
+		// 空中にいる場合は重力を適用
+		pos.y -= GRAVITY;
+		if (pos.y < m_FloorY)
+		{
+			pos.y = m_FloorY;
+		}
+	}
+	else
+	{
+		// 床に近い場合は床にスナップ（ランプを上る）
+		pos.y = m_FloorY;
+	}
+
+	SetPosition(pos);
+
+	//レイの位置をプレイヤーの座標にそろえる
+	m_pRayY->Position = m_vPosition;
+	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
+	m_pRayY->Position.y = m_vPosition.y + 0.2f;
+	m_pRayY->RotationY = m_vRotation.y;
+	m_pRayY->Length = 2.5f;
+
+	// クロスレイを更新
+	UpdateCrossRay();
+
+	CAnimCharacter::Update();
+}
+
+void CAnimEnemy::UpdateCrossRay()
+{
+	if (!m_pCrossRay || !m_pHeadCrossRay) return;
+
+
+	D3DXVECTOR3 pos = GetPosition() ;
+	D3DXVECTOR3 headPos = pos; 
+	pos.y += m_vPosition.y + 0.5f;  // 足元の高さに調整
+	headPos.y += m_vPosition.y + 0.2f;  // 頭部の高さに調整
+	float rayLength = 2.5f;  // 半径より少し長く
+
+	for(int i = 0; i < CROSSRAY::max; ++i)
+	{
+		m_pCrossRay->Ray[i].Position = pos;
+		m_pCrossRay->Ray[i].Length = rayLength;
+		m_pHeadCrossRay->Ray[i].Position = headPos;
+		m_pHeadCrossRay->Ray[i].Length = rayLength;
+	}
+
+}
+
+
+void CAnimEnemy::Draw(SCENE_DATA& sceneData)
+{
+	CAnimCharacter::Draw(sceneData);
+}

@@ -1,20 +1,21 @@
 #include "CPlayer.h"
 
 static constexpr float GRAVITY = 0.0198f;
-static constexpr float FRICTION = 0.050f;
+static constexpr float FRICTION = 0.0350f;
 
 
 static constexpr float HEALTH_MAX = 100.f;
 
 static constexpr float PLAYERSIZE = 2.0f;
-static constexpr float CROUCHSIZE = 0.7f;
+static constexpr float CROUCHSIZE = 0.6f;
+static constexpr float PLAYERRADIUS = 0.3f;
 
 static constexpr float RUN_SPEED = 0.3f;
 static constexpr float MAX_RUN_SPEED = 0.5f;
 
-static constexpr float CROUCH_SPEED = 0.025f;
+static constexpr float CROUCH_SPEED = 0.027f;
 
-static constexpr float JUMP_STRENGTH = 0.55f;
+static constexpr float JUMP_STRENGTH = 0.58f;
 
 static constexpr float PISTOL_CD = 0.15f; // seconds
 static constexpr float SHOTGUN_CD = 0.15f; // seconds
@@ -24,7 +25,7 @@ static constexpr float DASH_DISTANCE = 5.5f;
 static constexpr float DASH_COOLDOWN = 0.05f; // seconds
 static constexpr float DASH_MAX = 3.f; // seconds
 
-static constexpr float SLIDE_FRICTION = 0.010f;
+static constexpr float SLIDE_FRICTION = 0.009f;
 static constexpr float SLIDE_START_SPEED = 0.3f;
 
 CPlayer::CPlayer()
@@ -70,6 +71,14 @@ CPlayer::CPlayer()
 
 CPlayer::~CPlayer()
 {
+}
+
+void CPlayer::InitPlayer()
+{
+	m_Health = HEALTH_MAX;
+	m_Height = PLAYERSIZE;
+	m_MoveSpeed = RUN_SPEED;
+	m_JumpStrength = JUMP_STRENGTH;
 }
 
 void CPlayer::Update()
@@ -439,7 +448,7 @@ void CPlayer::HandleAirPhys()
 
 		if (distanceToCeiling < CEILING_BUFFER)
 		{
-			m_vPosition.y = m_CeilingY - m_Height - 0.05f; 
+			m_vPosition.y = m_CeilingY - m_Height - 0.003f; 
 			m_Velocity.y = 0.f;
 			m_Inertia.y = 0.f;
 			m_IsJumping = false;
@@ -477,7 +486,7 @@ void CPlayer::UpdateCrossRay()
 		m_pCrossRay->Ray[dir].Length = rayLength;
 
 		m_pHeadCrossRay->Ray[dir].Position = m_vPosition;
-		m_pHeadCrossRay->Ray[dir].Position.y = m_vPosition.y + m_Height * 0.1f;
+		m_pHeadCrossRay->Ray[dir].Position.y = m_vPosition.y + m_Height * 0.001f;
 		m_pHeadCrossRay->Ray[dir].RotationY = m_vRotation.y;
 		m_pHeadCrossRay->Ray[dir].Length = rayLength;
 	}

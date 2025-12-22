@@ -1,7 +1,8 @@
 #include "CGame.h"
+#include "CSpider.h"
 
 constexpr int PLAYER_AMMO_MAX = 999;
-constexpr int ENEMY_COUNT_MAX = 50;
+constexpr int ENEMY_COUNT_MAX = 5;
 constexpr int ENEMY_COUNT_PER_ROOM = 5;
 
 
@@ -20,6 +21,11 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pBridStageMesh(nullptr)
 	
 	, m_pEnemy(nullptr)
+	, m_pBossEnemy(nullptr)
+	, m_pEnemyList()
+	, m_pSpiderSkinMesh(nullptr)
+	, m_pRoboSkinMesh(nullptr)
+	, m_pBossSkinMesh(nullptr)
 	, m_pEnemyMesh(nullptr)
 	
 	, m_pPlayer(nullptr)
@@ -80,7 +86,19 @@ void CGame::Create()
 	m_pStage = new CStage();
 
 	m_pEnemyMesh = new CStaticMesh();
+	m_pSpiderSkinMesh = new CSkinMesh();
+	m_pRoboSkinMesh = new CSkinMesh();
+	m_pBossSkinMesh = new CSkinMesh();
+	m_pBossEnemy = new CAnimCharacter();
 	m_pEnemy = new CAnimCharacter();
+
+	m_pEnemyList.reserve(ENEMY_COUNT_MAX);
+	
+	for (int i = 0; i < ENEMY_COUNT_MAX; i++)
+	{
+		CAnimEnemy* pEnemy = new CSpider();
+		m_pEnemyList.push_back(pEnemy);
+	}
 
 	m_pPlayer = new CPlayer();
 
@@ -196,11 +214,37 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
+	if(FAILED(m_pSpiderSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako2\\zako2.x")))
+	{
+		return E_FAIL;
+	}
+
+	//if(FAILED(m_pRoboSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\robo\\Shamgar.x")))
+	//{
+	//	return E_FAIL;
+	//}
+
+	/*if(FAILED(m_pBossSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Boss\\Boss.x")))
+	{
+		return E_FAIL;
+	}*/
+
+
 	m_pEnemy->AttachMesh(*m_pEnemyMesh);
+	
+	//m_pEnemyList[0]->AttachMesh(*m_pEnemyMesh);
+
+	for (auto pEnemy : m_pEnemyList)
+	{
+		pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
+		pEnemy->SetScale(1.2f);
+	}
+
 	m_pGround->AttachMesh(*m_pGroundMesh);
 	m_pStage->AttachMesh(*m_pBaseStageMesh);
 	//m_pStage->SetScale(3.f);
 	m_pStage->SetPlayer(*m_pPlayer);
+	m_pStage->SetEnemyList(m_pEnemyList);
 
 	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
 	{
@@ -312,7 +356,15 @@ void CGame::Start()
 
 	m_pGround->SetPosition(0.0f, 0.0f, 0.0f);
 	m_pEnemy->SetPosition(0.0f, 0.0f, 5.0f);
+	
+	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
+	{
+		m_pEnemyList[i]->SetPosition(-5.0f + i * 2.5f, 0.0f, 10.0f);
+		m_pEnemyList[i]->InitEnemy(); 
+	}
+
 	m_pPlayer->SetPosition(0.0f, 10.0f, -5.0f);
+	m_pPlayer->InitPlayer();
 
 	//m_pPlayerWeapon->SetPosition(0.f, D3DXToRadian(180.f), 0.f);
 
@@ -354,6 +406,14 @@ void CGame::Update()
 #endif
 
 	m_pEnemy->Update();
+
+	for ( auto pEnemy : m_pEnemyList )
+	{
+		pEnemy->Update();
+		pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
+	}
+
+	//m_pEnemyList[1]->Update();
 	//m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
 	//m_pEnemy->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
 
@@ -377,6 +437,9 @@ void CGame::Update()
 	m_pCameraController->Update(0);
 
 	HandleWeapon();
+
+	HandlePlayerEnemyCollision();
+	HandleEnemyEnemyCollision();
 
 	for(auto pBullet : m_pBulletList)
 	{
@@ -439,6 +502,12 @@ void CGame::Draw()
 	m_pPlayerWeapon->Draw(m_SceneInfo);
 
 	m_pEnemy->RenderStatic(m_SceneInfo);
+
+
+	for(auto pEnemy : m_pEnemyList)
+	{
+		pEnemy->Draw(m_SceneInfo);
+	}
 
 	for (auto pBullet : m_pBulletList)
 	{
@@ -817,6 +886,51 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 	
 }
 
+void CGame::HandlePlayerEnemyCollision()
+{
+	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
+	float playerRadius = m_pPlayer->GetRadius();
+
+	for (auto pEnemy : m_pEnemyList)
+	{
+		if (!pEnemy) continue;
+
+		D3DXVECTOR3 enemyPos = pEnemy->GetPosition();
+		float enemyRadius = pEnemy->GetRadius();
+		if (HandleCollision(m_pPlayer, pEnemy, false))
+		{
+			// Collision detected between player and enemy
+			// Damage the player
+		}
+	}
+
+}
+
+void CGame::HandleEnemyEnemyCollision()
+{
+	size_t enemyCount = m_pEnemyList.size();
+
+	for (size_t i = 0; i < enemyCount; ++i)
+	{
+		if (!m_pEnemyList[i]) continue;
+
+		for (size_t j = i + 1; j < enemyCount; ++j)
+		{
+			if (!m_pEnemyList[j]) continue;
+
+			auto& enemyA = m_pEnemyList[i];
+			auto& enemyB = m_pEnemyList[j];
+
+			HandleCollision(enemyA, enemyB);
+		}
+	}
+
+}
+
+void CGame::HandleEnemySpawning()
+{
+}
+
 int CGame::NextBullet()
 {
 	if(m_bulletIndex >= PLAYER_AMMO_MAX - 1)
@@ -828,5 +942,49 @@ int CGame::NextBullet()
 	{
 		return m_bulletIndex++;
 	}
+
+}
+
+
+bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, bool doubleCollision)
+{
+
+	D3DXVECTOR3 posA = charaA->GetPosition();
+	D3DXVECTOR3 posB = charaB->GetPosition();
+	float radiusA = charaA->GetRadius();
+	float radiusB = charaB->GetRadius();
+
+	// XZ平面での距離計算（Y軸を無視）
+	D3DXVECTOR3 diff = posA - posB;
+	diff.y = 0.0f;
+	float distance = D3DXVec3Length(&diff);
+	float minDist = radiusA + radiusB;
+
+	// 衝突検出
+	if (distance < minDist && distance > 0.001f)
+	{
+		// 押し出しベクトルを計算
+		D3DXVECTOR3 pushDir;
+		D3DXVec3Normalize(&pushDir, &diff);
+
+		float overlap = minDist - distance;
+
+		// プレイヤーを押し出す（敵は動かない、または重量に応じて分配）
+		D3DXVECTOR3 correction = pushDir * overlap * 0.5f;
+
+		D3DXVECTOR3 newPos = posA + correction;
+		newPos.y = posA.y; // Y座標を保持
+
+		D3DXVECTOR3 newEnemyPos = posB - correction * 1.5f; // 敵も少し押し出す
+
+		charaB->SetPosition(newEnemyPos);
+		if (doubleCollision)
+		{
+			charaA->SetPosition(newPos);
+		}
+		return true;
+	}
+
+	return false;
 
 }

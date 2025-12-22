@@ -103,6 +103,15 @@
     <Filter Include="Source\GameObject\StaticMeshObject\Item\AmmoItem">
       <UniqueIdentifier>{8451fe5e-b1ba-4c4c-9aa0-c82e54a5faaf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GameObject\SkinMeshObject\AnimatedCharacter\Spider">
+      <UniqueIdentifier>{6dd35faf-8078-4281-8cb8-8fd128f51e6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SkinMeshObject\AnimatedCharacter\Boss">
+      <UniqueIdentifier>{402df3c5-cded-4317-92e2-6177bb311ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\SkinMeshObject\AnimatedCharacter\Robo">
+      <UniqueIdentifier>{83b48e1b-22bd-4db4-848c-ab9f56f70502}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMenu.cpp">
@@ -251,6 +260,18 @@
     </ClCompile>
     <ClCompile Include="CShot.cpp" />
     <ClCompile Include="CDecal.cpp" />
+    <ClCompile Include="CSpider.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Spider</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoss.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="CRobo.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Robo</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnimEnemy.cpp">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -402,6 +423,18 @@
     </ClInclude>
     <ClInclude Include="CShot.h" />
     <ClInclude Include="CDecal.h" />
+    <ClInclude Include="CSpider.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Spider</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoss.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="CRobo.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Robo</Filter>
+    </ClInclude>
+    <ClInclude Include="CAnimEnemy.h">
+      <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

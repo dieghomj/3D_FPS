@@ -25,19 +25,37 @@ void CStage::Update()
 
     HandleStepUp();
 
-
-
     m_prevPlayerPos = m_pPlayer->GetPosition();
     debugPlayerPath.push_back(m_prevPlayerPos);
     if (debugPlayerPath.size() > 500) {
         debugPlayerPath.erase(debugPlayerPath.begin());
     }
 
+    UpdateEnemyCollisions();
+
 }
 
 void CStage::Draw(SCENE_DATA& sceneData)
 {
     CStaticMeshObject::Draw(sceneData);
+}
+
+void CStage::UpdateEnemyCollisions()
+{
+    if (!m_pEnemyList) return;
+
+    for (auto pEnemy : *m_pEnemyList)
+    {
+        if (!pEnemy) continue;
+
+        // 床の衝突
+        HandleEnemyFloorCollisions(pEnemy);
+
+        // 壁の衝突
+        HandleEnemyWallCollisions(pEnemy);
+
+		//HandleEnemyStepUp(pEnemy);
+    }
 }
 
 void CStage::HandleWallCollisions()
@@ -174,6 +192,116 @@ void CStage::HandleSweptCollisions()
     else
     {
 
+    }
+}
+
+void CStage::HandleEnemyWallCollisions(CAnimEnemy* pEnemy)
+{
+    if (!pEnemy) return;
+
+    const int MAX_ITERATIONS = 3;
+
+    for (int iteration = 0; iteration < MAX_ITERATIONS; ++iteration)
+    {
+        CROSSRAY crossRay = pEnemy->GetCrossRay();
+        D3DXVECTOR3 beforePos = crossRay.Ray[0].Position;
+
+        // 壁から押し出す
+        CalculatePositionFromWall(&crossRay);
+
+        D3DXVECTOR3 afterPos = crossRay.Ray[0].Position;
+
+        // 補正を適用
+        D3DXVECTOR3 correctedPos = afterPos;
+        correctedPos.y = pEnemy->GetPosition().y;  // Y座標を保持
+        pEnemy->SetPosition(correctedPos);
+
+        // 補正がなければ終了
+        D3DXVECTOR3 correction = afterPos - beforePos;
+        if (D3DXVec3Length(&correction) < 0.00001f)
+        {
+            break;
+        }
+
+        // 次のイテレーション用にレイを更新
+        pEnemy->UpdateCrossRay();
+    }
+
+    // 頭部の衝突も処理
+    //for (int iteration = 0; iteration < MAX_ITERATIONS; ++iteration)
+    //{
+    //    CROSSRAY headCrossRay = pEnemy->GetHeadCrossRay();
+    //    D3DXVECTOR3 beforePos = headCrossRay.Ray[0].Position;
+
+    //    CalculatePositionFromWall(&headCrossRay);
+
+    //    D3DXVECTOR3 afterPos = headCrossRay.Ray[0].Position;
+
+    //    D3DXVECTOR3 correctedPos = afterPos;
+    //    correctedPos.y = pEnemy->GetPosition().y;
+    //    pEnemy->SetPosition(correctedPos);
+
+    //    D3DXVECTOR3 correction = afterPos - beforePos;
+    //    if (D3DXVec3Length(&correction) < 0.00001f)
+    //    {
+    //        break;
+    //    }
+
+    //    pEnemy->UpdateCrossRay();
+    //}
+}
+
+void CStage::HandleEnemyFloorCollisions(CAnimEnemy* pEnemy)
+{
+    if (!pEnemy) return;
+
+    RAY downRay = pEnemy->GetRayY();
+
+    FLOAT distance;
+    D3DXVECTOR3 hitPoint, hitNormal;
+
+    if (IsHitForRay(downRay, &distance, &hitPoint, &hitNormal))
+    {
+        pEnemy->SetFloorY(hitPoint.y);
+        pEnemy->SetFloorNormal(hitNormal);  // 床の法線を設定
+    }
+    else
+    {
+        pEnemy->SetFloorY(-FLT_MAX);
+        pEnemy->SetFloorNormal(D3DXVECTOR3(0.0f, 1.0f, 0.0f));  // デフォルトの上向き法線
+    }
+}
+
+void CStage::HandleEnemyStepUp(CAnimEnemy* pEnemy)
+{
+    if (!pEnemy) return;
+    
+    const float MAX_STEP_HEIGHT = 0.3f;  // 敵が上れる最大段差
+    
+    CROSSRAY rays = pEnemy->GetCrossRay();
+    FLOAT wallDist;
+    D3DXVECTOR3 wallHit, wallNormal;
+    
+    for (int dir = 0; dir < CROSSRAY::max; ++dir)
+    {
+        if (IsHitForRay(rays.Ray[dir], &wallDist, &wallHit, &wallNormal))
+        {
+            if (wallDist < 0.3f)  // 壁が近い
+            {
+                // 上に空きスペースがあるかチェック
+                RAY upRay = rays.Ray[dir];
+                upRay.Position.y += MAX_STEP_HEIGHT;
+                
+                if (!IsHitForRay(upRay, &wallDist, &wallHit, nullptr))
+                {
+                    // 階段検出！敵を持ち上げる
+                    D3DXVECTOR3 pos = pEnemy->GetPosition();
+                    pos.y += MAX_STEP_HEIGHT * 0.5f;  // スムーズにステップ
+                    pEnemy->SetPosition(pos);
+                    break;  // 1フレームに1方向のみ処理
+                }
+            }
+        }
     }
 }
 

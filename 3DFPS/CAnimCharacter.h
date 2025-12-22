@@ -32,9 +32,14 @@ public:
 	void GetSkinMesh(CSkinMesh** ppMesh) {
 		*ppMesh = m_pSkinMesh;
 	}
+	int GetAnimNo() const { return m_AnimNo; };
 
 	void SetAnimSpeed(double speed) { m_AnimSpeed = speed; }
 	bool SetAnimNo(int no, int flag = 0);
+
+	bool IsAnimOver() const {
+		return (m_AnimTime >= m_pSkinMesh->GetAnimPeriod(m_AnimNo));
+	}
 
 
 private:
