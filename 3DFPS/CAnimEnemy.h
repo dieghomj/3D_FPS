@@ -7,11 +7,14 @@ class CAnimEnemy :
 public:
 
 	enum EnemyState {
+		Spawning,
 		Idle,
 		Chasing,
 		Attacking,
 		Jumping,
-		Dying
+		Damaged,
+		Dying,
+		Dead
 	};
 
 
@@ -21,6 +24,12 @@ public:
 	virtual void InitEnemy();
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
+	virtual void Die() = 0;
+	virtual void ApplyDamage(int damge) = 0;
+
+	bool IsDead() const {
+		return !m_IsAlive;
+	}
 
 	int GetState() const {
 		return m_State;
@@ -53,9 +62,14 @@ public:
 	CROSSRAY GetHeadCrossRay() const { return *m_pHeadCrossRay; }
 
 protected:
+
+	void FacePlayer(float& distance);
+
+protected:
 	D3DXVECTOR3 m_PlayerPos;
 
 	int m_State;
+	float m_Health;
 	bool m_IsAlive;
 
 	// 衝突検出用のメンバー

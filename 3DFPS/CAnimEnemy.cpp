@@ -8,6 +8,7 @@ CAnimEnemy::CAnimEnemy()
 	, m_FloorY(0.0f)
 	, m_FloorNormal(D3DXVECTOR3(0.0f, 1.0f, 0.0f))
 	, m_pHeadCrossRay(nullptr)
+	, m_Health(100.0f)
 {
 }
 
@@ -32,6 +33,12 @@ void CAnimEnemy::InitEnemy()
 
 void CAnimEnemy::Update()
 {
+	if(IsDead())
+	{
+		CAnimCharacter::Update();
+		return;
+	}
+
 	D3DXVECTOR3 pos = GetPosition();
 	const float GRAVITY = 0.21f;
 	const float SNAP_DISTANCE = 0.05f;  // 床にスナップする距離
@@ -94,4 +101,17 @@ void CAnimEnemy::UpdateCrossRay()
 void CAnimEnemy::Draw(SCENE_DATA& sceneData)
 {
 	CAnimCharacter::Draw(sceneData);
+}
+
+void CAnimEnemy::FacePlayer(float& distance)
+{
+	D3DXVECTOR3 toPlayer = m_PlayerPos - GetPosition();
+	distance = D3DXVec3Length(&toPlayer);
+	D3DXVECTOR3 prevFwd = m_vForward;
+	m_vForward = m_PlayerPos - GetPosition();
+	m_vForward.y = 0.0f;
+
+	float angle = atan2f(m_vForward.x, m_vForward.z) - atan2f(prevFwd.x, prevFwd.z);
+
+	SetRotation(0.0f, D3DXToRadian(180.f) + GetRotation().y + angle, 0.0f);
 }
