@@ -58,7 +58,7 @@ public:
 
 	CROSSRAY GetHeadCrossRay() const { return *m_pHeadCrossRay; }
 
-	void ApplyDamage(float damage) { m_Health -= damage; }
+	void ApplyDamage(float damage);
 	void ApplyHeal(float heal) { m_Health += heal;  }
 	void ApplyStamina(float stamina) { m_DashTimer += stamina; }
 	void ApplyAmmo(int ammo) { return; };
@@ -126,6 +126,9 @@ private:
 	bool m_IsDashing = false;
 	bool m_IsCrouching = false;
 	bool m_IsSliding = false;
+
+	bool m_InvFrame = false;
+	float m_InvFrameTimer = 0.0f;
 	
 	float m_FloorY = 0.f;
 	float m_CeilingY = FLT_MAX;

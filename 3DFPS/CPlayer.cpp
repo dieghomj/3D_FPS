@@ -64,6 +64,10 @@ CPlayer::CPlayer()
 	, m_CanSlide				(true)
 	, m_CanMove					(true)
 	, m_IsGravityEnabled		(true)
+
+	, m_IsInertiaEnabled(true)
+	, m_InvFrame(false)
+	, m_InvFrameTimer(0.f)
 {
 	m_pInputHandler = new CInput();
 	m_pHeadCrossRay = new CROSSRAY();
@@ -101,6 +105,16 @@ void CPlayer::Update()
 	}
 
 	m_Shot = false;
+
+	if (m_InvFrameTimer > 0.5f)
+	{
+		m_InvFrame = false;
+		m_InvFrameTimer = 0.f;
+	}
+	else if (m_InvFrame)
+	{
+		m_InvFrameTimer += 0.016f;
+	}
 
 	if(m_DashTimer < DASH_MAX)
 		m_DashTimer += 0.006f; 
@@ -453,6 +467,15 @@ void CPlayer::HandleAirPhys()
 			m_Inertia.y = 0.f;
 			m_IsJumping = false;
 		}
+	}
+}
+
+void CPlayer::ApplyDamage(float damage) {
+	if (!m_InvFrame)
+	{
+		m_Health -= damage;
+		m_InvFrameTimer = 0.0f;
+		m_InvFrame = true;
 	}
 }
 
