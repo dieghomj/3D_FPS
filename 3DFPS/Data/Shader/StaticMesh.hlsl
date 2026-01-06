@@ -29,6 +29,8 @@ cbuffer per_mesh : register(b0)
 cbuffer per_material : register(b1)
 {
     float4 g_Diffuse; // Diffuse color
+    float4 g_Ambient; // Ambient color
+    float4 g_Specular; // Specular color
 };
 
 cbuffer per_frame : register(b2)
@@ -210,15 +212,23 @@ float4 PS_Main(PS_INPUT input) : SV_Target
 //-------------------------------------------------
 float4 PS_NoTex(PS_INPUT input) : SV_Target
 {
+    
+    
+    
     // Lighting
     float3 N = normalize(input.Normal);
     float3 L = normalize(g_LightDir.xyz);
     float NdotL = saturate(dot(N, -L));
 
+    
+    
     // Final Color Calculation
-    float3 diffuse = g_Diffuse.rgb * g_LightColor.rgb * NdotL;
     float3 ambient = g_AmbientColor.rgb;
-    float3 finalColor = ambient + diffuse;
+    float3 specular = g_Specular.rgb * pow(saturate(dot(reflect(L, N), normalize(g_CameraPos.xyz - input.WorldPos.xyz))), 16.0f);
+    float3 diffuse = g_Diffuse.rgb * g_LightColor.rgb * NdotL;
+    float3 finalColor = (ambient + diffuse + specular) * g_LightIntensity;
+    
+    
 
     return float4(finalColor, g_Diffuse.a);
 }
