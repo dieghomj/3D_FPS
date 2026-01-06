@@ -809,6 +809,8 @@ void CStaticMesh::RenderMesh(
 			CBUFFER_PER_MATERIAL cb;
 			//ディフューズ,アンビエント,スペキュラをシェーダに渡す.
 			cb.Diffuse = m_pMaterials[m_AttrID[No]].Diffuse;
+			cb.Ambient = m_pMaterials[m_AttrID[No]].Ambient;
+			cb.Specular = m_pMaterials[m_AttrID[No]].Specular;
 
 			memcpy_s(pDataMat.pData, pDataMat.RowPitch,
 				(void*)&cb, sizeof(cb));

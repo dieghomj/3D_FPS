@@ -46,7 +46,7 @@ void CStage::UpdateEnemyCollisions()
 
     for (auto pEnemy : *m_pEnemyList)
     {
-        if (!pEnemy) continue;
+        if (!pEnemy || pEnemy->IsDead()) continue;
 
         // °‚ÌÕ“Ë
         HandleEnemyFloorCollisions(pEnemy);

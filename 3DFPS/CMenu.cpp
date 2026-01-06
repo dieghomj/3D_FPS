@@ -111,7 +111,7 @@ void CMenu::Update()
 		{
 			m_FadeAlpha = 1.0f;
 			CSoundManager::Stop(CSoundManager::BGM_Title);
-			m_pManager->ChangeScene("RESULT");
+			m_pManager->ChangeScene("GAME");
 			return;
 		}
 		if (m_pFadeSprite)
@@ -182,7 +182,7 @@ void CMenu::Draw()
 	m_pMenuFont->SetAlpha(1.0f);
 
 	TCHAR titleText[64];
-	_stprintf_s(titleText, _T("MYSTERY MAZE"));
+	_stprintf_s(titleText, _T("FAST ATTACK"));
 	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 130), 90.0f, 60.0f);
 
 	if (m_SelectedOption == MENU_OPTION_START)
@@ -213,12 +213,6 @@ void CMenu::Draw()
 	TCHAR instructText[128];
 	_stprintf_s(instructText, _T("Use UP/DOWN to select, LEFT/RIGHT to change difficulty, ENTER to start"));
 	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 270), static_cast<float>(WND_H - 50), 35.0f);
-
-	// Show current difficulty
-	m_pMenuFont->SetColor(0.9f, 0.9f, 0.2f);
-	TCHAR diffText[64];
-	_stprintf_s(diffText, _T("DIFFICULTY: %s"), DifficultyToText(CGameStats::GetDifficulty()));
-	m_pMenuFont->Render(diffText, static_cast<float>(WND_W / 2 - 120), static_cast<float>(WND_H / 2 + 20), 32.0f);
 
 	// Draw fade overlay last so it covers everything
 	if (m_pFade)

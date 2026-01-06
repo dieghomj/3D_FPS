@@ -16,6 +16,7 @@ struct CGameStats
 	static unsigned long TimeMs; // total time played in milliseconds
 	static int Score;
 	static DIFFICULTY Difficulty;
+	static int LevelSelection; // For future use
 
 	// Simple score: 100 per kill, time penalty = floor(TimeMs/1000) * 2
 	static void ComputeScore()

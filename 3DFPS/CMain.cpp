@@ -14,8 +14,8 @@
 //=================================================
 //	’è”.
 //=================================================
-const TCHAR WND_TITLE[] = _T( "MAZE MYSTERY" );
-const TCHAR APP_NAME[]	= _T( "MAZE MYSTERY" );
+const TCHAR WND_TITLE[] = _T( "FAST ATTACK" );
+const TCHAR APP_NAME[]	= _T( "FAST ATTACK" );
 
 
 /********************************************************************************
@@ -106,7 +106,7 @@ HRESULT CMain::Create()
 	m_pSceneManager->AddScene(m_pMenu, "MENU");
 	m_pSceneManager->AddScene(m_pGame, "GAME");
 	m_pSceneManager->AddScene(m_pResult, "RESULT");
-	m_pSceneManager->AddScene(m_pGameOver,"GAME OVER");
+	m_pSceneManager->AddScene(m_pGameOver,"GAMEOVER");
 
 	//ƒV[ƒ“•ÏX.
 	m_pSceneManager->ChangeScene("GAME");

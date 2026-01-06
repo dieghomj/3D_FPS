@@ -2,8 +2,8 @@
 #include "CSpider.h"
 
 constexpr int PLAYER_AMMO_MAX = 999;
-constexpr int ENEMY_COUNT_MAX = 5;
-constexpr int ENEMY_COUNT_PER_ROOM = 5;
+constexpr int ENEMY_COUNT_MAX = 16;
+constexpr int ENEMY_COUNT_PER_ROOM = 16;
 
 
 CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager)
@@ -13,6 +13,10 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pStaminaBarUI(nullptr)
 	, m_pCrossHairSprite(nullptr)
 	, m_pCrossHairUI(nullptr)
+	, m_pHealthBarSprite(nullptr)
+	, m_pHealthBarUI(nullptr)
+	, m_pPainSprite(nullptr)
+	, m_pPainUI(nullptr)
 
 	, m_pGround(nullptr)
 	, m_pGroundMesh(nullptr)
@@ -45,6 +49,8 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pHealthItemMesh(nullptr)
 	, m_pDashItemMesh(nullptr)
 
+	, m_pSphereMesh(nullptr)
+
 	, currStage(0)
 
 	, m_pPlayerRayY(nullptr)
@@ -52,7 +58,6 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pPrevCrossRay()
 	, m_prevCrossRay()
 	, debugRay(nullptr)
-	, debugSphereMesh(nullptr)
 	, debugShotRay(nullptr)
 	, debugShotMark()
 	, debugHitShotList()
@@ -86,6 +91,9 @@ void CGame::Create()
 	m_pStage = new CStage();
 
 	m_pEnemyMesh = new CStaticMesh();
+	m_pSpiderMesh = new CStaticMesh();
+	m_pRoboMesh = new CStaticMesh();
+	m_pBossMesh = new CStaticMesh();
 	m_pSpiderSkinMesh = new CSkinMesh();
 	m_pRoboSkinMesh = new CSkinMesh();
 	m_pBossSkinMesh = new CSkinMesh();
@@ -141,7 +149,7 @@ void CGame::Create()
 		m_pPrevCrossRay[i] = new CRay();
 	}
 	m_pPlayerRayY = new CRay();
-	debugSphereMesh = new CStaticMesh();
+	m_pSphereMesh = new CStaticMesh();
 	debugRay = new CRay();
 	debugShotRay = new CRay();
 }
@@ -219,10 +227,15 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	//if(FAILED(m_pRoboSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\robo\\Shamgar.x")))
-	//{
-	//	return E_FAIL;
-	//}
+	if(FAILED(m_pSpiderMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako2\\zako2.x")))
+	{
+		return E_FAIL;
+	}
+
+	if(FAILED(m_pRoboSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\robo\\Robo.x")))
+	{
+		return E_FAIL;
+	}
 
 	/*if(FAILED(m_pBossSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Boss\\Boss.x")))
 	{
@@ -236,6 +249,7 @@ HRESULT CGame::LoadData()
 
 	for (auto pEnemy : m_pEnemyList)
 	{
+		pEnemy->AttachMesh(*m_pSpiderMesh);
 		pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
 		pEnemy->SetScale(1.2f);
 	}
@@ -267,6 +281,7 @@ HRESULT CGame::LoadData()
 	for (auto pBullet : m_pBulletList)
 	{
 		pBullet->AttachMesh(*m_pBulletMesh);
+		pBullet->SetScale(1.5f);
 	}
 
 	CSprite3D::SPRITE_STATE bulletHoleState = {};
@@ -324,7 +339,7 @@ HRESULT CGame::LoadData()
 
 	RAY rayY = m_pPlayer->GetRayY();
 	m_pPlayerRayY->Init(*m_pDx11, rayY);
-	debugSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
+	m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
 
 	RAY shotRay;
@@ -373,37 +388,14 @@ void CGame::Start()
 void CGame::Update()
 {
 
+	if(m_pPlayer->IsAlive() == false)
+	{
+		// Handle player death (e.g., restart level, show game over screen)
+		m_pManager->ChangeScene("GAMEOVER");
+		return; // Skip the rest of the update if the player is dead
+	}
+
 	m_pGround->Update();
-
-#if _DEBUG
-
-	if (GetAsyncKeyState('1'))
-	{
-		if(currStage != 0)
-		{
-			m_pStage->DetachMesh();
-			m_pStage->AttachMesh(*m_pBaseStageMesh);
-			currStage = 0;
-		}
-	}
-	if (GetAsyncKeyState('2'))
-	{
-		if (currStage != 1)
-		{
-			m_pStage->DetachMesh();
-			m_pStage->AttachMesh(*m_pBridStageMesh);
-			currStage = 1;
-		}
-	}
-
-	if (GetAsyncKeyState('R'))
-	{
-		m_pPlayer->SetPosition(0.0f, 10.0f, -5.0f);
-		m_pPlayer->SetFloorY(0.0f);
-		debugHitShotList.clear();
-	}
-
-#endif
 
 	m_pEnemy->Update();
 
@@ -427,9 +419,13 @@ void CGame::Update()
 		mSense = 0.0f; // Normal sensitivity
 	}
 
+	if (m_pPlayer->IsJumping())
+	{
+		mSense -= 0.05f; 
+	}
+
 	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pPlayer->Update();
-
 	m_pStage->Update();
 
 	m_pCameraController->FirstPersonCamera(m_pPlayer, m_mouseDelta, m_mouseSense - mSense);
@@ -490,7 +486,43 @@ void CGame::Update()
 
 
 
+#if _DEBUG
 
+	if (GetAsyncKeyState('1'))
+	{
+		if (currStage != 0)
+		{
+			m_pStage->DetachMesh();
+			m_pStage->AttachMesh(*m_pBaseStageMesh);
+			currStage = 0;
+		}
+	}
+	if (GetAsyncKeyState('2'))
+	{
+		if (currStage != 1)
+		{
+			m_pStage->DetachMesh();
+			m_pStage->AttachMesh(*m_pBridStageMesh);
+			currStage = 1;
+		}
+	}
+
+	if (GetAsyncKeyState('R'))
+	{
+		m_pPlayer->InitPlayer();
+		m_pPlayer->SetPosition(0.0f, 10.0f, -5.0f);
+		m_pPlayer->SetFloorY(0.0f);
+		debugHitShotList.clear();
+		int i = 0;
+		for (auto pEnemy : m_pEnemyList)
+		{
+			i++;
+			pEnemy->InitEnemy();
+			pEnemy->SpawnAt(D3DXVECTOR3(0.f, 0.f, 5.f + 0.1 *  i));
+		}
+	}
+
+#endif
 	CScene::Update();
 }
 
@@ -587,23 +619,23 @@ void CGame::Draw()
 
 	for(auto point : playerPath)
 	{
-		debugSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-1.f, 0.f));
-		debugSphereMesh->SetScale(D3DXVECTOR3(0.05f, 0.05f, 0.05f));
+		m_pSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-1.f, 0.f));
+		m_pSphereMesh->SetScale(D3DXVECTOR3(0.05f, 0.05f, 0.05f));
 		D3DXVECTOR3 dir = point - m_pPlayer->GetPosition();
 		float dist = D3DXVec3Length(&dir);
 		if(dist <= 3.f)
 		{
-			debugSphereMesh->SetScale(dist/ 3.f * 0.05f);
+			m_pSphereMesh->SetScale(dist/ 3.f * 0.05f);
 		}
-		debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+		m_pSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 	}
 
 	for (auto hitPos : debugHitShotList)
 	{
 		
-		debugSphereMesh->SetPosition(hitPos);
-		debugSphereMesh->SetScale(D3DXVECTOR3(0.02f, 0.02f, 0.02f));
-		//debugSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+		m_pSphereMesh->SetPosition(hitPos);
+		m_pSphereMesh->SetScale(D3DXVECTOR3(0.02f, 0.02f, 0.02f));
+		//m_pSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 
 	}
 
@@ -753,12 +785,12 @@ void CGame::HandleWeapon()
 		switch (currWeapon)
 		{
 		case 0: // Pistol
+
 			IsShotHit(shotRay, hitDist, hitPos, normal, impact);
 			m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), camForward, m_pCamera->GetYaw());
 			break;
 		
 		case 1: // Shotgun
-
 
 			for (int i = 0; i < PELLET_COUNT; ++i)
 			{
@@ -866,13 +898,32 @@ void CGame::HandleWeaponPos()
 
 void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact)
 {
+
+	for (auto& enemy : m_pEnemyList)
+	{
+		if (enemy->IsDead()) continue;
+		if (enemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
+		{
+			impact.position = hitPos;
+			impact.normal = normal;
+			impact.isEnemyHit = true;
+			enemy->ApplyDamage(5.f);
+			enemyHitHandle = CEffect::Play(CEffect::HitEffect, hitPos);
+			CEffect::SetSpeed(enemyHitHandle, 2.0f);
+			CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+			//debugHitShotList.push_back(hitPos);
+			//m_bulletImpactList.push_back(impact);
+			return;
+		}
+	}
+
 	if (m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 	{
 		impact.position = hitPos;
 		impact.normal = normal;
 		impact.isEnemyHit = true;
-		debugHitShotList.push_back(hitPos);
-		m_bulletImpactList.push_back(impact);
+		//debugHitShotList.push_back(hitPos);
+		//m_bulletImpactList.push_back(impact);
 	}
 	else if (m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 	{
@@ -893,14 +944,16 @@ void CGame::HandlePlayerEnemyCollision()
 
 	for (auto pEnemy : m_pEnemyList)
 	{
-		if (!pEnemy) continue;
+		if (!pEnemy || pEnemy->IsDead()) continue;
 
 		D3DXVECTOR3 enemyPos = pEnemy->GetPosition();
 		float enemyRadius = pEnemy->GetRadius();
-		if (HandleCollision(m_pPlayer, pEnemy, false))
+		float distance = 0.f;
+		HandleCollision(m_pPlayer, pEnemy, distance, false);
+
+		if (pEnemy->GetState() == CAnimEnemy::Attacking && distance <= enemyRadius + 0.85f)
 		{
-			// Collision detected between player and enemy
-			// Damage the player
+			m_pPlayer->ApplyDamage(5.5f);
 		}
 	}
 
@@ -912,16 +965,16 @@ void CGame::HandleEnemyEnemyCollision()
 
 	for (size_t i = 0; i < enemyCount; ++i)
 	{
-		if (!m_pEnemyList[i]) continue;
+		if (!m_pEnemyList[i] || m_pEnemyList[i]->IsDead()) continue;
 
 		for (size_t j = i + 1; j < enemyCount; ++j)
 		{
-			if (!m_pEnemyList[j]) continue;
+			if (!m_pEnemyList[j] || m_pEnemyList[j]->IsDead()) continue;
 
 			auto& enemyA = m_pEnemyList[i];
 			auto& enemyB = m_pEnemyList[j];
-
-			HandleCollision(enemyA, enemyB);
+			float distance = 0.f;
+			HandleCollision(enemyA, enemyB, distance);
 		}
 	}
 
@@ -929,6 +982,9 @@ void CGame::HandleEnemyEnemyCollision()
 
 void CGame::HandleEnemySpawning()
 {
+
+
+
 }
 
 int CGame::NextBullet()
@@ -946,7 +1002,7 @@ int CGame::NextBullet()
 }
 
 
-bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, bool doubleCollision)
+bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& distance, bool doubleCollision)
 {
 
 	D3DXVECTOR3 posA = charaA->GetPosition();
@@ -957,7 +1013,7 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, bool doubleC
 	// XZ平面での距離計算（Y軸を無視）
 	D3DXVECTOR3 diff = posA - posB;
 	diff.y = 0.0f;
-	float distance = D3DXVec3Length(&diff);
+	distance = D3DXVec3Length(&diff);
 	float minDist = radiusA + radiusB;
 
 	// 衝突検出

@@ -10,6 +10,7 @@
 #include "CEffect.h"
 #include "CShot.h"
 #include "CDecal.h"
+#include "CRobo.h"
 
 
 class CGame :
@@ -50,7 +51,7 @@ private:
 	void HandleWeapon();
 	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
 
-	bool HandleCollision(CCharacter* objA, CCharacter* objB, bool doubleCollision = true);
+	bool HandleCollision(CCharacter* objA, CCharacter* objB, float& distance, bool doubleCollision = true);
 	void HandlePlayerEnemyCollision();
 	void HandleEnemyEnemyCollision();
 	void HandleEnemySpawning();
@@ -103,6 +104,10 @@ private:
 	//----------------
 	CStaticMesh* m_pEnemyMesh;
 	CAnimCharacter* m_pEnemy;
+	
+	CStaticMesh* m_pSpiderMesh;
+	CStaticMesh* m_pRoboMesh;
+	CStaticMesh* m_pBossMesh;
 
 	CSkinMesh* m_pSpiderSkinMesh;
 	CSkinMesh* m_pRoboSkinMesh;
@@ -128,7 +133,16 @@ private:
 	CDecal* m_pShotDecalSprite;
 	CDecal* m_pEnemyHitDecalSprite;
 
+	::EsHandle explosionHandle = -1;
 	::EsHandle dashHandle = -1;
+	::EsHandle enemyHitHandle = -1;
+	::EsHandle enemyDeathHandle = -1;
+	::EsHandle itemPickupHandle = -1;
+	::EsHandle healthPickupHandle = -1;
+	::EsHandle ammoPickupHandle = -1;
+	::EsHandle playerDeathHandle = -1;
+	::EsHandle bossDeathHandle = -1;
+	
 	
 	//----------------
 	//---ITEMS--------
@@ -144,11 +158,11 @@ private:
 	CStaticMesh* m_pDashItemMesh;
 
 	int currStage = 0;
+	CStaticMesh* m_pSphereMesh;
 
+#if _DEBUG
 	//DEBUG
-	
 	CRay* debugRay;
-	CStaticMesh* debugSphereMesh;
 	CStaticMesh* debugShotMesh;
 	std::vector<D3DXVECTOR3> debugShotMark;
 	CROSSRAY m_prevCrossRay;
@@ -157,5 +171,6 @@ private:
 	CRay* m_pPlayerRayY;
 	CRay* debugShotRay;
 	std::vector<D3DXVECTOR3> debugHitShotList;
+#endif // _DEBUG
 };
 

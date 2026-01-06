@@ -1,4 +1,5 @@
 #include "CSpider.h"
+#include "CRobo.h"
 
 
 //Anim
@@ -17,7 +18,10 @@ static constexpr float ATTACK_CD = 2.0f;
 static constexpr float JUMP_ATTACK_CD = 3.0f;
 static constexpr float CHASE_SPEED = 0.1f;
 static constexpr float IDLE_SPEED = 0.015f;
+static constexpr float IDLE_TIMER_MAX = 2.0f;
 static constexpr float JUMP_ATTACK_SPEED = 0.35f;
+static constexpr float HEALTH_MAX = 15.0f;
+static constexpr float DAMAGE_TIMER_MAX = 0.5f;
 
 CSpider::CSpider()
 	: CAnimEnemy()
@@ -32,21 +36,38 @@ CSpider::~CSpider()
 {
 }
 
+void CSpider::InitEnemy()
+{
+	m_Health = HEALTH_MAX;
+	m_IsAlive = true;
+	CAnimEnemy::InitEnemy();
+}
+
 void CSpider::Update()
 {
-	
-	D3DXVECTOR3 toPlayer = m_PlayerPos - GetPosition();
-	m_PlayerDist = D3DXVec3Length(&toPlayer);
-	D3DXVECTOR3 prevFwd = m_vForward;
-	m_vForward = m_PlayerPos - GetPosition();
-	m_vForward.y = 0.0f;
 
-	float angle = atan2f(m_vForward.x, m_vForward.z) - atan2f(prevFwd.x, prevFwd.z);
+	if (!m_IsAlive && m_State == Dead)
+	{
+		//m_vPosition = D3DXVECTOR3(0.0f, -100.0f, 0.0f);
+		return;
+	}
+	else if (!m_IsAlive)
+	{
+		m_State = Dying;
+	}
+	else if (m_State == Dead)
+	{
+		m_State = Idle;
+	}
 
-	SetRotation(0.0f,D3DXToRadian(180.f) + GetRotation().y + angle, 0.0f);
+	FacePlayer(m_PlayerDist);
 
 	switch (m_State)
 	{
+	case Spawning:
+		SpawnBehavior();
+		break;
+
 	case Idle:
 		IdleBehavior();
 		break;
@@ -58,6 +79,9 @@ void CSpider::Update()
 		break;
 	case Attacking:
 		Attack();
+		break;
+	case Damaged:
+		DamagedAnim();
 		break;
 	case Dying:
 		Die();
@@ -72,6 +96,26 @@ void CSpider::Update()
 void CSpider::Draw(SCENE_DATA& sceneData)
 {
 	CAnimEnemy::Draw(sceneData);
+}
+
+void CSpider::ApplyDamage(int damage)
+{
+	m_Health -= damage;
+
+	if (m_State != Damaged)
+	{
+		m_State = Damaged;
+	}
+
+	if (m_Health <= 0.0f)
+	{
+		Kill();
+	}
+}
+
+void CSpider::SpawnBehavior()
+{
+	m_State = Idle;
 }
 
 void CSpider::Attack()
@@ -98,8 +142,6 @@ void CSpider::JumpAttack()
 	m_vPosition += m_vForward * -JUMP_ATTACK_SPEED;
 	m_vPosition.y += 0.2f;
 
-
-	
 }
 
 void CSpider::ChasePlayer()
@@ -124,7 +166,34 @@ void CSpider::IdleBehavior()
 	 
 }
 
+void CSpider::DamagedAnim()
+{
+	if (GetAnimNo() == 7 && IsAnimOver())
+	{
+		m_State = Idle;
+		return;
+	}
+	SetAnimNo(7, BLEND_CHANGE);
+	PushBackEffect();
+}
+
+void CSpider::PushBackEffect()
+{
+	m_vPosition += m_vForward * 0.3f;
+	m_vPosition.y += 0.15f;
+}
+
 void CSpider::Die()
 {
 
+	if(GetAnimNo() == 8 && IsAnimOver())
+	{
+		m_State = Dead;
+		m_vPosition = D3DXVECTOR3(0.0f, -100.0f, 0.0f);
+		return;
+	}
+
+
+	SetAnimNo(8, FORCE_CHANGE);
+	PushBackEffect();
 }

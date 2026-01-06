@@ -46,6 +46,7 @@ public:
 	void SpawnAt(const D3DXVECTOR3& pos) {
 		SetPosition(pos);
 		m_IsAlive = true;
+		m_State = Spawning;
 	}
 
 	void Kill() {

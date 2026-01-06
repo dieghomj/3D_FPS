@@ -69,6 +69,7 @@ public:
 	
 	D3DXVECTOR3 GetRight() const { return m_vRight; };
 
+
 private:
 
 	void CalculateVectors();
