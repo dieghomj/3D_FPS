@@ -49,6 +49,10 @@ public:
 		BloodEffect,		//‰¼‚Åİ’è
 		DashEffect,			//‰¼‚Åİ’è
 		PistolShotEffect,	//‰¼‚Åİ’è
+		HitEffect,			//‰¼‚Åİ’è
+		ExplosionEffect,		//‰¼‚Åİ’è
+		SparkEffect,			//‰¼‚Åİ’è
+
 		Max			//Å‘å”
 	};
 

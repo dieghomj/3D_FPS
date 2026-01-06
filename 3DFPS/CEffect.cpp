@@ -176,6 +176,9 @@ HRESULT CEffect::LoadData()
 		{ enList::BloodEffect,	u"Data\\Effects\\Combat\\blood.efk"	},
 		{ enList::DashEffect,	u"Data\\Effects\\dash_slide.efk"	},
 		{ enList::PistolShotEffect,	u"Data\\Effects\\ShotEffect\\PistolShot.efk"	},
+		{ enList::HitEffect,		u"Data\\Effects\\hiteffekt\\hiteffekt.efk"	},
+		{ enList::ExplosionEffect,	u"Data\\Effects\\Explosion\\Explosion.efk"	},
+		{ enList::SparkEffect,		u"Data\\Effects\\Combat\\spark.efk"	},
 	};
 	//配列の最大要素数を算出（配列全体のサイズ／配列１つ分のサイズ）
 	int list_max = sizeof(EList) / sizeof(EList[0]);
