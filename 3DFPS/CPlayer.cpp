@@ -1,12 +1,12 @@
 #include "CPlayer.h"
 
 static constexpr float GRAVITY = 0.0198f;
-static constexpr float FRICTION = 0.0350f;
+static constexpr float FRICTION = 0.0550f;
 
 
 static constexpr float HEALTH_MAX = 100.f;
 
-static constexpr float PLAYERSIZE = 2.0f;
+static constexpr float PLAYERSIZE = 4.5;
 static constexpr float CROUCHSIZE = 0.6f;
 static constexpr float PLAYERRADIUS = 0.3f;
 
@@ -407,9 +407,9 @@ void CPlayer::HandleAirPhys()
 	float feetY = m_vPosition.y - m_Height;			//プレイヤーの足元のY座標
 	float headY = m_vPosition.y + m_Height * 0.3f;	//プレイヤーの頭のY座標
 
-	const float GROUND_SNAP_DISTANCE = 0.15f;		//地面に吸着する距離
-	const float GROUND_PENETRATION = 0.1f;			//地面にめり込んだと見なす距離
-	const float CEILING_BUFFER = 0.02f;				//天井に当たったと見なす距離
+	const float GROUND_SNAP_DISTANCE = 0.015f;		//地面に吸着する距離
+	const float GROUND_PENETRATION = 0.01f;			//地面にめり込んだと見なす距離
+	const float CEILING_BUFFER = 0.01f;				//天井に当たったと見なす距離
 
 	float distanceToFloor = feetY - m_FloorY;		//プレイヤーの足元と地面の距離
 
@@ -462,7 +462,7 @@ void CPlayer::HandleAirPhys()
 
 		if (distanceToCeiling < CEILING_BUFFER)
 		{
-			m_vPosition.y = m_CeilingY - m_Height - 0.003f; 
+			m_vPosition.y = m_CeilingY - m_Height - 0.0003f; 
 			m_Velocity.y = 0.f;
 			m_Inertia.y = 0.f;
 			m_IsJumping = false;
@@ -484,9 +484,9 @@ void CPlayer::UpdateAxis()
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y = m_vPosition.y - m_Height*0.00f;
+	m_pRayY->Position.y = m_vPosition.y - m_Height*0.001f;
 	m_pRayY->RotationY = m_vRotation.y;
-	m_pRayY->Length = m_Height + 0.5f;
+	m_pRayY->Length = m_Height + 0.9f;
 
 	UpdateCrossRay();
 }
@@ -498,7 +498,7 @@ void CPlayer::UpdateCrossRay()
 	float speed = D3DXVec3Length(&horizontalVel);
 
 	// レイの長さを速度に応じて変化させる
-	float rayLength = 0.5f + (speed * 5.0f);
+	float rayLength = 1.f + (speed * 5.0f);
 
 	// 前後左右のレイの位置をプレイヤーの座標にそろえる
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
@@ -509,7 +509,7 @@ void CPlayer::UpdateCrossRay()
 		m_pCrossRay->Ray[dir].Length = rayLength;
 
 		m_pHeadCrossRay->Ray[dir].Position = m_vPosition;
-		m_pHeadCrossRay->Ray[dir].Position.y = m_vPosition.y + m_Height * 0.001f;
+		m_pHeadCrossRay->Ray[dir].Position.y = m_vPosition.y + 0.5f;
 		m_pHeadCrossRay->Ray[dir].RotationY = m_vRotation.y;
 		m_pHeadCrossRay->Ray[dir].Length = rayLength;
 	}

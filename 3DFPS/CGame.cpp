@@ -4,7 +4,10 @@
 constexpr int PLAYER_AMMO_MAX = 999;
 constexpr int ENEMY_COUNT_MAX = 16;
 constexpr int ENEMY_COUNT_PER_ROOM = 16;
+const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -65.f);
 
+bool wasStucked = false;
+int stuckFrameCount = 0;
 
 CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager)
 	: CScene(pDx9, pDx11, hWnd, pTime, m_pManager)
@@ -212,7 +215,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\TestStage\\TestMap.x")))
+	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\TestStage\\Level001.x")))
 	{
 		return E_FAIL;
 	}
@@ -378,20 +381,20 @@ void CGame::Start()
 		m_pEnemyList[i]->InitEnemy(); 
 	}
 
-	m_pPlayer->SetPosition(0.0f, 10.0f, -5.0f);
 	m_pPlayer->InitPlayer();
+	m_pPlayer->SetPosition( PLAYER_STARTPOS );
 
-	//m_pPlayerWeapon->SetPosition(0.f, D3DXToRadian(180.f), 0.f);
 
 }
 
 void CGame::Update()
 {
 
-	if(m_pPlayer->IsAlive() == false)
+	if (m_pPlayer->IsAlive() == false)
 	{
 		// Handle player death (e.g., restart level, show game over screen)
-		m_pManager->ChangeScene("GAMEOVER");
+		//m_pManager->ChangeScene("GAMEOVER");
+		Restart();
 		return; // Skip the rest of the update if the player is dead
 	}
 
@@ -399,7 +402,7 @@ void CGame::Update()
 
 	m_pEnemy->Update();
 
-	for ( auto pEnemy : m_pEnemyList )
+	for (auto pEnemy : m_pEnemyList)
 	{
 		pEnemy->Update();
 		pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
@@ -410,7 +413,7 @@ void CGame::Update()
 	//m_pEnemy->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
 
 	float mSense = 0.f;
-	if(m_pPlayer->IsDashing())
+	if (m_pPlayer->IsDashing())
 	{
 		mSense = 0.045f; // Lower sensitivity when dashing
 	}
@@ -421,13 +424,27 @@ void CGame::Update()
 
 	if (m_pPlayer->IsJumping())
 	{
-		mSense -= 0.05f; 
+		mSense -= 0.05f;
 	}
 
 	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pPlayer->Update();
+	if (wasStucked)
+	{
+		// Skip updating the stage to prevent collision issues
+		stuckFrameCount++;
+		if (stuckFrameCount > 18)
+		{
+			wasStucked = false;
+			stuckFrameCount = 0;
+		}
+	}
+	else
+	{
+
 	m_pStage->Update();
 
+	}
 	m_pCameraController->FirstPersonCamera(m_pPlayer, m_mouseDelta, m_mouseSense - mSense);
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
@@ -495,6 +512,7 @@ void CGame::Update()
 			m_pStage->DetachMesh();
 			m_pStage->AttachMesh(*m_pBaseStageMesh);
 			currStage = 0;
+			m_pStage->SetScale(1.f);
 		}
 	}
 	if (GetAsyncKeyState('2'))
@@ -503,27 +521,35 @@ void CGame::Update()
 		{
 			m_pStage->DetachMesh();
 			m_pStage->AttachMesh(*m_pBridStageMesh);
+			m_pStage->SetScale(1.0f);
 			currStage = 1;
 		}
 	}
 
 	if (GetAsyncKeyState('R'))
 	{
-		m_pPlayer->InitPlayer();
-		m_pPlayer->SetPosition(0.0f, 10.0f, -5.0f);
-		m_pPlayer->SetFloorY(0.0f);
-		debugHitShotList.clear();
-		int i = 0;
-		for (auto pEnemy : m_pEnemyList)
-		{
-			i++;
-			pEnemy->InitEnemy();
-			pEnemy->SpawnAt(D3DXVECTOR3(0.f, 0.f, 5.f + 0.1 *  i));
-		}
+		Restart();
 	}
 
 #endif
 	CScene::Update();
+}
+
+void CGame::Restart()
+{
+	wasStucked = true;
+	m_pPlayer->InitPlayer();
+	m_pPlayer->SetPosition(PLAYER_STARTPOS);
+	m_pPlayer->SetFloorY(0.f);
+	m_pPlayer->UpdateAxis();
+	debugHitShotList.clear();
+	int i = 0;
+	for (auto pEnemy : m_pEnemyList)
+	{
+		i++;
+		pEnemy->InitEnemy();
+		pEnemy->SpawnAt(D3DXVECTOR3(0.f, 10.f, 5.f + 0.1 * i));
+	}
 }
 
 
@@ -619,7 +645,7 @@ void CGame::Draw()
 
 	for(auto point : playerPath)
 	{
-		m_pSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-1.f, 0.f));
+		m_pSphereMesh->SetPosition(point + D3DXVECTOR3(0.f,-m_pPlayer->GetHeight(), 0.f));
 		m_pSphereMesh->SetScale(D3DXVECTOR3(0.05f, 0.05f, 0.05f));
 		D3DXVECTOR3 dir = point - m_pPlayer->GetPosition();
 		float dist = D3DXVec3Length(&dir);
@@ -847,9 +873,9 @@ void CGame::HandleWeaponPos()
 	camUp = m_pCamera->GetUp();
 
 	D3DXVECTOR3 localOffset =
-		camRight * 0.12f +   // move to the right
+		camRight * 0.25f +   // move to the right
 		camUp * -0.25f +  // move a bit down
-		camForward * 0.75f;     // move a bit forward
+		camForward * 0.65f;     // move a bit forward
 	weaponPos += localOffset;
 
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();

@@ -43,6 +43,8 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 
+	void Restart();
+
 
 private:
 

@@ -95,7 +95,7 @@ void CStage::HandleWallCollisions(CROSSRAY* cross)
         }
 
         // Update rays for next iteration
-        m_pPlayer->UpdateCrossRay();
+        m_pPlayer->UpdateAxis();
 
     }
 }
