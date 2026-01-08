@@ -384,12 +384,14 @@ void CSprite2D::Render()
 		//１マスあたりの割合にパターン番号(マス目)をかけて座標を設定する
 		cb.vUV.x =
 			m_SpriteState.Stride.w / m_SpriteState.Base.w
-			* static_cast<float>(m_PatternNo.x);
+			* static_cast<float>(m_PatternNo.x)
+			+ m_UV.x;  
 		cb.vUV.y =
 			m_SpriteState.Stride.h / m_SpriteState.Base.h
-			* static_cast<float>(m_PatternNo.y);
-		cb.vUV.z = m_FillPercent; //
-		cb.vUV.w = m_Orientation; //
+			* static_cast<float>(m_PatternNo.y)
+			+ m_UV.y;  
+		cb.vUV.z = m_FillPercent;
+		cb.vUV.w = m_Orientation;
 
 		//ビューポートの幅、高さを渡す
 		cb.fViewPortWidth	= static_cast<float>( WND_W );

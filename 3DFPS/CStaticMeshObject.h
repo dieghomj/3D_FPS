@@ -42,6 +42,8 @@ public:
 	//※モデルの原点が中心の場合を想定
 	void UpdateCollider() {
 		m_pCollider->SetPosition(m_vPosition);
+		m_pCollider->SetRotation(m_vRotation);
+		m_pCollider->SetScale(m_vScale);
 	}
 
 	//レイとメッシュの当たり判定

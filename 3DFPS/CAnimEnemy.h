@@ -47,6 +47,7 @@ public:
 		SetPosition(pos);
 		m_IsAlive = true;
 		m_State = Spawning;
+		m_IsActive = true;
 	}
 
 	void Kill() {

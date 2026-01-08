@@ -11,6 +11,7 @@ public:
     CStage();
     virtual ~CStage() override;
     virtual void Update() override;
+	void SavePrevPlayerPos();
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
     void SetPlayer(CPlayer& player) { 
@@ -24,8 +25,15 @@ public:
 
 	void UpdateEnemyCollisions();
 
+	void RestartPlayerPosition(D3DXVECTOR3 playerPos) {
+		
+		m_prevPlayerPos = playerPos;
 
-private:
+	}
+
+
+protected:
+
 
 	void HandleWallCollisions();
 	
@@ -37,15 +45,18 @@ private:
 	
 	void HandleStepUp();
 
-	void HandleSweptCollisions();
+	void HandleSweptCollisions(const D3DXVECTOR3& frameStartPos);
 
 	void HandleEnemyWallCollisions(CAnimEnemy* pEnemy);
 	void HandleEnemyFloorCollisions(CAnimEnemy* pEnemy);
 	void HandleEnemyStepUp(CAnimEnemy* pEnemy);
+	D3DXVECTOR3 CalculateWallPushback(CROSSRAY* pCrossRay);
    
-private:
+protected:
+
 	CPlayer* m_pPlayer;
 	D3DXVECTOR3 m_prevPlayerPos;
+private:
 	std::vector<CAnimEnemy*>* m_pEnemyList;
 
 #if _DEBUG

@@ -6,7 +6,7 @@
 #include "CGame.h"
 #include "CGameOver.h"
 #include "CResult.h"
-
+#include "CGameStats.h"
 
 //ウィンドウを画面中央で起動を有効にする.
 //#define ENABLE_WINDOWS_CENTERING
@@ -109,7 +109,7 @@ HRESULT CMain::Create()
 	m_pSceneManager->AddScene(m_pGameOver,"GAMEOVER");
 
 	//シーン変更.
-	m_pSceneManager->ChangeScene("GAME");
+	m_pSceneManager->ChangeScene("MENU");
 
 	return S_OK;
 }

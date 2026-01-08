@@ -7,6 +7,7 @@ CGameObject::CGameObject()
 	, m_vScale		( 1.0f, 1.0f, 1.0f )
 	, m_vForward	( 0.0f, 0.0f, 1.0f )
 	, m_vRight		( 1.0f, 0.0f, 0.0f )
+    , m_IsActive    ( true )
 {
 }
 

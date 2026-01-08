@@ -8,7 +8,7 @@ static constexpr float HEALTH_MAX = 100.f;
 
 static constexpr float PLAYERSIZE = 4.5;
 static constexpr float CROUCHSIZE = 0.6f;
-static constexpr float PLAYERRADIUS = 0.3f;
+static constexpr float PLAYERRADIUS = 0.5f;
 
 static constexpr float RUN_SPEED = 0.3f;
 static constexpr float MAX_RUN_SPEED = 0.5f;
@@ -498,19 +498,18 @@ void CPlayer::UpdateCrossRay()
 	float speed = D3DXVec3Length(&horizontalVel);
 
 	// レイの長さを速度に応じて変化させる
-	float rayLength = 1.f + (speed * 5.0f);
+	const float RAY_LENGTH = 1.5f;
 
-	// 前後左右のレイの位置をプレイヤーの座標にそろえる
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
 		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height * 0.55f;
 		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
-		m_pCrossRay->Ray[dir].Length = rayLength;
+		m_pCrossRay->Ray[dir].Length = RAY_LENGTH;
 
 		m_pHeadCrossRay->Ray[dir].Position = m_vPosition;
 		m_pHeadCrossRay->Ray[dir].Position.y = m_vPosition.y + 0.5f;
 		m_pHeadCrossRay->Ray[dir].RotationY = m_vRotation.y;
-		m_pHeadCrossRay->Ray[dir].Length = rayLength;
+		m_pHeadCrossRay->Ray[dir].Length = RAY_LENGTH;
 	}
 }

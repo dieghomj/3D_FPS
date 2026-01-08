@@ -46,6 +46,11 @@ void CSpider::InitEnemy()
 void CSpider::Update()
 {
 
+	if (IsActive() == false)
+	{
+		return;
+	}
+
 	if (!m_IsAlive && m_State == Dead)
 	{
 		//m_vPosition = D3DXVECTOR3(0.0f, -100.0f, 0.0f);
@@ -95,6 +100,10 @@ void CSpider::Update()
 
 void CSpider::Draw(SCENE_DATA& sceneData)
 {
+	if (IsActive() == false)
+	{
+		return;
+	}
 	CAnimEnemy::Draw(sceneData);
 }
 
@@ -148,7 +157,7 @@ void CSpider::ChasePlayer()
 {
 	SetAnimNo(1, BLEND_CHANGE);
 	D3DXVec3Normalize(&m_vForward, &m_vForward);
-	SetPosition(GetPosition() + m_vForward * -CHASE_SPEED);
+	m_vPosition = GetPosition() + m_vForward * -CHASE_SPEED;
 	if (m_PlayerDist < 0.5f)
 		m_State = Attacking;
 	else if (m_PlayerDist < 15.0f)
@@ -161,7 +170,7 @@ void CSpider::IdleBehavior()
 
 	if (m_PlayerDist < 2.3f)
 		m_State = Attacking;
-	else if(m_PlayerDist < 30.0f)
+	else if(m_PlayerDist < 50.0f)
 		m_State = Chasing;
 	 
 }
@@ -189,6 +198,7 @@ void CSpider::Die()
 	if(GetAnimNo() == 8 && IsAnimOver())
 	{
 		m_State = Dead;
+		SetActive(false);
 		m_vPosition = D3DXVECTOR3(0.0f, -100.0f, 0.0f);
 		return;
 	}

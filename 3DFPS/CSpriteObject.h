@@ -17,7 +17,7 @@ public:
 	//CGameObject‚Åƒˆ‰¼‘zŠÖ”‚ÌéŒ¾‚ª‚³‚ê‚Ä‚é‚Ì‚Å‚±‚¿‚ç‚Å’è‹`‚ğ‘‚­.
 	virtual void Update() override;
 	//CSpriteObject‚ÅéŒ¾‚µ‚½ŠÖ”‚ÅAˆÈ~‚Í‚±‚ê‚ğoverride‚³‚¹‚é
-	virtual void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj);
+	virtual void Draw(SCENE_DATA& sceneData) override;
 
 	virtual bool IsHit(CGameObject* obj, float rad);
 
@@ -31,8 +31,7 @@ public:
 	}
 
 protected:
-	void Draw(SCENE_DATA& 
-	) override final;
+	void Draw(D3DXMATRIX& View, D3DXMATRIX& Proj);
 
 protected:
 	CSprite3D*	m_pSprite;
