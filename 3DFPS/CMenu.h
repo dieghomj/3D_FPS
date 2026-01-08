@@ -9,6 +9,31 @@
 class CMenu : public CScene
 {
 public:
+	static bool s_OpenToLevelSelect;
+
+private:
+	enum MENU_OPTION
+	{
+		MENU_OPTION_START,
+		MENU_OPTION_EXIT,
+		MENU_OPTION_COUNT
+	};
+
+	enum LEVEL_OPTION
+	{
+		LEVEL_1 = 0,
+		LEVEL_2,
+		LEVEL_3,
+		LEVEL_COUNT
+	};
+
+	enum MENU_STATE
+	{
+		STATE_MAIN_MENU,
+		STATE_LEVEL_SELECT,
+	};
+
+public:
 	CMenu(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager);
 	~CMenu();
 
@@ -20,6 +45,11 @@ public:
 	void Draw() override;
 
 private:
+	void UpdateMainMenu();
+	void UpdateLevelSelect();
+	void DrawMainMenu();
+	void DrawLevelSelect();
+
 	// Font for menu text
 	CFont* m_pMenuFont;
 	CUIObject* m_pMenuBG;
@@ -27,12 +57,18 @@ private:
 	CSprite2D* m_pMenuBGSprite;
 	CUIObject* m_pFade;
 	CSprite2D* m_pFadeSprite;
-	
+
 	// Menu state
+	MENU_STATE m_MenuState;
 	int m_SelectedOption;
-	const int MENU_OPTION_START = 0;
-	const int MENU_OPTION_EXIT = 1;
+	int m_SelectedLevel;
+	int m_SelectedDifficulty;
+
 	bool m_IsFading;
 	float m_FadeAlpha;
 	float m_FadeSpeed;
+
+	// Background scrolling
+	float m_BGScrollOffset;
+	float m_BGScrollSpeed;
 };

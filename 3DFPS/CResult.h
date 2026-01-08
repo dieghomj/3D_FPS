@@ -1,6 +1,7 @@
 #pragma once
 #include "CScene.h"
 #include "CFont.h"
+#include "CUIObject.h"
 #include "CGameStats.h"
 
 class CResultScene : public CScene
@@ -23,5 +24,29 @@ public:
 	void Draw() override;
 
 private:
+	enum RESULT_OPTION
+	{
+		RESULT_OPTION_LEVEL_SELECT,
+		RESULT_OPTION_MAIN_MENU,
+		RESULT_OPTION_COUNT
+	};
+
 	CFont* m_Font;
+
+	// Background
+	CUIObject* m_pBG;
+	CSprite2D* m_pBGSprite;
+	float m_BGScrollOffset;
+	float m_BGScrollSpeed;
+
+	// Fade
+	CUIObject* m_pFade;
+	CSprite2D* m_pFadeSprite;
+	bool m_IsFading;
+	float m_FadeAlpha;
+	float m_FadeSpeed;
+
+	// Navigation
+	int m_SelectedOption;
+	bool m_GoToLevelSelect;
 };
