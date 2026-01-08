@@ -20,7 +20,7 @@ static constexpr float CHASE_SPEED = 0.1f;
 static constexpr float IDLE_SPEED = 0.015f;
 static constexpr float IDLE_TIMER_MAX = 2.0f;
 static constexpr float JUMP_ATTACK_SPEED = 0.35f;
-static constexpr float HEALTH_MAX = 15.0f;
+static constexpr float HEALTH_MAX = 25.0f;
 static constexpr float DAMAGE_TIMER_MAX = 0.5f;
 
 CSpider::CSpider()
@@ -104,6 +104,7 @@ void CSpider::Draw(SCENE_DATA& sceneData)
 	{
 		return;
 	}
+
 	CAnimEnemy::Draw(sceneData);
 }
 

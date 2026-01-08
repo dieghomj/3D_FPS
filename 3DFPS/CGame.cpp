@@ -4,7 +4,7 @@
 constexpr int PLAYER_AMMO_MAX = 999;
 constexpr int ENEMY_COUNT_MAX = 16;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
-constexpr int STAGE_TIMER = 1 * 60; // minutes
+constexpr int STAGE_TIMER = 2 * 60; // minutes
 const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -75.f);
 
 const D3DXVECTOR3 enemyStartPos[4] = {
@@ -69,7 +69,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pSphereMesh(nullptr)
 
 	, currStage(0)
-
+#if _DEBUG
 	, m_pPlayerRayY(nullptr)
 	, m_pCrossRay()
 	, m_pPrevCrossRay()
@@ -79,7 +79,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, debugShotMark()
 	, debugHitShotList()
 	, debugShotMesh(nullptr)
-
+#endif
 {
 }
 
@@ -167,6 +167,9 @@ void CGame::Create()
 		m_pDx11->GetDevice(),
 		m_pDx11->GetContext());
 
+#ifdef DEBUG
+
+
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -181,6 +184,7 @@ void CGame::Create()
 	m_pSphereMesh = new CStaticMesh();
 	debugRay = new CRay();
 	debugShotRay = new CRay();
+#endif // DEBUG
 }
 
 HRESULT CGame::LoadData()
@@ -297,7 +301,7 @@ HRESULT CGame::LoadData()
 	{
 		pEnemy->AttachMesh(*m_pSpiderMesh);
 		pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
-		pEnemy->SetScale(2.2f);
+		pEnemy->SetScale(3.2f);
 	}
 
 
@@ -314,7 +318,7 @@ HRESULT CGame::LoadData()
 
 	m_pGround->AttachMesh(*m_pGroundMesh);
 	m_pStage->AttachMesh(*m_pBridStageMesh);
-	//m_pStage->SetScale(3.f);
+	m_pStage->SetScale(0.8f);
 	m_pStage->SetPlayer(*m_pPlayer);
 	m_pStage->SetEnemyList(m_pEnemyList);
 
@@ -376,6 +380,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
+#if _DEBUG
 	CROSSRAY crossRay = m_pPlayer->GetCrossRay();
 	for (int i = 0; i < 4; ++i)
 	{
@@ -400,14 +405,14 @@ HRESULT CGame::LoadData()
 	m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
 
+	debugShotRay->Init(*m_pDx11, shotRay);
+#endif
 	RAY shotRay;
 	shotRay.Position = m_pCamera->GetPosition();
-	shotRay.Axis = D3DXVECTOR3(0.f,0.f,1.f);
+	shotRay.Axis = D3DXVECTOR3(0.f, 0.f, 1.f);
 	D3DXVec3Normalize(&shotRay.Axis, &shotRay.Axis);
 	shotRay.Length = 100.f;
 	shotRay.RotationY = 0.f;
-
-	debugShotRay->Init(*m_pDx11, shotRay);
 	return S_OK;
 }
 
@@ -431,6 +436,8 @@ void CGame::Start()
 	for (int i = 0; i < 4; i++)
 	{
 		m_pEnemyList[i]->InitEnemy();
+		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
+		m_pEnemyList[i]->SetActive(false);
 	}
 
 	m_pPlayer->InitPlayer();
@@ -443,6 +450,7 @@ void CGame::Start()
 
 	m_accumulatedTime = 0.0f;
 	m_enemyKillCount = 0;
+	m_comboCount = 0;
 	m_stageTimer = STAGE_TIMER;
 
 	CGameStats::Reset();
@@ -465,6 +473,7 @@ void CGame::Update()
 		m_highestCombo = max(m_highestCombo, m_comboCount);
 		m_comboCount = 0;
 		Restart();
+		return;
 	}
 
 	if (m_stageTimer <= 0.f)
@@ -524,7 +533,6 @@ void CGame::Update()
 		mSense -= 0.05f;
 	}
 
-	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pPlayer->Update();
 	if (wasStucked)
 	{
@@ -647,9 +655,12 @@ void CGame::Update()
 void CGame::Restart()
 {
 
+
 	for (int i = 0; i < 4; i++)
 	{
 		m_pEnemyList[i]->InitEnemy();
+		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
+		m_pEnemyList[i]->SetActive(false);
 	}
 
 	m_pPlayer->InitPlayer();
@@ -663,6 +674,11 @@ void CGame::Restart()
 	m_enemyKillCount = 0;
 	m_comboCount = 0;
 
+	for (auto blockedPath : m_pBlockedPathList)
+	{
+		blockedPath->SetActive(false);
+	}
+	
 	for (auto& trigger : m_CollisionTriggerList)
 	{
 		trigger.isTriggered = false;
@@ -693,7 +709,7 @@ void CGame::Draw()
 		pBullet->Draw(m_SceneInfo);
 	}
 
-	m_pHealthItem->Draw(m_SceneInfo);
+	//m_pHealthItem->Draw(m_SceneInfo);
 
 	CEffect::GetInstance()->Draw(m_SceneInfo);
 
@@ -827,7 +843,7 @@ void CGame::Draw()
 	float seconds = static_cast<int>(m_stageTimer) % 60;
 	float minutes = static_cast<int>(m_stageTimer) / 60;
 	_stprintf_s(buff, _T("TIME: %02.f:%02.f"), minutes, seconds );
-	m_pFont->Render(buff, WND_W/2 - 32*9, 40, 32.f);
+	m_pFont->Render(buff, WND_W - 32*9, 40, 32.f);
 
 
 #if _DEBUG
@@ -1096,7 +1112,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		impact.normal = normal;
 		impact.isEnemyHit = false;
 		// Hit detected
-		debugHitShotList.push_back(hitPos);
+		//debugHitShotList.push_back(hitPos);
 		m_bulletImpactList.push_back(impact);
 	}
 	
@@ -1157,8 +1173,8 @@ void CGame::SetupBlockedPath()
 {
 	m_pBlockedPathList[0]->SetScale(12.f, 5.f, 3.f);
 	m_pBlockedPathList[1]->SetScale(12.f, 5.f, 3.f);
-	m_pBlockedPathList[0]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 172.f));
-	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 242.f));
+	m_pBlockedPathList[0]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 175.f));
+	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 245.f));
 }
 
 void CGame::SetupTriggers()

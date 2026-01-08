@@ -24,7 +24,8 @@ private:
 		LEVEL_1 = 0,
 		LEVEL_2,
 		LEVEL_3,
-		LEVEL_COUNT
+		LEVEL_COUNT,
+		LEVEL_BACK
 	};
 
 	enum MENU_STATE
