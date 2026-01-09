@@ -189,6 +189,8 @@ private:
 	::EsHandle dashHandle = -1;
 	::EsHandle enemyHitHandle = -1;
 	::EsHandle enemyDeathHandle = -1;
+	::EsHandle enemyShotLoadHandle = -1;
+	std::vector<::EsHandle> enemyShotEffectHandles;
 	::EsHandle itemPickupHandle = -1;
 	::EsHandle healthPickupHandle = -1;
 	::EsHandle ammoPickupHandle = -1;

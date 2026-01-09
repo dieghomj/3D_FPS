@@ -143,6 +143,7 @@ void CGame::Create()
 	{
 		CShot* pProjectile = new CShot();
 		m_pEnemyShotList.push_back(pProjectile);
+		enemyShotEffectHandles.push_back(-1);
 	}
 
 	m_pPlayer = new CPlayer();
@@ -721,16 +722,25 @@ void CGame::Draw()
 	m_pEnemy->RenderStatic(m_SceneInfo);
 	if (!m_pEnemy->IsShot())
 	{
-		m_pSphereMesh->SetScale(m_pEnemy->GetAttackCD() * 0.5f);
-		D3DXMATRIX& mView = m_SceneInfo.mView;
-		D3DXMATRIX& mProj = m_SceneInfo.mProj;
-		LIGHT globalLight = m_SceneInfo.Light;
-		D3DXVECTOR3 camPos = m_SceneInfo.Camera.vPosition;
-		FOG fog = m_SceneInfo.Fog;
-		SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
-		int lightCount = m_SceneInfo.SpotLightNum;
-		m_pSphereMesh->SetPosition(m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.5f,0.f) - m_pEnemy->GetForward() * 3.5f);
-		m_pSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+		float scale = m_pEnemy->GetAttackCD() * 0.5f;
+		D3DXVECTOR3 vScale = D3DXVECTOR3(scale, scale, scale);
+		D3DXVECTOR3 vPos = m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.5f, 0.f) - m_pEnemy->GetForward() * 3.5f;
+
+		if (CEffect::IsPlaying(enemyShotLoadHandle))
+		{
+			CEffect::SetScale(enemyShotLoadHandle,vScale);
+			CEffect::SetLocation(enemyShotLoadHandle, vPos);
+		}
+		else
+		{
+			enemyShotLoadHandle = CEffect::Play(CEffect::MagmaEffect, vPos);
+			CEffect::SetScale(enemyShotLoadHandle, vScale);
+		}
+
+	}
+	else
+	{
+		CEffect::Stop(enemyShotLoadHandle);
 	}
 
 
@@ -738,7 +748,6 @@ void CGame::Draw()
 	{
 		pEnemy->Draw(m_SceneInfo);
 		
-	
 	}
 
 	for (auto pBullet : m_pBulletList)
@@ -746,14 +755,27 @@ void CGame::Draw()
 		pBullet->Draw(m_SceneInfo);
 	}
 
-	for (auto pEnemyShot : m_pEnemyShotList)
+
+	for (int i = 0; i < PROJECTILE_COUNT_MAX; i++)
 	{
-		pEnemyShot->UpdateCollider();
+		m_pEnemyShotList[i]->UpdateCollider();
 
-		pEnemyShot->Draw(m_SceneInfo);
+		if (!m_pEnemyShotList[i]->IsDisplay())
+		{
+			CEffect::Stop(enemyShotEffectHandles[i]);
+			continue;
+		}
+		
+		if ( CEffect::IsPlaying(enemyShotEffectHandles[i]) )
+		{
+			CEffect::SetLocation(enemyShotEffectHandles[i], m_pEnemyShotList[i]->GetPosition());
+		}
+		else
+		{
+			enemyShotEffectHandles[i] = CEffect::Play(CEffect::MagmaEffect, m_pEnemyShotList[i]->GetPosition());
+		}
+
 	}
-
-
 
 	m_pHealthItem->Draw(m_SceneInfo);
 
