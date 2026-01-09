@@ -50,9 +50,9 @@ public:
 	virtual HRESULT LoadData() override;
 	virtual void Release() override;
 	virtual void Start() override;
-	void SetupBlockedPath();
 	virtual void Draw() override;
 	virtual void Update() override;
+
 
 	void Restart();
 
@@ -81,6 +81,11 @@ private:
 	void SetupGoal();
 	void CheckGoal();
 	bool IsPlayerInTriggerArea(const GOAL& trigger);
+
+	void SetupBlockedPath();
+	void DrawEnemyShots();
+	void HandleEnemyShotLoadAnim();
+	void HandlePlayerDashEffect();
 
 	//void HandlePlayerBulletCollision();
 	//void HandleEnemyBulletCollision();

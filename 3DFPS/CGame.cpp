@@ -452,6 +452,7 @@ void CGame::Start()
 
 
 	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 10.f));
+	//m_pEnemyList.push_back(m_pEnemy);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -610,41 +611,7 @@ void CGame::Update()
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
 	float playerVelLen = D3DXVec3Length(&playerVel);
 
-	if (m_pPlayer->IsDashing())
-	{
-		D3DXVECTOR3 playerPos = m_pCamera->GetPosition();
-		D3DXVECTOR3 forward = m_pPlayer->GetForwardVector();
-		//playerPos.y -= 0.02f; // Adjust Y position to be at player's feet
-		//playerPos -= forward * 0.3f; // Offset backward a bit
-		
-		//
-		D3DXVec3Normalize(&forward, &forward);
-
-		//
-		float angleY = atan2f(forward.x, forward.z);
-
-		if (!CEffect::IsPlaying(dashHandle))
-		{
-			dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
-			CEffect::SetScale(dashHandle, D3DXVECTOR3(1.0f, 1.0f, 1.0f));
-			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ + angleY);
-			CEffect::SetSpeed(dashHandle, 1.0f);
-		}
-		else
-		{
-			// Keep the effect attached and rotated with the current forward
-			CEffect::SetLocation(dashHandle, playerPos);
-			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ + angleY);
-		}
-	}
-	else
-	{
-		if (CEffect::IsPlaying(dashHandle))
-		{
-			CEffect::Stop(dashHandle);
-			dashHandle = -1;
-		}
-	}
+	HandlePlayerDashEffect();
 
 	m_pHealthItem->Update();
 	m_pHealthItem->UpDownAnim(m_pTime->GetTotalTime(), 0.005f, 0.009);
@@ -681,6 +648,45 @@ void CGame::Update()
 
 #endif
 	CScene::Update();
+}
+
+void CGame::HandlePlayerDashEffect()
+{
+	if (m_pPlayer->IsDashing())
+	{
+		D3DXVECTOR3 playerPos = m_pCamera->GetPosition();
+		D3DXVECTOR3 forward = m_pPlayer->GetForwardVector();
+		//playerPos.y -= 0.02f; // Adjust Y position to be at player's feet
+		//playerPos -= forward * 0.3f; // Offset backward a bit
+
+		//
+		D3DXVec3Normalize(&forward, &forward);
+
+		//
+		float angleY = atan2f(forward.x, forward.z);
+
+		if (!CEffect::IsPlaying(dashHandle))
+		{
+			dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
+			CEffect::SetScale(dashHandle, D3DXVECTOR3(1.0f, 1.0f, 1.0f));
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ +angleY);
+			CEffect::SetSpeed(dashHandle, 1.0f);
+		}
+		else
+		{
+			// Keep the effect attached and rotated with the current forward
+			CEffect::SetLocation(dashHandle, playerPos);
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ +angleY);
+		}
+	}
+	else
+	{
+		if (CEffect::IsPlaying(dashHandle))
+		{
+			CEffect::Stop(dashHandle);
+			dashHandle = -1;
+		}
+	}
 }
 
 void CGame::Restart()
@@ -720,29 +726,7 @@ void CGame::Draw()
 	m_pPlayerWeapon->Draw(m_SceneInfo);
 
 	m_pEnemy->RenderStatic(m_SceneInfo);
-	if (!m_pEnemy->IsShot())
-	{
-		float scale = m_pEnemy->GetAttackCD() * 0.5f;
-		D3DXVECTOR3 vScale = D3DXVECTOR3(scale, scale, scale);
-		D3DXVECTOR3 vPos = m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.5f, 0.f) - m_pEnemy->GetForward() * 3.5f;
-
-		if (CEffect::IsPlaying(enemyShotLoadHandle))
-		{
-			CEffect::SetScale(enemyShotLoadHandle,vScale);
-			CEffect::SetLocation(enemyShotLoadHandle, vPos);
-		}
-		else
-		{
-			enemyShotLoadHandle = CEffect::Play(CEffect::MagmaEffect, vPos);
-			CEffect::SetScale(enemyShotLoadHandle, vScale);
-		}
-
-	}
-	else
-	{
-		CEffect::Stop(enemyShotLoadHandle);
-	}
-
+	HandleEnemyShotLoadAnim();
 
 	for(auto pEnemy : m_pEnemyList)
 	{
@@ -755,27 +739,7 @@ void CGame::Draw()
 		pBullet->Draw(m_SceneInfo);
 	}
 
-
-	for (int i = 0; i < PROJECTILE_COUNT_MAX; i++)
-	{
-		m_pEnemyShotList[i]->UpdateCollider();
-
-		if (!m_pEnemyShotList[i]->IsDisplay())
-		{
-			CEffect::Stop(enemyShotEffectHandles[i]);
-			continue;
-		}
-		
-		if ( CEffect::IsPlaying(enemyShotEffectHandles[i]) )
-		{
-			CEffect::SetLocation(enemyShotEffectHandles[i], m_pEnemyShotList[i]->GetPosition());
-		}
-		else
-		{
-			enemyShotEffectHandles[i] = CEffect::Play(CEffect::MagmaEffect, m_pEnemyShotList[i]->GetPosition());
-		}
-
-	}
+	DrawEnemyShots();
 
 	m_pHealthItem->Draw(m_SceneInfo);
 
@@ -993,6 +957,55 @@ void CGame::Draw()
 
 #endif
 
+}
+
+void CGame::DrawEnemyShots()
+{
+	for (int i = 0; i < PROJECTILE_COUNT_MAX; i++)
+	{
+		m_pEnemyShotList[i]->UpdateCollider();
+
+		if (!m_pEnemyShotList[i]->IsDisplay())
+		{
+			CEffect::Stop(enemyShotEffectHandles[i]);
+			continue;
+		}
+
+		if (CEffect::IsPlaying(enemyShotEffectHandles[i]))
+		{
+			CEffect::SetLocation(enemyShotEffectHandles[i], m_pEnemyShotList[i]->GetPosition());
+		}
+		else
+		{
+			enemyShotEffectHandles[i] = CEffect::Play(CEffect::MagmaEffect, m_pEnemyShotList[i]->GetPosition());
+		}
+	}
+}
+
+void CGame::HandleEnemyShotLoadAnim()
+{
+	if (!m_pEnemy->IsShot())
+	{
+		float scale = m_pEnemy->GetAttackCD() * 0.5f;
+		D3DXVECTOR3 vScale = D3DXVECTOR3(scale, scale, scale);
+		D3DXVECTOR3 vPos = m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.5f, 0.f) - m_pEnemy->GetForward() * 3.5f;
+
+		if (CEffect::IsPlaying(enemyShotLoadHandle))
+		{
+			CEffect::SetScale(enemyShotLoadHandle, vScale);
+			CEffect::SetLocation(enemyShotLoadHandle, vPos);
+		}
+		else
+		{
+			enemyShotLoadHandle = CEffect::Play(CEffect::MagmaEffect, vPos);
+			CEffect::SetScale(enemyShotLoadHandle, vScale);
+		}
+
+	}
+	else
+	{
+		CEffect::Stop(enemyShotLoadHandle);
+	}
 }
 
 void CGame::HandleWeapon()
@@ -1251,16 +1264,19 @@ void CGame::HandleEnemyShooting()
 			m_pEnemy->GetRotation().y);
 	}
 
-	/*for (auto pEnemy : m_pEnemyList)
+	for (auto pEnemy : m_pEnemyList)
 	{
 		
 		if(pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
 		{
-			
+			m_pEnemyShotList[NextEnemyShot()]->Reload(
+				pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f),
+				dirToPlayer,
+				pEnemy->GetRotation().y);
 		}
 
 
-	}*/
+	}
 
 }
 
