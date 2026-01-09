@@ -1,9 +1,11 @@
 #include "CGame.h"
 #include "CSpider.h"
 
+constexpr int PROJECTILE_COUNT_MAX = 32;
 constexpr int PLAYER_AMMO_MAX = 999;
 constexpr int ENEMY_COUNT_MAX = 16;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
+constexpr float ENEMY_SHOT_SPEED = 1.2f;
 constexpr int STAGE_TIMER = 1 * 60; // minutes
 const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -75.f);
 
@@ -125,8 +127,8 @@ void CGame::Create()
 	m_pSpiderSkinMesh = new CSkinMesh();
 	m_pRoboSkinMesh = new CSkinMesh();
 	m_pBossSkinMesh = new CSkinMesh();
-	m_pBossEnemy = new CAnimCharacter();
-	m_pEnemy = new CAnimCharacter();
+	m_pBossEnemy = new CRobo();
+	m_pEnemy = new CRobo();
 
 	m_pEnemyList.reserve(ENEMY_COUNT_MAX);
 	
@@ -135,6 +137,12 @@ void CGame::Create()
 		CAnimEnemy* pEnemy = new CSpider();
 		pEnemy->SetActive(false);
 		m_pEnemyList.push_back(pEnemy);
+	}
+
+	for (int i = 0; i < PROJECTILE_COUNT_MAX; i++)
+	{
+		CShot* pProjectile = new CShot();
+		m_pEnemyShotList.push_back(pProjectile);
 	}
 
 	m_pPlayer = new CPlayer();
@@ -279,6 +287,8 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
+	if ( FAILED(m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x")) );
+
 	/*if(FAILED(m_pBossSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Boss\\Boss.x")))
 	{
 		return E_FAIL;
@@ -289,8 +299,9 @@ HRESULT CGame::LoadData()
 	m_pLightning->SetScale(10.f, 5.f, 3.f);
 	m_pLightning->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 
-	//m_pEnemy->AttachMesh(*m_pEnemyMesh);
-	
+	m_pEnemy->AttachMesh(*m_pEnemyMesh);
+	m_pEnemy->SetScale(2.9f);
+	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 	//m_pEnemyList[0]->AttachMesh(*m_pEnemyMesh);
 
 	for (auto pEnemy : m_pEnemyList)
@@ -300,6 +311,13 @@ HRESULT CGame::LoadData()
 		pEnemy->SetScale(2.2f);
 	}
 
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		pEnemyShot->AttachMesh(*m_pSphereMesh);
+		pEnemyShot->SetScale(1.5f);
+		pEnemyShot->SetMoveSpeed(ENEMY_SHOT_SPEED);
+		pEnemyShot->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+	}
 
 	for (auto pBlockedPath : m_pBlockedPathList)
 	{
@@ -317,6 +335,10 @@ HRESULT CGame::LoadData()
 	//m_pStage->SetScale(3.f);
 	m_pStage->SetPlayer(*m_pPlayer);
 	m_pStage->SetEnemyList(m_pEnemyList);
+
+	m_pPlayer->AttachMesh(*m_pSphereMesh);
+	m_pPlayer->SetScale(1.5f);
+	m_pPlayer->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
 
 	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
 	{
@@ -397,7 +419,7 @@ HRESULT CGame::LoadData()
 
 	RAY rayY = m_pPlayer->GetRayY();
 	m_pPlayerRayY->Init(*m_pDx11, rayY);
-	m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
+
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
 
 	RAY shotRay;
@@ -427,6 +449,8 @@ void CGame::Start()
 
 	m_Fog.Enable = false;
 
+
+	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 10.f));
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -497,7 +521,8 @@ void CGame::Update()
 
 	//m_pGround->Update();
 
-	//m_pEnemy->Update();
+	m_pEnemy->Update();
+	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 
 	for (auto pEnemy : m_pEnemyList)
 	{
@@ -526,6 +551,7 @@ void CGame::Update()
 
 	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pPlayer->Update();
+	m_pPlayer->UpdateCollider();
 	if (wasStucked)
 	{
 		// Skip updating the stage to prevent collision issues
@@ -562,10 +588,22 @@ void CGame::Update()
 
 	HandlePlayerEnemyCollision();
 	HandleEnemyEnemyCollision();
+	HandleEnemyShooting();
 
 	for(auto pBullet : m_pBulletList)
 	{
 		pBullet->Update();
+	}
+
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		pEnemyShot->Update();
+		pEnemyShot->UpdateCollider();
+		if (pEnemyShot->IsHit(m_pPlayer->GetCollider(), m_pPlayer->GetRadius()))
+		{
+			m_pPlayer->ApplyDamage(20.f);
+			pEnemyShot->SetDisplay(false);
+		}
 	}
 
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
@@ -681,17 +719,41 @@ void CGame::Draw()
 	m_pPlayerWeapon->Draw(m_SceneInfo);
 
 	m_pEnemy->RenderStatic(m_SceneInfo);
+	if (!m_pEnemy->IsShot())
+	{
+		m_pSphereMesh->SetScale(m_pEnemy->GetAttackCD() * 0.5f);
+		D3DXMATRIX& mView = m_SceneInfo.mView;
+		D3DXMATRIX& mProj = m_SceneInfo.mProj;
+		LIGHT globalLight = m_SceneInfo.Light;
+		D3DXVECTOR3 camPos = m_SceneInfo.Camera.vPosition;
+		FOG fog = m_SceneInfo.Fog;
+		SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
+		int lightCount = m_SceneInfo.SpotLightNum;
+		m_pSphereMesh->SetPosition(m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.5f,0.f) - m_pEnemy->GetForward() * 3.5f);
+		m_pSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
+	}
 
 
 	for(auto pEnemy : m_pEnemyList)
 	{
 		pEnemy->Draw(m_SceneInfo);
+		
+	
 	}
 
 	for (auto pBullet : m_pBulletList)
 	{
 		pBullet->Draw(m_SceneInfo);
 	}
+
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		pEnemyShot->UpdateCollider();
+
+		pEnemyShot->Draw(m_SceneInfo);
+	}
+
+
 
 	m_pHealthItem->Draw(m_SceneInfo);
 
@@ -1153,6 +1215,33 @@ void CGame::HandleEnemySpawning()
 
 }
 
+void CGame::HandleEnemyShooting()
+{
+	float playerHeight = m_pPlayer->GetHeight();
+	D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f,-playerHeight * 0.5f, 0.f) - m_pEnemy->GetPosition();
+	D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
+
+	if (m_pEnemy->IsShot())
+	{
+		m_pEnemyShotList[NextEnemyShot()]->Reload(
+			m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f),
+			dirToPlayer,
+			m_pEnemy->GetRotation().y);
+	}
+
+	/*for (auto pEnemy : m_pEnemyList)
+	{
+		
+		if(pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
+		{
+			
+		}
+
+
+	}*/
+
+}
+
 void CGame::SetupBlockedPath()
 {
 	m_pBlockedPathList[0]->SetScale(12.f, 5.f, 3.f);
@@ -1275,6 +1364,19 @@ int CGame::NextBullet()
 		return m_bulletIndex++;
 	}
 
+}
+
+int CGame::NextEnemyShot()
+{
+	if (m_enemyShotIndex >= PROJECTILE_COUNT_MAX - 1)
+	{
+		m_enemyShotIndex = 0;
+		return m_enemyShotIndex;
+	}
+	else
+	{
+		return m_enemyShotIndex++;
+	}
 }
 
 

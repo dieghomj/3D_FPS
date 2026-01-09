@@ -60,6 +60,7 @@ public:
 private:
 
 	int NextBullet();
+	int NextEnemyShot();
 	void HandleWeaponPos();
 	void HandleWeapon();
 	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
@@ -68,6 +69,8 @@ private:
 	void HandlePlayerEnemyCollision();
 	void HandleEnemyEnemyCollision();
 	void HandleEnemySpawning();
+
+	void HandleEnemyShooting();
 
 	//void HandleWallCollisions(CCharacter* character);
 
@@ -149,7 +152,7 @@ private:
 	//-----ENEMY------
 	//----------------
 	CStaticMesh* m_pEnemyMesh;
-	CAnimCharacter* m_pEnemy;
+	CRobo* m_pEnemy;
 	
 	CStaticMesh* m_pSpiderMesh;
 	CStaticMesh* m_pRoboMesh;
@@ -158,8 +161,11 @@ private:
 	CSkinMesh* m_pSpiderSkinMesh;
 	CSkinMesh* m_pRoboSkinMesh;
 	CSkinMesh* m_pBossSkinMesh;
-	CAnimCharacter* m_pBossEnemy;
+	CAnimEnemy* m_pBossEnemy;
 	std::vector<CAnimEnemy*> m_pEnemyList;
+	std::vector<CShot*> m_pEnemyShotList;
+	int m_enemyShotIndex = 0;
+
 
 	//----------------
 	//-----PLAYER-----

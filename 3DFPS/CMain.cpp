@@ -109,7 +109,7 @@ HRESULT CMain::Create()
 	m_pSceneManager->AddScene(m_pGameOver,"GAMEOVER");
 
 	//ƒV[ƒ“•ÏX.
-	m_pSceneManager->ChangeScene("MENU");
+	m_pSceneManager->ChangeScene("GAME");
 
 	return S_OK;
 }

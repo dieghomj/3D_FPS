@@ -112,7 +112,7 @@ void CCollider::RecalculateWorldBounds()
 	mWorld = mS * mR * mT;
 
 	// 球: 中心は座標変換、半径は最大スケール成分でスケール
-	if (m_pBSphere)
+	if (m_pBSphere != nullptr && m_Shape == COLLIDER_SHAPE_SPHERE)
 	{
 		D3DXVECTOR3 worldCenter;
 		D3DXVec3TransformCoord(&worldCenter, &m_SphereLocalCenter, &mWorld);
@@ -123,7 +123,7 @@ void CCollider::RecalculateWorldBounds()
 	}
 
 	// 立方(軸平行AABB): ローカルAABBの8頂点をSRTで変換してワールドAABBを再構築
-	if (m_pBCube)
+	if (m_pBCube != nullptr && m_Shape == COLLIDER_SHAPE_BOX)
 	{
 		const D3DXVECTOR3& mn = m_BoxLocalMin;
 		const D3DXVECTOR3& mx = m_BoxLocalMax;

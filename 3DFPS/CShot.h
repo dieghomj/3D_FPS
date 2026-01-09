@@ -25,7 +25,9 @@ public:
 
 	void SetDisplay(bool disp) { m_Display = disp; }
 
-	virtual bool IsHit(CGameObject* obj, float rad);
+	void SetMoveSpeed(float speed) { m_MoveSpeed = speed; }
+
+	virtual bool IsHit(CCollider* col, float rad);
 
 	virtual bool IsDisplay() const { return m_Display; }
 

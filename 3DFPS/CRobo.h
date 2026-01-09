@@ -10,6 +10,10 @@ public:
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
 	virtual void ApplyDamage(int damage) override;
+	float GetAttackCD() const
+	{
+		return m_AttackCD;
+	};
 	void Die();
 
 private:
@@ -21,6 +25,10 @@ private:
 
 private:
 	float m_PlayerDist;
+
+	float m_AttackCD;
+	bool m_HasAttacked;
+
 #if _DEBUG
 	public:
 	float debugPlayerDist;

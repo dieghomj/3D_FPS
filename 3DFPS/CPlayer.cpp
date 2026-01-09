@@ -71,6 +71,7 @@ CPlayer::CPlayer()
 {
 	m_pInputHandler = new CInput();
 	m_pHeadCrossRay = new CROSSRAY();
+	m_Radius = PLAYERRADIUS;
 }
 
 CPlayer::~CPlayer()
