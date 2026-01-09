@@ -95,6 +95,12 @@ public:
 
 	void SetFillPercent(float percent, bool horizontal);
 
+	//Set UV offset for scrolling effects
+	void SetUVOffset(float u, float v) { m_UV.x = u; m_UV.y = v; }
+
+	//Get current UV offset
+	D3DXVECTOR2 GetUVOffset() const { return m_UV; }
+
 	//ƒ¿’l‚ğİ’è.
 	void SetAlpha(float alpha) { m_Alpha = alpha; }
 

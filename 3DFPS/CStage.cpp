@@ -13,26 +13,36 @@ CStage::~CStage()
 void CStage::Update()
 {
     if (!m_pPlayer) return;
+    D3DXVECTOR3 frameStartPos = m_prevPlayerPos;
+    D3DXVECTOR3 currentPos = m_pPlayer->GetPosition();
 
     // Save position before collision correction
     HandleCeilingCollisions();
 
     HandleWallCollisions();
 
-    HandleSweptCollisions();
+    HandleSweptCollisions(frameStartPos);
 
     HandleFloorCollisions();
 
     HandleStepUp();
 
     m_prevPlayerPos = m_pPlayer->GetPosition();
+
+#if _DEBUG
     debugPlayerPath.push_back(m_prevPlayerPos);
     if (debugPlayerPath.size() > 500) {
         debugPlayerPath.erase(debugPlayerPath.begin());
     }
+#endif // _DEBUG
 
     UpdateEnemyCollisions();
 
+}
+
+void CStage::SavePrevPlayerPos()
+{
+    m_prevPlayerPos = m_pPlayer->GetPosition();
 }
 
 void CStage::Draw(SCENE_DATA& sceneData)
@@ -58,46 +68,105 @@ void CStage::UpdateEnemyCollisions()
     }
 }
 
+
+
 void CStage::HandleWallCollisions()
 {
-	CROSSRAY cross = m_pPlayer->GetCrossRay();
-    HandleWallCollisions(&cross);
-    cross = m_pPlayer->GetHeadCrossRay();
-    HandleWallCollisions(&cross);
-
-}
-
-void CStage::HandleWallCollisions(CROSSRAY* cross)
-{
-    const int MAX_ITERATIONS = 3;  // Multiple passes for strong collision
+    const int MAX_ITERATIONS = 4;
+    const float MIN_CORRECTION = 0.001f;
 
     for (int iteration = 0; iteration < MAX_ITERATIONS; ++iteration)
     {
-        CROSSRAY crossRay = *cross;
+        D3DXVECTOR3 totalCorrection(0.f, 0.f, 0.f);
+        bool hadCollision = false;
 
-        D3DXVECTOR3 beforePos = crossRay.Ray[0].Position;
-
-        // Push away from walls
-        CalculatePositionFromWall(&crossRay);
-
-        D3DXVECTOR3 afterPos = crossRay.Ray[0].Position;
-
-        // Apply correction
-        D3DXVECTOR3 correctedPos = afterPos;
-        correctedPos.y = m_pPlayer->GetPosition().y;  // Preserve Y
-        m_pPlayer->SetPosition(correctedPos.x, correctedPos.y, correctedPos.z);
-
-        // If no correction happened, we're done
-        D3DXVECTOR3 correction = afterPos - beforePos;
-        if (D3DXVec3Length(&correction) < 0.00001f)
+        // Check body-level rays
+        CROSSRAY crossRay = m_pPlayer->GetCrossRay();
+        D3DXVECTOR3 correction = CalculateWallPushback(&crossRay);
+        if (D3DXVec3Length(&correction) > MIN_CORRECTION)
         {
-            break;
+            totalCorrection += correction;
+            hadCollision = true;
         }
 
-        // Update rays for next iteration
-        m_pPlayer->UpdateCrossRay();
+        // Check head-level rays
+        CROSSRAY headCrossRay = m_pPlayer->GetHeadCrossRay();
+        correction = CalculateWallPushback(&headCrossRay);
+        if (D3DXVec3Length(&correction) > MIN_CORRECTION)
+        {
+            totalCorrection += correction;
+            hadCollision = true;
+        }
 
+        if (!hadCollision)
+            break;
+
+        // Apply correction (preserve Y)
+        D3DXVECTOR3 pos = m_pPlayer->GetPosition();
+        pos.x += totalCorrection.x;
+        pos.z += totalCorrection.z;
+        m_pPlayer->SetPosition(pos.x, pos.y, pos.z);
+
+        // Dampen velocity toward walls
+        D3DXVECTOR3 velocity = m_pPlayer->GetVelocity();
+        D3DXVECTOR3 correctionDir;
+        D3DXVec3Normalize(&correctionDir, &totalCorrection);
+
+        float velDotCorrection = D3DXVec3Dot(&velocity, &correctionDir);
+        if (velDotCorrection < 0.f)
+        {
+            // Remove velocity component pushing into wall
+            velocity -= correctionDir * velDotCorrection * 0.8f;
+            m_pPlayer->SetVelocity(velocity);
+        }
+
+        m_pPlayer->UpdateAxis();
     }
+
+}
+
+D3DXVECTOR3 CStage::CalculateWallPushback(CROSSRAY* pCrossRay)
+{
+    static constexpr float WALL_DISTANCE = 0.45f;  // Increased from 0.3f
+    static constexpr float MIN_HIT_DIST = 0.01f;
+
+    D3DXVECTOR3 totalOffset(0.f, 0.f, 0.f);
+    int hitCount = 0;
+
+    for (int dir = 0; dir < CROSSRAY::max; dir++)
+    {
+        FLOAT distance;
+        D3DXVECTOR3 intersect, normal;
+
+        if (IsHitForRay(pCrossRay->Ray[dir], &distance, &intersect, &normal))
+        {
+            if (distance > MIN_HIT_DIST && distance < WALL_DISTANCE)
+            {
+                float pushAmount = WALL_DISTANCE - distance;
+
+                // Use normal for push direction (more accurate than ray direction)
+                D3DXVECTOR3 pushDir;
+                D3DXVec3Normalize(&pushDir, &normal);
+
+                totalOffset += pushDir * pushAmount;
+                hitCount++;
+            }
+        }
+    }
+
+    // Average if multiple walls hit (prevents over-correction in corners)
+    if (hitCount > 1)
+    {
+        totalOffset /= (float)hitCount;
+    }
+
+    return totalOffset;
+}
+
+
+void CStage::HandleWallCollisions(CROSSRAY* cross)
+{
+    CalculatePositionFromWall(cross);
 }
 
 void CStage::HandleFloorCollisions()
@@ -121,77 +190,111 @@ void CStage::HandleFloorCollisions()
 
 void CStage::HandleStepUp()
 {
-    const float MAX_STEP_HEIGHT = 0.2f; // Maximum climbable step
+    if (!m_pPlayer->IsGrounded()) return;  // Only step up when on ground
 
-    // Check if there's a wall in front
+    const float MAX_STEP_HEIGHT = 0.25f;
+    const float STEP_CHECK_DIST = 0.15f;
+
     CROSSRAY rays = m_pPlayer->GetCrossRay();
-    FLOAT wallDist;
-    D3DXVECTOR3 wallHit, wallNormal;
 
     for (int dir = 0; dir < CROSSRAY::max; ++dir)
     {
+        FLOAT wallDist;
+        D3DXVECTOR3 wallHit, wallNormal;
 
         if (IsHitForRay(rays.Ray[dir], &wallDist, &wallHit, &wallNormal))
         {
-            if (wallDist < 0.1f) // Wall is close
+            if (wallDist < STEP_CHECK_DIST)
             {
-                // Check if there's empty space above the wall
+                // Check if there's space above
                 RAY upRay = rays.Ray[dir];
                 upRay.Position.y += MAX_STEP_HEIGHT;
 
-                if (!IsHitForRay(upRay, &wallDist, &wallHit, nullptr))
+                FLOAT upDist;
+                D3DXVECTOR3 intersect;
+
+                if (!IsHitForRay(upRay, &upDist, &intersect) || upDist > STEP_CHECK_DIST)
                 {
-                    // Empty above = it's a stair! Lift player
+                    // It's a step - lift player smoothly
                     D3DXVECTOR3 pos = m_pPlayer->GetPosition();
-                    pos.y += MAX_STEP_HEIGHT * 0.3f; // Smooth step
+                    float stepAmount = min(MAX_STEP_HEIGHT * 0.4f, MAX_STEP_HEIGHT);
+                    pos.y += stepAmount;
                     m_pPlayer->SetPosition(pos.x, pos.y, pos.z);
+                    break;  // Only one step per frame
                 }
             }
         }
-
     }
 }
 
 
 //
-void CStage::HandleSweptCollisions()
+void CStage::HandleSweptCollisions(const D3DXVECTOR3& frameStartPos)
 {
     D3DXVECTOR3 currentPos = m_pPlayer->GetPosition();
-    D3DXVECTOR3 movement = currentPos - m_prevPlayerPos;    //移動ベクトル
-    float moveDistance = D3DXVec3Length(&movement);         //移動距離
+    D3DXVECTOR3 movement = currentPos - frameStartPos;
 
-    if (moveDistance < 0.001f) return;
+    // Only check horizontal movement for swept collision
+    D3DXVECTOR3 horizontalMovement(movement.x, 0.f, movement.z);
+    float moveDistance = D3DXVec3Length(&horizontalMovement);
+
+    if (moveDistance < 0.01f) return;
+
+    const float PLAYER_RADIUS = 0.4f;
 
     RAY movementRay;
-    movementRay.Position = m_prevPlayerPos;
-    movementRay.Position.y -= m_pPlayer->GetHeight() * 0.1f;  // Center of player
-    movementRay.Axis = movement;
-    D3DXVec3Normalize(&movementRay.Axis, &movementRay.Axis);
-    movementRay.Length = moveDistance + 0.5f;  // Add buffer for player radius
-    movementRay.RotationY = 0.f;                    //移動距離
+    movementRay.Position = frameStartPos;
+    movementRay.Position.y -= m_pPlayer->GetHeight() * 0.5f;  // Center height
+
+    D3DXVec3Normalize(&movementRay.Axis, &horizontalMovement);
+    movementRay.Length = moveDistance + PLAYER_RADIUS;
+    movementRay.RotationY = 0.f;
 
     FLOAT hitDistance;
     D3DXVECTOR3 hitPoint, hitNormal;
 
+#if _DEBUG
+    debugSweptRay = movementRay;
+    debugSweptHit = false;
+#endif
+
     if (IsHitForRay(movementRay, &hitDistance, &hitPoint, &hitNormal))
     {
-        float safeDistance = max(0.2f, hitDistance - 0.5f);
-        D3DXVECTOR3 safePos = m_prevPlayerPos + movement * (safeDistance / moveDistance);
-        safePos += hitNormal * 0.6f;
+#if _DEBUG
+        debugSweptHit = true;
+#endif
+        float safeDistance = max(0.f, hitDistance - PLAYER_RADIUS - 0.05f);
 
-        D3DXVECTOR3 velocity = m_pPlayer->GetVelocity();
-        float velDotNormal = D3DXVec3Dot(&velocity, &hitNormal);
-        if (velDotNormal < 0.0f)  // Moving into wall
+        if (safeDistance < moveDistance)
         {
-            velocity -= hitNormal * velDotNormal;  // Remove velocity component toward wall
-            m_pPlayer->SetVelocity(velocity);
+            D3DXVECTOR3 safePos = frameStartPos;
+
+            if (moveDistance > 0.001f)
+            {
+                D3DXVECTOR3 moveDir;
+                D3DXVec3Normalize(&moveDir, &horizontalMovement);
+                safePos.x += moveDir.x * safeDistance;
+                safePos.z += moveDir.z * safeDistance;
+            }
+
+            // Add small push away from wall
+            safePos.x += hitNormal.x * 0.05f;
+            safePos.z += hitNormal.z * 0.05f;
+            safePos.y = currentPos.y;  // Preserve current Y
+
+            // Kill velocity toward wall
+            D3DXVECTOR3 velocity = m_pPlayer->GetVelocity();
+            float velDotNormal = D3DXVec3Dot(&velocity, &hitNormal);
+            if (velDotNormal < 0.f)
+            {
+                velocity.x -= hitNormal.x * velDotNormal;
+                velocity.z -= hitNormal.z * velDotNormal;
+                m_pPlayer->SetVelocity(velocity);
+            }
+
+            m_pPlayer->SetPosition(safePos.x, safePos.y, safePos.z);
+            m_pPlayer->UpdateAxis();
         }
-
-        m_pPlayer->SetPosition(safePos.x, safePos.y, safePos.z);
-    }
-    else
-    {
-
     }
 }
 
@@ -206,49 +309,20 @@ void CStage::HandleEnemyWallCollisions(CAnimEnemy* pEnemy)
         CROSSRAY crossRay = pEnemy->GetCrossRay();
         D3DXVECTOR3 beforePos = crossRay.Ray[0].Position;
 
-        // 壁から押し出す
         CalculatePositionFromWall(&crossRay);
 
         D3DXVECTOR3 afterPos = crossRay.Ray[0].Position;
-
-        // 補正を適用
-        D3DXVECTOR3 correctedPos = afterPos;
-        correctedPos.y = pEnemy->GetPosition().y;  // Y座標を保持
-        pEnemy->SetPosition(correctedPos);
-
-        // 補正がなければ終了
         D3DXVECTOR3 correction = afterPos - beforePos;
-        if (D3DXVec3Length(&correction) < 0.00001f)
-        {
-            break;
-        }
 
-        // 次のイテレーション用にレイを更新
+        if (D3DXVec3Length(&correction) < 0.0001f)
+            break;
+
+        D3DXVECTOR3 correctedPos = afterPos;
+        correctedPos.y = pEnemy->GetPosition().y;
+        pEnemy->SetPosition(correctedPos);
         pEnemy->UpdateCrossRay();
     }
-
-    // 頭部の衝突も処理
-    //for (int iteration = 0; iteration < MAX_ITERATIONS; ++iteration)
-    //{
-    //    CROSSRAY headCrossRay = pEnemy->GetHeadCrossRay();
-    //    D3DXVECTOR3 beforePos = headCrossRay.Ray[0].Position;
-
-    //    CalculatePositionFromWall(&headCrossRay);
-
-    //    D3DXVECTOR3 afterPos = headCrossRay.Ray[0].Position;
-
-    //    D3DXVECTOR3 correctedPos = afterPos;
-    //    correctedPos.y = pEnemy->GetPosition().y;
-    //    pEnemy->SetPosition(correctedPos);
-
-    //    D3DXVECTOR3 correction = afterPos - beforePos;
-    //    if (D3DXVec3Length(&correction) < 0.00001f)
-    //    {
-    //        break;
-    //    }
-
-    //    pEnemy->UpdateCrossRay();
-    //}
+ 
 }
 
 void CStage::HandleEnemyFloorCollisions(CAnimEnemy* pEnemy)

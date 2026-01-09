@@ -15,6 +15,10 @@ public:
 	virtual void Update() = 0;
 	virtual void Draw(SCENE_DATA& sceneData) = 0;
 
+	void SetActive( bool active ){
+		m_IsActive = active;
+	}
+
 	//座標設定関数.
 	void SetPosition( float x, float y, float z ){
 		m_vPosition.x = x;
@@ -69,6 +73,9 @@ public:
 	
 	D3DXVECTOR3 GetRight() const { return m_vRight; };
 
+	bool IsActive() const {
+		return m_IsActive;
+	}
 
 private:
 
@@ -76,6 +83,7 @@ private:
 
 protected://protectedは子クラスのみアクセス可能.
 
+	bool m_IsActive = true;	//アクティブフラグ.
 	D3DXVECTOR3 m_vForward;
 	D3DXVECTOR3 m_vRight;
 	D3DXVECTOR3	m_vPosition;

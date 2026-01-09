@@ -1,4 +1,5 @@
 #pragma once
+#include <fstream> 
 
 struct CGameStats
 {
@@ -13,47 +14,102 @@ struct CGameStats
 	static DIFFICULTY GetDifficulty() { return Difficulty; }
 
 	static int EnemiesKilled;
-	static unsigned long TimeMs; // total time played in milliseconds
-	static int Score;
+	static int DeathCounter;
+	static unsigned long RemainingTime;        // total time played in milliseconds
+	static int ComboScore;              // combo bonus score
+	static int HighestCombo;            // highest combo achieved in current run
+	static int Score;                   // total score for current run
+	static int HighestScore;            // highest score ever achieved
 	static DIFFICULTY Difficulty;
-	static int LevelSelection; // For future use
+	static int LevelSelection;
 
-	// Simple score: 100 per kill, time penalty = floor(TimeMs/1000) * 2
+	// Compute total score with combo bonus
 	static void ComputeScore()
 	{
 		const int perKill = 100;
-		int timePenaltyPerSec = 2;
-		int bonus = 0;
+		const int comboMultiplier = 50;
+		int timeBonusPerSec = 2;
+		int difficultyMultiplier = 1;
+
 		switch (Difficulty)
 		{
-			case DIFF_EASY:
-				timePenaltyPerSec = 4;
-				bonus = -100;
-				break;
-			case DIFF_NORMAL:
-				timePenaltyPerSec = 3;
-				bonus = 0;
-				break;
-			case DIFF_HARD:
-				timePenaltyPerSec = 1;
-				bonus = 100;
-				break;
+		case DIFF_EASY:
+			timeBonusPerSec = 1;
+			difficultyMultiplier = 1;
+			break;
+		case DIFF_NORMAL:
+			timeBonusPerSec = 2;
+			difficultyMultiplier = 2;
+			break;
+		case DIFF_HARD:
+			timeBonusPerSec = 3;
+			difficultyMultiplier = 3;
+			break;
 		}
-		int seconds = static_cast<int>(TimeMs / 1000);
-		Score = 1000 + (EnemiesKilled * perKill) - (seconds * timePenaltyPerSec);
+
+		// Calculate remaining time bonus
+		unsigned long remainingMs = GetRemainingTimeMs();
+		int remainingSeconds = static_cast<int>(remainingMs / 1000);
+		int timeBonus = remainingSeconds * timeBonusPerSec;
+
+		// Calculate combo bonus
+		ComboScore = HighestCombo * comboMultiplier;
+
+		// Death penalty
+		int deathPenalty = DeathCounter * 50;
+
+		// Base score calculation
+		int baseScore = 1000 + (EnemiesKilled * perKill);
+
+		// Total score
+		Score = (baseScore + timeBonus + ComboScore - deathPenalty) * difficultyMultiplier;
 		if (Score < 0) Score = 0;
+
+		// Update highest score if beaten
+		if (Score > HighestScore)
+		{
+			HighestScore = Score;
+			//SaveHighestScore();
+		}
+	}
+
+	// Get remaining time in milliseconds
+	static unsigned long GetRemainingTimeMs()
+	{
+		return RemainingTime * 1000;
 	}
 
 	static void Reset()
 	{
 		EnemiesKilled = 0;
-		TimeMs = 0;
+		DeathCounter = 0;
+		RemainingTime = 0;
+		ComboScore = 0;
+		HighestCombo = 0;
 		Score = 0;
 	}
+
+	//void SaveHighestScore()
+	//{
+	//	std::ofstream ofs("highest_score.dat", std::ios::binary);
+	//	if (ofs.is_open())
+	//	{
+	//		ofs.write(reinterpret_cast<const char*>(&HighestScore), sizeof(HighestScore));
+	//		ofs.close();
+	//	}
+	//}
+
+
+
+
 };
 
-// Static definitions
 inline int CGameStats::EnemiesKilled = 0;
-inline unsigned long CGameStats::TimeMs = 0;
-inline int CGameStats::Score = 0;
-inline CGameStats::DIFFICULTY CGameStats::Difficulty = CGameStats::DIFF_NORMAL;
+inline int CGameStats::DeathCounter = 0;
+inline unsigned long CGameStats::RemainingTime = 0;        // remaining time seconds
+inline int CGameStats::ComboScore = 0;              // combo bonus score
+inline int CGameStats::HighestCombo = 0;            // highest combo achieved in current run
+inline int CGameStats::Score = 0;                   // total score for current run
+inline int CGameStats::HighestScore = 0;            // highest score ever achieved
+inline CGameStats::DIFFICULTY CGameStats::Difficulty = DIFF_NORMAL;
+inline int CGameStats::LevelSelection = 0;

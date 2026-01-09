@@ -23,9 +23,29 @@ public:
 	void Draw() override;
 
 private:
+	enum GAMEOVER_OPTION
+	{
+		GAMEOVER_OPTION_RETRY,
+		GAMEOVER_OPTION_MAIN_MENU,
+		GAMEOVER_OPTION_COUNT
+	};
+
 	CFont* m_Font;
 
-	CSprite2D* m_pGameOverSprite;
-	CUIObject* m_pGameOverUI;
-	
+	// Background
+	CUIObject* m_pBG;
+	CSprite2D* m_pBGSprite;
+	float m_BGScrollOffset;
+	float m_BGScrollSpeed;
+
+	// Fade
+	CUIObject* m_pFade;
+	CSprite2D* m_pFadeSprite;
+	bool m_IsFading;
+	float m_FadeAlpha;
+	float m_FadeSpeed;
+
+	// Navigation
+	int m_SelectedOption;
+	bool m_GoToRetry;
 };

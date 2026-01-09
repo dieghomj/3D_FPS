@@ -53,7 +53,5 @@ void CSpriteObject::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj)
 
 void CSpriteObject::Draw(SCENE_DATA& sceneData)
 {
-	D3DXMATRIX View = sceneData.mView;
-	D3DXMATRIX Proj = sceneData.mProj;
-	Draw( View, Proj );
+	Draw(sceneData.mView, sceneData.mProj);
 }

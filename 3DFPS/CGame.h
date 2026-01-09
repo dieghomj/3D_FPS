@@ -11,6 +11,7 @@
 #include "CShot.h"
 #include "CDecal.h"
 #include "CRobo.h"
+#include "CBlockedPath.h"	
 
 
 class CGame :
@@ -21,8 +22,17 @@ public:
 	struct GOAL
 	{
 		D3DXVECTOR3 position;
-		float radius;
+		D3DXVECTOR3 size;
 		bool isReached;
+	};
+
+	struct COLLISION_TRIGGER
+	{
+		D3DXVECTOR3 position;
+		D3DXVECTOR3 size;
+		std::vector<int> blockedPathIndices;
+		bool isTriggered;
+		bool blockBehindPlayer;
 	};
 
 	struct BULLET_IMPACT {
@@ -40,8 +50,11 @@ public:
 	virtual HRESULT LoadData() override;
 	virtual void Release() override;
 	virtual void Start() override;
+	void SetupBlockedPath();
 	virtual void Draw() override;
 	virtual void Update() override;
+
+	void Restart();
 
 
 private:
@@ -56,6 +69,16 @@ private:
 	void HandleEnemyEnemyCollision();
 	void HandleEnemySpawning();
 
+	//void HandleWallCollisions(CCharacter* character);
+
+	void SetupTriggers();
+	void CheckTriggers();
+	bool IsPlayerInTriggerArea(const COLLISION_TRIGGER& trigger);
+
+	void SetupGoal();
+	void CheckGoal();
+	bool IsPlayerInTriggerArea(const GOAL& trigger);
+
 	//void HandlePlayerBulletCollision();
 	//void HandleEnemyBulletCollision();
 	//void HandlePlayerItemCollision();
@@ -65,8 +88,19 @@ private:
 	//void HandlePlayerDeath();
 	//void HandleStageProgression();
 
+	void SaveStats();
+
+
 
 private:
+
+	//STATS
+
+	CGameStats m_GameStats;
+	int m_enemyKillCount = 0;
+	int m_deathCount = 0;
+	int m_comboCount = 0;
+	int m_highestCombo = 0;
 
 	//----------------
 	//----UI----------
@@ -97,8 +131,20 @@ private:
 		CStaticMesh* m_pBaseStageMesh;
 		CStaticMesh* m_pBridStageMesh;
 		CStage* m_pStage;
+	//WALL COLLIDER
+		CStaticMesh* m_pWallColliderMesh;
+	//GOAL
+		GOAL m_Goal;
+	//LIGHTNING
+		CSprite3D* m_pLightningSprite;
+		CBlockedPath* m_pLightning;
+		std::vector<CBlockedPath*> m_pBlockedPathList;
+	//TRIGGERS
+		std::vector<COLLISION_TRIGGER> m_CollisionTriggerList;
 
-
+	//TIMER
+		float m_stageTimer = 0.0f;
+		float m_accumulatedTime = 0.0f;
 	//----------------
 	//-----ENEMY------
 	//----------------
@@ -142,7 +188,6 @@ private:
 	::EsHandle ammoPickupHandle = -1;
 	::EsHandle playerDeathHandle = -1;
 	::EsHandle bossDeathHandle = -1;
-	
 	
 	//----------------
 	//---ITEMS--------

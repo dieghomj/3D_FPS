@@ -272,6 +272,7 @@
     <ClCompile Include="CAnimEnemy.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClCompile>
+    <ClCompile Include="CBlockedPath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -435,6 +436,7 @@
     <ClInclude Include="CAnimEnemy.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClInclude>
+    <ClInclude Include="CBlockedPath.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">
