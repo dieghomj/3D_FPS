@@ -167,7 +167,7 @@ void CGame::Create()
 		m_pDx11->GetDevice(),
 		m_pDx11->GetContext());
 
-#ifdef DEBUG
+#ifdef _DEBUG
 
 
 
@@ -405,7 +405,6 @@ HRESULT CGame::LoadData()
 	m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
 
-	debugShotRay->Init(*m_pDx11, shotRay);
 #endif
 	RAY shotRay;
 	shotRay.Position = m_pCamera->GetPosition();
@@ -413,6 +412,7 @@ HRESULT CGame::LoadData()
 	D3DXVec3Normalize(&shotRay.Axis, &shotRay.Axis);
 	shotRay.Length = 100.f;
 	shotRay.RotationY = 0.f;
+	debugShotRay->Init(*m_pDx11, shotRay);
 	return S_OK;
 }
 
