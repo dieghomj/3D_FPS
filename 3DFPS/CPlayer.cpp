@@ -7,7 +7,7 @@ static constexpr float FRICTION = 0.0390f;
 static constexpr float HEALTH_MAX = 100.f;
 
 static constexpr float PLAYERSIZE = 4.5;
-static constexpr float CROUCHSIZE = 1.6f;
+static constexpr float CROUCHSIZE = 1.8f;
 static constexpr float PLAYERRADIUS = 0.5f;
 
 static constexpr float RUN_SPEED = 0.45f;
@@ -364,7 +364,9 @@ void CPlayer::Slide()
 	//	m_Inertia.z = 0.f;
 	//	return;
 	//}
+	
 
+	ApplyDamage(0.0f); // to trigger invincibility frames
 	m_IsSliding = true;
 	m_MoveSpeed = CROUCH_SPEED;
 	m_Height = CROUCHSIZE;

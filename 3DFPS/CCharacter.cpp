@@ -5,6 +5,7 @@ CCharacter::CCharacter()
 	, m_pRayY		( nullptr )
 	, m_pCrossRay	( nullptr )
 	, m_Radius		(0.3f)	//‚Æ‚è‚ ‚¦‚¸0.3‚É‚µ‚Ä‚¨‚­
+	, m_GravityEnabled(true)
 {
 	m_pRayY = new RAY();
 	m_pRayY->Axis = D3DXVECTOR3(0.f, -1.f, 0.f);	//‰ºŒü‚«‚ÌŽ²

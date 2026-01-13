@@ -1,4 +1,5 @@
 #pragma once
+#include <random>
 #include "CScene.h"
 #include "CUIObject.h"
 #include "CAnimEnemy.h"
@@ -11,6 +12,7 @@
 #include "CShot.h"
 #include "CDecal.h"
 #include "CRobo.h"
+#include "CBoss.h"
 #include "CBlockedPath.h"	
 
 
@@ -84,7 +86,7 @@ private:
 
 	void SetupBlockedPath();
 	void DrawEnemyShots();
-	void HandleEnemyShotLoadAnim();
+	void HandleEnemyShotLoadAnim(CRobo* pEnemy);
 	void HandlePlayerDashEffect();
 
 	//void HandlePlayerBulletCollision();
@@ -101,6 +103,10 @@ private:
 
 
 private:
+
+	std::mt19937 m_RandomGen;
+	std::uniform_real_distribution<float> m_AngleDist;
+	std::uniform_real_distribution<float> distFloat;
 
 	//STATS
 
@@ -157,7 +163,7 @@ private:
 	//-----ENEMY------
 	//----------------
 	CStaticMesh* m_pEnemyMesh;
-	CRobo* m_pEnemy;
+	CBoss* m_pEnemy;
 	
 	CStaticMesh* m_pSpiderMesh;
 	CStaticMesh* m_pRoboMesh;
@@ -167,9 +173,11 @@ private:
 	CSkinMesh* m_pRoboSkinMesh;
 	CSkinMesh* m_pBossSkinMesh;
 	CAnimEnemy* m_pBossEnemy;
+	std::vector<CAnimEnemy*> m_pBossShotList;
 	std::vector<CAnimEnemy*> m_pEnemyList;
 	std::vector<CShot*> m_pEnemyShotList;
 	int m_enemyShotIndex = 0;
+	int m_bossShotIndex = 0;
 
 
 	//----------------

@@ -57,6 +57,7 @@ public:
 	void CalculatePositionFromWall(CROSSRAY* pCrossRay);
 
 	void ScaleAnim(float dt, float speed);
+	void ScaleMorphAnim(float dt, float amp, float speed);
 	void RotateAnim(float dt, float speed);
 	void UpDownAnim(float dt, float amp, float speed);
 	void VibrateAnim(float dt, float amp, float speed);
@@ -75,6 +76,13 @@ private:
 
 	//回転値調整（１周以上している時の調整）
 	void ClampDirection(float* dir);	//再帰関数
+
+
+	float m_ScaleAnimTime = 0.0f;
+	float m_ScaleMorphAnimTime = 0.0f;
+	float m_UpDownAnimTime = 0.0f;
+	float m_VibrateAnimTime = 0.0f;
+	float m_RotateAnimTime = 0.0f;
 
 protected:
 	CStaticMesh*		m_pMesh;

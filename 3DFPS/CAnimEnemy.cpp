@@ -34,6 +34,11 @@ void CAnimEnemy::InitEnemy()
 
 void CAnimEnemy::Update()
 {
+	if(IsActive() == false)
+	{
+		return;
+	}
+
 	if(IsDead())
 	{
 		CAnimCharacter::Update();
@@ -47,10 +52,14 @@ void CAnimEnemy::Update()
 	// 床との距離を計算
 	float distanceToFloor = pos.y - m_FloorY;
 
+
 	if (distanceToFloor > SNAP_DISTANCE)
 	{
+		m_IsGrounded = false;
 		// 空中にいる場合は重力を適用
-		pos.y -= GRAVITY;
+		if(m_GravityEnabled)
+			pos.y -= GRAVITY;
+	
 		if (pos.y < m_FloorY)
 		{
 			pos.y = m_FloorY;
@@ -60,9 +69,20 @@ void CAnimEnemy::Update()
 	{
 		// 床に近い場合は床にスナップ（ランプを上る）
 		pos.y = m_FloorY;
+		m_IsGrounded = true;
 	}
 
 	SetPosition(pos);
+
+	if (m_State == Launched)
+	{
+		m_vPosition += m_LaunchVelocity;
+		if( m_IsGrounded )
+		{
+			m_State = Idle;
+			m_LaunchVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		}
+	}
 
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
@@ -95,6 +115,20 @@ void CAnimEnemy::UpdateCrossRay()
 		m_pHeadCrossRay->Ray[i].Position = headPos;
 		m_pHeadCrossRay->Ray[i].Length = rayLength;
 	}
+
+}
+
+void CAnimEnemy::LaunchAtPlayer(float speed )
+{
+
+	m_State = Launched;
+	D3DXVECTOR3 direction = m_PlayerPos - GetPosition();
+	D3DXVec3Normalize(&direction, &direction);
+	D3DXVECTOR3 velocity = direction * speed;
+	D3DXVECTOR3 pos = GetPosition();
+	m_LaunchVelocity = velocity;
+	pos += velocity;
+	SetPosition(pos);
 
 }
 

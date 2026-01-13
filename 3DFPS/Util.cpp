@@ -5,11 +5,11 @@
 // amplitude: 振幅
 // frequency: 周波数
 // forward: 前方向ベクトル
-D3DXVECTOR3 Util::CalcVibrationOffset(float time, float amplitude, float frequency, const D3DXVECTOR3& forward)
+D3DXVECTOR3 Util::CalcVibrationOffset(float freq, float amplitude, const D3DXVECTOR3& forward)
 {
 	// Build a small jitter in local space: side + up oscillation
-	float s = sinf(time * frequency * 6.2831853f); // 2πf t
-	float c = cosf(time * frequency * 6.2831853f);
+	float s = sinf(freq * 6.2831853f); // 2πf t
+	float c = cosf(freq * 6.2831853f);
 
 	// Derive a right vector from forward projected on XZ.
 	D3DXVECTOR3 f = forward;
@@ -41,8 +41,6 @@ D3DXVECTOR3 Util::CalcVibrationOffset(float time, float amplitude, float frequen
 
 D3DXVECTOR3 Util::CalcUpDownOffset(float dt, float amp, float speed, const D3DXVECTOR3& forward)
 {
-
-	
 
 	return D3DXVECTOR3();
 }

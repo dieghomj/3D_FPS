@@ -1,6 +1,8 @@
 #include "CStaticMeshObject.h"
 #include "Util.h"
 
+static constexpr float MAX_ANIM_TIME = 6.28318530718f; // 2π
+
 CStaticMeshObject::CStaticMeshObject()
 	: m_pMesh			( nullptr )
 	, m_pCollider		( nullptr )
@@ -375,25 +377,62 @@ void CStaticMeshObject::CalculatePositionFromWall(CROSSRAY* pCrossRay)
 void CStaticMeshObject::RotateAnim(float dt, float speed)
 {
 
-	m_vRotation.y += speed * dt;
+	m_RotateAnimTime += dt * speed;
+
+	m_vRotation.y += m_RotateAnimTime;
 	ClampDirection(&m_vRotation.y);
 
 }
 
 void CStaticMeshObject::UpDownAnim(float dt, float amp, float speed)
 {
-	m_vPosition.y += amp * sinf(dt * speed);
+
+	m_UpDownAnimTime += dt * speed;
+
+	m_vPosition.y += amp * sinf(m_UpDownAnimTime);
 
 }
 
 void CStaticMeshObject::VibrateAnim(float dt, float amp, float speed)
 {
-	m_vPosition += Util::CalcVibrationOffset(dt, amp, speed, m_vForward);
+	m_VibrateAnimTime += dt * speed;
+	m_vPosition += Util::CalcVibrationOffset(m_VibrateAnimTime, amp, m_vForward);
 }
 
 void CStaticMeshObject::ScaleAnim(float dt, float speed)
 {
-	m_vScale += Util::CalcVibrationOffset(dt, 1.f, speed, m_vForward);
+	m_ScaleAnimTime += dt * speed;
+
+	// 各軸に異なるランダムな周波数を使用してモーフィング効果を作成
+	float scaleOffsetX = sinf(m_ScaleAnimTime * 1.0f) * 0.1f;
+	float scaleOffsetY = sinf(m_ScaleAnimTime * 1.3f) * 0.1f;
+	float scaleOffsetZ = sinf(m_ScaleAnimTime * 0.8f) * 0.1f;
+
+	// ベーススケール + ランダムオフセット
+	m_vScale.x = 1.0f + scaleOffsetX;
+	m_vScale.y = 1.0f + scaleOffsetY;
+	m_vScale.z = 1.0f + scaleOffsetZ;
+}
+
+void CStaticMeshObject::ScaleMorphAnim(float dt, float amp, float speed)
+{
+	// 時間ベースのランダムなモーフィング
+	m_ScaleMorphAnimTime += dt * speed;
+
+	// 複数の正弦波を組み合わせて複雑なモーフィング効果を作成
+	float morphX = sinf(m_ScaleMorphAnimTime * 1.0f) + cosf(m_ScaleMorphAnimTime * 2.3f) * 0.5f;
+	float morphY = sinf(m_ScaleMorphAnimTime * 1.5f) + cosf(m_ScaleMorphAnimTime * 1.8f) * 0.5f;
+	float morphZ = sinf(m_ScaleMorphAnimTime * 0.9f) + cosf(m_ScaleMorphAnimTime * 2.1f) * 0.5f;
+
+	// 振幅を適用してスケールを設定
+	m_vScale.x = 1.0f + (morphX * amp * 0.1f);
+	m_vScale.y = 1.0f + (morphY * amp * 0.1f);
+	m_vScale.z = 1.0f + (morphZ * amp * 0.1f);
+
+	// スケールが負にならないように制限
+	m_vScale.x = max(0.1f, m_vScale.x);
+	m_vScale.y = max(0.1f, m_vScale.y);
+	m_vScale.z = max(0.1f, m_vScale.z);
 }
 
 //交差位置のポリゴンの頂点を見つける

@@ -273,6 +273,7 @@
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClCompile>
     <ClCompile Include="CBlockedPath.cpp" />
+    <ClCompile Include="CEnemyController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -437,6 +438,7 @@
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClInclude>
     <ClInclude Include="CBlockedPath.h" />
+    <ClInclude Include="CEnemyController.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

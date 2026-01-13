@@ -31,6 +31,8 @@ protected:
 
 	float m_Radius;	//キャラクターの半径
 
+	bool m_GravityEnabled; //重力有効フラグ
+
 	RAY*		m_pRayY;		//Y方向へ伸ばしたレイ
 	CROSSRAY*	m_pCrossRay;	//前後左右に伸ばしたレイ
 };

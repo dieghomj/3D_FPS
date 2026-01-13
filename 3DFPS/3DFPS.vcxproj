@@ -171,6 +171,7 @@
     <ClCompile Include="CDirectX11.cpp" />
     <ClCompile Include="CDirectX9.cpp" />
     <ClCompile Include="CEffect.cpp" />
+    <ClCompile Include="CEnemyController.cpp" />
     <ClCompile Include="CFont.cpp" />
     <ClCompile Include="CGameObject.cpp" />
     <ClCompile Include="CGameStats.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="CDirectX11.h" />
     <ClInclude Include="CDirectX9.h" />
     <ClInclude Include="CEffect.h" />
+    <ClInclude Include="CEnemyController.h" />
     <ClInclude Include="CFont.h" />
     <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CGameStats.h" />

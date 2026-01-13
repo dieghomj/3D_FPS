@@ -12,6 +12,7 @@ public:
 		Chasing,
 		Running,
 		Attacking,
+		Launched,
 		Jumping,
 		Damaged,
 		Dying,
@@ -32,6 +33,10 @@ public:
 		return !m_IsAlive;
 	}
 
+	bool IsGrounded() const {
+		return m_IsGrounded;
+	}
+
 	int GetState() const {
 		return m_State;
 	}
@@ -44,6 +49,10 @@ public:
 		m_PlayerPos = pos;
 	}
 
+	void SetGravity(bool enabled) {
+		m_IsGrounded = !enabled;
+	}
+	
 	void SpawnAt(const D3DXVECTOR3& pos) {
 		SetPosition(pos);
 		m_IsAlive = true;
@@ -66,17 +75,23 @@ public:
 	void UpdateCrossRay();
 	CROSSRAY GetHeadCrossRay() const { return *m_pHeadCrossRay; }
 
+	void LaunchAtPlayer(float speed);
+
 protected:
 
 	void FacePlayer(float& distance);
 
 protected:
 	D3DXVECTOR3 m_PlayerPos;
+	D3DXVECTOR3 m_LaunchVelocity;
 
 	int m_State;
 	float m_Health;
-	bool m_IsAlive;
 
+	bool m_IsAlive;
+	bool m_IsGrounded;
+
+	
 	float m_RotationSpeed;
 
 	// 衝突検出用のメンバー
