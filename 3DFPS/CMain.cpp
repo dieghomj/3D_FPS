@@ -319,6 +319,7 @@ LRESULT CALLBACK CMain::MsgProc(
 			}
 			break;
 		}
+		break;
 	default:
 		UnlockCursor();
 		break;

@@ -7,11 +7,11 @@ static constexpr float FRICTION = 0.0550f;
 static constexpr float HEALTH_MAX = 100.f;
 
 static constexpr float PLAYERSIZE = 4.5;
-static constexpr float CROUCHSIZE = 0.6f;
+static constexpr float CROUCHSIZE = 1.6f;
 static constexpr float PLAYERRADIUS = 0.5f;
 
-static constexpr float RUN_SPEED = 0.3f;
-static constexpr float MAX_RUN_SPEED = 0.5f;
+static constexpr float RUN_SPEED = 0.45f;
+static constexpr float MAX_RUN_SPEED = 0.8f;
 
 static constexpr float CROUCH_SPEED = 0.027f;
 
@@ -20,7 +20,7 @@ static constexpr float JUMP_STRENGTH = 0.58f;
 static constexpr float PISTOL_CD = 0.15f; // seconds
 static constexpr float SHOTGUN_CD = 0.15f; // seconds
 
-static constexpr float DASH_SPEED = 0.95f;
+static constexpr float DASH_SPEED = 2.5f;
 static constexpr float DASH_DISTANCE = 5.5f;
 static constexpr float DASH_COOLDOWN = 0.05f; // seconds
 static constexpr float DASH_MAX = 3.f; // seconds
@@ -83,7 +83,10 @@ void CPlayer::InitPlayer()
 	m_Health = HEALTH_MAX;
 	m_Height = PLAYERSIZE;
 	m_MoveSpeed = RUN_SPEED;
+	m_DashTimer = DASH_MAX;
 	m_JumpStrength = JUMP_STRENGTH;
+	m_Velocity = D3DXVECTOR3(0.f, 0.f, 0.f);
+	m_Inertia = D3DXVECTOR3(0.f, 0.f, 0.f);
 }
 
 void CPlayer::Update()
@@ -213,6 +216,11 @@ void CPlayer::HandleInput()
 	if (m_pInputHandler->GetKeyDown(VK_LBUTTON))
 	{
 		Shoot();
+	}
+
+	if (m_pInputHandler->GetKeyDown(VK_RBUTTON))
+	{
+		SpecialAction();
 	}
 
 	if (m_pInputHandler->GetKeyDown(VK_SPACE))
@@ -361,6 +369,13 @@ void CPlayer::Slide()
 	m_MoveSpeed = CROUCH_SPEED;
 	m_Height = CROUCHSIZE;
 	m_State = Sliding;
+
+}
+
+void CPlayer::SpecialAction()
+{
+
+
 
 }
 
