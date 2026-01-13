@@ -129,7 +129,7 @@ void CMenu::Update()
 	// Apply scroll offset to background sprite
 	if (m_pMenuBGSprite)
 	{
-		m_pMenuBGSprite->SetUVOffset(m_BGScrollOffset, 0.0f);
+		m_pMenuBGSprite->SetUVOffset(m_BGScrollOffset, m_BGScrollOffset);
 	}
 
 	m_pMenuBG->Update();
@@ -204,6 +204,9 @@ void CMenu::UpdateLevelSelect()
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
 		m_SelectedLevel--;
+		if(m_SelectedLevel == LEVEL_COUNT)
+			m_SelectedLevel = LEVEL_BACK - 2;
+
 		if (m_SelectedLevel < 0)
 			m_SelectedLevel = LEVEL_BACK;
 	}
@@ -211,6 +214,10 @@ void CMenu::UpdateLevelSelect()
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
 		m_SelectedLevel++;
+		if (m_SelectedLevel == LEVEL_COUNT)
+		{
+			m_SelectedLevel++;
+		}
 		if (m_SelectedLevel > LEVEL_BACK)
 			m_SelectedLevel = 0;
 	}
@@ -281,7 +288,7 @@ void CMenu::DrawLevelSelect()
 	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 140), 90.0f, 60.0f);
 
 	// Level names
-	const TCHAR* levelNames[] = { _T("Level 0 - Tutorial"), _T("Level 1 - [LOCKED]"), _T("Level 2 - [LOCKED]") };
+	const TCHAR* levelNames[] = { _T("Level 0 - Tutorial"), _T("Level 1 - [LOCKED]"), _T("Level 2 - [LOCKED]"), _T("Level 3 - [LOCKED]")};
 
 	float startY = static_cast<float>(WND_H / 2 - 80);
 	for (int i = 0; i < LEVEL_COUNT; i++)
@@ -314,7 +321,7 @@ void CMenu::DrawLevelSelect()
 	// Instructions
 	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
 	TCHAR instructText[128];
-	_stprintf_s(instructText, _T("UP/DOWN: Select | LEFT/RIGHT: Difficulty | ENTER: Confirm | ESC: Back"));
+	_stprintf_s(instructText, _T("UP/DOWN: Select | ENTER: Confirm | ESC: Back"));
 	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 310), static_cast<float>(WND_H - 50), 28.0f);
 }
 

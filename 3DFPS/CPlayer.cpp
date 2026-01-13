@@ -1,7 +1,7 @@
 #include "CPlayer.h"
 
 static constexpr float GRAVITY = 0.0198f;
-static constexpr float FRICTION = 0.0550f;
+static constexpr float FRICTION = 0.0390f;
 
 
 static constexpr float HEALTH_MAX = 100.f;
@@ -13,7 +13,7 @@ static constexpr float PLAYERRADIUS = 0.5f;
 static constexpr float RUN_SPEED = 0.45f;
 static constexpr float MAX_RUN_SPEED = 0.8f;
 
-static constexpr float CROUCH_SPEED = 0.027f;
+static constexpr float CROUCH_SPEED = 0.05f;
 
 static constexpr float JUMP_STRENGTH = 0.58f;
 
@@ -25,8 +25,8 @@ static constexpr float DASH_DISTANCE = 5.5f;
 static constexpr float DASH_COOLDOWN = 0.05f; // seconds
 static constexpr float DASH_MAX = 3.f; // seconds
 
-static constexpr float SLIDE_FRICTION = 0.009f;
-static constexpr float SLIDE_START_SPEED = 0.3f;
+static constexpr float SLIDE_FRICTION = 0.003f;
+static constexpr float SLIDE_START_SPEED = 0.01f;
 
 CPlayer::CPlayer()
 	: CCharacter()
@@ -243,7 +243,7 @@ void CPlayer::HandleInput()
 		Dash();
 	}
 
-	if (m_pInputHandler->GetKey(VK_CONTROL))
+	if (m_pInputHandler->GetKey(VK_CONTROL) || m_pInputHandler->GetKey('C'))
 	{
 		Slide();
 	}
@@ -357,13 +357,13 @@ void CPlayer::Slide()
 		return;
 	}
 
-	if(vel < 0.1f)
-	{
-		m_IsSliding = false;
-		m_Inertia.x = 0.f;
-		m_Inertia.z = 0.f;
-		return;
-	}
+	//if(vel < 0.1f)
+	//{
+	//	m_IsSliding = false;
+	//	m_Inertia.x = 0.f;
+	//	m_Inertia.z = 0.f;
+	//	return;
+	//}
 
 	m_IsSliding = true;
 	m_MoveSpeed = CROUCH_SPEED;
