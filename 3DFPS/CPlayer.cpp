@@ -28,6 +28,8 @@ static constexpr float DASH_MAX = 3.f; // seconds
 static constexpr float SLIDE_FRICTION = 0.003f;
 static constexpr float SLIDE_START_SPEED = 0.01f;
 
+static bool debugGodMode = false;
+
 CPlayer::CPlayer()
 	: CCharacter()
 	, m_pInputHandler			(nullptr)
@@ -91,6 +93,15 @@ void CPlayer::InitPlayer()
 
 void CPlayer::Update()
 {
+	m_pInputHandler->Update();
+	if (debugGodMode)
+	{
+		m_Health = HEALTH_MAX;
+		HandleInput();
+		Move();
+		return;
+	}
+
 	float weaponCD = 0.f;
 	switch (m_currWeapon)
 	{
@@ -133,8 +144,7 @@ void CPlayer::Update()
 		m_CanShoot = true;
 		m_ShootCooldownTimer = 0.f;
 	}
-
-	m_pInputHandler->Update();
+	
 	HandleInput();
 
 	if (!m_IsSliding)
@@ -164,6 +174,16 @@ void CPlayer::HandleInput()
 
 	if(!m_IsSliding)
 	{
+#if _DEBUG
+		if (m_pInputHandler->GetKeyDown('G'))
+		{
+
+			debugGodMode = !debugGodMode;
+			
+		}
+
+#endif
+		
 		if (m_pInputHandler->GetKey('W'))
 		{
 			inputVel += m_Forward * m_MoveSpeed;
@@ -203,6 +223,24 @@ void CPlayer::HandleInput()
 		{
 			m_State = Idle;
 		}
+	}
+	if(debugGodMode)
+	{
+		inputVel.y = 0.f;
+
+		if (m_pInputHandler->GetKey(VK_SPACE))
+		{
+			inputVel.y += m_MoveSpeed;
+		}
+
+		if (m_pInputHandler->GetKey(VK_CONTROL))
+		{
+			inputVel.y -= m_MoveSpeed;
+		}
+
+		m_Velocity = inputVel * 1.5f;
+		
+		return;
 	}
 
 	if (m_IsInertiaEnabled)
