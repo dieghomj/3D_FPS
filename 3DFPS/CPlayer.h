@@ -89,6 +89,7 @@ private:
 	void Jump();
 	void Dash();
 	void Slide();
+	void SpecialAction();
 
 
 private:

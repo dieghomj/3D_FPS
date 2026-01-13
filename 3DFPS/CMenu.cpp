@@ -199,55 +199,65 @@ void CMenu::UpdateMainMenu()
 
 void CMenu::UpdateLevelSelect()
 {
-	// Navigate levels (UP/DOWN)
+	// Navigate levels (UP/DOWN) - include BACK option
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
 		m_SelectedLevel--;
 		if (m_SelectedLevel < 0)
-			m_SelectedLevel = LEVEL_COUNT - 1;
+			m_SelectedLevel = LEVEL_BACK;
 	}
 	if (GetAsyncKeyState(VK_DOWN) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
 		m_SelectedLevel++;
-		if (m_SelectedLevel >= LEVEL_COUNT)
+		if (m_SelectedLevel > LEVEL_BACK)
 			m_SelectedLevel = 0;
 	}
 
-	// Change difficulty (LEFT/RIGHT)
-	if (GetAsyncKeyState(VK_LEFT) & 0x0001)
+	// Change difficulty (LEFT/RIGHT) - only when a level is selected
+	if (m_SelectedLevel < LEVEL_COUNT)
 	{
-		CSoundManager::PlaySE(CSoundManager::SE_Select);
-		m_SelectedDifficulty--;
-		if (m_SelectedDifficulty < CGameStats::DIFF_EASY)
-			m_SelectedDifficulty = CGameStats::DIFF_HARD;
-	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x0001)
-	{
-		CSoundManager::PlaySE(CSoundManager::SE_Select);
-		m_SelectedDifficulty++;
-		if (m_SelectedDifficulty > CGameStats::DIFF_HARD)
-			m_SelectedDifficulty = CGameStats::DIFF_EASY;
+		if (GetAsyncKeyState(VK_LEFT) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Select);
+			m_SelectedDifficulty--;
+			if (m_SelectedDifficulty < CGameStats::DIFF_EASY)
+				m_SelectedDifficulty = CGameStats::DIFF_HARD;
+		}
+		if (GetAsyncKeyState(VK_RIGHT) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Select);
+			m_SelectedDifficulty++;
+			if (m_SelectedDifficulty > CGameStats::DIFF_HARD)
+				m_SelectedDifficulty = CGameStats::DIFF_EASY;
+		}
 	}
 
-	// Go back to main menu
+	// Go back to main menu (ESC shortcut)
 	if (GetAsyncKeyState(VK_ESCAPE) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
 		m_MenuState = STATE_MAIN_MENU;
 	}
 
-	// Confirm selection and start game
+	// Confirm selection
 	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Decide);
 
-		// Apply selections
+		// Check if BACK is selected
+		if (m_SelectedLevel == LEVEL_BACK)
+		{
+			m_MenuState = STATE_MAIN_MENU;
+			return;
+		}
+
+		// Apply selections (only for unlocked levels)
 		if (m_SelectedLevel == 0)
 		{
 			CGameStats::SetDifficulty(static_cast<CGameStats::DIFFICULTY>(m_SelectedDifficulty));
-			CGameStats::LevelSelection = m_SelectedLevel + 1; // 1-based level index
+			CGameStats::LevelSelection = m_SelectedLevel + 1;
 
 			// Begin fade to game
 			m_IsFading = true;
@@ -259,6 +269,53 @@ void CMenu::UpdateLevelSelect()
 			}
 		}
 	}
+}
+
+void CMenu::DrawLevelSelect()
+{
+	m_pMenuFont->SetColor(1.0f, 0.1f, 0.05f);
+	m_pMenuFont->SetAlpha(1.0f);
+
+	TCHAR titleText[64];
+	_stprintf_s(titleText, _T("SELECT LEVEL"));
+	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 140), 90.0f, 60.0f);
+
+	// Level names
+	const TCHAR* levelNames[] = { _T("Level 0 - Tutorial"), _T("Level 1 - [LOCKED]"), _T("Level 2 - [LOCKED]") };
+
+	float startY = static_cast<float>(WND_H / 2 - 80);
+	for (int i = 0; i < LEVEL_COUNT; i++)
+	{
+		if (m_SelectedLevel == i)
+			m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
+		else
+			m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
+
+		TCHAR levelText[64];
+		_stprintf_s(levelText, _T("> %s"), levelNames[i]);
+		m_pMenuFont->Render(levelText, static_cast<float>(WND_W / 2 - 120), startY + (i * 50.0f), 35.0f);
+	}
+
+	// Difficulty selector
+	m_pMenuFont->SetColor(0.8f, 0.8f, 0.2f);
+	const TCHAR* diffNames[] = { _T("EASY"), _T("NORMAL"), _T("HARD") };
+	TCHAR diffText[128];
+	_stprintf_s(diffText, _T("< DIFFICULTY: %s >"), diffNames[m_SelectedDifficulty]);
+	m_pMenuFont->Render(diffText, static_cast<float>(WND_W / 2 - 140), startY + (LEVEL_COUNT * 50.0f) + 20.0f, 35.0f);
+
+	// BACK option
+	float backY = startY + (LEVEL_COUNT * 50.0f) + 80.0f;
+	if (m_SelectedLevel == LEVEL_BACK)
+		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
+	else
+		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
+	m_pMenuFont->Render(_T("> BACK"), static_cast<float>(WND_W / 2 - 60), backY, 35.0f);
+
+	// Instructions
+	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
+	TCHAR instructText[128];
+	_stprintf_s(instructText, _T("UP/DOWN: Select | LEFT/RIGHT: Difficulty | ENTER: Confirm | ESC: Back"));
+	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 310), static_cast<float>(WND_H - 50), 28.0f);
 }
 
 void CMenu::Draw()
@@ -316,43 +373,4 @@ void CMenu::DrawMainMenu()
 	TCHAR instructText[128];
 	_stprintf_s(instructText, _T("Use UP/DOWN to select, ENTER to confirm"));
 	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 200), static_cast<float>(WND_H - 50), 35.0f);
-}
-
-void CMenu::DrawLevelSelect()
-{
-	m_pMenuFont->SetColor(1.0f, 0.1f, 0.05f);
-	m_pMenuFont->SetAlpha(1.0f);
-
-	TCHAR titleText[64];
-	_stprintf_s(titleText, _T("SELECT LEVEL"));
-	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 140), 90.0f, 60.0f);
-
-	// Level names
-	const TCHAR* levelNames[] = { _T("Level 0 - Tutorial"), _T("Level 1 - [LOCKED]"), _T("Level 2 - [LOCKED]") };
-
-	float startY = static_cast<float>(WND_H / 2 - 80);
-	for (int i = 0; i < LEVEL_COUNT; i++)
-	{
-		if (m_SelectedLevel == i)
-			m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
-		else
-			m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
-
-		TCHAR levelText[64];
-		_stprintf_s(levelText, _T("> %s"), levelNames[i]);
-		m_pMenuFont->Render(levelText, static_cast<float>(WND_W / 2 - 120), startY + (i * 50.0f), 35.0f);
-	}
-
-	// Difficulty selector
-	m_pMenuFont->SetColor(0.8f, 0.8f, 0.2f);
-	const TCHAR* diffNames[] = { _T("EASY"), _T("NORMAL"), _T("HARD") };
-	TCHAR diffText[128];
-	_stprintf_s(diffText, _T("< DIFFICULTY: %s >"), diffNames[m_SelectedDifficulty]);
-	m_pMenuFont->Render(diffText, static_cast<float>(WND_W / 2 - 140), startY + (LEVEL_COUNT * 50.0f) + 40.0f, 35.0f);
-
-	// Instructions
-	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
-	TCHAR instructText[128];
-	_stprintf_s(instructText, _T("UP/DOWN: Select Level | LEFT/RIGHT: Difficulty | ENTER: Start | ESC: Back"));
-	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 330), static_cast<float>(WND_H - 50), 30.0f);
 }

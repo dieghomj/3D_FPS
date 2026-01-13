@@ -9,6 +9,7 @@ CAnimEnemy::CAnimEnemy()
 	, m_FloorNormal(D3DXVECTOR3(0.0f, 1.0f, 0.0f))
 	, m_pHeadCrossRay(nullptr)
 	, m_Health(100.0f)
+	, m_RotationSpeed(0.9f)
 {
 }
 
@@ -111,7 +112,7 @@ void CAnimEnemy::FacePlayer(float& distance)
 	m_vForward = m_PlayerPos - GetPosition();
 	m_vForward.y = 0.0f;
 
-	float angle = atan2f(m_vForward.x, m_vForward.z) - atan2f(prevFwd.x, prevFwd.z);
+	float angle = (atan2f(m_vForward.x, m_vForward.z) - atan2f(prevFwd.x, prevFwd.z));
 
-	SetRotation(0.0f, D3DXToRadian(180.f) + GetRotation().y + angle, 0.0f);
+	SetRotation(0.0f, D3DXToRadian(180.f) + GetRotation().y + angle , 0.0f);
 }

@@ -1,10 +1,12 @@
 #include "CGame.h"
 #include "CSpider.h"
 
+constexpr int PROJECTILE_COUNT_MAX = 32;
 constexpr int PLAYER_AMMO_MAX = 999;
 constexpr int ENEMY_COUNT_MAX = 16;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
-constexpr int STAGE_TIMER = 1 * 60; // minutes
+constexpr float ENEMY_SHOT_SPEED = 1.2f;
+constexpr int STAGE_TIMER = 2 * 60; // minutes
 const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -75.f);
 
 const D3DXVECTOR3 enemyStartPos[4] = {
@@ -69,7 +71,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pSphereMesh(nullptr)
 
 	, currStage(0)
-
+#if _DEBUG
 	, m_pPlayerRayY(nullptr)
 	, m_pCrossRay()
 	, m_pPrevCrossRay()
@@ -79,7 +81,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, debugShotMark()
 	, debugHitShotList()
 	, debugShotMesh(nullptr)
-
+#endif
 {
 }
 
@@ -125,8 +127,8 @@ void CGame::Create()
 	m_pSpiderSkinMesh = new CSkinMesh();
 	m_pRoboSkinMesh = new CSkinMesh();
 	m_pBossSkinMesh = new CSkinMesh();
-	m_pBossEnemy = new CAnimCharacter();
-	m_pEnemy = new CAnimCharacter();
+	m_pBossEnemy = new CRobo();
+	m_pEnemy = new CRobo();
 
 	m_pEnemyList.reserve(ENEMY_COUNT_MAX);
 	
@@ -135,6 +137,13 @@ void CGame::Create()
 		CAnimEnemy* pEnemy = new CSpider();
 		pEnemy->SetActive(false);
 		m_pEnemyList.push_back(pEnemy);
+	}
+
+	for (int i = 0; i < PROJECTILE_COUNT_MAX; i++)
+	{
+		CShot* pProjectile = new CShot();
+		m_pEnemyShotList.push_back(pProjectile);
+		enemyShotEffectHandles.push_back(-1);
 	}
 
 	m_pPlayer = new CPlayer();
@@ -167,6 +176,9 @@ void CGame::Create()
 		m_pDx11->GetDevice(),
 		m_pDx11->GetContext());
 
+#ifdef _DEBUG
+
+
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -181,6 +193,7 @@ void CGame::Create()
 	m_pSphereMesh = new CStaticMesh();
 	debugRay = new CRay();
 	debugShotRay = new CRay();
+#endif // DEBUG
 }
 
 HRESULT CGame::LoadData()
@@ -279,6 +292,8 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
+	if ( FAILED(m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x")) );
+
 	/*if(FAILED(m_pBossSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Boss\\Boss.x")))
 	{
 		return E_FAIL;
@@ -289,8 +304,9 @@ HRESULT CGame::LoadData()
 	m_pLightning->SetScale(10.f, 5.f, 3.f);
 	m_pLightning->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
 
-	//m_pEnemy->AttachMesh(*m_pEnemyMesh);
-	
+	m_pEnemy->AttachMesh(*m_pEnemyMesh);
+	m_pEnemy->SetScale(2.9f);
+	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 	//m_pEnemyList[0]->AttachMesh(*m_pEnemyMesh);
 
 	for (auto pEnemy : m_pEnemyList)
@@ -300,6 +316,13 @@ HRESULT CGame::LoadData()
 		pEnemy->SetScale(2.2f);
 	}
 
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		pEnemyShot->AttachMesh(*m_pSphereMesh);
+		pEnemyShot->SetScale(1.5f);
+		pEnemyShot->SetMoveSpeed(ENEMY_SHOT_SPEED);
+		pEnemyShot->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+	}
 
 	for (auto pBlockedPath : m_pBlockedPathList)
 	{
@@ -314,9 +337,13 @@ HRESULT CGame::LoadData()
 
 	m_pGround->AttachMesh(*m_pGroundMesh);
 	m_pStage->AttachMesh(*m_pBridStageMesh);
-	//m_pStage->SetScale(3.f);
+	m_pStage->SetScale(0.8f);
 	m_pStage->SetPlayer(*m_pPlayer);
 	m_pStage->SetEnemyList(m_pEnemyList);
+
+	m_pPlayer->AttachMesh(*m_pSphereMesh);
+	m_pPlayer->SetScale(1.5f);
+	m_pPlayer->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
 
 	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
 	{
@@ -376,6 +403,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
+#if _DEBUG
 	CROSSRAY crossRay = m_pPlayer->GetCrossRay();
 	for (int i = 0; i < 4; ++i)
 	{
@@ -397,16 +425,16 @@ HRESULT CGame::LoadData()
 
 	RAY rayY = m_pPlayer->GetRayY();
 	m_pPlayerRayY->Init(*m_pDx11, rayY);
-	m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x");
+
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
 
+#endif
 	RAY shotRay;
 	shotRay.Position = m_pCamera->GetPosition();
-	shotRay.Axis = D3DXVECTOR3(0.f,0.f,1.f);
+	shotRay.Axis = D3DXVECTOR3(0.f, 0.f, 1.f);
 	D3DXVec3Normalize(&shotRay.Axis, &shotRay.Axis);
 	shotRay.Length = 100.f;
 	shotRay.RotationY = 0.f;
-
 	debugShotRay->Init(*m_pDx11, shotRay);
 	return S_OK;
 }
@@ -428,9 +456,14 @@ void CGame::Start()
 	m_Fog.Enable = false;
 
 
+	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 10.f));
+	//m_pEnemyList.push_back(m_pEnemy);
+
 	for (int i = 0; i < 4; i++)
 	{
 		m_pEnemyList[i]->InitEnemy();
+		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
+		m_pEnemyList[i]->SetActive(false);
 	}
 
 	m_pPlayer->InitPlayer();
@@ -443,6 +476,7 @@ void CGame::Start()
 
 	m_accumulatedTime = 0.0f;
 	m_enemyKillCount = 0;
+	m_comboCount = 0;
 	m_stageTimer = STAGE_TIMER;
 
 	CGameStats::Reset();
@@ -465,6 +499,7 @@ void CGame::Update()
 		m_highestCombo = max(m_highestCombo, m_comboCount);
 		m_comboCount = 0;
 		Restart();
+		return;
 	}
 
 	if (m_stageTimer <= 0.f)
@@ -497,7 +532,8 @@ void CGame::Update()
 
 	//m_pGround->Update();
 
-	//m_pEnemy->Update();
+	m_pEnemy->Update();
+	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 
 	for (auto pEnemy : m_pEnemyList)
 	{
@@ -524,8 +560,8 @@ void CGame::Update()
 		mSense -= 0.05f;
 	}
 
-	m_prevCrossRay = m_pPlayer->GetCrossRay();
 	m_pPlayer->Update();
+	m_pPlayer->UpdateCollider();
 	if (wasStucked)
 	{
 		// Skip updating the stage to prevent collision issues
@@ -562,50 +598,28 @@ void CGame::Update()
 
 	HandlePlayerEnemyCollision();
 	HandleEnemyEnemyCollision();
+	HandleEnemyShooting();
 
 	for(auto pBullet : m_pBulletList)
 	{
 		pBullet->Update();
 	}
 
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		pEnemyShot->Update();
+		pEnemyShot->UpdateCollider();
+		if (pEnemyShot->IsHit(m_pPlayer->GetCollider(), m_pPlayer->GetRadius()))
+		{
+			m_pPlayer->ApplyDamage(20.f);
+			pEnemyShot->SetDisplay(false);
+		}
+	}
+
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
 	float playerVelLen = D3DXVec3Length(&playerVel);
 
-	if (m_pPlayer->IsDashing())
-	{
-		D3DXVECTOR3 playerPos = m_pCamera->GetPosition();
-		D3DXVECTOR3 forward = m_pPlayer->GetForwardVector();
-		//playerPos.y -= 0.02f; // Adjust Y position to be at player's feet
-		//playerPos -= forward * 0.3f; // Offset backward a bit
-		
-		//
-		D3DXVec3Normalize(&forward, &forward);
-
-		//
-		float angleY = atan2f(forward.x, forward.z);
-
-		if (!CEffect::IsPlaying(dashHandle))
-		{
-			dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
-			CEffect::SetScale(dashHandle, D3DXVECTOR3(1.0f, 1.0f, 1.0f));
-			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ + angleY);
-			CEffect::SetSpeed(dashHandle, 1.0f);
-		}
-		else
-		{
-			// Keep the effect attached and rotated with the current forward
-			CEffect::SetLocation(dashHandle, playerPos);
-			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ + angleY);
-		}
-	}
-	else
-	{
-		if (CEffect::IsPlaying(dashHandle))
-		{
-			CEffect::Stop(dashHandle);
-			dashHandle = -1;
-		}
-	}
+	HandlePlayerDashEffect();
 
 	m_pHealthItem->Update();
 	m_pHealthItem->UpDownAnim(m_pTime->GetTotalTime(), 0.005f, 0.009);
@@ -644,12 +658,54 @@ void CGame::Update()
 	CScene::Update();
 }
 
+void CGame::HandlePlayerDashEffect()
+{
+	if (m_pPlayer->IsDashing())
+	{
+		D3DXVECTOR3 playerPos = m_pCamera->GetPosition();
+		D3DXVECTOR3 forward = m_pPlayer->GetForwardVector();
+		//playerPos.y -= 0.02f; // Adjust Y position to be at player's feet
+		//playerPos -= forward * 0.3f; // Offset backward a bit
+
+		//
+		D3DXVec3Normalize(&forward, &forward);
+
+		//
+		float angleY = atan2f(forward.x, forward.z);
+
+		if (!CEffect::IsPlaying(dashHandle))
+		{
+			dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
+			CEffect::SetScale(dashHandle, D3DXVECTOR3(1.0f, 1.0f, 1.0f));
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ +angleY);
+			CEffect::SetSpeed(dashHandle, 1.0f);
+		}
+		else
+		{
+			// Keep the effect attached and rotated with the current forward
+			CEffect::SetLocation(dashHandle, playerPos);
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ +angleY);
+		}
+	}
+	else
+	{
+		if (CEffect::IsPlaying(dashHandle))
+		{
+			CEffect::Stop(dashHandle);
+			dashHandle = -1;
+		}
+	}
+}
+
 void CGame::Restart()
 {
+
 
 	for (int i = 0; i < 4; i++)
 	{
 		m_pEnemyList[i]->InitEnemy();
+		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
+		m_pEnemyList[i]->SetActive(false);
 	}
 
 	m_pPlayer->InitPlayer();
@@ -663,6 +719,11 @@ void CGame::Restart()
 	m_enemyKillCount = 0;
 	m_comboCount = 0;
 
+	for (auto blockedPath : m_pBlockedPathList)
+	{
+		blockedPath->SetActive(false);
+	}
+	
 	for (auto& trigger : m_CollisionTriggerList)
 	{
 		trigger.isTriggered = false;
@@ -681,17 +742,20 @@ void CGame::Draw()
 	m_pPlayerWeapon->Draw(m_SceneInfo);
 
 	m_pEnemy->RenderStatic(m_SceneInfo);
-
+	HandleEnemyShotLoadAnim();
 
 	for(auto pEnemy : m_pEnemyList)
 	{
 		pEnemy->Draw(m_SceneInfo);
+		
 	}
 
 	for (auto pBullet : m_pBulletList)
 	{
 		pBullet->Draw(m_SceneInfo);
 	}
+
+	DrawEnemyShots();
 
 	m_pHealthItem->Draw(m_SceneInfo);
 
@@ -827,7 +891,7 @@ void CGame::Draw()
 	float seconds = static_cast<int>(m_stageTimer) % 60;
 	float minutes = static_cast<int>(m_stageTimer) / 60;
 	_stprintf_s(buff, _T("TIME: %02.f:%02.f"), minutes, seconds );
-	m_pFont->Render(buff, WND_W/2 - 32*9, 40, 32.f);
+	m_pFont->Render(buff, WND_W - 32*9, 40, 32.f);
 
 
 #if _DEBUG
@@ -909,6 +973,55 @@ void CGame::Draw()
 
 #endif
 
+}
+
+void CGame::DrawEnemyShots()
+{
+	for (int i = 0; i < PROJECTILE_COUNT_MAX; i++)
+	{
+		m_pEnemyShotList[i]->UpdateCollider();
+
+		if (!m_pEnemyShotList[i]->IsDisplay())
+		{
+			CEffect::Stop(enemyShotEffectHandles[i]);
+			continue;
+		}
+
+		if (CEffect::IsPlaying(enemyShotEffectHandles[i]))
+		{
+			CEffect::SetLocation(enemyShotEffectHandles[i], m_pEnemyShotList[i]->GetPosition());
+		}
+		else
+		{
+			enemyShotEffectHandles[i] = CEffect::Play(CEffect::MagmaEffect, m_pEnemyShotList[i]->GetPosition());
+		}
+	}
+}
+
+void CGame::HandleEnemyShotLoadAnim()
+{
+	if (!m_pEnemy->IsShot())
+	{
+		float scale = m_pEnemy->GetAttackCD() * 0.5f;
+		D3DXVECTOR3 vScale = D3DXVECTOR3(scale, scale, scale);
+		D3DXVECTOR3 vPos = m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.5f, 0.f) - m_pEnemy->GetForward() * 3.5f;
+
+		if (CEffect::IsPlaying(enemyShotLoadHandle))
+		{
+			CEffect::SetScale(enemyShotLoadHandle, vScale);
+			CEffect::SetLocation(enemyShotLoadHandle, vPos);
+		}
+		else
+		{
+			enemyShotLoadHandle = CEffect::Play(CEffect::MagmaEffect, vPos);
+			CEffect::SetScale(enemyShotLoadHandle, vScale);
+		}
+
+	}
+	else
+	{
+		CEffect::Stop(enemyShotLoadHandle);
+	}
 }
 
 void CGame::HandleWeapon()
@@ -1096,7 +1209,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		impact.normal = normal;
 		impact.isEnemyHit = false;
 		// Hit detected
-		debugHitShotList.push_back(hitPos);
+		//debugHitShotList.push_back(hitPos);
 		m_bulletImpactList.push_back(impact);
 	}
 	
@@ -1153,12 +1266,42 @@ void CGame::HandleEnemySpawning()
 
 }
 
+void CGame::HandleEnemyShooting()
+{
+	float playerHeight = m_pPlayer->GetHeight();
+	D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f,-playerHeight * 0.5f, 0.f) - m_pEnemy->GetPosition();
+	D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
+
+	if (m_pEnemy->IsShot())
+	{
+		m_pEnemyShotList[NextEnemyShot()]->Reload(
+			m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f),
+			dirToPlayer,
+			m_pEnemy->GetRotation().y);
+	}
+
+	for (auto pEnemy : m_pEnemyList)
+	{
+		
+		if(pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
+		{
+			m_pEnemyShotList[NextEnemyShot()]->Reload(
+				pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f),
+				dirToPlayer,
+				pEnemy->GetRotation().y);
+		}
+
+
+	}
+
+}
+
 void CGame::SetupBlockedPath()
 {
 	m_pBlockedPathList[0]->SetScale(12.f, 5.f, 3.f);
 	m_pBlockedPathList[1]->SetScale(12.f, 5.f, 3.f);
-	m_pBlockedPathList[0]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 172.f));
-	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 242.f));
+	m_pBlockedPathList[0]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 175.f));
+	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 7.5f, 245.f));
 }
 
 void CGame::SetupTriggers()
@@ -1275,6 +1418,19 @@ int CGame::NextBullet()
 		return m_bulletIndex++;
 	}
 
+}
+
+int CGame::NextEnemyShot()
+{
+	if (m_enemyShotIndex >= PROJECTILE_COUNT_MAX - 1)
+	{
+		m_enemyShotIndex = 0;
+		return m_enemyShotIndex;
+	}
+	else
+	{
+		return m_enemyShotIndex++;
+	}
 }
 
 

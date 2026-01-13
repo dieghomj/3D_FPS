@@ -10,6 +10,7 @@ public:
 		Spawning,
 		Idle,
 		Chasing,
+		Running,
 		Attacking,
 		Jumping,
 		Damaged,
@@ -60,6 +61,8 @@ public:
 	void SetFloorNormal(const D3DXVECTOR3& normal) { m_FloorNormal = normal; }
 	D3DXVECTOR3 GetFloorNormal() const { return m_FloorNormal; }
 
+	void SetRotationSpeed(float speed) { m_RotationSpeed = speed; }
+
 	void UpdateCrossRay();
 	CROSSRAY GetHeadCrossRay() const { return *m_pHeadCrossRay; }
 
@@ -73,6 +76,8 @@ protected:
 	int m_State;
 	float m_Health;
 	bool m_IsAlive;
+
+	float m_RotationSpeed;
 
 	// 衝突検出用のメンバー
 	float m_FloorY;

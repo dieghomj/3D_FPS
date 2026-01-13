@@ -50,9 +50,9 @@ public:
 	virtual HRESULT LoadData() override;
 	virtual void Release() override;
 	virtual void Start() override;
-	void SetupBlockedPath();
 	virtual void Draw() override;
 	virtual void Update() override;
+
 
 	void Restart();
 
@@ -60,6 +60,7 @@ public:
 private:
 
 	int NextBullet();
+	int NextEnemyShot();
 	void HandleWeaponPos();
 	void HandleWeapon();
 	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
@@ -68,6 +69,8 @@ private:
 	void HandlePlayerEnemyCollision();
 	void HandleEnemyEnemyCollision();
 	void HandleEnemySpawning();
+
+	void HandleEnemyShooting();
 
 	//void HandleWallCollisions(CCharacter* character);
 
@@ -78,6 +81,11 @@ private:
 	void SetupGoal();
 	void CheckGoal();
 	bool IsPlayerInTriggerArea(const GOAL& trigger);
+
+	void SetupBlockedPath();
+	void DrawEnemyShots();
+	void HandleEnemyShotLoadAnim();
+	void HandlePlayerDashEffect();
 
 	//void HandlePlayerBulletCollision();
 	//void HandleEnemyBulletCollision();
@@ -149,7 +157,7 @@ private:
 	//-----ENEMY------
 	//----------------
 	CStaticMesh* m_pEnemyMesh;
-	CAnimCharacter* m_pEnemy;
+	CRobo* m_pEnemy;
 	
 	CStaticMesh* m_pSpiderMesh;
 	CStaticMesh* m_pRoboMesh;
@@ -158,8 +166,11 @@ private:
 	CSkinMesh* m_pSpiderSkinMesh;
 	CSkinMesh* m_pRoboSkinMesh;
 	CSkinMesh* m_pBossSkinMesh;
-	CAnimCharacter* m_pBossEnemy;
+	CAnimEnemy* m_pBossEnemy;
 	std::vector<CAnimEnemy*> m_pEnemyList;
+	std::vector<CShot*> m_pEnemyShotList;
+	int m_enemyShotIndex = 0;
+
 
 	//----------------
 	//-----PLAYER-----
@@ -183,6 +194,8 @@ private:
 	::EsHandle dashHandle = -1;
 	::EsHandle enemyHitHandle = -1;
 	::EsHandle enemyDeathHandle = -1;
+	::EsHandle enemyShotLoadHandle = -1;
+	std::vector<::EsHandle> enemyShotEffectHandles;
 	::EsHandle itemPickupHandle = -1;
 	::EsHandle healthPickupHandle = -1;
 	::EsHandle ammoPickupHandle = -1;
