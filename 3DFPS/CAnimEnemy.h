@@ -10,6 +10,7 @@ public:
 		Spawning,
 		Idle,
 		Chasing,
+		Running,
 		Attacking,
 		Jumping,
 		Damaged,
