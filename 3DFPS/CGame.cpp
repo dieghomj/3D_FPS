@@ -290,7 +290,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\TestStage\\Level001.x")))
+	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Level001\\Level001.x")))
 	{
 		return E_FAIL;
 	}
@@ -385,7 +385,7 @@ HRESULT CGame::LoadData()
 	}
 
 	m_pGround->AttachMesh(*m_pGroundMesh);
-	m_pStage->AttachMesh(*m_pBaseStageMesh);
+	m_pStage->AttachMesh(*m_pBridStageMesh);
 	m_pStage->SetScale(0.8f);
 	m_pStage->SetPlayer(*m_pPlayer);
 	m_pStage->SetEnemyList(m_pEnemyList);
@@ -770,9 +770,9 @@ void CGame::Restart()
 	m_pPlayer->SetPosition(PLAYER_STARTPOS);
 	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS);
 
-	SetupBlockedPath();
-	SetupGoal();
-	SetupTriggers();
+	//SetupBlockedPath();
+	//SetupGoal();
+	//SetupTriggers();
 
 	m_enemyKillCount = 0;
 	m_comboCount = 0;
