@@ -216,23 +216,23 @@ void CMenu::UpdateLevelSelect()
 	}
 
 	// Change difficulty (LEFT/RIGHT) - only when a level is selected
-	if (m_SelectedLevel < LEVEL_COUNT)
-	{
-		if (GetAsyncKeyState(VK_LEFT) & 0x0001)
-		{
-			CSoundManager::PlaySE(CSoundManager::SE_Select);
-			m_SelectedDifficulty--;
-			if (m_SelectedDifficulty < CGameStats::DIFF_EASY)
-				m_SelectedDifficulty = CGameStats::DIFF_HARD;
-		}
-		if (GetAsyncKeyState(VK_RIGHT) & 0x0001)
-		{
-			CSoundManager::PlaySE(CSoundManager::SE_Select);
-			m_SelectedDifficulty++;
-			if (m_SelectedDifficulty > CGameStats::DIFF_HARD)
-				m_SelectedDifficulty = CGameStats::DIFF_EASY;
-		}
-	}
+	//if (m_SelectedLevel < LEVEL_COUNT)
+	//{
+	//	if (GetAsyncKeyState(VK_LEFT) & 0x0001)
+	//	{
+	//		CSoundManager::PlaySE(CSoundManager::SE_Select);
+	//		m_SelectedDifficulty--;
+	//		if (m_SelectedDifficulty < CGameStats::DIFF_EASY)
+	//			m_SelectedDifficulty = CGameStats::DIFF_HARD;
+	//	}
+	//	if (GetAsyncKeyState(VK_RIGHT) & 0x0001)
+	//	{
+	//		CSoundManager::PlaySE(CSoundManager::SE_Select);
+	//		m_SelectedDifficulty++;
+	//		if (m_SelectedDifficulty > CGameStats::DIFF_HARD)
+	//			m_SelectedDifficulty = CGameStats::DIFF_EASY;
+	//	}
+	//}
 
 	// Go back to main menu (ESC shortcut)
 	if (GetAsyncKeyState(VK_ESCAPE) & 0x0001)
@@ -297,11 +297,11 @@ void CMenu::DrawLevelSelect()
 	}
 
 	// Difficulty selector
-	m_pMenuFont->SetColor(0.8f, 0.8f, 0.2f);
-	const TCHAR* diffNames[] = { _T("EASY"), _T("NORMAL"), _T("HARD") };
-	TCHAR diffText[128];
-	_stprintf_s(diffText, _T("< DIFFICULTY: %s >"), diffNames[m_SelectedDifficulty]);
-	m_pMenuFont->Render(diffText, static_cast<float>(WND_W / 2 - 140), startY + (LEVEL_COUNT * 50.0f) + 20.0f, 35.0f);
+	//m_pMenuFont->SetColor(0.8f, 0.8f, 0.2f);
+	//const TCHAR* diffNames[] = { _T("EASY"), _T("NORMAL"), _T("HARD") };
+	//TCHAR diffText[128];
+	//_stprintf_s(diffText, _T("< DIFFICULTY: %s >"), diffNames[m_SelectedDifficulty]);
+	//m_pMenuFont->Render(diffText, static_cast<float>(WND_W / 2 - 140), startY + (LEVEL_COUNT * 50.0f) + 20.0f, 35.0f);
 
 	// BACK option
 	float backY = startY + (LEVEL_COUNT * 50.0f) + 80.0f;
