@@ -47,6 +47,9 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	// Allow free mouse movement in menus
+	bool ShouldLockMouse() const override { return false; }
+
 private:
 	void UpdateMainMenu();
 	void UpdateLevelSelect();

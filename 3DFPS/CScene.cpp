@@ -93,15 +93,26 @@ void CScene::UpdateMousePos()
 	GetCursorPos(&mousePos);
 	ScreenToClient(m_hWnd, &mousePos);
 
-	// Calculate delta from center
-	POINT center = { WND_W / 2, WND_H / 2 };
-	m_mouseDelta.x = mousePos.x - center.x;
-	m_mouseDelta.y = mousePos.y - center.y;
-	m_mouseSeudoPos.x += m_mouseDelta.x;
-	m_mouseSeudoPos.y += m_mouseDelta.y;
-	//// Reset cursor to center
-	ClientToScreen(m_hWnd, &center);
-	SetCursorPos(center.x, center.y);
+	if (ShouldLockMouse())
+	{
+		// Calculate delta from center
+		POINT center = { WND_W / 2, WND_H / 2 };
+		m_mouseDelta.x = mousePos.x - center.x;
+		m_mouseDelta.y = mousePos.y - center.y;
+		m_mouseSeudoPos.x += m_mouseDelta.x;
+		m_mouseSeudoPos.y += m_mouseDelta.y;
+		// Reset cursor to center
+		ClientToScreen(m_hWnd, &center);
+		SetCursorPos(center.x, center.y);
+	}
+	else
+	{
+		// Free mouse movement for menus
+		m_mouseDelta.x = mousePos.x - m_mouseBeforePos.x;
+		m_mouseDelta.y = mousePos.y - m_mouseBeforePos.y;
+		m_mouseBeforePos = mousePos;
+		m_mousePos = mousePos;
+	}
 }
 
 POINT CScene::GetMouseSeudoPos()

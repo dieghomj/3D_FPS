@@ -7,7 +7,7 @@ constexpr int ENEMY_COUNT_MAX = 64;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
 constexpr float ENEMY_SHOT_SPEED = 1.2f;
 constexpr int STAGE_TIMER = 2 * 60; // minutes
-const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -75.f);
+const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -25.f);
 
 const D3DXVECTOR3 enemyStartPos[4] = {
 	D3DXVECTOR3(-13.f,8.f,200.f),
@@ -290,7 +290,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Level001\\Level001.x")))
+	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Level003\\Level003.x")))
 	{
 		return E_FAIL;
 	}
@@ -341,6 +341,7 @@ HRESULT CGame::LoadData()
 	{
 		pEnemy->AttachMesh(*m_pSpiderMesh);
 		pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
+		pEnemy->SetActive(false);
 		pEnemy->SetScale(2.2f);
 	}
 
@@ -1260,7 +1261,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 
 	for (auto& enemy : m_pEnemyList)
 	{
-		if (enemy->IsDead()) continue;
+		if (enemy->IsDead() || !enemy->IsActive()) continue;
 		if (enemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 		{
 			impact.position = hitPos;
@@ -1307,6 +1308,8 @@ void CGame::HandlePlayerEnemyCollision()
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
 	float playerRadius = m_pPlayer->GetRadius();
 
+	HandleCollision(m_pEnemy, m_pPlayer, playerRadius, false);
+
 	for (auto pEnemy : m_pEnemyList)
 	{
 		if (!pEnemy || pEnemy->IsDead() || !pEnemy->IsActive()) continue;
@@ -1330,6 +1333,9 @@ void CGame::HandlePlayerEnemyCollision()
 void CGame::HandleEnemyEnemyCollision()
 {
 	size_t enemyCount = m_pEnemyList.size();
+	float distance = 0.f;
+
+	HandleCollision(m_pEnemy, m_pEnemy, distance); // Reset any previous collision state
 
 	for (size_t i = 0; i < enemyCount; ++i)
 	{
@@ -1341,7 +1347,6 @@ void CGame::HandleEnemyEnemyCollision()
 
 			auto& enemyA = m_pEnemyList[i];
 			auto& enemyB = m_pEnemyList[j];
-			float distance = 0.f;
 			HandleCollision(enemyA, enemyB, distance);
 		}
 	}

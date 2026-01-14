@@ -24,7 +24,10 @@ void CAnimCharacter::InitAnimation()
 
 void CAnimCharacter::Update()
 {
-	
+	if (IsActive() == false)
+	{
+		return;
+	}
 	m_AnimTime += (float)m_AnimSpeed;
 
 }
@@ -32,12 +35,19 @@ void CAnimCharacter::Update()
 //デバッグのみ使用
 void CAnimCharacter::RenderStatic(SCENE_DATA& sceneData)
 {
+	if (IsActive() == false)
+	{
+		return;
+	}
 	CCharacter::Draw(sceneData);
 }
 
 void CAnimCharacter::Draw(SCENE_DATA& sceneData)
 {
-
+	if (IsActive() == false)
+	{
+		return;
+	}
 	D3DXMATRIX& View = sceneData.mView;
 	D3DXMATRIX& Proj = sceneData.mProj;
 	LIGHT& Light = sceneData.Light;

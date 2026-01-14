@@ -17,9 +17,9 @@ static constexpr float SLAM_CD = 6.0f;
 static constexpr float SHOOT_MINION_CD = 3.0f;
 static constexpr float MORPH_ATTACK_CD = 8.0f;
 
-static constexpr float MORPH_ATTACK_WIDTH = 10.5f;
-static constexpr float MORPH_ATTACK_HEIGHT = 9.0f;
-static constexpr float MORPH_ATTACK_DURATION = 2.0f;
+static constexpr float MORPH_ATTACK_WIDTH = 100.5f;
+static constexpr float MORPH_ATTACK_HEIGHT = 15.0f;
+static constexpr float MORPH_ATTACK_AREA = 50.f;
 static constexpr float MORPH_ATTACK_SPEED = 0.5f;
 
 static constexpr float SLAM_ATTACK_DURATION = 1.5f;
@@ -168,7 +168,27 @@ void CBoss::Attack()
 	{
 
 	case MORPH:
-		MorphAttack();
+
+		switch (m_CurrentAttackState)
+		{
+			case START:
+				m_MorphSweepStartPosition = m_vPosition;
+				MorphAttack();
+				break;
+			case SLAM:
+				MorphSlam();
+				break;
+			case SWEEP:
+				MorphSweep();
+				break;
+			case RECOVER:
+				MorphRecover();
+				break;
+		default:
+			MorphAttack();
+			break;
+		}
+
 		break;
 	case GROUNDSLAM:
 		GroundSlam();
@@ -212,19 +232,20 @@ void CBoss::MorphAttack()
 {
 	if(m_Morphed)
 		return;
-
-	m_CurrentShape = GetRandomMorphShape();
+	m_CurrentAttackState = START;
+	//m_CurrentShape = GetRandomMorphShape();
+	m_CurrentShape = MORPH_HORIZONTAL;
 	switch (m_CurrentShape)
 	{
 	case MORPH_HORIZONTAL:
 		m_vScale = D3DXVECTOR3(MORPH_ATTACK_WIDTH, MORPH_ATTACK_HEIGHT, 4.9f);
 		MorphSlam();
-		m_CurrentAttack = GROUNDSLAM;
+		m_CurrentAttack = MORPH;
 		break;
 	case MORPH_VERTICAL:
 		m_vScale = D3DXVECTOR3(4.9f, MORPH_ATTACK_HEIGHT, MORPH_ATTACK_WIDTH);
 		MorphSlam();
-		m_CurrentAttack = GROUNDSLAM;
+		m_CurrentAttack = MORPH;
 		break;
 	}
 
@@ -236,7 +257,7 @@ void CBoss::MorphAttack()
 // Stay down and the sweep attack
 void CBoss::MorphSlam()
 {
-
+	m_CurrentAttackState = SLAM;
 	m_SlamAnimTime += 0.016f;
 	if (m_SlamAnimTime >= 0.5f && IsGrounded() == false)
 	{
@@ -257,22 +278,23 @@ void CBoss::MorphSlam()
 // Extend scale and sweep side to side
 void CBoss::MorphSweep()
 {
-
-	float dirSpeed = MORPH_ATTACK_SPEED;
+	m_CurrentAttackState = SWEEP;
+	static float dirSpeed = (rand() % 2) == 0 ? 1 : -1;
 	switch (m_CurrentShape)
 	{
-
 	case MORPH_HORIZONTAL:
-		if (m_vPosition.x > MORPH_ATTACK_WIDTH)
-			m_vPosition.x += -dirSpeed;
-		else
-			m_vPosition.x += dirSpeed;
+		if (m_vPosition.z >= m_MorphSweepStartPosition.z + MORPH_ATTACK_AREA)
+			dirSpeed = -1;
+		else if (m_vPosition.z <= -(m_MorphSweepStartPosition.z + MORPH_ATTACK_AREA))
+			dirSpeed = 1;
+		m_vPosition.z += dirSpeed * MORPH_ATTACK_SPEED;
 		break;
 	case MORPH_VERTICAL:
-		if (m_vPosition.z > MORPH_ATTACK_WIDTH)
-			m_vPosition.z += -dirSpeed;
-		else			
-			m_vPosition.z += dirSpeed;
+		if (m_vPosition.x >= m_MorphSweepStartPosition.x + MORPH_ATTACK_AREA)
+			dirSpeed = -1;
+		else if (m_vPosition.x <= -(m_MorphSweepStartPosition.x + MORPH_ATTACK_AREA))
+			dirSpeed = 1;
+		m_vPosition.x += dirSpeed * MORPH_ATTACK_SPEED;
 		break;
 	default:
 		break;

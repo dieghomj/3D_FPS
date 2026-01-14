@@ -135,6 +135,10 @@ void CAnimEnemy::LaunchAtPlayer(float speed )
 
 void CAnimEnemy::Draw(SCENE_DATA& sceneData)
 {
+	if (IsActive() == false)
+	{
+		return;
+	}
 	CAnimCharacter::Draw(sceneData);
 }
 
