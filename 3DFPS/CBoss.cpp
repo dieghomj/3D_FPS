@@ -9,7 +9,7 @@ static constexpr float SCALEMORPH_AMPLITUDE = 7.25f;
 static constexpr float IDLE_SPEED = 0.01f;
 static constexpr float CHASE_SPEED = 0.39f;
 
-static constexpr float SLAM_RANGE = 0.9f;
+static constexpr float SLAM_RANGE = 1.0f;
 static constexpr float SHOOT_MINION_RANGE = 100.f;
 static constexpr float MORPH_ATTACK_RANGE = 20.f;
 

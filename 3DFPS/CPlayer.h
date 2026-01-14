@@ -63,13 +63,13 @@ public:
 	void ApplyStamina(float stamina) { m_DashTimer += stamina; }
 	void ApplyAmmo(int ammo) { return; };
 
-	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 3; }	// 0,1,2
+	int NextWeapon() { return m_currWeapon = (m_currWeapon + 1) % 2; }	// 0,1,2
 	int PrevWeapon() 
 	{
 		return m_currWeapon = 
 			((m_currWeapon - 1) < 0 ? 
 				(4 + (m_currWeapon - 1) * -1) : 
-				(m_currWeapon - 1)) % 3; 
+				(m_currWeapon - 1)) % 2; 
 	}
 
 	void UpdateAxis();

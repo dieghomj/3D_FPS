@@ -54,6 +54,7 @@ public:
 	virtual void Release() override;
 	virtual void Start() override;
 	virtual void Draw() override;
+	void DrawDecals(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 	virtual void Update() override;
 
 
@@ -196,6 +197,8 @@ private:
 
 	::EsHandle m_shotHandle = -1;
 	CStaticMesh* m_pBulletMesh;
+	CSprite3D* m_pBulletLaserSprite;
+	CSpriteObject* m_pBulletLaser;
 	std::vector<CShot*> m_pBulletList;
 	std::vector<BULLET_IMPACT> m_bulletImpactList;
 	CDecal* m_pShotDecalSprite;
