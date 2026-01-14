@@ -13,9 +13,9 @@ static constexpr float SLAM_RANGE = 0.9f;
 static constexpr float SHOOT_MINION_RANGE = 100.f;
 static constexpr float MORPH_ATTACK_RANGE = 20.f;
 
-static constexpr float SLAM_CD = 6.0f;
+static constexpr float SLAM_CD = 4.0f;
 static constexpr float SHOOT_MINION_CD = 3.0f;
-static constexpr float MORPH_ATTACK_CD = 8.0f;
+static constexpr float MORPH_ATTACK_CD = 88.0f;
 
 static constexpr float MORPH_ATTACK_WIDTH = 100.5f;
 static constexpr float MORPH_ATTACK_HEIGHT = 15.0f;
@@ -43,8 +43,14 @@ CBoss::CBoss()
 	, m_SlamCD(SLAM_CD)
 	, m_ShootMinionCD(0.0f)
 	, m_PhaseHealth{ 300.0f, 200.0f, 100.0f }
+	, m_MorphSweepStartPosition(0.0f, 0.0f, 0.0f)
+	, m_CurrentAttackState(0)
+	, m_CurrentShape(0)
+	, m_OriginalScale(4.9f, 4.9f, 4.9f)
+
 {
 
+	m_Radius = 5.0f;
 	m_GravityEnabled = false;
 	m_State = Idle;
 
@@ -82,38 +88,26 @@ void CBoss::Update()
 		}
 	}
 
-	if (m_Morphed)
+	else if (m_Morphed)
 	{
 		m_MorphAttackCD += 0.016f;
-		ScaleMorphAnim(0.016f, 10.25f, 2.0f);
-		if (m_SlamCD > SLAM_CD)
+		ScaleMorphAnim(0.016f, 1.25f, 2.0f);
+		if (m_MorphAttackCD > MORPH_ATTACK_CD)
 		{
 			m_Attacked = false;
 			m_Morphed = false;
 			m_MorphAttackCD = MORPH_ATTACK_CD;
 			m_State = Idle;
-			m_vScale = D3DXVECTOR3(4.9f, 4.9f, 4.9f);
+			//m_vScale = D3DXVECTOR3(4.9f, 4.9f, 4.9f);
 		}
 	}
 
-	if (m_GroundSlammed)
+	else if (m_GroundSlammed)
 	{
 		m_SlamAnimTime = 0.f;
 		m_SlamCD += 0.016f;
 
-		float objectiveHeight = m_FloorY + FLIGHT_HEIGHT;
-		if (m_vPosition.y < objectiveHeight)
-		{
-			m_vPosition.y += RECOVER_SPEED;
-			if (m_vPosition.y > objectiveHeight)
-				m_vPosition.y = objectiveHeight;
-		}
-		else if (m_vPosition.y > objectiveHeight)
-		{
-			m_vPosition.y -= RECOVER_SPEED;
-			if (m_vPosition.y < objectiveHeight)
-				m_vPosition.y = objectiveHeight;
-		}
+		RecoverPosition();
 
 		if (m_SlamCD > SLAM_CD)
 		{
@@ -153,6 +147,27 @@ void CBoss::Update()
 
 }
 
+bool CBoss::RecoverPosition()
+{
+	float objectiveHeight = m_FloorY + FLIGHT_HEIGHT;
+	if (m_vPosition.y < objectiveHeight)
+	{
+		m_vPosition.y += RECOVER_SPEED;
+		if (m_vPosition.y > objectiveHeight)
+			m_vPosition.y = objectiveHeight;
+	}
+	else if (m_vPosition.y > objectiveHeight)
+	{
+		m_vPosition.y -= RECOVER_SPEED;
+		if (m_vPosition.y < objectiveHeight)
+			m_vPosition.y = objectiveHeight;
+
+	}
+	else
+		return true;
+	return false;
+}
+
 void CBoss::Draw(SCENE_DATA& sceneData)
 {
 }
@@ -168,7 +183,7 @@ void CBoss::Attack()
 	{
 
 	case MORPH:
-
+		
 		switch (m_CurrentAttackState)
 		{
 			case START:
@@ -209,9 +224,16 @@ void CBoss::ChasePlayer()
 	D3DXVECTOR3 toPlayer = m_PlayerPos - GetPosition();
 	toPlayer.y = 0.0f;
 	dist = D3DXVec3Length(&toPlayer);
-	if(dist <= SLAM_RANGE)
+	if (dist <= SLAM_RANGE)
 	{
 		m_State = Attacking;
+		m_CurrentAttack = GROUNDSLAM;
+		return;
+	}
+	else if(dist <= MORPH_ATTACK_RANGE && 0)
+	{
+		m_State = Attacking;
+		m_CurrentAttackState = START;
 		m_CurrentAttack = MORPH;
 		return;
 	}
@@ -222,7 +244,7 @@ void CBoss::ChasePlayer()
 		return;
 	}
 
-	m_vPosition += m_vForward * -CHASE_SPEED;
+	m_vPosition += -m_vForward * CHASE_SPEED;
 
 }
 
@@ -230,8 +252,6 @@ void CBoss::ChasePlayer()
 // Morph attack logic
 void CBoss::MorphAttack()
 {
-	if(m_Morphed)
-		return;
 	m_CurrentAttackState = START;
 	//m_CurrentShape = GetRandomMorphShape();
 	m_CurrentShape = MORPH_HORIZONTAL;
@@ -279,21 +299,39 @@ void CBoss::MorphSlam()
 void CBoss::MorphSweep()
 {
 	m_CurrentAttackState = SWEEP;
+	if(m_MorphAttackCount >= 3)
+	{
+		MorphRecover();
+		m_MorphAttackCount = 0;
+		return;
+	}
 	static float dirSpeed = (rand() % 2) == 0 ? 1 : -1;
 	switch (m_CurrentShape)
 	{
 	case MORPH_HORIZONTAL:
 		if (m_vPosition.z >= m_MorphSweepStartPosition.z + MORPH_ATTACK_AREA)
+		{
 			dirSpeed = -1;
+			m_MorphAttackCount++;
+		}
 		else if (m_vPosition.z <= -(m_MorphSweepStartPosition.z + MORPH_ATTACK_AREA))
+		{
 			dirSpeed = 1;
+			m_MorphAttackCount++;
+		}
 		m_vPosition.z += dirSpeed * MORPH_ATTACK_SPEED;
 		break;
 	case MORPH_VERTICAL:
 		if (m_vPosition.x >= m_MorphSweepStartPosition.x + MORPH_ATTACK_AREA)
+		{
 			dirSpeed = -1;
+			m_MorphAttackCount++;
+		}
 		else if (m_vPosition.x <= -(m_MorphSweepStartPosition.x + MORPH_ATTACK_AREA))
+		{
 			dirSpeed = 1;
+			m_MorphAttackCount++;
+		}
 		m_vPosition.x += dirSpeed * MORPH_ATTACK_SPEED;
 		break;
 	default:
@@ -304,8 +342,19 @@ void CBoss::MorphSweep()
 
 void CBoss::MorphRecover()
 {
+	m_CurrentAttackState = RECOVER;
+	
+	m_vScale = m_OriginalScale;
+	m_Attacked = true;
+	m_Morphed = true;
+	m_MorphAttackCD = 0.f;
 
-
+	if (RecoverPosition())
+	{
+		m_CurrentAttack = GROUNDSLAM;
+		m_CurrentAttackState = START;
+		m_State = Idle;
+	}
 }
 
 // Slam attack logic
@@ -320,6 +369,7 @@ void CBoss::GroundSlam()
 	m_SlamAnimTime += 0.016f;
 	if (m_SlamAnimTime >= 0.5f && IsGrounded() == false)
 	{
+		VibrateAnim(0.016f, 0.05f, 9.50f);
 		m_vPosition.y -= 1.5f * SLAM_SPEED; // Move down
 		return;
 	}
@@ -332,6 +382,7 @@ void CBoss::GroundSlam()
 		m_State = Idle;
 		return;
 	}
+	VibrateAnim(0.016f, 0.05f, 9.50f);
 
 	m_vPosition.y += 0.9f; // Move up
 

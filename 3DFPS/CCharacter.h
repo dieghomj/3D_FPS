@@ -19,7 +19,7 @@ public:
 
 	//弾を飛ばしたいか確認
 	bool IsShot() const { return m_Shot; }
-
+	void SetRadius(float radius) { m_Radius = radius; }
 	//キャラクターの半径を取得
 	float GetRadius() const { return m_Radius; }
 	//Y軸方向へ伸ばしたレイを取得

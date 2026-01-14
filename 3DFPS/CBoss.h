@@ -10,6 +10,7 @@ public:
 	virtual ~CBoss() override;
 	virtual void InitEnemy() override;
 	virtual void Update() override;
+	bool RecoverPosition();
 	virtual void Draw(SCENE_DATA& sceneData) override;
 	virtual void Die() override;
 	virtual void ApplyDamage(int damage) override;

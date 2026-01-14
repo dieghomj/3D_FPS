@@ -448,7 +448,7 @@ HRESULT CGame::LoadData()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pHealthItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Health\\HP_Play.x")))
+	if (FAILED(m_pHealthItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Wall\\WallCol.x")))
 	{
 		return E_FAIL;
 	}
@@ -1321,10 +1321,6 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 
 void CGame::HandlePlayerEnemyCollision()
 {
-	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
-	float playerRadius = m_pPlayer->GetRadius();
-
-	HandleCollision(m_pEnemy, m_pPlayer, playerRadius, false);
 
 	for (auto pEnemy : m_pEnemyList)
 	{
@@ -1350,8 +1346,6 @@ void CGame::HandleEnemyEnemyCollision()
 {
 	size_t enemyCount = m_pEnemyList.size();
 	float distance = 0.f;
-
-	HandleCollision(m_pEnemy, m_pEnemy, distance); // Reset any previous collision state
 
 	for (size_t i = 0; i < enemyCount; ++i)
 	{

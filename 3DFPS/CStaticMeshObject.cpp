@@ -425,9 +425,9 @@ void CStaticMeshObject::ScaleMorphAnim(float dt, float amp, float speed)
 	float morphZ = sinf(m_ScaleMorphAnimTime * 0.9f) + cosf(m_ScaleMorphAnimTime * 2.1f) * 0.5f;
 
 	// 振幅を適用してスケールを設定
-	m_vScale.x = 1.0f + (morphX * amp * 0.1f);
-	m_vScale.y = 1.0f + (morphY * amp * 0.1f);
-	m_vScale.z = 1.0f + (morphZ * amp * 0.1f);
+	m_vScale.x += (morphX * amp * 0.1f);
+	m_vScale.y += (morphY * amp * 0.1f);
+	m_vScale.z += (morphZ * amp * 0.1f);
 
 	// スケールが負にならないように制限
 	m_vScale.x = max(0.1f, m_vScale.x);
