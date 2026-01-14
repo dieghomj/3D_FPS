@@ -54,7 +54,7 @@ float4 PS_Main(VS_OUTPUT input) : SV_Target
 	// エッジのソフトフェード処理
 	// UV座標が中心から離れるほど透明度を下げる
     float2 centered = input.UV * 2.0 - 1.0; // 0-1 を -1 to 1 に変換
-    float edgeDistance = length(centered);
+    float edgeDistance = length(centered) * 0.8;
     float edgeFade = saturate(1.0 - edgeDistance);
     edgeFade = pow(edgeFade, 2.0); // より滑らかなフェード
 	
