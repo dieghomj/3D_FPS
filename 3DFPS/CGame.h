@@ -14,6 +14,7 @@
 #include "CRobo.h"
 #include "CBoss.h"
 #include "CBlockedPath.h"	
+#include "CSkybox.h"
 
 
 class CGame :
@@ -137,6 +138,8 @@ private:
 	//--------------------
 	//---SCENE OBJECTS---
 	//--------------------
+	//SKYBOX
+		CSkybox* m_pSkybox;
 	//GROUND
 		CStaticMesh* m_pGroundMesh;
 		CStaticMeshObject* m_pGround;

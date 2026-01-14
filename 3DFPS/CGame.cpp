@@ -22,7 +22,7 @@ const D3DXVECTOR3 itemPos[2] =
 	D3DXVECTOR3(0.f, 1.45f, 150.9f),
 };
 
-bool wasStucked = false;
+bool wasStuck = false;
 int stuckFrameCount = 0;
 
 CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager)
@@ -40,6 +40,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pPainSprite(nullptr)
 	, m_pPainUI(nullptr)
 
+	, m_pSkybox(nullptr)
 	, m_pGround(nullptr)
 	, m_pGroundMesh(nullptr)
 	, m_pStage(nullptr)
@@ -106,6 +107,8 @@ void CGame::Create()
 	m_pHealthBarSprite = new CSprite2D();
 	m_pHealthBarUI = new CUIObject();
 
+	m_pSkybox = new CSkybox();
+
 	m_pGroundMesh = new CStaticMesh();
 	m_pGround = new CStaticMeshObject();
 	m_pBaseStageMesh = new CStaticMesh();
@@ -125,7 +128,6 @@ void CGame::Create()
 
 	m_pEnemyMesh = new CStaticMesh();
 	m_pSpiderMesh = new CStaticMesh();
-	m_pRoboMesh = new CStaticMesh();
 	m_pBossMesh = new CStaticMesh();
 	m_pSpiderSkinMesh = new CSkinMesh();
 	m_pRoboSkinMesh = new CSkinMesh();
@@ -225,6 +227,13 @@ HRESULT CGame::LoadData()
 	if (FAILED(m_pFont->Init(*m_pDx11)))
 	{
 		return E_FAIL;
+	}
+
+	// Load skybox cubemap texture
+	if (FAILED(m_pSkybox->Init(*m_pDx11, L"Data\\Texture\\Skybox\\skybox.dds")))
+	{
+		// Skybox loading failed - continue without it (optional)
+		OutputDebugString(_T("Warning: Skybox texture not found. Continuing without skybox.\n"));
 	}
 
 	CSprite2D::SPRITE_STATE healthBarState = {};
@@ -357,7 +366,7 @@ HRESULT CGame::LoadData()
 		else if (typeid(*pBossShot) == typeid(CRobo))
 		{
 			pBossShot = dynamic_cast<CRobo*>(pBossShot);
-			pBossShot->AttachMesh(*m_pSphereMesh);
+			//pBossShot->AttachMesh(*m_pSphereMesh);
 			//pBossShot->AttachSkinMesh();
 			pBossShot->SetScale(2.2f);
 		}
@@ -620,13 +629,13 @@ void CGame::Update()
 
 	m_pPlayer->Update();
 	m_pPlayer->UpdateCollider();
-	if (wasStucked)
+	if (wasStuck)
 	{
 		// Skip updating the stage to prevent collision issues
 		stuckFrameCount++;
 		if (stuckFrameCount > 1)
 		{
-			wasStucked = false;
+			wasStuck = false;
 			stuckFrameCount = 0;
 		}
 	}
@@ -796,6 +805,13 @@ void CGame::Restart()
 void CGame::Draw()
 {
 	m_pCamera->Draw(m_SceneInfo);
+
+	// Render skybox first (before other objects)
+	if (m_pSkybox)
+	{
+		m_pSkybox->Render(m_SceneInfo.mView, m_SceneInfo.mProj, m_SceneInfo.Camera.vPosition);
+	}
+
 	m_pStage->Draw(m_SceneInfo);
 	m_pPlayerWeapon->Draw(m_SceneInfo);
 
