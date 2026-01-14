@@ -16,6 +16,13 @@ public:
 
 private:
 
+	enum AttackState {
+		START,
+		SLAM,
+		SWEEP,
+		RECOVER,
+	};
+
 	enum Phase {
 		Phase1,
 		Phase2,
@@ -68,12 +75,15 @@ private:
 	float m_MorphAttackHeight;
 	float m_GroundSlamHeight;
 
-	int m_CurrentShape;
+	D3DXVECTOR3 m_OriginalScale;
+	D3DXVECTOR3 m_MorphSweepStartPosition;
 
 	int m_MorphAttackCount;
 	int m_ShootMinionCount;
 
 	int m_CurrentAttack;
+	int m_CurrentAttackState;
+	int m_CurrentShape;
 	int m_CurrentPhase;
 
 	float m_SlamAnimTime;

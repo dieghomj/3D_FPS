@@ -22,6 +22,9 @@ public:
 
 	void Draw() override;
 
+	// Allow free mouse movement in game over screen
+	bool ShouldLockMouse() const override { return false; }
+
 private:
 	enum GAMEOVER_OPTION
 	{

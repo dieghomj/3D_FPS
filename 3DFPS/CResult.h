@@ -23,6 +23,9 @@ public:
 
 	void Draw() override;
 
+	// Allow free mouse movement in result screen
+	bool ShouldLockMouse() const override { return false; }
+
 private:
 	enum RESULT_OPTION
 	{
