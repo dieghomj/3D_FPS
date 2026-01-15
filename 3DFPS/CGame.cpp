@@ -386,23 +386,14 @@ void CGame::Update()
 	HandleBlockedPath();
 	//m_pGround->Update();
 
-	m_pEnemy->Update();
-	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
-
-	for (auto pEnemy : m_pEnemyList)
-	{
-		pEnemy->Update();
-		pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
-	}
-
-	for (auto pBossShot : m_pBossShotList)
-	{
-		if (pBossShot->IsActive())
-		{
-			pBossShot->Update();
-			pBossShot->SetPlayerPos(m_pPlayer->GetPosition());
-		}
-	}
+	//for (auto pBossShot : m_pBossShotList)
+	//{
+	//	if (pBossShot->IsActive())
+	//	{
+	//		pBossShot->Update();
+	//		pBossShot->SetPlayerPos(m_pPlayer->GetPosition());
+	//	}
+	//}
 
 	//m_pEnemyList[1]->Update();
 	//m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
@@ -460,9 +451,17 @@ void CGame::Update()
 
 	HandleWeapon();
 
+	//m_pEnemy->Update();
+	//m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
+	for (auto pEnemy : m_pEnemyList)
+	{
+		pEnemy->Update();
+		pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
+	}
 	HandlePlayerEnemyCollision();
 	HandleEnemyEnemyCollision();
 	HandleEnemyShooting();
+
 
 	for(auto pBullet : m_pBulletList)
 	{
@@ -935,7 +934,7 @@ void CGame::HandleEnemyShotLoadAnim(CRobo* pEnemy)
 
 
 	//RANGED ENEMY SHOT LOAD ANIMATION
-	/*if (!pEnemy->IsShot())
+	if (!pEnemy->IsShot())
 	{
 		float scale = pEnemy->GetAttackCD() * 0.5f;
 		D3DXVECTOR3 vScale = D3DXVECTOR3(scale, scale, scale);
@@ -956,7 +955,7 @@ void CGame::HandleEnemyShotLoadAnim(CRobo* pEnemy)
 	else
 	{
 		CEffect::Stop(enemyShotLoadHandle);
-	}*/
+	}
 }
 
 void CGame::HandleWeapon()
@@ -1168,6 +1167,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 	//	//debugHitShotList.push_back(hitPos);
 	//	//m_bulletImpactList.push_back(impact);
 	//}
+
 	if (m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 	{
 		impact.position = hitPos;
@@ -1186,10 +1186,18 @@ void CGame::HandlePlayerEnemyCollision()
 	for (auto pEnemy : m_pEnemyList)
 	{
 		if (!pEnemy || pEnemy->IsDead() || !pEnemy->IsActive()) continue;
-
+		if (typeid(*pEnemy) == typeid(CBoss))
+		{
+			continue;
+		}
 		D3DXVECTOR3 enemyPos = pEnemy->GetPosition();
 		float enemyRadius = pEnemy->GetRadius();
 		float distance = 0.f;
+		if (typeid(*pEnemy) == typeid(CBoss))
+		{
+			HandleCollision(pEnemy, m_pPlayer, distance, false);
+			continue;
+		}
 		HandleCollision(m_pPlayer, pEnemy, distance, false);
 
 		if (pEnemy->GetState() == CAnimEnemy::Attacking && distance <= enemyRadius + 0.85f)
@@ -1212,9 +1220,19 @@ void CGame::HandleEnemyEnemyCollision()
 	{
 		if (!m_pEnemyList[i] || m_pEnemyList[i]->IsDead()) continue;
 
+		if(typeid(*m_pEnemyList[i]) == typeid(CBoss))
+		{
+			continue;
+		}
+
 		for (size_t j = i + 1; j < enemyCount; ++j)
 		{
 			if (!m_pEnemyList[j] || m_pEnemyList[j]->IsDead()) continue;
+			
+			if (typeid(*m_pEnemyList[j]) == typeid(CBoss))
+			{
+				continue;
+			}
 
 			auto& enemyA = m_pEnemyList[i];
 			auto& enemyB = m_pEnemyList[j];
@@ -1254,10 +1272,6 @@ void CGame::HandleEnemyShooting()
 	}
 	
 	//RANGED ENEMY SHOOTING
-	/*float playerHeight = m_pPlayer->GetHeight();
-	D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f,-playerHeight * 0.5f, 0.f) - m_pEnemy->GetPosition();
-	D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
-
 	if (m_pEnemy->IsShot())
 	{
 		m_pEnemyShotList[NextEnemyShot()]->Reload(
@@ -1269,16 +1283,18 @@ void CGame::HandleEnemyShooting()
 	for (auto pEnemy : m_pEnemyList)
 	{
 		
+		if(typeid(*pEnemy) != typeid(CRobo))
+			continue;
+
 		if(pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
 		{
 			m_pEnemyShotList[NextEnemyShot()]->Reload(
 				pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f),
 				dirToPlayer,
 				pEnemy->GetRotation().y);
-		}*/
+		}
 
-
-	//}
+	}
 
 }
 
@@ -1731,6 +1747,7 @@ void CGame::InitEnemy()
 			pBossShot = dynamic_cast<CRobo*>(pBossShot);
 			pBossShot->SetScale(2.2f);
 		}
+		m_pEnemyList.push_back(pBossShot);
 	}
 
 	for (auto pEnemyShot : m_pEnemyShotList)
@@ -1739,14 +1756,17 @@ void CGame::InitEnemy()
 		pEnemyShot->SetMoveSpeed(ENEMY_SHOT_SPEED);
 	}
 
-	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 10.f));
+	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 13.f));
 
 	for (int i = 0; i < 4; i++)
 	{
 		m_pEnemyList[i]->InitEnemy();
 		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
-		m_pEnemyList[i]->SetActive(false);
+		//m_pEnemyList[i]->SetActive(false);
 	}
+
+	m_pEnemyList.push_back(m_pEnemy);
+	
 
 }
 HRESULT CGame::LoadPlayerAsset()

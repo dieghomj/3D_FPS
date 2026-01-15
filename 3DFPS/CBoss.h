@@ -1,4 +1,5 @@
 #pragma once
+#include <random>
 #include "CAnimEnemy.h"
 
 class CBoss :
@@ -59,6 +60,9 @@ private:
 	int GetRandomMorphShape();
 
 private:
+
+	std::mt19937 m_RandomGen;
+	std::uniform_int_distribution<int> shapeInt;
 
 	CROSSRAY m_CrossRay;
 	RAY m_HeadRay;

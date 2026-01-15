@@ -17,9 +17,9 @@ static constexpr float SLAM_CD = 4.0f;
 static constexpr float SHOOT_MINION_CD = 3.0f;
 static constexpr float MORPH_ATTACK_CD = 88.0f;
 
-static constexpr float MORPH_ATTACK_WIDTH = 100.5f;
+static constexpr float MORPH_ATTACK_WIDTH = 55.5f;
 static constexpr float MORPH_ATTACK_HEIGHT = 15.0f;
-static constexpr float MORPH_ATTACK_AREA = 50.f;
+static constexpr float MORPH_ATTACK_AREA = 36.f;
 static constexpr float MORPH_ATTACK_SPEED = 0.5f;
 
 static constexpr float SLAM_ATTACK_DURATION = 1.5f;
@@ -28,6 +28,7 @@ static constexpr float SLAM_SPEED = 0.9f;
 
 CBoss::CBoss()
 	: CAnimEnemy()
+	, shapeInt(0, 1)
 	, m_PlayerDist(0.0f)
 	, m_GroundSlammed(false)
 	, m_Morphed(false)
@@ -72,6 +73,11 @@ void CBoss::InitEnemy()
 
 void CBoss::Update()
 {
+	if (m_FloorY <= -FLT_MAX)
+	{
+		m_FloorY = 0.0f;
+	}
+
 	if ((m_CurrentAttack != MORPH))
 		FacePlayer(m_PlayerDist);
 	m_Shot = false;
@@ -91,7 +97,7 @@ void CBoss::Update()
 	else if (m_Morphed)
 	{
 		m_MorphAttackCD += 0.016f;
-		ScaleMorphAnim(0.016f, 1.25f, 2.0f);
+		ScaleMorphAnim(0.016f, 0.25f, 2.0f);
 		if (m_MorphAttackCD > MORPH_ATTACK_CD)
 		{
 			m_Attacked = false;
@@ -221,16 +227,16 @@ void CBoss::Attack()
 void CBoss::ChasePlayer()
 {
 	float dist = 0;
-	D3DXVECTOR3 toPlayer = m_PlayerPos - GetPosition();
+	D3DXVECTOR3 toPlayer = m_vPosition - m_PlayerPos  ;
 	toPlayer.y = 0.0f;
 	dist = D3DXVec3Length(&toPlayer);
-	if (dist <= SLAM_RANGE)
+	if (dist <= SLAM_RANGE && 0)
 	{
 		m_State = Attacking;
 		m_CurrentAttack = GROUNDSLAM;
 		return;
 	}
-	else if(dist <= MORPH_ATTACK_RANGE && 0)
+	else if(dist <= MORPH_ATTACK_RANGE )
 	{
 		m_State = Attacking;
 		m_CurrentAttackState = START;
@@ -279,7 +285,7 @@ void CBoss::MorphSlam()
 {
 	m_CurrentAttackState = SLAM;
 	m_SlamAnimTime += 0.016f;
-	if (m_SlamAnimTime >= 0.5f && IsGrounded() == false)
+	if (m_SlamAnimTime >= 2.5f && IsGrounded() == false)
 	{
 		m_vPosition.y -= 1.5f * SLAM_SPEED; // Move down
 		return;
@@ -348,6 +354,8 @@ void CBoss::MorphRecover()
 	m_Attacked = true;
 	m_Morphed = true;
 	m_MorphAttackCD = 0.f;
+	m_SlamAnimTime = 0.f;
+	ScaleMorphAnim(0.016f, 0.25f, 2.0f);
 
 	if (RecoverPosition())
 	{
@@ -412,8 +420,7 @@ int CBoss::NextPhase()
 
 int CBoss::GetRandomMorphShape()
 {
-
-	int shape = rand() % 2;
+	int shape = shapeInt(m_RandomGen);
 	return shape;
 }
 

@@ -47,14 +47,19 @@ void CAnimEnemy::Update()
 
 	D3DXVECTOR3 pos = GetPosition();
 	const float GRAVITY = 0.21f;
-	const float SNAP_DISTANCE = 0.05f;  // 床にスナップする距離
+	const float SNAP_DISTANCE = 0.005f;  // 床にスナップする距離
+
 
 	// 床との距離を計算
 	float distanceToFloor = pos.y - m_FloorY;
-
-
 	if (distanceToFloor > SNAP_DISTANCE)
 	{
+
+		if (m_FloorY <= -FLT_MAX)
+		{
+			m_FloorY = 0.0f;
+		}
+
 		m_IsGrounded = false;
 		// 空中にいる場合は重力を適用
 		if(m_GravityEnabled)
@@ -72,7 +77,7 @@ void CAnimEnemy::Update()
 		m_IsGrounded = true;
 	}
 
-	SetPosition(pos);
+	m_vPosition = pos;
 
 	if (m_State == Launched)
 	{
@@ -87,9 +92,9 @@ void CAnimEnemy::Update()
 	//レイの位置をプレイヤーの座標にそろえる
 	m_pRayY->Position = m_vPosition;
 	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y = m_vPosition.y + 0.2f;
+	m_pRayY->Position.y = m_vPosition.y + 0.45;
 	m_pRayY->RotationY = m_vRotation.y;
-	m_pRayY->Length = 2.5f;
+	m_pRayY->Length = 5.5f;
 
 	// クロスレイを更新
 	UpdateCrossRay();
@@ -104,8 +109,8 @@ void CAnimEnemy::UpdateCrossRay()
 
 	D3DXVECTOR3 pos = GetPosition() ;
 	D3DXVECTOR3 headPos = pos; 
-	pos.y += m_vPosition.y + 0.5f;  // 足元の高さに調整
-	headPos.y += m_vPosition.y + 0.2f;  // 頭部の高さに調整
+	pos.y += m_vPosition.y + 0.01;  // 足元の高さに調整
+	headPos.y += m_vPosition.y - 0.1f;  // 頭部の高さに調整
 	float rayLength = 2.5f;  // 半径より少し長く
 
 	for(int i = 0; i < CROSSRAY::max; ++i)
