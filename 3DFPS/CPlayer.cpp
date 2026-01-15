@@ -7,13 +7,13 @@ static constexpr float FRICTION = 0.0390f;
 static constexpr float HEALTH_MAX = 100.f;
 
 static constexpr float PLAYERSIZE = 4.5;
-static constexpr float CROUCHSIZE = 1.8f;
+static constexpr float CROUCHSIZE = 2.8f;
 static constexpr float PLAYERRADIUS = 0.5f;
 
-static constexpr float RUN_SPEED = 0.45f;
+static constexpr float RUN_SPEED = 0.55f;
 static constexpr float MAX_RUN_SPEED = 0.8f;
 
-static constexpr float CROUCH_SPEED = 0.05f;
+static constexpr float CROUCH_SPEED = 0.9f;
 
 static constexpr float JUMP_STRENGTH = 0.58f;
 
@@ -25,7 +25,7 @@ static constexpr float DASH_DISTANCE = 5.5f;
 static constexpr float DASH_COOLDOWN = 0.05f; // seconds
 static constexpr float DASH_MAX = 3.f; // seconds
 
-static constexpr float SLIDE_FRICTION = 0.003f;
+static constexpr float SLIDE_FRICTION = 0.0003f;
 static constexpr float SLIDE_START_SPEED = 0.01f;
 
 static bool debugGodMode = false;
@@ -243,12 +243,6 @@ void CPlayer::HandleInput()
 		return;
 	}
 
-	if (m_IsInertiaEnabled)
-	{
-		inputVel.x += m_Inertia.x;
-		inputVel.z += m_Inertia.z;
-	}
-
 	m_Velocity = inputVel;
 
 	if (m_pInputHandler->GetKeyDown(VK_LBUTTON))
@@ -283,11 +277,18 @@ void CPlayer::HandleInput()
 
 	if (m_pInputHandler->GetKey(VK_CONTROL) || m_pInputHandler->GetKey('C'))
 	{
+		m_Inertia += inputVel;
 		Slide();
 	}
 	else
 	{
 		m_IsSliding = false;
+	}
+
+	if (m_IsInertiaEnabled)
+	{
+		m_Velocity.x += m_Inertia.x;
+		m_Velocity.z += m_Inertia.z;
 	}
 
 }
@@ -362,7 +363,6 @@ void CPlayer::Jump()
 
 void CPlayer::Dash()
 {
-
 	if (m_DashTimer <= 1.0f)
 	{
 		return;
@@ -378,6 +378,7 @@ void CPlayer::Dash()
 		D3DXVECTOR3 dashDirection = m_DashDirection;
 		D3DXVec3Normalize(&dashDirection, &dashDirection);
 
+		ApplyDamage(0.0f);
 		m_Velocity += dashDirection * (RUN_SPEED + DASH_SPEED);
 		m_Inertia += dashDirection * (RUN_SPEED + DASH_SPEED) * 0.5f;
 	}
@@ -390,10 +391,10 @@ void CPlayer::Slide()
 	D3DXVECTOR3 horizontalVel = D3DXVECTOR3( m_Velocity.x, 0.f, m_Velocity.z);
 	float vel = D3DXVec3Length(&m_Velocity);
 
-	if (vel < SLIDE_START_SPEED && !m_IsSliding)
-	{
-		return;
-	}
+	//if (vel < SLIDE_START_SPEED && !m_IsSliding)
+	//{
+	//	return;
+	//}
 
 	//if(vel < 0.1f)
 	//{
@@ -404,7 +405,6 @@ void CPlayer::Slide()
 	//}
 	
 
-	ApplyDamage(0.0f); // to trigger invincibility frames
 	m_IsSliding = true;
 	m_MoveSpeed = CROUCH_SPEED;
 	m_Height = CROUCHSIZE;
@@ -461,10 +461,10 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleAirPhys()
 {
 	float feetY = m_vPosition.y - m_Height;			//プレイヤーの足元のY座標
-	float headY = m_vPosition.y + m_Height * 0.3f;	//プレイヤーの頭のY座標
+	float headY = m_vPosition.y + m_Height * 0.1f;	//プレイヤーの頭のY座標
 
-	const float GROUND_SNAP_DISTANCE = 0.015f;		//地面に吸着する距離
-	const float GROUND_PENETRATION = 0.01f;			//地面にめり込んだと見なす距離
+	const float GROUND_SNAP_DISTANCE = 0.00015f;		//地面に吸着する距離
+	const float GROUND_PENETRATION = 0.00001f;			//地面にめり込んだと見なす距離
 	const float CEILING_BUFFER = 0.01f;				//天井に当たったと見なす距離
 
 	float distanceToFloor = feetY - m_FloorY;		//プレイヤーの足元と地面の距離
@@ -475,9 +475,8 @@ void CPlayer::HandleAirPhys()
 		m_Velocity.y <= 0.f)
 	{
 		// On ground - snap to floor
-		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
-		m_Velocity.y = 0.f;
+		m_Velocity.y = 0;
 		m_Inertia.y = 0.f;
 
 		// End jump when touching ground while falling
