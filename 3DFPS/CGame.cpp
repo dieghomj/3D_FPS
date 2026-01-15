@@ -323,8 +323,8 @@ void CGame::Release()
 void CGame::Start()
 {
 	//ライト設定
-	float lightIntensity	= 1.0f;
-	D3DXVECTOR3 lightDir	= D3DXVECTOR3(0.0f, -1.0f, 3.5f);
+	float lightIntensity	= 1.05f;
+	D3DXVECTOR3 lightDir	= D3DXVECTOR3(0.2f, -1.0f, 0.5f);
 	
 	//フォグ設定
 	bool fog				= false;
@@ -368,52 +368,22 @@ void CGame::InitScene(float fovY, float aspect, float zn, float zf, float lightI
 
 void CGame::Update()
 {
-	
 	m_accumulatedTime += 0.016f;
-
 	if (1.0f - m_accumulatedTime <= 1e-5)
 	{
 		m_stageTimer -= 1.0f;
 		m_accumulatedTime = 0.0f;
 	}
 	
-	if (m_pPlayer->IsAlive() == false || m_pPlayer->GetPosition().y <= -50.f)
+	if (CheckRestartStatus())
 	{
-		CGameStats::DeathCounter++;
-		m_highestCombo = max(m_highestCombo, m_comboCount);
-		m_comboCount = 0;
 		Restart();
 		return;
 	}
 
-	if (m_stageTimer <= 0.f)
-	{
-		// Time's up - handle game over
-		SaveStats();
-		m_pManager->ChangeScene("GAMEOVER");
-	}
+	HandleGameOver();
 
-	if (m_pBlockedPathList[0]->IsActive() == true)
-	{
-		for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
-		{
-			if (m_pEnemyList[i]->IsActive() == false)
-				m_pEnemyList[i]->SpawnAt(enemyStartPos[i]);
-		}
-
-	}
-
-	if (m_enemyKillCount >= ENEMY_COUNT_PER_ROOM)
-	{
-		for (auto pBlockedPath : m_pBlockedPathList)
-		{
-			if (pBlockedPath->IsActive() == true)
-			{
-				pBlockedPath->SetActive(false);
-			}
-		}
-	}
-
+	HandleBlockedPath();
 	//m_pGround->Update();
 
 	m_pEnemy->Update();
@@ -483,6 +453,7 @@ void CGame::Update()
 		m_pStage->Update();
 
 	}
+
 	m_pCameraController->FirstPersonCamera(m_pPlayer, m_mouseDelta, m_mouseSense - mSense);
 	m_pCamera->Update();
 	m_pCameraController->Update(0);
@@ -523,22 +494,23 @@ void CGame::Update()
 
 	if (GetAsyncKeyState('1'))
 	{
-		if (currStage != 0)
-		{
-			m_pStage->DetachMesh();
-			m_pStage->AttachMesh(*m_pTestStageMesh);
-			currStage = 0;
-			m_pStage->SetScale(1.f);
-		}
-	}
-	if (GetAsyncKeyState('2'))
-	{
 		if (currStage != 1)
 		{
 			m_pStage->DetachMesh();
 			m_pStage->AttachMesh(*m_pStageMesh);
 			m_pStage->SetScale(1.0f);
 			currStage = 1;
+		}
+	}
+
+	if (GetAsyncKeyState('2'))
+	{
+		if (currStage != 0)
+		{
+			m_pStage->DetachMesh();
+			m_pStage->AttachMesh(*m_pTestStageMesh);
+			currStage = 0;
+			m_pStage->SetScale(1.f);
 		}
 	}
 
@@ -549,6 +521,45 @@ void CGame::Update()
 
 #endif
 	CScene::Update();
+}
+
+void CGame::HandleBlockedPath()
+{
+	if (m_enemyKillCount >= ENEMY_COUNT_PER_ROOM)
+	{
+		for (auto pBlockedPath : m_pBlockedPathList)
+		{
+			if (pBlockedPath->IsActive() == true)
+			{
+				pBlockedPath->SetActive(false);
+			}
+		}
+		return;
+	}
+
+	if (m_pBlockedPathList[0]->IsActive() == true)
+	{
+		for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
+		{
+			if (m_pEnemyList[i]->IsActive() == false)
+				m_pEnemyList[i]->SpawnAt(enemyStartPos[i]);
+		}
+	}
+}
+
+void CGame::HandleGameOver()
+{
+	if (m_stageTimer <= 0.f)
+	{
+		// Time's up - handle game over
+		SaveStats();
+		m_pManager->ChangeScene("GAMEOVER");
+	}
+}
+
+bool CGame::CheckRestartStatus()
+{
+	return m_pPlayer->IsAlive() == false || m_pPlayer->GetPosition().y <= -50.f;
 }
 
 void CGame::HandlePlayerDashEffect()
@@ -593,7 +604,6 @@ void CGame::HandlePlayerDashEffect()
 void CGame::Restart()
 {
 
-
 	for (int i = 0; i < 4; i++)
 	{
 		m_pEnemyList[i]->InitEnemy();
@@ -610,6 +620,9 @@ void CGame::Restart()
 	//SetupTriggers();
 
 	m_enemyKillCount = 0;
+	m_comboCount = 0;
+	CGameStats::DeathCounter++;
+	m_highestCombo = max(m_highestCombo, m_comboCount);
 	m_comboCount = 0;
 
 	for (auto blockedPath : m_pBlockedPathList)
@@ -1571,7 +1584,7 @@ void CGame::InitSpriteAssets()
 	m_pLightning->AttachMesh(*m_pCubeMesh);
 	m_pLightning->SetScale(3.f);
 	m_pLightning->SetScale(10.f, 5.f, 3.f);
-	m_pLightning->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+	m_pLightning->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
 }
 HRESULT CGame::LoadUtilityMesh()
 {
@@ -1619,7 +1632,7 @@ void CGame::InitStage()
 	for (auto pBlockedPath : m_pBlockedPathList)
 	{
 		pBlockedPath->AttachMesh(*m_pCubeMesh);
-		pBlockedPath->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+		pBlockedPath->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
 		pBlockedPath->SetActive(false);
 		pBlockedPath->SetPosition(0.f, -50.f, 0.f);
 		pBlockedPath->SetRotation(0.f, 0.f, 0.f);
@@ -1655,12 +1668,14 @@ HRESULT CGame::LoadEnemiesMesh()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pBossMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\DebugCube.x")))
+	if (FAILED(m_pBossMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Enemy\\BrainRobot\\brain-robot.x")))
 	{
 		return E_FAIL;
 	}
 
 	m_pEnemy->AttachMesh(*m_pBossMesh);
+	m_pEnemy->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
+
 	for (auto pEnemy : m_pEnemyList)
 	{
 		pEnemy->AttachMesh(*m_pSpiderMesh);
@@ -1693,6 +1708,7 @@ HRESULT CGame::LoadEnemiesMesh()
 }
 void CGame::InitEnemy()
 {
+	m_pBossMesh->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
 	m_pEnemy->SetScale(4.9f);
 	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 

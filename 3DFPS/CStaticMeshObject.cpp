@@ -69,7 +69,7 @@ HRESULT CStaticMeshObject::CreateCollider(CCollider::COLLIDER_SHAPE shape)
 	case CCollider::COLLIDER_SHAPE_SPHERE:
 		hr = m_pCollider->CreateSphereForMesh(*m_pMesh);
 		break;
-	case CCollider::COLLIDER_SHAPE_BOX:
+	case CCollider::COLLIDER_SHAPE_CUBE:
 		hr = m_pCollider->CreateBoxForMesh(*m_pMesh);
 		break;
 	case CCollider::COLLIDER_SHAPE_MESH:

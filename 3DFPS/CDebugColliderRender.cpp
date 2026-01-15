@@ -51,7 +51,7 @@ void CDebugColliderRender::DrawCollider(CDirectX11& pDx11, D3DXMATRIX& mView, D3
 			D3DXVECTOR4(0.1f, 1.0f, 0.1f, 1.0f));
 		break;
 
-	case CCollider::COLLIDER_SHAPE_BOX:
+	case CCollider::COLLIDER_SHAPE_CUBE:
 
 		pBox = collider.GetBBox();
 

@@ -56,6 +56,9 @@ public:
 	virtual void Draw() override;
 	void DrawDecals(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 	virtual void Update() override;
+	void HandleBlockedPath();
+	void HandleGameOver();
+	bool CheckRestartStatus();
 	void Restart();
 
 

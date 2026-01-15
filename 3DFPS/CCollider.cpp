@@ -61,7 +61,7 @@ HRESULT CCollider::CreateBoxForMesh(const CStaticMesh& pMesh)
 	// Capture local AABB from mesh
 	m_BoxLocalMin = m_pBCube->GetMin();
 	m_BoxLocalMax = m_pBCube->GetMax();
-	m_Shape = COLLIDER_SHAPE_BOX;
+	m_Shape = COLLIDER_SHAPE_CUBE;
 
 	RecalculateWorldBounds();
 	return S_OK;
@@ -123,7 +123,7 @@ void CCollider::RecalculateWorldBounds()
 	}
 
 	// 立方(軸平行AABB): ローカルAABBの8頂点をSRTで変換してワールドAABBを再構築
-	if (m_pBCube != nullptr && m_Shape == COLLIDER_SHAPE_BOX)
+	if (m_pBCube != nullptr && m_Shape == COLLIDER_SHAPE_CUBE)
 	{
 		const D3DXVECTOR3& mn = m_BoxLocalMin;
 		const D3DXVECTOR3& mx = m_BoxLocalMax;
