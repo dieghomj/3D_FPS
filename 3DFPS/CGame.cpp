@@ -44,8 +44,8 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pGround(nullptr)
 	, m_pGroundMesh(nullptr)
 	, m_pStage(nullptr)
-	, m_pBaseStageMesh(nullptr)
-	, m_pBridStageMesh(nullptr)
+	, m_pTestStageMesh(nullptr)
+	, m_pStageMesh(nullptr)
 	
 	, m_pEnemy(nullptr)
 	, m_pBossEnemy(nullptr)
@@ -111,11 +111,11 @@ void CGame::Create()
 
 	m_pGroundMesh = new CStaticMesh();
 	m_pGround = new CStaticMeshObject();
-	m_pBaseStageMesh = new CStaticMesh();
-	m_pBridStageMesh = new CStaticMesh();
+	m_pTestStageMesh = new CStaticMesh();
+	m_pStageMesh = new CStaticMesh();
 	m_pStage = new CStage();
 
-	m_pWallColliderMesh = new CStaticMesh();
+	m_pCubeMesh = new CStaticMesh();
 	m_pLightningSprite = new CSprite3D();
 	m_pLightning = new CBlockedPath();
 	m_pBlockedPathList.reserve(32);
@@ -205,8 +205,6 @@ void CGame::Create()
 
 #ifdef _DEBUG
 
-
-
 	for (int i = 0; i < 4; ++i)
 	{
 		m_pCrossRay[i] = new CRay();
@@ -225,240 +223,47 @@ void CGame::Create()
 
 HRESULT CGame::LoadData()
 {
+	HRESULT hr = S_OK;
 	
-	if (FAILED(m_pFont->Init(*m_pDx11)))
+	if (FAILED(LoadSceneAssets()))
 	{
 		return E_FAIL;
 	}
 
-	// Load skybox cubemap texture
-	if (FAILED(m_pSkybox->Init(*m_pDx11, L"Data\\Texture\\Skybox\\skybox.dds")))
-	{
-		// Skybox loading failed - continue without it (optional)
-		OutputDebugString(_T("Warning: Skybox texture not found. Continuing without skybox.\n"));
-	}
-
-	CSprite2D::SPRITE_STATE healthBarState = {};
-	healthBarState.Disp = { 350.f, 45.6f };
-	healthBarState.Base = { 361.f, 79.f };
-	healthBarState.Stride = { 361.f, 79.f };
-
-	if(FAILED(m_pHealthBarSprite->Init(*m_pDx11, L"Data\\Texture\\Health.png", healthBarState)))
+	if(FAILED(LoadUIAssets()))
 	{
 		return E_FAIL;
 	}
 
-	m_pHealthBarUI->AttachSprite(*m_pHealthBarSprite);
-	m_pHealthBarUI->SetPosition(D3DXVECTOR3(20.0f, WND_H - 150.0f, 0.0f));
-
-	CSprite2D::SPRITE_STATE staminaBarState = {};
-	staminaBarState.Disp = { 300.f, 45.6f };
-	staminaBarState.Base = { 128.f, 43.0f };
-	staminaBarState.Stride = { 128.f, 43.0f };
-
-	if (FAILED(m_pStaminaBarSprite->Init(*m_pDx11, L"Data\\Texture\\dash.png", staminaBarState)))
-	{
-		return E_FAIL;
-	}
-
-	m_pStaminaBarUI->AttachSprite(*m_pStaminaBarSprite);
-	m_pStaminaBarUI->SetPosition(D3DXVECTOR3(20.0f, WND_H - 100.0f, 0.0f));
-
-	CSprite2D::SPRITE_STATE crossHairState = {};
-	crossHairState.Disp = { 32.f, 32.f };
-	crossHairState.Base = { 512.f, 512.f };
-	crossHairState.Stride = { 512.f, 512.f };
-
-	if (FAILED(m_pCrossHairSprite->Init(*m_pDx11, L"Data\\Texture\\Cross.png", crossHairState)))
-	{
-		return E_FAIL;	
-	}
-
-	m_pCrossHairUI->AttachSprite(*m_pCrossHairSprite);
-	m_pCrossHairUI->SetPosition(D3DXVECTOR3((WND_W / 2) - 16.0f, (WND_H / 2) - 16.0f, 0.0f));
-	m_pCrossHairUI->SetAlpha(0.7f);
-
-	CSprite3D::SPRITE_STATE lightningState = {};
-	lightningState.Disp = { 2.5f, 0.5f };
-	lightningState.Base = { 1024.f, 1892.f };
-	lightningState.Stride = { 1024.f, 171.f };
-
-	m_pLightningSprite->Init(*m_pDx11, L"Data\\Texture\\lightning.png", lightningState);
-	m_pLightning->AttachSprite(*m_pLightningSprite);
-
-
-	CSprite3D::SPRITE_STATE bulletLaserState = {};
-	bulletLaserState.Disp = { 1.5f, 5.5f };
-	bulletLaserState.Base = { 2048.f, 2048.f};
-	bulletLaserState.Stride = { 512.f, 682.f };
-
-	if(FAILED(m_pBulletLaserSprite->Init(*m_pDx11, L"Data\\Texture\\laser.png", bulletLaserState)))
-	{
-		return E_FAIL;
-	}
-
-	m_pBulletLaserSprite->SetBillboard(true);
-	m_pBulletLaser->AttachSprite(*m_pBulletLaserSprite);
-
-	if (FAILED(m_pGroundMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ground\\ground.x")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pWallColliderMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Wall\\WallCol.x")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pBaseStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\stage.x")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pBridStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Level003\\Level003.x")))
+	if(FAILED(LoadSpriteAssets()))
 	{
 		return E_FAIL;
 	}
 	
-	if(FAILED(m_pEnemyMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Pigman\\Pigman.x")))
+	if(FAILED(LoadUtilityMesh()))
 	{
 		return E_FAIL;
 	}
-
-	if(FAILED(m_pSpiderSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako2\\zako2.x")))
+	
+	if(FAILED(LoadStageMesh()))
 	{
 		return E_FAIL;
 	}
-
-	if(FAILED(m_pSpiderMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako2\\zako2.x")))
+	
+	if(FAILED(LoadEnemiesMesh()))
 	{
 		return E_FAIL;
 	}
-
-	if(FAILED(m_pRoboSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\robo\\Robo.x")))
+	
+	if(FAILED(LoadPlayerAsset()))
 	{
 		return E_FAIL;
 	}
-
-	if(FAILED(m_pBossMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\DebugCube.x")))
-	{
-		return E_FAIL;
-	}
-
-	if ( FAILED(m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x")) );
-
-	/*if(FAILED(m_pBossSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Boss\\Boss.x")))
-	{
-		return E_FAIL;
-	}*/
-
-	m_pLightning->AttachMesh(*m_pWallColliderMesh);
-	m_pLightning->SetScale(3.f);
-	m_pLightning->SetScale(10.f, 5.f, 3.f);
-	m_pLightning->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
-
-	m_pEnemy->AttachMesh(*m_pBossMesh);
-	m_pEnemy->SetScale(4.9f);
-	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
-	//m_pEnemyList[0]->AttachMesh(*m_pEnemyMesh);
-
-	for (auto pEnemy : m_pEnemyList)
-	{
-		pEnemy->AttachMesh(*m_pSpiderMesh);
-		pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
-		pEnemy->SetActive(false);
-		pEnemy->SetScale(2.2f);
-	}
-
-	for (auto pBossShot : m_pBossShotList)
-	{
-		pBossShot->SetActive(false);
-		if(typeid(*pBossShot) == typeid(CSpider))
-		{
-			pBossShot = dynamic_cast<CSpider*>(pBossShot);
-			pBossShot->AttachMesh(*m_pSpiderMesh);
-			pBossShot->AttachSkinMesh(*m_pSpiderSkinMesh);
-			pBossShot->SetScale(2.2f);
-		}
-		else if (typeid(*pBossShot) == typeid(CRobo))
-		{
-			pBossShot = dynamic_cast<CRobo*>(pBossShot);
-			//pBossShot->AttachMesh(*m_pSphereMesh);
-			//pBossShot->AttachSkinMesh();
-			pBossShot->SetScale(2.2f);
-		}
+	
 
 
-	}
-
-	for (auto pEnemyShot : m_pEnemyShotList)
-	{
-		pEnemyShot->AttachMesh(*m_pSphereMesh);
-		pEnemyShot->SetScale(1.5f);
-		pEnemyShot->SetMoveSpeed(ENEMY_SHOT_SPEED);
-		pEnemyShot->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
-	}
-
-	for (auto pBlockedPath : m_pBlockedPathList)
-	{
-		pBlockedPath->AttachMesh(*m_pWallColliderMesh);
-		pBlockedPath->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
-		pBlockedPath->SetActive(false);
-		pBlockedPath->SetPosition(0.f, -50.f, 0.f);
-		pBlockedPath->SetRotation(0.f, 0.f, 0.f);
-		pBlockedPath->AttachSprite(*m_pLightningSprite);
-		pBlockedPath->SetScale(3.f);
-	}
-
-	m_pGround->AttachMesh(*m_pGroundMesh);
-	m_pStage->AttachMesh(*m_pBridStageMesh);
-	m_pStage->SetScale(0.8f);
-	m_pStage->SetPlayer(*m_pPlayer);
-	m_pStage->SetEnemyList(m_pEnemyList);
-
-	m_pPlayer->AttachMesh(*m_pSphereMesh);
-	m_pPlayer->SetScale(1.5f);
-	m_pPlayer->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
-
-	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShotgunMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Shotgun\\shotgun.x")))
-	{
-		return E_FAIL;
-	}
-
-	m_pPlayerWeapon->AttachMesh(*m_pPistolMesh);
-	m_pPlayerWeapon->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
-
-	if (FAILED(m_pBulletMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Bullet\\bullet.x")))
-	{
-		return E_FAIL;
-	}
-
-	for (auto pBullet : m_pBulletList)
-	{
-		pBullet->AttachMesh(*m_pBulletMesh);
-		pBullet->SetScale(1.5f);
-		pBullet->SetMoveSpeed(6.90f);
-	}
-
-	CSprite3D::SPRITE_STATE bulletHoleState = {};
-	bulletHoleState.Disp = {32.f,32.f};
-	bulletHoleState.Base = { 512.f,512.f };
-	bulletHoleState.Stride = { 512.f,512.f };
-
-	if (FAILED(m_pShotDecalSprite->Init(*m_pDx11, L"Data\\Texture\\bullet_hole.png", bulletHoleState)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pEnemyHitDecalSprite->Init(*m_pDx11, L"Data\\Texture\\blood.png", bulletHoleState)))
-	{
-		return E_FAIL;
-	}
+//デバッグ用
+#if _DEBUG
 
 	if (FAILED(m_pItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ammo\\AMMO.x")))
 	{
@@ -474,12 +279,6 @@ HRESULT CGame::LoadData()
 
 	m_pHealthItem->SetPosition(2.0f, 2.0f, 2.0f);
 
-	if (FAILED(CEffect::GetInstance()->LoadData()))
-	{
-		return E_FAIL;
-	}
-
-#if _DEBUG
 	CROSSRAY crossRay = m_pPlayer->GetCrossRay();
 	for (int i = 0; i < 4; ++i)
 	{
@@ -504,7 +303,6 @@ HRESULT CGame::LoadData()
 
 	debugRay->Init(*m_pDx11, m_pStage->debugSweptRay);
 
-#endif
 	RAY shotRay;
 	shotRay.Position = m_pCamera->GetPosition();
 	shotRay.Axis = D3DXVECTOR3(0.f, 0.f, 1.f);
@@ -512,9 +310,11 @@ HRESULT CGame::LoadData()
 	shotRay.Length = 100.f;
 	shotRay.RotationY = 0.f;
 	debugShotRay->Init(*m_pDx11, shotRay);
+
+#endif
+
 	return S_OK;
 }
-
 
 void CGame::Release()
 {
@@ -522,33 +322,31 @@ void CGame::Release()
 
 void CGame::Start()
 {
-	m_pCamera->SetPosition(0.0f, 2.0f, -5.0f);
-	m_pCamera->SetPerspective(D3DX_PI / 4.0f,
-		static_cast<float>(WND_W) / static_cast<float>(WND_H),
-		0.1f, 1000.0f);
-	m_GlobalLight.fIntensity = 1.0f;
-	m_GlobalLight.vDirection = D3DXVECTOR3(0.0f, -1.0f, 1.5f);
+	//ライト設定
+	float lightIntensity	= 1.0f;
+	D3DXVECTOR3 lightDir	= D3DXVECTOR3(0.0f, -1.0f, 3.5f);
+	
+	//フォグ設定
+	bool fog				= false;
 
-	m_Fog.Enable = false;
+	//カメラ設定.
+	float fovY				= D3DX_PI / 4.0f;
+	float aspect			= static_cast<float>(WND_W) / static_cast<float>(WND_H);
+	float zn				= 0.1f, 
+		  zf				= 1000.0f;
 
+	//シーン初期化.
+	InitScene(fovY, aspect, zn, zf, lightIntensity, lightDir, fog);
 
-	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 10.f));
-	//m_pEnemyList.push_back(m_pEnemy);
-
-	for (int i = 0; i < 4; i++)
-	{
-		m_pEnemyList[i]->InitEnemy();
-		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
-		m_pEnemyList[i]->SetActive(false);
-	}
+	InitUI();
+	InitSpriteAssets();
+	InitStage();
+	InitEnemy();
+	InitPlayer();
 
 	m_pPlayer->InitPlayer();
 	m_pPlayer->SetPosition( PLAYER_STARTPOS );
 	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS);
-
-	SetupBlockedPath();
-	SetupGoal();
-	SetupTriggers();
 
 	m_accumulatedTime = 0.0f;
 	m_enemyKillCount = 0;
@@ -556,6 +354,16 @@ void CGame::Start()
 	m_stageTimer = STAGE_TIMER;
 
 	CGameStats::Reset();
+}
+
+void CGame::InitScene(float fovY, float aspect, float zn, float zf, float lightIntensity, const D3DXVECTOR3& lightDir, bool fog)
+{
+	m_pCamera->SetPerspective(fovY,
+		aspect,
+		zn, zf);
+	m_GlobalLight.fIntensity = lightIntensity;
+	m_GlobalLight.vDirection = lightDir;
+	m_Fog.Enable = fog;
 }
 
 void CGame::Update()
@@ -718,7 +526,7 @@ void CGame::Update()
 		if (currStage != 0)
 		{
 			m_pStage->DetachMesh();
-			m_pStage->AttachMesh(*m_pBaseStageMesh);
+			m_pStage->AttachMesh(*m_pTestStageMesh);
 			currStage = 0;
 			m_pStage->SetScale(1.f);
 		}
@@ -728,7 +536,7 @@ void CGame::Update()
 		if (currStage != 1)
 		{
 			m_pStage->DetachMesh();
-			m_pStage->AttachMesh(*m_pBridStageMesh);
+			m_pStage->AttachMesh(*m_pStageMesh);
 			m_pStage->SetScale(1.0f);
 			currStage = 1;
 		}
@@ -1648,4 +1456,318 @@ void CGame::SaveStats()
 	CGameStats::HighestCombo = m_highestCombo;
 	CGameStats::RemainingTime = static_cast<int>(m_stageTimer);
 	CGameStats::ComputeScore();
+}
+
+HRESULT CGame::LoadSceneAssets()
+{
+	if (FAILED(m_pFont->Init(*m_pDx11)))
+	{
+		return E_FAIL;
+	}
+
+	// Load skybox cubemap texture
+	if (FAILED(m_pSkybox->Init(*m_pDx11, L"Data\\Texture\\Skybox\\skybox.dds")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(CEffect::GetInstance()->LoadData()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(LoadUtilityMesh())) {
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+HRESULT CGame::LoadUIAssets()
+{
+	CSprite2D::SPRITE_STATE healthBarState = {};
+	healthBarState.Disp = { 350.f, 45.6f };
+	healthBarState.Base = { 361.f, 79.f };
+	healthBarState.Stride = { 361.f, 79.f };
+
+	CSprite2D::SPRITE_STATE crossHairState = {};
+	crossHairState.Disp = { 32.f, 32.f };
+	crossHairState.Base = { 512.f, 512.f };
+	crossHairState.Stride = { 512.f, 512.f };
+
+	CSprite2D::SPRITE_STATE staminaBarState = {};
+	staminaBarState.Disp = { 300.f, 45.6f };
+	staminaBarState.Base = { 128.f, 43.0f };
+	staminaBarState.Stride = { 128.f, 43.0f };
+
+	if (FAILED(m_pHealthBarSprite->Init(*m_pDx11, L"Data\\Texture\\Health.png", healthBarState)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pStaminaBarSprite->Init(*m_pDx11, L"Data\\Texture\\dash.png", staminaBarState)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pCrossHairSprite->Init(*m_pDx11, L"Data\\Texture\\Cross.png", crossHairState)))
+	{
+		return E_FAIL;
+	}
+
+	m_pHealthBarUI->AttachSprite(*m_pHealthBarSprite);
+	m_pStaminaBarUI->AttachSprite(*m_pStaminaBarSprite);
+	m_pCrossHairUI->AttachSprite(*m_pCrossHairSprite);
+
+	return S_OK;
+}
+void CGame::InitUI()
+{
+	m_pHealthBarUI->SetPosition(D3DXVECTOR3(20.0f, WND_H - 150.0f, 0.0f));
+	m_pStaminaBarUI->SetPosition(D3DXVECTOR3(20.0f, WND_H - 100.0f, 0.0f));
+	m_pCrossHairUI->SetPosition(D3DXVECTOR3((WND_W / 2) - 16.0f, (WND_H / 2) - 16.0f, 0.0f));
+	m_pCrossHairUI->SetAlpha(0.7f);
+}
+HRESULT CGame::LoadSpriteAssets()
+{
+	CSprite3D::SPRITE_STATE lightningState = {};
+	lightningState.Disp = { 2.5f, 0.5f };
+	lightningState.Base = { 1024.f, 1892.f };
+	lightningState.Stride = { 1024.f, 171.f };
+
+	CSprite3D::SPRITE_STATE bulletLaserState = {};
+	bulletLaserState.Disp = { 1.5f, 5.5f };
+	bulletLaserState.Base = { 2048.f, 2048.f };
+	bulletLaserState.Stride = { 512.f, 682.f };
+
+	CSprite3D::SPRITE_STATE bulletHoleState = {};
+	bulletHoleState.Disp = { 32.f,32.f };
+	bulletHoleState.Base = { 512.f,512.f };
+	bulletHoleState.Stride = { 512.f,512.f };
+
+	if (FAILED(m_pLightningSprite->Init(*m_pDx11, L"Data\\Texture\\lightning.png", lightningState)))
+	{
+	}
+
+	if (FAILED(m_pShotDecalSprite->Init(*m_pDx11, L"Data\\Texture\\bullet_hole.png", bulletHoleState)))
+	{
+	}
+
+	if (FAILED(m_pEnemyHitDecalSprite->Init(*m_pDx11, L"Data\\Texture\\blood.png", bulletHoleState)))
+	{
+	}
+
+	if (FAILED(m_pBulletLaserSprite->Init(*m_pDx11, L"Data\\Texture\\laser.png", bulletLaserState)))
+	{
+	}
+
+	m_pBulletLaser->AttachSprite(*m_pBulletLaserSprite);
+	m_pLightning->AttachSprite(*m_pLightningSprite);
+
+	return S_OK;
+}
+void CGame::InitSpriteAssets()
+{
+	m_pBulletLaserSprite->SetBillboard(true);
+	m_pLightning->AttachMesh(*m_pCubeMesh);
+	m_pLightning->SetScale(3.f);
+	m_pLightning->SetScale(10.f, 5.f, 3.f);
+	m_pLightning->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+}
+HRESULT CGame::LoadUtilityMesh()
+{
+	if (FAILED(m_pGroundMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ground\\ground.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pCubeMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Wall\\WallCol.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pSphereMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Collision\\Sphere.x")))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+HRESULT CGame::LoadStageMesh()
+{
+	if (FAILED(m_pTestStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\stage.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pStageMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Stage\\Level003\\Level003.x")))
+	{
+		return E_FAIL;
+	}
+
+	m_pGround->AttachMesh(*m_pGroundMesh);
+
+	m_pStage->AttachMesh(*m_pStageMesh);
+
+	return S_OK;
+}
+void CGame::InitStage()
+{
+	m_pStage->SetScale(0.8f);
+	m_pStage->SetPlayer(*m_pPlayer);
+	m_pStage->SetEnemyList(m_pEnemyList);
+
+	for (auto pBlockedPath : m_pBlockedPathList)
+	{
+		pBlockedPath->AttachMesh(*m_pCubeMesh);
+		pBlockedPath->CreateCollider(CCollider::COLLIDER_SHAPE_BOX);
+		pBlockedPath->SetActive(false);
+		pBlockedPath->SetPosition(0.f, -50.f, 0.f);
+		pBlockedPath->SetRotation(0.f, 0.f, 0.f);
+		pBlockedPath->AttachSprite(*m_pLightningSprite);
+		pBlockedPath->SetScale(3.f);
+	}
+
+	SetupBlockedPath();
+	SetupGoal();
+	SetupTriggers();
+
+}
+HRESULT CGame::LoadEnemiesMesh()
+{
+
+	if (FAILED(m_pEnemyMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Pigman\\Pigman.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pSpiderSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako2\\zako2.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pSpiderMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako2\\zako2.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pRoboSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\robo\\Robo.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pBossMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\DebugCube.x")))
+	{
+		return E_FAIL;
+	}
+
+	m_pEnemy->AttachMesh(*m_pBossMesh);
+	for (auto pEnemy : m_pEnemyList)
+	{
+		pEnemy->AttachMesh(*m_pSpiderMesh);
+		pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
+	}
+
+	for (auto pBossShot : m_pBossShotList)
+	{
+		pBossShot->SetActive(false);
+		if (typeid(*pBossShot) == typeid(CSpider))
+		{
+			pBossShot = dynamic_cast<CSpider*>(pBossShot);
+			pBossShot->AttachMesh(*m_pSpiderMesh);
+			pBossShot->AttachSkinMesh(*m_pSpiderSkinMesh);
+		}
+		else if (typeid(*pBossShot) == typeid(CRobo))
+		{
+			pBossShot = dynamic_cast<CRobo*>(pBossShot);
+			pBossShot->AttachMesh(*m_pSphereMesh);
+		}
+	}
+
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		pEnemyShot->AttachMesh(*m_pSphereMesh);
+		pEnemyShot->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+	}
+
+	return S_OK;
+}
+void CGame::InitEnemy()
+{
+	m_pEnemy->SetScale(4.9f);
+	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
+
+	for (auto pEnemy : m_pEnemyList)
+	{
+		pEnemy->SetActive(false);
+		pEnemy->SetScale(2.2f);
+	}
+
+	for (auto pBossShot : m_pBossShotList)
+	{
+		pBossShot->SetActive(false);
+		if (typeid(*pBossShot) == typeid(CSpider))
+		{
+			pBossShot = dynamic_cast<CSpider*>(pBossShot);
+			pBossShot->SetScale(2.2f);
+		}
+		else if (typeid(*pBossShot) == typeid(CRobo))
+		{
+			pBossShot = dynamic_cast<CRobo*>(pBossShot);
+			pBossShot->SetScale(2.2f);
+		}
+	}
+
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		pEnemyShot->SetScale(1.5f);
+		pEnemyShot->SetMoveSpeed(ENEMY_SHOT_SPEED);
+	}
+
+	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 10.f));
+
+	for (int i = 0; i < 4; i++)
+	{
+		m_pEnemyList[i]->InitEnemy();
+		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
+		m_pEnemyList[i]->SetActive(false);
+	}
+
+}
+HRESULT CGame::LoadPlayerAsset()
+{
+	if (FAILED(m_pPistolMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\gun3.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShotgunMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Shotgun\\shotgun.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pBulletMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Bullet\\bullet.x")))
+	{
+		return E_FAIL;
+	}
+
+	m_pPlayer->AttachMesh(*m_pSphereMesh);
+	m_pPlayer->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+	m_pPlayerWeapon->AttachMesh(*m_pPistolMesh);
+	for (auto pBullet : m_pBulletList)
+	{
+		pBullet->AttachMesh(*m_pBulletMesh);
+	}
+
+	return S_OK;
+}
+void CGame::InitPlayer()
+{
+	m_pPlayer->SetScale(1.5f);
+	m_pPlayer->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
+	m_pPlayerWeapon->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
+	for (auto pBullet : m_pBulletList)
+	{
+		pBullet->SetScale(1.5f);
+		pBullet->SetMoveSpeed(6.90f);
+	}
 }

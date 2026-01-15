@@ -10,6 +10,14 @@ struct CGameStats
 		DIFF_HARD = 2
 	};
 
+	enum LEVEL_SELECTION
+	{
+		LEVEL_1 = 0,
+		LEVEL_2 = 1,
+		LEVEL_3 = 2,
+		LEVEL_COUNT
+	};
+
 	static void SetDifficulty(DIFFICULTY diff) { Difficulty = diff; }
 	static DIFFICULTY GetDifficulty() { return Difficulty; }
 

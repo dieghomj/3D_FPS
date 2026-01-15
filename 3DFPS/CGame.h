@@ -56,12 +56,25 @@ public:
 	virtual void Draw() override;
 	void DrawDecals(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 	virtual void Update() override;
-
-
 	void Restart();
 
 
 private:
+
+	//Loaders
+	HRESULT LoadPlayerAsset();
+	HRESULT LoadEnemiesMesh();
+	HRESULT LoadStageMesh();
+	HRESULT LoadUtilityMesh();
+	HRESULT LoadSpriteAssets();
+	HRESULT LoadUIAssets();
+	HRESULT LoadSceneAssets();
+	void InitPlayer();
+	void InitEnemy();
+	void InitStage();
+	void InitSpriteAssets();
+	void InitUI();
+	void InitScene(float fovY, float aspect, float zn, float zf, float lightIntensity, const D3DXVECTOR3& lightDir, bool fog);
 
 	int NextBullet();
 	int NextEnemyShot();
@@ -146,11 +159,11 @@ private:
 		CStaticMeshObject* m_pGround;
 		
 	//STAGE
-		CStaticMesh* m_pBaseStageMesh;
-		CStaticMesh* m_pBridStageMesh;
+		CStaticMesh* m_pTestStageMesh;
+		CStaticMesh* m_pStageMesh;
 		CStage* m_pStage;
 	//WALL COLLIDER
-		CStaticMesh* m_pWallColliderMesh;
+		CStaticMesh* m_pCubeMesh;
 	//GOAL
 		GOAL m_Goal;
 	//LIGHTNING
