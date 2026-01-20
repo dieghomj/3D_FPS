@@ -14,7 +14,6 @@ void CBlockedPath::Update()
 {
 	if (!IsActive())
 		return;
-
 }
 
 void CBlockedPath::Draw(SCENE_DATA& sceneData)

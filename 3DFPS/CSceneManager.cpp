@@ -24,10 +24,10 @@ HRESULT CSceneManager::AddScene(CScene* scene, const char* name)
 	m_pSceneList[name] = scene;
 }
 
-CScene* CSceneManager::ChangeScene(const char* name)
+CScene* CSceneManager::ChangeScene(const char* name, bool release)
 {
 	//‘O‚ÌƒV[ƒ“”j‰ó
-	if (m_pCurrentScene)
+	if (m_pCurrentScene && release)
 	{
 		m_pCurrentScene->Release();
 	}

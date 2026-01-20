@@ -422,9 +422,9 @@ void CPlayer::SpecialAction()
 void CPlayer::UpdateAxis()
 {
 
-	UpdateRayY(m_vPosition.y - m_Height * 0.001f);
-	UpdateCrossRay(*m_pHeadCrossRay, m_vPosition.y + 0.5f);
-	UpdateCrossRay(*m_pCrossRay, m_vPosition.y - m_Height * 0.55f);
+	UpdateRayY(m_vPosition.y - m_Height * 0.95f);
+	UpdateCrossRay(*m_pHeadCrossRay, m_vPosition.y  + 0.1f);
+	UpdateCrossRay(*m_pCrossRay, m_vPosition.y - m_Height * 0.5f);
 
 }
 
@@ -470,10 +470,10 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleAirPhys()
 {
 	float feetY = m_vPosition.y - m_Height;			//プレイヤーの足元のY座標
-	float headY = m_vPosition.y + m_Height;	//プレイヤーの頭のY座標
+	float headY = m_vPosition.y + 0.1f;			//プレイヤーの頭のY座標
 
 	const float GROUND_SNAP_DISTANCE = 0.000015f;		//地面に吸着する距離
-	const float GROUND_PENETRATION = 0.01f;			//地面にめり込んだと見なす距離
+	const float GROUND_PENETRATION = 0.001f;			//地面にめり込んだと見なす距離
 	const float CEILING_BUFFER = 0.01f;				//天井に当たったと見なす距離
 
 	float distanceToFloor = feetY - m_FloorY;		//プレイヤーの足元と地面の距離
@@ -526,10 +526,8 @@ void CPlayer::HandleAirPhys()
 
 		if (distanceToCeiling < CEILING_BUFFER)
 		{
-			m_vPosition.y = m_CeilingY - m_Height; 
 			m_Velocity.y = 0.f;
 			m_Inertia.y = 0.f;
-			m_IsJumping = false;
 		}
 	}
 }

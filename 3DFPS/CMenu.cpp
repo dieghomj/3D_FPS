@@ -261,19 +261,16 @@ void CMenu::UpdateLevelSelect()
 		}
 
 		// Apply selections (only for unlocked levels)
-		if (m_SelectedLevel == 0)
-		{
-			CGameStats::SetDifficulty(static_cast<CGameStats::DIFFICULTY>(m_SelectedDifficulty));
-			CGameStats::LevelSelection = m_SelectedLevel + 1;
 
-			// Begin fade to game
-			m_IsFading = true;
-			m_FadeAlpha = 0.0f;
-			m_FadeSpeed = 0.1f;
-			if (m_pFadeSprite)
-			{
-				m_pFadeSprite->SetAlpha(0.0f);
-			}
+		CGameStats::LevelSelection = m_SelectedLevel;
+
+		// Begin fade to game
+		m_IsFading = true;
+		m_FadeAlpha = 0.0f;
+		m_FadeSpeed = 0.1f;
+		if (m_pFadeSprite)
+		{
+			m_pFadeSprite->SetAlpha(0.0f);
 		}
 	}
 }

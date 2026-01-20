@@ -39,21 +39,21 @@ struct CGameStats
 		int timeBonusPerSec = 2;
 		int difficultyMultiplier = 1;
 
-		switch (Difficulty)
-		{
-		case DIFF_EASY:
-			timeBonusPerSec = 1;
-			difficultyMultiplier = 1;
-			break;
-		case DIFF_NORMAL:
-			timeBonusPerSec = 2;
-			difficultyMultiplier = 2;
-			break;
-		case DIFF_HARD:
-			timeBonusPerSec = 3;
-			difficultyMultiplier = 3;
-			break;
-		}
+		//switch (Difficulty)
+		//{
+		//case DIFF_EASY:
+		//	timeBonusPerSec = 1;
+		//	difficultyMultiplier = 1;
+		//	break;
+		//case DIFF_NORMAL:
+		//	timeBonusPerSec = 2;
+		//	difficultyMultiplier = 2;
+		//	break;
+		//case DIFF_HARD:
+		//	timeBonusPerSec = 3;
+		//	difficultyMultiplier = 3;
+		//	break;
+		//}
 
 		// Calculate remaining time bonus
 		unsigned long remainingMs = GetRemainingTimeMs();

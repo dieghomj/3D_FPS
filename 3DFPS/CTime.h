@@ -20,7 +20,6 @@ public:
 
     void StartTimer();
     double StopTimer();
-
     double GetTimerElapsed() const { return m_timerElapsed; };
 	double GetFramePerSec() const { return m_framePerSec; };
     // Getters for external use

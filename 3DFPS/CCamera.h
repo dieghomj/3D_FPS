@@ -13,6 +13,7 @@ public:
 
 	void Draw(SCENE_DATA& sceneData) override;
 
+	void SetFieldOfView(float fovY) { m_FovY = fovY; }
 	// レンズ設定（FOV/アスペクト/ニア/ファー）
 	void SetPerspective(float fovY, float aspect, float zn, float zf);
 	// リサイズ時などにアスペクトだけ更新

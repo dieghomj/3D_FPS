@@ -112,6 +112,30 @@
     <Filter Include="Source\GameObject\SkinMeshObject\AnimatedCharacter\Robo">
       <UniqueIdentifier>{83b48e1b-22bd-4db4-848c-ab9f56f70502}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Level">
+      <UniqueIdentifier>{9de6271f-3446-4d75-91d7-048ccdce26c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Enviroment\Stage">
+      <UniqueIdentifier>{f674be03-3855-4d1e-8937-6aa9907f10f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Enviroment\BlockedPath">
+      <UniqueIdentifier>{f10d024e-e253-4faf-8b90-757e41581cf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SkyBox">
+      <UniqueIdentifier>{2e193f26-ae68-4488-997f-3fddfd9aebb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sprite\Sprite2D">
+      <UniqueIdentifier>{a29fdeae-d362-4bb5-b670-d80f15ffea74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sprite\Sprite3D">
+      <UniqueIdentifier>{8fec475e-0de3-46e2-8a51-46e20e135c31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sprite\Sprite3D\Decal">
+      <UniqueIdentifier>{70b406c9-c1bd-4e74-9de4-a15ce11df7c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameObject\StaticMeshObject\Shot">
+      <UniqueIdentifier>{6920392d-e3aa-4039-aa11-12481ad96e82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMenu.cpp">
@@ -158,12 +182,6 @@
     </ClCompile>
     <ClCompile Include="CBoundingSphere.cpp">
       <Filter>Source\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="CSprite2D.cpp">
-      <Filter>Source\Sprite</Filter>
-    </ClCompile>
-    <ClCompile Include="CSprite3D.cpp">
-      <Filter>Source\Sprite</Filter>
     </ClCompile>
     <ClCompile Include="CSkinMesh.cpp">
       <Filter>Source\SkinMesh</Filter>
@@ -249,17 +267,12 @@
     <ClCompile Include="CItem.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Item</Filter>
     </ClCompile>
-    <ClCompile Include="CStage.cpp">
-      <Filter>Source\GameObject\StaticMeshObject\Enviroment</Filter>
-    </ClCompile>
     <ClCompile Include="CPlayer.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Character\Player</Filter>
     </ClCompile>
     <ClCompile Include="CHealthItem.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Item\HealthItem</Filter>
     </ClCompile>
-    <ClCompile Include="CShot.cpp" />
-    <ClCompile Include="CDecal.cpp" />
     <ClCompile Include="CSpider.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Spider</Filter>
     </ClCompile>
@@ -272,8 +285,33 @@
     <ClCompile Include="CAnimEnemy.cpp">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClCompile>
-    <ClCompile Include="CBlockedPath.cpp" />
-    <ClCompile Include="CEnemyController.cpp" />
+    <ClCompile Include="CLevelController.cpp">
+      <Filter>Source\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CLevel.cpp">
+      <Filter>Source\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="CBlockedPath.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Enviroment\BlockedPath</Filter>
+    </ClCompile>
+    <ClCompile Include="CStage.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Enviroment\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="CSkybox.cpp">
+      <Filter>Source\SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="CSprite2D.cpp">
+      <Filter>Source\Sprite\Sprite2D</Filter>
+    </ClCompile>
+    <ClCompile Include="CSprite3D.cpp">
+      <Filter>Source\Sprite\Sprite3D</Filter>
+    </ClCompile>
+    <ClCompile Include="CDecal.cpp">
+      <Filter>Source\Sprite\Sprite3D\Decal</Filter>
+    </ClCompile>
+    <ClCompile Include="CShot.cpp">
+      <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -317,12 +355,6 @@
     </ClInclude>
     <ClInclude Include="CBoundingSphere.h">
       <Filter>Source\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="CSprite2D.h">
-      <Filter>Source\Sprite</Filter>
-    </ClInclude>
-    <ClInclude Include="CSprite3D.h">
-      <Filter>Source\Sprite</Filter>
     </ClInclude>
     <ClInclude Include="CSkinMesh.h">
       <Filter>Source\SkinMesh</Filter>
@@ -414,17 +446,12 @@
     <ClInclude Include="CItem.h">
       <Filter>Source\GameObject\StaticMeshObject\Item</Filter>
     </ClInclude>
-    <ClInclude Include="CStage.h">
-      <Filter>Source\GameObject\StaticMeshObject\Enviroment</Filter>
-    </ClInclude>
     <ClInclude Include="CPlayer.h">
       <Filter>Source\GameObject\StaticMeshObject\Character\Player</Filter>
     </ClInclude>
     <ClInclude Include="CHealthItem.h">
       <Filter>Source\GameObject\StaticMeshObject\Item\HealthItem</Filter>
     </ClInclude>
-    <ClInclude Include="CShot.h" />
-    <ClInclude Include="CDecal.h" />
     <ClInclude Include="CSpider.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter\Spider</Filter>
     </ClInclude>
@@ -437,8 +464,33 @@
     <ClInclude Include="CAnimEnemy.h">
       <Filter>Source\GameObject\SkinMeshObject\AnimatedCharacter</Filter>
     </ClInclude>
-    <ClInclude Include="CBlockedPath.h" />
-    <ClInclude Include="CEnemyController.h" />
+    <ClInclude Include="CLevelController.h">
+      <Filter>Source\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CLevel.h">
+      <Filter>Source\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="CBlockedPath.h">
+      <Filter>Source\GameObject\StaticMeshObject\Enviroment\BlockedPath</Filter>
+    </ClInclude>
+    <ClInclude Include="CStage.h">
+      <Filter>Source\GameObject\StaticMeshObject\Enviroment\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="CSkybox.h">
+      <Filter>Source\SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CSprite2D.h">
+      <Filter>Source\Sprite\Sprite2D</Filter>
+    </ClInclude>
+    <ClInclude Include="CSprite3D.h">
+      <Filter>Source\Sprite\Sprite3D</Filter>
+    </ClInclude>
+    <ClInclude Include="CDecal.h">
+      <Filter>Source\Sprite\Sprite3D\Decal</Filter>
+    </ClInclude>
+    <ClInclude Include="CShot.h">
+      <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">
@@ -469,6 +521,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="Data\Shader\Decal.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\Skybox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

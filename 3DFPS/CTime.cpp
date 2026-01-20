@@ -80,6 +80,6 @@ void CTime::StartTimer()
 
 double CTime::StopTimer()
 {
-	m_timerElapsed = 0;
+	m_timerElapsed = 0.f;
 	return m_totalTime - m_timerElapsed;
 }
