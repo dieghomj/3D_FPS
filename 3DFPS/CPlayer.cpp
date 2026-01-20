@@ -6,9 +6,9 @@ static constexpr float FRICTION = 0.0390f;
 
 static constexpr float HEALTH_MAX = 100.f;
 
-static constexpr float PLAYERSIZE = 4.5;
+static constexpr float PLAYERSIZE = 6.5;
 static constexpr float CROUCHSIZE = 2.8f;
-static constexpr float PLAYERRADIUS = 0.5f;
+static constexpr float PLAYERRADIUS = 0.7f;
 
 static constexpr float RUN_SPEED = 0.55f;
 static constexpr float MAX_RUN_SPEED = 0.8f;
@@ -36,7 +36,6 @@ CPlayer::CPlayer()
 	
 	, m_State					(Idle)
 	
-	, m_Height					(PLAYERSIZE)
 	, m_MoveSpeed				(RUN_SPEED)
 	, m_JumpStrength			(JUMP_STRENGTH)
 	, m_Health					(HEALTH_MAX)
@@ -49,7 +48,6 @@ CPlayer::CPlayer()
 	, m_FloorY					(0.f)
 	, m_Right					(1.f, 0.f, 0.f)
 	, m_Forward					(0.f, 0.f, 1.f)
-	, m_Velocity				(0.f, 0.f, 0.f)
 	, m_Acceleration			(0.f, 0.f, 0.f)
 	, m_Inertia					(0.f, 0.f, 0.f)
 	, m_DashDirection			(0.f, 0.f, 1.f)
@@ -65,7 +63,6 @@ CPlayer::CPlayer()
 	, m_CanCrouch				(true)
 	, m_CanSlide				(true)
 	, m_CanMove					(true)
-	, m_IsGravityEnabled		(true)
 
 	, m_IsInertiaEnabled(true)
 	, m_InvFrame(false)
@@ -74,6 +71,9 @@ CPlayer::CPlayer()
 	m_pInputHandler = new CInput();
 	m_pHeadCrossRay = new CROSSRAY();
 	m_Radius = PLAYERRADIUS;
+	m_Height = PLAYERSIZE;
+	m_Velocity = D3DXVECTOR3(0.f, 0.f, 0.f);
+	m_GravityEnabled = true;
 }
 
 CPlayer::~CPlayer()
@@ -419,6 +419,15 @@ void CPlayer::SpecialAction()
 
 }
 
+void CPlayer::UpdateAxis()
+{
+
+	UpdateRayY(m_vPosition.y - m_Height * 0.001f);
+	UpdateCrossRay(*m_pHeadCrossRay, m_vPosition.y + 0.5f);
+	UpdateCrossRay(*m_pCrossRay, m_vPosition.y - m_Height * 0.55f);
+
+}
+
 
 // 摩擦による慣性の減衰を計算
 void CPlayer::CalculateInertia()
@@ -461,10 +470,10 @@ void CPlayer::CalculateInertia()
 void CPlayer::HandleAirPhys()
 {
 	float feetY = m_vPosition.y - m_Height;			//プレイヤーの足元のY座標
-	float headY = m_vPosition.y + m_Height * 0.1f;	//プレイヤーの頭のY座標
+	float headY = m_vPosition.y + m_Height;	//プレイヤーの頭のY座標
 
-	const float GROUND_SNAP_DISTANCE = 0.00015f;		//地面に吸着する距離
-	const float GROUND_PENETRATION = 0.00001f;			//地面にめり込んだと見なす距離
+	const float GROUND_SNAP_DISTANCE = 0.000015f;		//地面に吸着する距離
+	const float GROUND_PENETRATION = 0.01f;			//地面にめり込んだと見なす距離
 	const float CEILING_BUFFER = 0.01f;				//天井に当たったと見なす距離
 
 	float distanceToFloor = feetY - m_FloorY;		//プレイヤーの足元と地面の距離
@@ -517,7 +526,7 @@ void CPlayer::HandleAirPhys()
 
 		if (distanceToCeiling < CEILING_BUFFER)
 		{
-			m_vPosition.y = m_CeilingY - m_Height - 0.0003f; 
+			m_vPosition.y = m_CeilingY - m_Height; 
 			m_Velocity.y = 0.f;
 			m_Inertia.y = 0.f;
 			m_IsJumping = false;
@@ -534,37 +543,4 @@ void CPlayer::ApplyDamage(float damage) {
 	}
 }
 
-void CPlayer::UpdateAxis()
-{
-	//レイの位置をプレイヤーの座標にそろえる
-	m_pRayY->Position = m_vPosition;
-	//地面めり込み回避のためプレイヤーの位置よりも少し上にしておく
-	m_pRayY->Position.y = m_vPosition.y - m_Height*0.001f;
-	m_pRayY->RotationY = m_vRotation.y;
-	m_pRayY->Length = m_Height + 0.9f;
 
-	UpdateCrossRay();
-}
-
-void CPlayer::UpdateCrossRay()
-{
-	// 水平方向の速度ベクトルを取得
-	D3DXVECTOR3 horizontalVel(m_Velocity.x, 0.f, m_Velocity.z);
-	float speed = D3DXVec3Length(&horizontalVel);
-
-	// レイの長さを速度に応じて変化させる
-	const float RAY_LENGTH = 1.5f;
-
-	for (int dir = 0; dir < CROSSRAY::max; dir++)
-	{
-		m_pCrossRay->Ray[dir].Position = m_vPosition;
-		m_pCrossRay->Ray[dir].Position.y = m_vPosition.y - m_Height * 0.55f;
-		m_pCrossRay->Ray[dir].RotationY = m_vRotation.y;
-		m_pCrossRay->Ray[dir].Length = RAY_LENGTH;
-
-		m_pHeadCrossRay->Ray[dir].Position = m_vPosition;
-		m_pHeadCrossRay->Ray[dir].Position.y = m_vPosition.y + 0.5f;
-		m_pHeadCrossRay->Ray[dir].RotationY = m_vRotation.y;
-		m_pHeadCrossRay->Ray[dir].Length = RAY_LENGTH;
-	}
-}

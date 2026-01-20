@@ -25,14 +25,13 @@ public:
 
 	void SetFloorY(float y) { m_FloorY = y; }
 	void SetCeilingY(float y) { m_CeilingY = y; }
-	void SetVelocity(const D3DXVECTOR3& vel) { m_Velocity = vel; }
 	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
 
 	void SetShooting(bool value) { m_CanShoot = value; }
 	void SetDash(bool value) { m_CanDash = value; }
 	void SetJump(bool value) { m_CanJump = value; }
 	void SetCrouch(bool value) { m_CanCrouch = value; }
-	void SetGravity(bool value) { m_IsGravityEnabled = value; }
+	void SetGravity(bool value) { m_GravityEnabled = value; }
 	void SetInertia(bool value) { m_IsInertiaEnabled = value; }
 
 	bool IsAlive() const { return m_Health > 0.0f; }
@@ -74,8 +73,6 @@ public:
 
 	void UpdateAxis();
 
-	void UpdateCrossRay();
-
 private:
 	
 	void HandleInput();
@@ -92,9 +89,9 @@ private:
 	void SpecialAction();
 
 
+
 private:
 	
-	D3DXVECTOR3 m_Velocity;
 	D3DXVECTOR3 m_Inertia;
 	D3DXVECTOR3 m_Acceleration;
 	D3DXVECTOR3 m_Forward;
@@ -105,7 +102,6 @@ private:
     float m_MoveSpeed;
 	float m_JumpStrength;
 	float m_Health;
-	float m_Height;
 	int m_currWeapon;
 	CInput* m_pInputHandler;
 
@@ -119,7 +115,6 @@ private:
 	bool m_CanSlide = true;
 	bool m_CanMove = true;
 	
-	bool m_IsGravityEnabled = true;
 	bool m_IsInertiaEnabled = true;
 	
 	bool m_IsOnGround = true;
