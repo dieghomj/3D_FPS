@@ -9,6 +9,15 @@ CSceneManager::CSceneManager()
 
 CSceneManager::~CSceneManager()
 {
+	for (auto& scenePair : m_pSceneList)
+	{
+		if (scenePair.second)
+		{
+			scenePair.second->Release();
+			SAFE_DELETE(scenePair.second);
+		}
+	}
+	m_pSceneList.clear();
 }
 
 HRESULT CSceneManager::AddScene(CScene* scene, const char* name)
@@ -16,12 +25,9 @@ HRESULT CSceneManager::AddScene(CScene* scene, const char* name)
 	
 	scene->Create();
 
-	if (FAILED(scene->LoadData()))
-	{
-		return E_FAIL;
-	}
-	
 	m_pSceneList[name] = scene;
+
+	return S_OK;
 }
 
 CScene* CSceneManager::ChangeScene(const char* name, bool release)
@@ -36,7 +42,7 @@ CScene* CSceneManager::ChangeScene(const char* name, bool release)
 
 	if (FAILED(m_pCurrentScene->LoadData()))
 	{
-		return nullptr;
+		throw std::runtime_error("Failed to load scene data");
 	}
 
 	if (m_pCurrentScene)

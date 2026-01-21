@@ -51,7 +51,6 @@ CMain::CMain()
 CMain::~CMain()
 {
 	SAFE_DELETE( m_pTime );
-	SAFE_DELETE( m_pGame );
 	SAFE_DELETE( m_pSceneManager )
 	SAFE_DELETE( m_pDx11 );
 	SAFE_DELETE( m_pDx9 );
