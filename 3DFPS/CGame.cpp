@@ -12,10 +12,18 @@ const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -95.f);
 const std::vector<CLevel::COLLISION_TRIGGER> collisionTriggers[3] = {
 	
 	{
-	{ D3DXVECTOR3(0.f, 5.f, 270.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
-	{ D3DXVECTOR3(0.f, 5.f, 505.f), D3DXVECTOR3(50.f, 20.f, 10.f), {1}, false, true },
-	{ D3DXVECTOR3(0.f, 8.f, 700.f), D3DXVECTOR3(50.f, 20.f, 10.f), {2}, false, true }
+		{ D3DXVECTOR3(0.f, 5.f, 270.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
+		{ D3DXVECTOR3(0.f, 5.f, 505.f), D3DXVECTOR3(50.f, 20.f, 10.f), {1}, false, true },
+		{ D3DXVECTOR3(0.f, 8.f, 700.f), D3DXVECTOR3(50.f, 20.f, 10.f), {2}, false, true }
 	},
+	
+	{},
+
+	{
+		{ D3DXVECTOR3(0.f, 1.f, 5.f), D3DXVECTOR3(500.f, 500.f, 500.f), {0, 1}, false, false },
+		{ D3DXVECTOR3(0.f, 5.f, 1070.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, true, false },
+		{ D3DXVECTOR3(0.f, 5.f, 1070.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, true, false },
+	}
 
 };
 
@@ -25,11 +33,25 @@ const CLevel::GOAL levelGoals[3] = {
 	{ D3DXVECTOR3(0.f, 8.f, 800.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
 };
 
-const D3DXVECTOR3 enemyStartPos[] = {
-	D3DXVECTOR3(-13.f,15.f,230.f),
-	D3DXVECTOR3(13.f,15.f,230.f),
-	D3DXVECTOR3(-13.f,15.f,265.f),
-	D3DXVECTOR3(13.f,15.f,265.f),
+const D3DXVECTOR3 enemyStartPos[LEVEL_COUNT][4] = {
+	{
+		D3DXVECTOR3(-13.f,15.f,230.f),
+		D3DXVECTOR3(13.f,15.f,230.f),
+		D3DXVECTOR3(-13.f,15.f,265.f),
+		D3DXVECTOR3(13.f,15.f,265.f),
+	},
+	{	
+		D3DXVECTOR3(-13.f,15.f,230.f),
+		D3DXVECTOR3(13.f,15.f,230.f),
+		D3DXVECTOR3(-13.f,15.f,265.f),
+		D3DXVECTOR3(13.f,15.f,265.f),
+	},
+	{
+		D3DXVECTOR3(0.f,15.f,5.f),
+		D3DXVECTOR3(13.f,15.f,230.f),
+		D3DXVECTOR3(-13.f,15.f,265.f),
+		D3DXVECTOR3(13.f,15.f,265.f),
+	}
 };
 
 const D3DXVECTOR3 itemPos[2] =
@@ -164,12 +186,8 @@ void CGame::Create()
 	m_pEnemyPool.reserve(ENEMY_COUNT_MAX);
 	m_pBossShotList.reserve(ENEMY_COUNT_MAX);
 	
-
-	// Initialize enemy groups
 	// Get form csv later
-	m_EnemyGroups.reserve(16);
-
-	m_EnemyGroups = {
+	m_EnemyGroups [0] = {
 
 		{
 			4,
@@ -178,22 +196,20 @@ void CGame::Create()
 			7.f,
 			{new CSpider, new CSpider, new CSpider, new CSpider} // enemies will be spawned later
 		},
-		{
-			0,
-			false,
-			false,
-			7.f,
-			{},
-		},
-		{
-			0,
-			false,
-			false,
-			7.f,
-			{},
-		},
-
 	};
+
+	m_EnemyGroups[2] = {
+
+		{
+			1,
+			false,
+			false,
+			7.f,
+			{new CBoss} // enemies will be spawned later
+		},
+	};
+
+
 
 	for( int i= 0; i < ENEMY_COUNT_MAX; i++)
 	{
@@ -723,7 +739,6 @@ void CGame::Draw()
 	{
 	m_pBoss->RenderStatic(m_SceneInfo);
 	}
-	//HandleEnemyShotLoadAnim();
 
 	for ( auto pBossShot : m_pBossShotList)
 	{
@@ -735,24 +750,29 @@ void CGame::Draw()
 		else if (typeid(*pBossShot) == typeid(CRobo))
 		{
 			CRobo* pRobo = dynamic_cast<CRobo*>(pBossShot);
-			pRobo->RenderStatic(m_SceneInfo);
+			pRobo->Draw(m_SceneInfo);
 		}
-	}
-
-	for (auto pEnemyShot : m_pEnemyShotList)
-	{
-		pEnemyShot->Draw(m_SceneInfo);
 	}
 
 	for(auto pEnemy : m_pEnemyPool)
 	{
-		pEnemy->Draw(m_SceneInfo);
-		
+		if (typeid(*pEnemy) == typeid(CRobo))
+		{
+			HandleEnemyShotLoadAnim(dynamic_cast<CRobo*>(pEnemy));
+		}
+
+		if (typeid(*pEnemy) == typeid(CBoss))
+		{
+			pEnemy->RenderStatic(m_SceneInfo);
+		}
+		else
+		{
+			pEnemy->Draw(m_SceneInfo);
+
+		}
 	}
 	
 	DrawEnemyShots();
-
-	m_pHealthItem->Draw(m_SceneInfo);
 
 	CEffect::GetInstance()->Draw(m_SceneInfo);
 
@@ -997,7 +1017,7 @@ void CGame::DrawEnemyShots()
 void CGame::HandleEnemyShotLoadAnim(CRobo* pEnemy)
 {
 	//RANGED ENEMY SHOT LOAD ANIMATION
-	if (!pEnemy->IsShot())
+	if (!pEnemy->IsShot() && pEnemy->IsActive())
 	{
 		float scale = pEnemy->GetAttackCD() * 0.5f;
 		D3DXVECTOR3 vScale = D3DXVECTOR3(scale, scale, scale);
@@ -1219,16 +1239,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		}
 	}
 
-	//if (m_pBoss->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
-	//{
-	//	impact.position = hitPos;
-	//	impact.normal = normal;
-	//	impact.isEnemyHit = true;
-	//	//debugHitShotList.push_back(hitPos);
-	//	//m_bulletImpactList.push_back(impact);
-	//}
-
-	if (m_pStage->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
+	if (m_pLevelController->GetStage()->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 	{
 		impact.position = hitPos;
 		impact.normal = normal;
@@ -1419,21 +1430,34 @@ void CGame::HandleEnemyEnemyCollision()
 
 void CGame::HandleEnemySpawning()
 {
+
+	const float SPIDER_SCALE = 7.f;
+	const float ROBO_SCALE = 0.01f;
+	const float BOSS_SCALE = 2.f;
+
 	auto level = m_pLevelController->GetCurrentLevel();
+	int currLevelIndex = CGameStats::LevelSelection;
 	int triggerCount = level->GetTriggerAreaCount();
 
 	for (int i = 0; i < triggerCount; i++)
 	{
-		if (level->IsAreaTriggered(i) && !m_EnemyGroups[i].isSpawned)
+		if (level->IsAreaTriggered(i) && !m_EnemyGroups[currLevelIndex][i].isSpawned)
 		{
-			m_EnemyGroups[i].isSpawned = true;
-			auto enemyList = m_EnemyGroups[i].enemies;
+			m_EnemyGroups[currLevelIndex][i].isSpawned = true;
+			auto enemyList = m_EnemyGroups[currLevelIndex][i].enemies;
 			for(auto enemy : enemyList)
 			{
 				int poolCount = static_cast<int>(m_pEnemyPool.size());
-				enemy->SetScale(m_EnemyGroups[i].scale);
+
+				if (typeid(*enemy) == typeid(CSpider))
+					enemy->SetScale(SPIDER_SCALE);
+				if (typeid(*enemy) == typeid(CRobo))
+					enemy->SetScale(ROBO_SCALE);
+				if (typeid(*enemy) == typeid(CBoss))
+					enemy->SetScale(BOSS_SCALE);
+				
 				enemy->InitEnemy();
-				enemy->SpawnAt(enemyStartPos[poolCount]);
+				enemy->SpawnAt(enemyStartPos[currLevelIndex][poolCount]);
 				m_pEnemyPool.push_back(enemy);
 			}
 
@@ -1469,7 +1493,9 @@ void CGame::HandleEnemyShooting()
 	//RANGED ENEMY SHOOTING
 	for (auto pEnemy : m_pEnemyPool)
 	{
-		
+		D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.5f, 0.f) - pEnemy->GetPosition();
+		D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
+
 		if(typeid(*pEnemy) != typeid(CRobo))
 			continue;
 
@@ -1488,9 +1514,9 @@ void CGame::HandleEnemyShooting()
 void CGame::HandleEnemyGroupCleared()
 {
 
-	for (int i = 0; i < m_EnemyGroups.size(); i++)
+	for (int i = 0; i < m_EnemyGroups[CGameStats::LevelSelection].size(); i++)
 	{
-		auto& group = m_EnemyGroups[i];
+		auto& group = m_EnemyGroups[CGameStats::LevelSelection][i];
 		if (!group.isSpawned || group.isCleared)
 			continue;
 		bool allDead = true;
@@ -1799,10 +1825,7 @@ HRESULT CGame::LoadEnemiesMesh()
 		return E_FAIL;
 	}
 
-	m_pBoss->AttachMesh(*m_pBossMesh);
-	m_pBoss->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
-
-	for (auto& group : m_EnemyGroups)
+	for (auto& group : m_EnemyGroups[CGameStats::LevelSelection])
 	{
 		for (auto& pEnemy : group.enemies)
 		{
@@ -1818,21 +1841,11 @@ HRESULT CGame::LoadEnemiesMesh()
 				pEnemy->AttachMesh(*m_pRoboMesh);
 				pEnemy->AttachSkinMesh(*m_pRoboSkinMesh);
 			}
-		}
-	}
-
-	for (auto pEnemy : m_pEnemyPool)
-	{
-		if (typeid(*pEnemy) == typeid(CSpider))
-		{
-			pEnemy = dynamic_cast<CSpider*>(pEnemy);
-			pEnemy->AttachMesh(*m_pSpiderMesh);
-			pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
-		}
-		else if (typeid(*pEnemy) == typeid(CRobo))
-		{
-			pEnemy = dynamic_cast<CRobo*>(pEnemy);
-			pEnemy->AttachMesh(*m_pSphereMesh);
+			else if (typeid(*pEnemy) == typeid(CBoss))
+			{
+				pEnemy = dynamic_cast<CBoss*>(pEnemy);
+				pEnemy->AttachMesh(*m_pBossMesh);
+			}
 		}
 	}
 
@@ -1872,7 +1885,7 @@ void CGame::InitEnemy()
 	}
 	m_pEnemyPool.clear();
 
-	for (auto& group : m_EnemyGroups)
+	for (auto& group : m_EnemyGroups[CGameStats::LevelSelection])
 	{
 		group.isSpawned = false;
 		group.isCleared = false;
@@ -1943,12 +1956,12 @@ void CGame::InitLevelController()
 		case 0:
 		{
 			pLevel->SetStartPosition(PLAYER_STARTPOS);
-			pLevel->SetTriggerAreas(collisionTriggers[0]);
+			pLevel->SetTriggerAreas(collisionTriggers[CGameStats::LevelSelection]);
 			pLevel->SetBlockedPathList(m_pBlockedPathList);
-			pLevel->SetEnemySpawnPositions(std::vector<D3DXVECTOR3>(enemyStartPos, enemyStartPos + ENEMY_COUNT_PER_ROOM));
 			break;
 		}
 		default:
+			pLevel->SetTriggerAreas(collisionTriggers[CGameStats::LevelSelection]);
 			break;
 		}
 

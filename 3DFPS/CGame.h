@@ -171,7 +171,7 @@ private:
 	//-----ENEMY------
 	//----------------
 
-		std::vector<ENEMY_GROUP> m_EnemyGroups;
+		std::vector<ENEMY_GROUP> m_EnemyGroups[LEVEL_COUNT];
 
 		CStaticMesh* m_pEnemyMesh;
 		CBoss* m_pBoss;

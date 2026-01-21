@@ -34,9 +34,13 @@ CScene* CSceneManager::ChangeScene(const char* name, bool release)
 
 	m_pCurrentScene = m_pSceneList[name];
 
+	if (FAILED(m_pCurrentScene->LoadData()))
+	{
+		return nullptr;
+	}
+
 	if (m_pCurrentScene)
 	{
-		Sleep(50);
 		m_pCurrentScene->Start();
 	}
 
