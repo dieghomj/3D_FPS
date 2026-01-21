@@ -89,6 +89,7 @@ void CPlayer::InitPlayer()
 	m_JumpStrength = JUMP_STRENGTH;
 	m_Velocity = D3DXVECTOR3(0.f, 0.f, 0.f);
 	m_Inertia = D3DXVECTOR3(0.f, 0.f, 0.f);
+	m_currWeapon = 0;
 }
 
 void CPlayer::Update()
