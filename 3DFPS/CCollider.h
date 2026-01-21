@@ -23,6 +23,7 @@ public:
 	~CCollider();
 
 	HRESULT Init();
+	HRESULT InitDebugRender(CDirectX11& pDx11);
 
 	HRESULT CreateSphereForMesh(const CStaticMesh& pMesh);
 	HRESULT CreateBoxForMesh(const CStaticMesh& pMesh);
@@ -36,6 +37,24 @@ public:
 
 	CBoundingSphere* GetBSphere();
 	CBoundingCube* GetBBox();
+	COLLIDER_SHAPE GetShape() const { return m_Shape; }
+	const D3DXMATRIX& GetRotationMatrix() const { return m_mRotation; }
+
+	// 衝突判定メソッド
+	bool CheckCollision(CCollider* pOther, D3DXVECTOR3* pPenetration = nullptr);
+	
+	// 球 vs 球の衝突判定
+	static bool SphereVsSphere(CBoundingSphere* pSphereA, CBoundingSphere* pSphereB, 
+							   D3DXVECTOR3* pPenetration = nullptr);
+	
+	// 球 vs OBB（回転対応ボックス）の衝突判定
+	static bool SphereVsOBB(CBoundingSphere* pSphere, CBoundingCube* pBox, 
+							const D3DXMATRIX& boxRotation,
+							D3DXVECTOR3* pPenetration = nullptr);
+
+	// 球 vs AABB（軸平行ボックス）の衝突判定
+	static bool SphereVsAABB(CBoundingSphere* pSphere, CBoundingCube* pBox,
+							 D3DXVECTOR3* pPenetration = nullptr);
 
 	void Release();
 	void DebugDraw(CDirectX11& pDx11, D3DXMATRIX& mView, D3DXMATRIX& mProj);
@@ -61,7 +80,7 @@ private:
 
 	CDebugColliderRender*	m_pDbgCollider;	
 	COLLIDER_SHAPE			m_Shape = COLLIDER_SHAPE_SPHERE;
-
+	D3DXMATRIX				m_mRotation;	// 回転行列（OBB用）
 
 };
 

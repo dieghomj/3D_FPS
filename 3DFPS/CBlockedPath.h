@@ -15,7 +15,7 @@ public:
 	}
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
-	void HandleWallCollisions(CPlayer* character);
+	void HandleCubeCollisions(CPlayer* character);
 
 private:
 

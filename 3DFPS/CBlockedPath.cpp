@@ -46,7 +46,7 @@ void CBlockedPath::Draw(SCENE_DATA& sceneData)
 	m_pBlockedPathSprite->Render(sceneData.mView, sceneData.mProj);
 }
 
-void CBlockedPath::HandleWallCollisions(CPlayer* player)
+void CBlockedPath::HandleCubeCollisions(CPlayer* player)
 {
 
 	if (IsActive() == false)

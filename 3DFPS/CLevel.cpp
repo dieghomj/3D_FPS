@@ -133,7 +133,7 @@ void CLevel::UpdateBlockedPaths()
 		}
 		pBlockedPath->Update();
 		pBlockedPath->UpdateCollider();
-		pBlockedPath->HandleWallCollisions(m_pPlayer);
+		pBlockedPath->HandleCubeCollisions(m_pPlayer);
 	}
 }
 

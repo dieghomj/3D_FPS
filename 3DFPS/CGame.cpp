@@ -7,7 +7,12 @@ constexpr int ENEMY_COUNT_MAX = 64;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
 constexpr float ENEMY_SHOT_SPEED = 1.2f;
 constexpr int STAGE_TIMER = 2 * 60; // minutes
-const D3DXVECTOR3  PLAYER_STARTPOS = D3DXVECTOR3(0.f, 25.f, -95.f);
+const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
+		D3DXVECTOR3(0.f, 25.f, -95.f),
+		D3DXVECTOR3(0.f, 25.f, -95.f),
+		D3DXVECTOR3(0.f, 25.f, -35.f),
+		D3DXVECTOR3(0.f, 25.f, -95.f),
+};
 
 const std::vector<CLevel::COLLISION_TRIGGER> collisionTriggers[3] = {
 	
@@ -47,7 +52,7 @@ const D3DXVECTOR3 enemyStartPos[LEVEL_COUNT][4] = {
 		D3DXVECTOR3(13.f,15.f,265.f),
 	},
 	{
-		D3DXVECTOR3(0.f,15.f,5.f),
+		D3DXVECTOR3(0.f,15.f,1.f),
 		D3DXVECTOR3(13.f,15.f,230.f),
 		D3DXVECTOR3(-13.f,15.f,265.f),
 		D3DXVECTOR3(13.f,15.f,265.f),
@@ -123,6 +128,7 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, debugShotMark()
 	, debugHitShotList()
 	, debugShotMesh(nullptr)
+	, m_pDebugColliderRender(nullptr)
 #endif
 {
 }
@@ -285,6 +291,7 @@ void CGame::Create()
 	m_pSphereMesh = new CStaticMesh();
 	debugRay = new CRay();
 	debugShotRay = new CRay();
+	m_pDebugColliderRender = new CDebugColliderRender();
 #endif // DEBUG
 }
 
@@ -327,6 +334,15 @@ HRESULT CGame::LoadData()
 
 //デバッグ用
 #if _DEBUG
+
+	// Initialize debug collider renderer
+	if (m_pDebugColliderRender)
+	{
+		if (FAILED(m_pDebugColliderRender->Init(*m_pDx11)))
+		{
+			return E_FAIL;
+		}
+	}
 
 	if (FAILED(m_pItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ammo\\AMMO.x")))
 	{
@@ -428,6 +444,10 @@ void CGame::Release()
 	SAFE_DELETE(m_pShotgunMesh);
 	
 
+#if _DEBUG
+	SAFE_DELETE(m_pDebugColliderRender);
+#endif
+
 }
 
 void CGame::Start()
@@ -456,9 +476,9 @@ void CGame::Start()
 	InitEnemy();
 
 	m_pPlayer->InitPlayer();
-	m_pPlayer->SetPosition( PLAYER_STARTPOS );
+	m_pPlayer->SetPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
 	m_pLevelController->Restart();
-	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS);
+	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
 
 	m_accumulatedTime = 0.0f;
 	m_enemyKillCount = 0;
@@ -565,6 +585,7 @@ void CGame::Update()
 	for (auto pEnemy : m_pEnemyPool)
 	{
 		pEnemy->Update();
+		pEnemy->UpdateCollider();
 		pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 	}
 
@@ -701,8 +722,8 @@ void CGame::HandlePlayerDashEffect()
 void CGame::Restart()
 {
 	m_pPlayer->InitPlayer();
-	m_pPlayer->SetPosition(PLAYER_STARTPOS);
-	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS);
+	m_pPlayer->SetPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
+	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
 	m_pLevelController->Restart();
 	
 	InitEnemy();
@@ -804,6 +825,9 @@ void CGame::Draw()
 	m_pFont->Render(textOnScreen, WND_W - 32 * 9, 40, 32.f);
 
 #if _DEBUG
+
+	// Draw debug colliders for enemies and other objects
+	DrawDebugColliders();
 
 	auto playerPath = m_pStage->debugPlayerPath;
 
@@ -1296,6 +1320,125 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& dista
 	return false;
 
 }
+
+bool CGame::HandleCubeCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara)
+{
+	if (pMeshObj->IsActive() == false)
+	{
+		return false;
+	}
+
+	CCollider* pCollider = pMeshObj->GetCollider();
+	if (pCollider == nullptr)
+	{
+		return false;
+	}
+
+	CBoundingCube* pBox = pCollider->GetBBox();
+	if (pBox == nullptr)
+	{
+		return false;
+	}
+
+	const D3DXVECTOR3 minBound = pBox->GetMin();
+	const D3DXVECTOR3 maxBound = pBox->GetMax();
+
+	const float playerRadius = pChara->GetRadius();
+	const float playerHeight = pChara->GetHeight();
+	D3DXVECTOR3 playerPos = pChara->GetPosition();
+	const float playerFeet = playerPos.y - playerHeight;
+	const float playerHead = playerPos.y + playerHeight * 0.3f;
+
+	const bool overlapX = (playerPos.x + playerRadius) > minBound.x && (playerPos.x - playerRadius) < maxBound.x;
+	const bool overlapZ = (playerPos.z + playerRadius) > minBound.z && (playerPos.z - playerRadius) < maxBound.z;
+	const bool overlapY = playerHead > minBound.y && playerFeet < maxBound.y;
+
+	if (!(overlapX && overlapZ && overlapY))
+	{
+		return false;
+	}
+
+	const float centerX = (minBound.x + maxBound.x) * 0.5f;
+	const float centerZ = (minBound.z + maxBound.z) * 0.5f;
+
+	float penetrationX = (playerPos.x >= centerX)
+		? maxBound.x - (playerPos.x - playerRadius)
+		: (playerPos.x + playerRadius) - minBound.x;
+	float penetrationZ = (playerPos.z >= centerZ)
+		? maxBound.z - (playerPos.z - playerRadius)
+		: (playerPos.z + playerRadius) - minBound.z;
+
+	if (penetrationX <= 0.f && penetrationZ <= 0.f)
+	{
+		return false;
+	}
+
+	D3DXVECTOR3 resolvedPos = playerPos;
+	D3DXVECTOR3 playerVelocity = pChara->GetVelocity();
+
+	if (penetrationX < penetrationZ)
+	{
+		const float pushDir = (playerPos.x >= centerX) ? 1.f : -1.f;
+		resolvedPos.x += pushDir * penetrationX;
+		playerVelocity.x = 0.f;
+	}
+	else
+	{
+		const float pushDir = (playerPos.z >= centerZ) ? 1.f : -1.f;
+		resolvedPos.z += pushDir * penetrationZ;
+		playerVelocity.z = 0.f;
+	}
+	
+	pChara->SetPosition(resolvedPos);
+	pChara->SetVelocity(playerVelocity);
+
+	return true;
+}
+
+bool CGame::HandleColliderCollision(CStaticMeshObject* pObjA, CCharacter* pChara, bool resolveForChara)
+{
+	if (!pObjA || !pChara) return false;
+	if (!pObjA->IsActive()) return false;
+
+	CCollider* pColliderA = pObjA->GetCollider();
+	CCollider* pColliderB = pChara->GetCollider();
+
+	if (!pColliderA || !pColliderB) return false;
+
+	D3DXVECTOR3 penetration(0, 0, 0);
+	
+	// コライダー同士の衝突判定
+	if (pColliderB->CheckCollision(pColliderA, &penetration))
+	{
+		if (resolveForChara)
+		{
+			// キャラクターを押し出す
+			D3DXVECTOR3 charaPos = pChara->GetPosition();
+			D3DXVECTOR3 charaVel = pChara->GetVelocity();
+
+			// Y方向の押し出しは無視（床の衝突は別処理）
+			penetration.y = 0.0f;
+
+			charaPos += penetration;
+			pChara->SetPosition(charaPos);
+
+			// 押し出し方向の速度をゼロにする
+			if (fabsf(penetration.x) > 0.001f)
+			{
+				charaVel.x = 0.0f;
+			}
+			if (fabsf(penetration.z) > 0.001f)
+			{
+				charaVel.z = 0.0f;
+			}
+			pChara->SetVelocity(charaVel);
+		}
+		return true;
+	}
+
+	return false;
+}
+
 void CGame::HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara)
 {
 	if (pMeshObj->IsActive() == false)
@@ -1372,30 +1515,53 @@ void CGame::HandlePlayerEnemyCollision()
 	for (auto pEnemy : m_pEnemyPool)
 	{
 		if (!pEnemy || pEnemy->IsDead() || !pEnemy->IsActive()) continue;
-		if (typeid(*pEnemy) == typeid(CBoss))
-		{
-			continue;
-		}
-		D3DXVECTOR3 enemyPos = pEnemy->GetPosition();
-		float enemyRadius = pEnemy->GetRadius();
+
+		CCollider* pEnemyCollider = pEnemy->GetCollider();
 		float distance = 0.f;
-		if (typeid(*pEnemy) == typeid(CBoss))
+		bool collided = false;
+
+		// コライダーがある場合はコライダーベースの衝突判定を使用
+		if (pEnemyCollider)
 		{
-			HandleCollision(pEnemy, m_pPlayer, distance, false);
-			continue;
+			collided = HandleColliderCollision(pEnemy, m_pPlayer, true);
+			
+			// 距離計算（ダメージ判定用）
+			D3DXVECTOR3 diff = m_pPlayer->GetPosition() - pEnemy->GetPosition();
+			diff.y = 0.0f;
+			distance = D3DXVec3Length(&diff);
 		}
-		HandleCollision(m_pPlayer, pEnemy, distance, false);
-
-		if (pEnemy->GetState() == CAnimEnemy::Attacking && distance <= enemyRadius + 0.85f)
+		else
 		{
-			m_pPlayer->ApplyDamage(5.5f);
+			// コライダーがない場合は従来の球ベースの衝突判定
+			if (typeid(*pEnemy) == typeid(CBoss))
+			{
+				collided = HandleCubeCollisions(pEnemy, m_pPlayer);
+				D3DXVECTOR3 diff = m_pPlayer->GetPosition() - pEnemy->GetPosition();
+				diff.y = 0.0f;
+				distance = D3DXVec3Length(&diff);
+			}
+			else
+			{
+				HandleCollision(m_pPlayer, pEnemy, distance, false);
+				collided = (distance <= m_pPlayer->GetRadius() + pEnemy->GetRadius());
+			}
+		}
 
+		// ダメージ処理
+		if (collided && pEnemy->GetState() == CAnimEnemy::Attacking)
+		{
+			float damage = 5.5f;
+			if (typeid(*pEnemy) == typeid(CBoss))
+			{
+				damage = 10.f;
+			}
+			m_pPlayer->ApplyDamage(damage);
 			m_highestCombo = max(m_highestCombo, m_comboCount);
 			m_comboCount = 0;
 		}
 	}
-
 }
+
 void CGame::HandleEnemyEnemyCollision()
 {
 	size_t enemyCount = m_pEnemyPool.size();
@@ -1431,7 +1597,7 @@ void CGame::HandleEnemyEnemyCollision()
 void CGame::HandleEnemySpawning()
 {
 
-	const float SPIDER_SCALE = 7.f;
+	const float SPIDER_SCALE = 6.f;
 	const float ROBO_SCALE = 0.01f;
 	const float BOSS_SCALE = 2.f;
 
@@ -1834,17 +2000,20 @@ HRESULT CGame::LoadEnemiesMesh()
 				pEnemy = dynamic_cast<CSpider*>(pEnemy);
 				pEnemy->AttachMesh(*m_pSpiderMesh);
 				pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
+				pEnemy->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
 			}
 			else if (typeid(*pEnemy) == typeid(CRobo))
 			{
 				pEnemy = dynamic_cast<CRobo*>(pEnemy);
 				pEnemy->AttachMesh(*m_pRoboMesh);
 				pEnemy->AttachSkinMesh(*m_pRoboSkinMesh);
+				pEnemy->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
 			}
 			else if (typeid(*pEnemy) == typeid(CBoss))
 			{
 				pEnemy = dynamic_cast<CBoss*>(pEnemy);
 				pEnemy->AttachMesh(*m_pBossMesh);
+				pEnemy->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
 			}
 		}
 	}
@@ -1955,12 +2124,13 @@ void CGame::InitLevelController()
 		{
 		case 0:
 		{
-			pLevel->SetStartPosition(PLAYER_STARTPOS);
+			pLevel->SetStartPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
 			pLevel->SetTriggerAreas(collisionTriggers[CGameStats::LevelSelection]);
 			pLevel->SetBlockedPathList(m_pBlockedPathList);
 			break;
 		}
 		default:
+			pLevel->SetStartPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
 			pLevel->SetTriggerAreas(collisionTriggers[CGameStats::LevelSelection]);
 			break;
 		}
@@ -1968,4 +2138,65 @@ void CGame::InitLevelController()
 	}
 
 	m_pLevelController->SetCurrentLevel(CGameStats::LevelSelection);
+}	
+
+#if _DEBUG
+void CGame::DrawDebugColliders()
+{
+	if (!m_pDebugColliderRender)
+		return;
+
+	D3DXMATRIX& mView = m_SceneInfo.mView;
+	D3DXMATRIX& mProj = m_SceneInfo.mProj;
+
+	// Draw player collider
+	if (m_pPlayer && m_pPlayer->GetCollider())
+	{
+		CCollider* pCollider = m_pPlayer->GetCollider();
+		CCollider::COLLIDER_SHAPE shape = pCollider->GetShape();
+		m_pDebugColliderRender->DrawCollider(*m_pDx11, mView, mProj, shape, *pCollider);
+	}
+
+	// Draw enemy colliders
+	for (auto pEnemy : m_pEnemyPool)
+	{
+		if (!pEnemy || !pEnemy->IsActive() || pEnemy->IsDead())
+			continue;
+
+		CCollider* pCollider = pEnemy->GetCollider();
+		if (!pCollider)
+			continue;
+
+		CCollider::COLLIDER_SHAPE shape = pCollider->GetShape();
+		m_pDebugColliderRender->DrawCollider(*m_pDx11, mView, mProj, shape, *pCollider);
+	}
+
+	// Draw blocked path colliders
+	for (auto pBlockedPath : m_pBlockedPathList)
+	{
+		if (!pBlockedPath || !pBlockedPath->IsActive())
+			continue;
+
+		CCollider* pCollider = pBlockedPath->GetCollider();
+		if (!pCollider)
+			continue;
+
+		CCollider::COLLIDER_SHAPE shape = pCollider->GetShape();
+		m_pDebugColliderRender->DrawCollider(*m_pDx11, mView, mProj, shape, *pCollider);
+	}
+
+	// Draw enemy shot colliders
+	for (auto pEnemyShot : m_pEnemyShotList)
+	{
+		if (!pEnemyShot || !pEnemyShot->IsDisplay())
+			continue;
+
+		CCollider* pCollider = pEnemyShot->GetCollider();
+		if (!pCollider)
+			continue;
+
+		CCollider::COLLIDER_SHAPE shape = pCollider->GetShape();
+		m_pDebugColliderRender->DrawCollider(*m_pDx11, mView, mProj, shape, *pCollider);
+	}
 }
+#endif

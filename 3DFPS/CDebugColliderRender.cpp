@@ -32,7 +32,7 @@ void CDebugColliderRender::Release()
 	SAFE_DELETE(m_pDbgBBox);
 }
 
-void CDebugColliderRender::DrawCollider(CDirectX11& pDx11, D3DXMATRIX& mView, D3DXMATRIX& mProj ,CCollider::COLLIDER_SHAPE shape, CCollider& collider)
+void CDebugColliderRender::DrawCollider(CDirectX11& pDx11, D3DXMATRIX& mView, D3DXMATRIX& mProj, CCollider::COLLIDER_SHAPE shape, CCollider& collider)
 {
 	CBoundingSphere* pSphere = nullptr;
 	CBoundingCube* pBox = nullptr;
@@ -55,12 +55,16 @@ void CDebugColliderRender::DrawCollider(CDirectX11& pDx11, D3DXMATRIX& mView, D3
 
 		pBox = collider.GetBBox();
 
-		DrawBox(m_pDx11->GetContext(),
-			mView,
-			mProj,
-			pBox->GetMin(),
-			pBox->GetMax(),
-			D3DXVECTOR4(0.1f, 1.0f, 0.1f, 1.0f));
+		// OBB•`‰æi‰ñ“]‚ðl—¶j
+		{
+			D3DXVECTOR3 corners[8];
+			pBox->GetWorldCorners(corners);
+			m_pDbgBBox->DrawOBB(m_pDx11->GetContext(),
+				mView,
+				mProj,
+				corners,
+				D3DXVECTOR4(0.1f, 1.0f, 0.1f, 1.0f));
+		}
 
 		break;
 	default:

@@ -189,3 +189,67 @@ void CDebugBBox::DrawBox(ID3D11DeviceContext* ctx,
 
 	ctx->Draw(static_cast<UINT>(m_TmpVerts.size()), 0);
 }
+
+// 既存のコードの後に追加
+
+void CDebugBBox::AppendOBB(std::vector<VERTEX>& out, const D3DXVECTOR3 corners[8], const D3DXVECTOR4& color)
+{
+	// corners配列の順序:
+	// 0: min.x, min.y, min.z
+	// 1: max.x, min.y, min.z
+	// 2: min.x, max.y, min.z
+	// 3: max.x, max.y, min.z
+	// 4: min.x, min.y, max.z
+	// 5: max.x, min.y, max.z
+	// 6: min.x, max.y, max.z
+	// 7: max.x, max.y, max.z
+
+	// 下面 (y=min)
+	out.push_back({ corners[0], color }); out.push_back({ corners[1], color });
+	out.push_back({ corners[1], color }); out.push_back({ corners[5], color });
+	out.push_back({ corners[5], color }); out.push_back({ corners[4], color });
+	out.push_back({ corners[4], color }); out.push_back({ corners[0], color });
+
+	// 上面 (y=max)
+	out.push_back({ corners[2], color }); out.push_back({ corners[3], color });
+	out.push_back({ corners[3], color }); out.push_back({ corners[7], color });
+	out.push_back({ corners[7], color }); out.push_back({ corners[6], color });
+	out.push_back({ corners[6], color }); out.push_back({ corners[2], color });
+
+	// 垂直エッジ
+	out.push_back({ corners[0], color }); out.push_back({ corners[2], color });
+	out.push_back({ corners[1], color }); out.push_back({ corners[3], color });
+	out.push_back({ corners[5], color }); out.push_back({ corners[7], color });
+	out.push_back({ corners[4], color }); out.push_back({ corners[6], color });
+}
+
+void CDebugBBox::DrawOBB(ID3D11DeviceContext* ctx,
+	const D3DXMATRIX& mView,
+	const D3DXMATRIX& mProj,
+	const D3DXVECTOR3 corners[8],
+	const D3DXVECTOR4& color)
+{
+	m_TmpVerts.clear();
+	AppendOBB(m_TmpVerts, corners, color);
+	if ((int)m_TmpVerts.size() > m_MaxVBVerts) return;
+
+	// Update VP
+	D3DXMATRIX mVP = mView * mProj;
+	ApplyVP(ctx, mVP);
+
+	// Update VB
+	D3D11_MAPPED_SUBRESOURCE mapped{};
+	if (FAILED(ctx->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped))) return;
+	memcpy(mapped.pData, m_TmpVerts.data(), sizeof(VERTEX) * m_TmpVerts.size());
+	ctx->Unmap(m_pVertexBuffer, 0);
+
+	// Bind and draw
+	UINT stride = sizeof(VERTEX), offset = 0;
+	ctx->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	ctx->IASetInputLayout(m_pLayout);
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	ctx->VSSetShader(m_pVertexShader, nullptr, 0);
+	ctx->PSSetShader(m_pPixelShader, nullptr, 0);
+
+	ctx->Draw(static_cast<UINT>(m_TmpVerts.size()), 0);
+}

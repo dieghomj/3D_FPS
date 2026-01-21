@@ -75,6 +75,7 @@ private:
 	bool m_MinionShot;
 	bool m_GroundSlammed;
 	bool m_Morphed;
+	bool m_SpawnFlag;
 
 	float m_PhaseHealth[PhaseCount];
 	float m_MorphAttackHeight;

@@ -8,7 +8,7 @@ static constexpr float HEALTH_MAX = 100.f;
 
 static constexpr float PLAYERSIZE = 6.5;
 static constexpr float CROUCHSIZE = 2.8f;
-static constexpr float PLAYERRADIUS = 0.7f;
+static constexpr float PLAYERRADIUS = 0.3f;
 
 static constexpr float RUN_SPEED = 0.55f;
 static constexpr float MAX_RUN_SPEED = 0.8f;

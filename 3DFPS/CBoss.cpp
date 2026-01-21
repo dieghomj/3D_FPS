@@ -1,5 +1,7 @@
 #include "CBoss.h"
 
+static constexpr float SPAWN_OFFSET = -8.f; // 16ms per frame ~ 60FPS
+
 static constexpr float FLIGHT_HEIGHT = 22.0f;
 static constexpr float RECOVER_SPEED = 0.1f;
 
@@ -33,6 +35,8 @@ CBoss::CBoss()
 	, m_GroundSlammed(false)
 	, m_Morphed(false)
 	, m_Attacked(false)
+	, m_MinionShot(false)
+	, m_SpawnFlag(false)
 	, m_MorphAttackHeight(0.0f)
 	, m_GroundSlamHeight(0.0f)
 	, m_MorphAttackCount(0)
@@ -66,8 +70,21 @@ void CBoss::InitEnemy()
 	CAnimEnemy::InitEnemy();
 	m_Health = 300.0f;
 	m_IsAlive = true;
-	m_State = CAnimEnemy::Idle;
 	m_RotationSpeed = 0.03f;
+	m_vScale = m_OriginalScale;
+	m_Attacked = false;
+	m_Morphed = false;
+	m_GroundSlammed = false;
+	m_CurrentAttack = GROUNDSLAM;
+	m_CurrentPhase = Phase1;
+	m_CurrentAttackState = START;
+	m_IsGrounded = false;
+	m_ShootMinionCD = SHOOT_MINION_CD;
+	m_MorphAttackCD = MORPH_ATTACK_CD;
+	m_SlamAnimTime = 0.f;
+	m_SlamCD = SLAM_CD;
+	m_SpawnFlag = false;
+	m_GroundSlammed = false;
 }
 
 
@@ -75,7 +92,7 @@ void CBoss::Update()
 {
 	if (m_FloorY <= -FLT_MAX)
 	{
-		m_FloorY = 0.0f;
+		m_FloorY = 2.0f;
 	}
 
 	if ((m_CurrentAttack != MORPH))
@@ -136,6 +153,15 @@ void CBoss::Update()
 
 	switch (m_State)
 	{
+	case Spawning:
+		if(m_SpawnFlag == false)
+			m_vPosition.y += SPAWN_OFFSET;
+		m_SpawnFlag = true;
+		if (RecoverPosition())
+		{
+			m_State = Idle;
+		}
+		break;
 	case Idle:
 		IdleBehavior();
 		break;
@@ -230,23 +256,24 @@ void CBoss::ChasePlayer()
 	D3DXVECTOR3 toPlayer = m_vPosition - m_PlayerPos  ;
 	toPlayer.y = 0.0f;
 	dist = D3DXVec3Length(&toPlayer);
-	if (dist <= SLAM_RANGE && 0)
+
+	if (dist >= SHOOT_MINION_RANGE && m_Health <= 200.f)
 	{
 		m_State = Attacking;
-		m_CurrentAttack = GROUNDSLAM;
+		m_CurrentAttack = SHOOT;
 		return;
 	}
-	else if(dist <= MORPH_ATTACK_RANGE )
+	else if(dist <= MORPH_ATTACK_RANGE && m_Health <= 200.f)
 	{
 		m_State = Attacking;
 		m_CurrentAttackState = START;
 		m_CurrentAttack = MORPH;
 		return;
 	}
-	else if(dist <= SHOOT_MINION_RANGE && 0)
+	else if (dist <= SLAM_RANGE)
 	{
 		m_State = Attacking;
-		m_CurrentAttack = SHOOT;
+		m_CurrentAttack = GROUNDSLAM;
 		return;
 	}
 
@@ -399,7 +426,6 @@ void CBoss::GroundSlam()
 void CBoss::ShootMinions()
 {
 
-
 	if (m_MinionShot)
 		return;
 
@@ -430,4 +456,10 @@ void CBoss::Die()
 
 void CBoss::ApplyDamage(int damage)
 {
+	m_Health -= damage;
+	if (m_Health <= 0.0f)
+	{
+		m_Health = 0.0f;
+		Die();
+	}
 }

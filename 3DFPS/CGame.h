@@ -17,6 +17,7 @@
 #include "CSkybox.h"
 #include "CLevelController.h"
 #include "CLevel.h"
+#include "CDebugColliderRender.h"
 
 
 class CGame :
@@ -82,7 +83,9 @@ private:
 	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
 
 	void HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara);
+	bool HandleCubeCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara);
 	bool HandleCollision(CCharacter* objA, CCharacter* objB, float& distance, bool doubleCollision = true);
+	bool HandleColliderCollision(CStaticMeshObject* pObjA, CCharacter* pChara, bool resolveForChara = true);
 	void HandlePlayerEnemyCollision();
 	void HandleEnemyEnemyCollision();
 	void HandleEnemySpawning();
@@ -246,15 +249,17 @@ private:
 		CStaticMesh* m_pSphereMesh;
 
 #if _DEBUG
-		CRay* debugRay;
-		CStaticMesh* debugShotMesh;
-		std::vector<D3DXVECTOR3> debugShotMark;
-		CROSSRAY m_prevCrossRay;
-		CRay* m_pCrossRay[4];
-		CRay* m_pPrevCrossRay[4];
-		CRay* m_pPlayerRayY;
-		CRay* debugShotRay;
-		std::vector<D3DXVECTOR3> debugHitShotList;
+	void DrawDebugColliders();
+	CRay* debugRay;
+	CStaticMesh* debugShotMesh;
+	std::vector<D3DXVECTOR3> debugShotMark;
+	CROSSRAY m_prevCrossRay;
+	CRay* m_pCrossRay[4];
+	CRay* m_pPrevCrossRay[4];
+	CRay* m_pPlayerRayY;
+	CRay* debugShotRay;
+	std::vector<D3DXVECTOR3> debugHitShotList;
+	CDebugColliderRender* m_pDebugColliderRender;
 #endif // _DEBUG
 };
 
