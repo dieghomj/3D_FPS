@@ -34,9 +34,11 @@ public:
 	};
 
 	struct ENEMY_GROUP {
-		std::vector<CAnimEnemy*> enemies;
-		D3DXVECTOR3 spawnPosition;
+		int count = 0;
 		bool isSpawned = false;
+		bool isCleared = false;
+		float scale = 1;
+		std::vector<CAnimEnemy*> enemies;
 	};
 
 	CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& m_pManager);
@@ -84,8 +86,8 @@ private:
 	void HandlePlayerEnemyCollision();
 	void HandleEnemyEnemyCollision();
 	void HandleEnemySpawning();
-
 	void HandleEnemyShooting();
+	void HandleEnemyGroupCleared();
 
 	//void HandleWallCollisions(CCharacter* character);
 
@@ -168,10 +170,11 @@ private:
 	//----------------
 	//-----ENEMY------
 	//----------------
-		std::vector<ENEMY_GROUP> m_enemyGroups;
+
+		std::vector<ENEMY_GROUP> m_EnemyGroups;
 
 		CStaticMesh* m_pEnemyMesh;
-		CBoss* m_pEnemy;
+		CBoss* m_pBoss;
 	
 		CStaticMesh* m_pSpiderMesh;
 		CStaticMesh* m_pRoboMesh;
@@ -182,7 +185,7 @@ private:
 		CSkinMesh* m_pBossSkinMesh;
 		CAnimEnemy* m_pBossEnemy;
 		std::vector<CAnimEnemy*> m_pBossShotList;
-		std::vector<CAnimEnemy*> m_pEnemyList;
+		std::vector<CAnimEnemy*> m_pEnemyPool;
 		std::vector<CShot*> m_pEnemyShotList;
 		int m_enemyShotIndex = 0;
 		int m_bossShotIndex = 0;
@@ -192,13 +195,13 @@ private:
 	//-----PLAYER-----
 	//----------------
 		CPlayer* m_pPlayer;
+		//WEAPON
 		CStaticMesh* m_pPistolMesh;
 		CStaticMesh* m_pShotgunMesh;
-
 		CStaticMeshObject* m_pPlayerWeapon;
 
+		//SHOT
 		int m_bulletIndex = 0;
-
 		::EsHandle m_shotHandle = -1;
 		CStaticMesh* m_pBulletMesh;
 		CSprite3D* m_pBulletLaserSprite;
@@ -208,6 +211,9 @@ private:
 		CDecal* m_pShotDecalSprite;
 		CDecal* m_pEnemyHitDecalSprite;
 
+	//----------------
+	//EFFECTS HANDLERS
+	//----------------
 		::EsHandle explosionHandle = -1;
 		::EsHandle dashHandle = -1;
 		::EsHandle enemyHitHandle = -1;
@@ -233,6 +239,9 @@ private:
 		CStaticMesh* m_pHealthItemMesh;
 		CStaticMesh* m_pDashItemMesh;
 
+	//----------------
+	//---UTILITY------
+	//----------------
 		int currStage = 0;
 		CStaticMesh* m_pSphereMesh;
 

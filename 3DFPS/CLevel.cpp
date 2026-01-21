@@ -6,7 +6,7 @@ CLevel::CLevel()
 	, m_pPlayer(nullptr)
 	, m_Goal()
 	, m_pBlockedPathList()
-	, m_CollisionTriggers()
+	, m_TriggerAreas()
 {
 }
 
@@ -33,6 +33,19 @@ void CLevel::Draw()
 {
 }
 
+void CLevel::Restart()
+{
+	m_IsCleared = false;
+	for (auto& trigger : m_TriggerAreas)
+	{
+		trigger.isTriggered = false;
+	}
+	for (auto pBlockedPath : m_pBlockedPathList)
+	{
+		pBlockedPath->SetActive(false);
+	}
+}
+
 void CLevel::CheckGoal()
 {
 
@@ -46,7 +59,7 @@ void CLevel::CheckGoal()
 void CLevel::CheckTriggers()
 {
 
-	for (auto& trigger : m_CollisionTriggers)
+	for (auto& trigger : m_TriggerAreas)
 	{
 		if (trigger.isTriggered)
 			continue;
@@ -142,8 +155,8 @@ void CLevel::HandleBlockedPath()
 	//{
 	//	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
 	//	{
-	//		if (m_pEnemyList[i]->IsActive() == false)
-	//			m_pEnemyList[i]->SpawnAt(enemyStartPos[i]);
+	//		if (m_pEnemyPool[i]->IsActive() == false)
+	//			m_pEnemyPool[i]->SpawnAt(enemyStartPos[i]);
 	//	}
 	//}
 }

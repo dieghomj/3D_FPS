@@ -25,11 +25,11 @@ const CLevel::GOAL levelGoals[3] = {
 	{ D3DXVECTOR3(0.f, 8.f, 800.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
 };
 
-const D3DXVECTOR3 enemyStartPos[4] = {
-	D3DXVECTOR3(-13.f,8.f,200.f),
-	D3DXVECTOR3(13.f,8.f,200.f),
-	D3DXVECTOR3(-13.f,8.f,235.f),
-	D3DXVECTOR3(13.f,8.f,235.f),
+const D3DXVECTOR3 enemyStartPos[] = {
+	D3DXVECTOR3(-13.f,15.f,230.f),
+	D3DXVECTOR3(13.f,15.f,230.f),
+	D3DXVECTOR3(-13.f,15.f,265.f),
+	D3DXVECTOR3(13.f,15.f,265.f),
 };
 
 const D3DXVECTOR3 itemPos[2] =
@@ -63,9 +63,9 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pTestStageMesh(nullptr)
 	, m_pStageMesh(nullptr)
 	
-	, m_pEnemy(nullptr)
+	, m_pBoss(nullptr)
 	, m_pBossEnemy(nullptr)
-	, m_pEnemyList()
+	, m_pEnemyPool()
 	, m_pSpiderSkinMesh(nullptr)
 	, m_pRoboSkinMesh(nullptr)
 	, m_pBossSkinMesh(nullptr)
@@ -153,16 +153,48 @@ void CGame::Create()
 
 	m_pEnemyMesh = new CStaticMesh();
 	m_pSpiderMesh = new CStaticMesh();
+	m_pRoboMesh = new CStaticMesh();
 	m_pBossMesh = new CStaticMesh();
 	m_pSpiderSkinMesh = new CSkinMesh();
 	m_pRoboSkinMesh = new CSkinMesh();
 	m_pBossSkinMesh = new CSkinMesh();
 	m_pBossEnemy = new CBoss();
-	m_pEnemy = new CBoss();
+	m_pBoss = new CBoss();
 
-	m_pEnemyList.reserve(ENEMY_COUNT_MAX);
+	m_pEnemyPool.reserve(ENEMY_COUNT_MAX);
 	m_pBossShotList.reserve(ENEMY_COUNT_MAX);
 	
+
+	// Initialize enemy groups
+	// Get form csv later
+	m_EnemyGroups.reserve(16);
+
+	m_EnemyGroups = {
+
+		{
+			4,
+			false,
+			false,
+			7.f,
+			{new CSpider, new CSpider, new CSpider, new CSpider} // enemies will be spawned later
+		},
+		{
+			0,
+			false,
+			false,
+			7.f,
+			{},
+		},
+		{
+			0,
+			false,
+			false,
+			7.f,
+			{},
+		},
+
+	};
+
 	for( int i= 0; i < ENEMY_COUNT_MAX; i++)
 	{
 		float rnd = distFloat(m_RandomGen); 
@@ -180,13 +212,6 @@ void CGame::Create()
 			m_pBossShotList.push_back(pEnemy);
 			continue;
 		}
-	}
-
-	for (int i = 0; i < ENEMY_COUNT_MAX; i++)
-	{
-		CAnimEnemy* pEnemy = new CSpider();
-		pEnemy->SetActive(false);
-		m_pEnemyList.push_back(pEnemy);
 	}
 
 	for (int i = 0; i < PROJECTILE_COUNT_MAX; i++)
@@ -371,8 +396,8 @@ void CGame::Release()
 	SAFE_DELETE(m_pRoboSkinMesh);
 	SAFE_DELETE(m_pBossSkinMesh);
 	SAFE_DELETE(m_pBossEnemy);
-	SAFE_DELETE(m_pEnemy);
-	for (auto pEnemy : m_pEnemyList)
+	SAFE_DELETE(m_pBoss);
+	for (auto pEnemy : m_pEnemyPool)
 	{
 		SAFE_DELETE(pEnemy);
 	}
@@ -399,7 +424,7 @@ void CGame::Start()
 	bool fog				= false;
 
 	//カメラ設定.
-	float fovY				= D3DX_PI / 3.50f;
+	float fovY				= D3DX_PI / 4.0f;
 	float aspect			= static_cast<float>(WND_W) / static_cast<float>(WND_H);
 	float zn				= 0.1f, 
 		  zf				= 1000.0f;
@@ -470,8 +495,8 @@ void CGame::Update()
 	//{
 	//	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
 	//	{
-	//		if (m_pEnemyList[i]->IsActive() == false)
-	//			m_pEnemyList[i]->SpawnAt(enemyStartPos[i]);
+	//		if (m_pEnemyPool[i]->IsActive() == false)
+	//			m_pEnemyPool[i]->SpawnAt(enemyStartPos[i]);
 	//	}
 	//}
 	 
@@ -487,39 +512,27 @@ void CGame::Update()
 	//	}
 	//}
 
-	//m_pEnemyList[1]->Update();
-	//m_pEnemy->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
-	//m_pEnemy->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
+	//m_pEnemyPool[1]->Update();
+	//m_pBoss->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
+	//m_pBoss->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
+
+	m_pPlayer->Update();
+	m_pPlayer->UpdateCollider();
+	
+	m_pLevelController->Update();
 
 	float mSense = 0.f;
 	if (m_pPlayer->IsDashing())
 	{
-		mSense = 0.045f; 
+		mSense = 0.045f;
 	}
 	else
 	{
-		mSense = 0.0f; 
+		mSense = 0.0f;
 	}
 	if (m_pPlayer->IsJumping())
 	{
 		mSense -= 0.05f;
-	}
-
-	m_pPlayer->Update();
-	m_pPlayer->UpdateCollider();
-	if (wasStuck)
-	{
-		// Skip updating the stage to prevent collision issues
-		stuckFrameCount++;
-		if (stuckFrameCount > 1)
-		{
-			wasStuck = false;
-			stuckFrameCount = 0;
-		}
-	}
-	else
-	{
-		m_pLevelController->Update();
 	}
 
 	m_pCameraController->FirstPersonCamera(m_pPlayer, m_mouseDelta, m_mouseSense - mSense);
@@ -528,18 +541,23 @@ void CGame::Update()
 
 	HandleWeapon();
 
-	//m_pEnemy->Update();
-	//m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
-	for (auto pEnemy : m_pEnemyList)
+	//m_pBoss->Update();
+	//m_pBoss->SetPlayerPos(m_pPlayer->GetPosition());
+
+	HandleEnemySpawning();
+
+	for (auto pEnemy : m_pEnemyPool)
 	{
 		pEnemy->Update();
 		pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 	}
+
 	HandlePlayerEnemyCollision();
 	HandleEnemyEnemyCollision();
 	HandleEnemyShooting();
+	HandleEnemyGroupCleared();
 
-	 for(auto pBullet : m_pBulletList)
+	for(auto pBullet : m_pBulletList)
 	{
 		pBullet->Update();
 	}
@@ -555,32 +573,27 @@ void CGame::Update()
 		}
 	}
 
-	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
-	playerVel.y = 0.f; 
-	float playerVelLen = D3DXVec3Length(&playerVel);
-
 	HandlePlayerDashEffect();
+
+	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
+	playerVel.y = 0.f;
+	float playerVelLen = D3DXVec3Length(&playerVel);
 
 	static float fovY = D3DX_PI / 4.0f;
 	if (m_pPlayer->IsDashing() && playerVelLen > 0.1f)
 	{
-		// Increase FOV when dashing
-		float targetFovY = D3DX_PI / 3.0f; // Wider FOV
-		fovY += (targetFovY - fovY) * FPS/1000.f; // Smooth transition
+		// FOV拡大
+		float targetFovY = D3DX_PI / 3.0f; // 
+		fovY += (targetFovY - fovY) * FPS / 1000.f; // スムーズに拡大
 	}
 	else
 	{
-		// Return to normal FOV
+		// FOV通常戻し
 		float normalFovY = D3DX_PI / 4.0f;
-		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // Smooth transition
+		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // スムーズに戻す
 	}
 
 	m_pCamera->SetFieldOfView(fovY);
-
-	m_pHealthItem->Update();
-	m_pHealthItem->UpDownAnim(m_pTime->GetTotalTime(), 0.005f, 0.009);
-
-
 
 #if _DEBUG
 
@@ -671,38 +684,18 @@ void CGame::HandlePlayerDashEffect()
 
 void CGame::Restart()
 {
-
-	for (int i = 0; i < 4; i++)
-	{
-		m_pEnemyList[i]->InitEnemy();
-		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
-		m_pEnemyList[i]->SetActive(false);
-	}
-
 	m_pPlayer->InitPlayer();
 	m_pPlayer->SetPosition(PLAYER_STARTPOS);
 	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS);
 	m_pLevelController->Restart();
-
-	//SetupBlockedPath();
-	//SetupGoal();
-	//SetupTriggers();
+	
+	InitEnemy();
 
 	m_enemyKillCount = 0;
 	m_comboCount = 0;
 	m_deathCount++;
 	m_highestCombo = max(m_highestCombo, m_comboCount);
 	m_comboCount = 0;
-
-	for (auto blockedPath : m_pBlockedPathList)
-	{
-		blockedPath->SetActive(false);
-	}
-	
-	for (auto& trigger : m_CollisionTriggerList)
-	{
-		trigger.isTriggered = false;
-	}
 
 #if _DEBUG
 	debugHitShotList.clear();
@@ -728,7 +721,7 @@ void CGame::Draw()
 
 	if (0)
 	{
-	m_pEnemy->RenderStatic(m_SceneInfo);
+	m_pBoss->RenderStatic(m_SceneInfo);
 	}
 	//HandleEnemyShotLoadAnim();
 
@@ -751,7 +744,7 @@ void CGame::Draw()
 		pEnemyShot->Draw(m_SceneInfo);
 	}
 
-	for(auto pEnemy : m_pEnemyList)
+	for(auto pEnemy : m_pEnemyPool)
 	{
 		pEnemy->Draw(m_SceneInfo);
 		
@@ -1202,7 +1195,7 @@ void CGame::HandleWeaponPos()
 void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact)
 {
 
-	for (auto& enemy : m_pEnemyList)
+	for (auto& enemy : m_pEnemyPool)
 	{
 		if (enemy->IsDead() || !enemy->IsActive()) continue;
 		if (enemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
@@ -1226,7 +1219,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		}
 	}
 
-	//if (m_pEnemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
+	//if (m_pBoss->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 	//{
 	//	impact.position = hitPos;
 	//	impact.normal = normal;
@@ -1294,7 +1287,6 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& dista
 }
 void CGame::HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara)
 {
-
 	if (pMeshObj->IsActive() == false)
 	{
 		return;
@@ -1366,8 +1358,7 @@ void CGame::HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara
 }
 void CGame::HandlePlayerEnemyCollision()
 {
-
-	for (auto pEnemy : m_pEnemyList)
+	for (auto pEnemy : m_pEnemyPool)
 	{
 		if (!pEnemy || pEnemy->IsDead() || !pEnemy->IsActive()) continue;
 		if (typeid(*pEnemy) == typeid(CBoss))
@@ -1396,29 +1387,29 @@ void CGame::HandlePlayerEnemyCollision()
 }
 void CGame::HandleEnemyEnemyCollision()
 {
-	size_t enemyCount = m_pEnemyList.size();
+	size_t enemyCount = m_pEnemyPool.size();
 	float distance = 0.f;
 
 	for (size_t i = 0; i < enemyCount; ++i)
 	{
-		if (!m_pEnemyList[i] || m_pEnemyList[i]->IsDead()) continue;
+		if (!m_pEnemyPool[i] || m_pEnemyPool[i]->IsDead()) continue;
 
-		if(typeid(*m_pEnemyList[i]) == typeid(CBoss))
+		if(typeid(*m_pEnemyPool[i]) == typeid(CBoss))
 		{
 			continue;
 		}
 
 		for (size_t j = i + 1; j < enemyCount; ++j)
 		{
-			if (!m_pEnemyList[j] || m_pEnemyList[j]->IsDead()) continue;
+			if (!m_pEnemyPool[j] || m_pEnemyPool[j]->IsDead()) continue;
 			
-			if (typeid(*m_pEnemyList[j]) == typeid(CBoss))
+			if (typeid(*m_pEnemyPool[j]) == typeid(CBoss))
 			{
 				continue;
 			}
 
-			auto& enemyA = m_pEnemyList[i];
-			auto& enemyB = m_pEnemyList[j];
+			auto& enemyA = m_pEnemyPool[i];
+			auto& enemyB = m_pEnemyPool[j];
 			HandleCollision(enemyA, enemyB, distance);
 		}
 	}
@@ -1428,16 +1419,37 @@ void CGame::HandleEnemyEnemyCollision()
 
 void CGame::HandleEnemySpawning()
 {
+	auto level = m_pLevelController->GetCurrentLevel();
+	int triggerCount = level->GetTriggerAreaCount();
 
+	for (int i = 0; i < triggerCount; i++)
+	{
+		if (level->IsAreaTriggered(i) && !m_EnemyGroups[i].isSpawned)
+		{
+			m_EnemyGroups[i].isSpawned = true;
+			auto enemyList = m_EnemyGroups[i].enemies;
+			for(auto enemy : enemyList)
+			{
+				int poolCount = static_cast<int>(m_pEnemyPool.size());
+				enemy->SetScale(m_EnemyGroups[i].scale);
+				enemy->InitEnemy();
+				enemy->SpawnAt(enemyStartPos[poolCount]);
+				m_pEnemyPool.push_back(enemy);
+			}
+
+			m_pLevelController->GetStage()->SetEnemyList(m_pEnemyPool);
+		}
+	}
 }
+
 void CGame::HandleEnemyShooting()
 {
-
 	//BOSS MINION ENEMY SHOOTING
 	float playerHeight = m_pPlayer->GetHeight();
-	D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.5f, 0.f) - m_pEnemy->GetPosition();
+	D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.5f, 0.f) - m_pBoss->GetPosition();
 	D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
-	if (m_pEnemy->IsShot())
+
+	if (m_pBoss->IsShot())
 	{
 		if(m_bossShotIndex > m_pBossShotList.size()-1)
 		{
@@ -1448,22 +1460,14 @@ void CGame::HandleEnemyShooting()
 			return;
 		minion->InitEnemy();
 		minion->SpawnAt(
-			m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f));
+			m_pBoss->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f));
 		minion->SetPlayerPos(m_pPlayer->GetPosition());
 		minion->LaunchAtPlayer(0.9f);
 		
 	}
 	
 	//RANGED ENEMY SHOOTING
-	if (m_pEnemy->IsShot())
-	{
-		m_pEnemyShotList[NextEnemyShot()]->Reload(
-			m_pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f),
-			dirToPlayer,
-			m_pEnemy->GetRotation().y);
-	}
-
-	for (auto pEnemy : m_pEnemyList)
+	for (auto pEnemy : m_pEnemyPool)
 	{
 		
 		if(typeid(*pEnemy) != typeid(CRobo))
@@ -1481,6 +1485,41 @@ void CGame::HandleEnemyShooting()
 
 }
 
+void CGame::HandleEnemyGroupCleared()
+{
+
+	for (int i = 0; i < m_EnemyGroups.size(); i++)
+	{
+		auto& group = m_EnemyGroups[i];
+		if (!group.isSpawned || group.isCleared)
+			continue;
+		bool allDead = true;
+		for (auto enemy : group.enemies)
+		{
+			if (enemy && enemy->IsActive() && !enemy->IsDead())
+			{
+				allDead = false;
+				break;
+			}
+		}
+
+		if (allDead)
+		{
+			group.isCleared = true;
+
+			auto pathIndices = collisionTriggers[CGameStats::LevelSelection][i].blockedPathIndices;
+			
+			for (auto index : pathIndices)
+			{
+				m_pBlockedPathList[index]->SetActive(false);
+			}
+
+		}
+
+	}
+
+}
+
 void CGame::SetupBlockedPath()
 {
 	m_pBlockedPathList[0]->SetScale(12.f, 5.f, 9.f);
@@ -1488,22 +1527,13 @@ void CGame::SetupBlockedPath()
 	m_pBlockedPathList[0]->SetPosition(D3DXVECTOR3(0.f, 9.5f, 219.f));
 	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 9.5f, 307.f));
 }
+
 void CGame::SetupTriggers()
 {
-	CLevel::COLLISION_TRIGGER trigger1;
-	trigger1.position = D3DXVECTOR3(0.f, 0.f, 100.f);
-	trigger1.size = D3DXVECTOR3(100.f, 100.f, 1.f); // 10x10x4 box
-	trigger1.blockedPathIndices.push_back(0); // Block the first blocked path
-	trigger1.blockedPathIndices.push_back(1); // Block the second blocked path
-	trigger1.isTriggered = false;
-	trigger1.blockBehindPlayer = false;
-	m_CollisionTriggerList.push_back(trigger1);
+
 }
 void CGame::SetupGoal()
 {
-
-	m_Goal.position = D3DXVECTOR3(0.f, 0.f, 300.f);
-	m_Goal.size = D3DXVECTOR3(10.f, 100.f, 10.f); // 10x10x4 box
 
 }
 
@@ -1722,7 +1752,7 @@ void CGame::InitStage()
 {
 	m_pStage->SetScale(0.8f);
 	m_pStage->SetPlayer(*m_pPlayer);
-	m_pStage->SetEnemyList(m_pEnemyList);
+	m_pStage->SetEnemyList(m_pEnemyPool);
 
 	for (auto pBlockedPath : m_pBlockedPathList)
 	{
@@ -1744,11 +1774,6 @@ void CGame::InitStage()
 HRESULT CGame::LoadEnemiesMesh()
 {
 
-	if (FAILED(m_pEnemyMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\Pigman\\Pigman.x")))
-	{
-		return E_FAIL;
-	}
-
 	if (FAILED(m_pSpiderSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako2\\zako2.x")))
 	{
 		return E_FAIL;
@@ -1759,7 +1784,12 @@ HRESULT CGame::LoadEnemiesMesh()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pRoboSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\robo\\Robo.x")))
+	if (FAILED(m_pRoboMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako\\zako.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pRoboSkinMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Skin\\zako\\zako.x")))
 	{
 		return E_FAIL;
 	}
@@ -1769,13 +1799,41 @@ HRESULT CGame::LoadEnemiesMesh()
 		return E_FAIL;
 	}
 
-	m_pEnemy->AttachMesh(*m_pBossMesh);
-	m_pEnemy->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
+	m_pBoss->AttachMesh(*m_pBossMesh);
+	m_pBoss->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
 
-	for (auto pEnemy : m_pEnemyList)
+	for (auto& group : m_EnemyGroups)
 	{
-		pEnemy->AttachMesh(*m_pSpiderMesh);
-		pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
+		for (auto& pEnemy : group.enemies)
+		{
+			if (typeid(*pEnemy) == typeid(CSpider))
+			{
+				pEnemy = dynamic_cast<CSpider*>(pEnemy);
+				pEnemy->AttachMesh(*m_pSpiderMesh);
+				pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
+			}
+			else if (typeid(*pEnemy) == typeid(CRobo))
+			{
+				pEnemy = dynamic_cast<CRobo*>(pEnemy);
+				pEnemy->AttachMesh(*m_pRoboMesh);
+				pEnemy->AttachSkinMesh(*m_pRoboSkinMesh);
+			}
+		}
+	}
+
+	for (auto pEnemy : m_pEnemyPool)
+	{
+		if (typeid(*pEnemy) == typeid(CSpider))
+		{
+			pEnemy = dynamic_cast<CSpider*>(pEnemy);
+			pEnemy->AttachMesh(*m_pSpiderMesh);
+			pEnemy->AttachSkinMesh(*m_pSpiderSkinMesh);
+		}
+		else if (typeid(*pEnemy) == typeid(CRobo))
+		{
+			pEnemy = dynamic_cast<CRobo*>(pEnemy);
+			pEnemy->AttachMesh(*m_pSphereMesh);
+		}
 	}
 
 	for (auto pBossShot : m_pBossShotList)
@@ -1804,49 +1862,29 @@ HRESULT CGame::LoadEnemiesMesh()
 }
 void CGame::InitEnemy()
 {
-	m_pBossMesh->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
-	m_pEnemy->SetScale(4.9f);
-	m_pEnemy->SetPlayerPos(m_pPlayer->GetPosition());
 
-	for (auto pEnemy : m_pEnemyList)
+	//敵の非アクティブ化.
+	for (auto pEnemy : m_pEnemyPool)
 	{
+		pEnemy->InitEnemy();
 		pEnemy->SetActive(false);
-		pEnemy->SetScale(2.2f);
+		pEnemy->SetPosition(0.f, -100.f, -500.f);
+	}
+	m_pEnemyPool.clear();
+
+	for (auto& group : m_EnemyGroups)
+	{
+		group.isSpawned = false;
+		group.isCleared = false;
 	}
 
-	for (auto pBossShot : m_pBossShotList)
-	{
-		pBossShot->SetActive(false);
-		if (typeid(*pBossShot) == typeid(CSpider))
-		{
-			pBossShot = dynamic_cast<CSpider*>(pBossShot);
-			pBossShot->SetScale(2.2f);
-		}
-		else if (typeid(*pBossShot) == typeid(CRobo))
-		{
-			pBossShot = dynamic_cast<CRobo*>(pBossShot);
-			pBossShot->SetScale(2.2f);
-		}
-		m_pEnemyList.push_back(pBossShot);
-	}
+	m_pBossMesh->SetRotation(D3DXVECTOR3(0.f, D3DXToRadian(180.f), 0.f));
 
 	for (auto pEnemyShot : m_pEnemyShotList)
 	{
 		pEnemyShot->SetScale(1.5f);
 		pEnemyShot->SetMoveSpeed(ENEMY_SHOT_SPEED);
 	}
-
-	m_pEnemy->SetPosition(D3DXVECTOR3(0.f, 15.f, 13.f));
-
-	for (int i = 0; i < 4; i++)
-	{
-		m_pEnemyList[i]->InitEnemy();
-		m_pEnemyList[i]->SetPosition(enemyStartPos[i]);
-		//m_pEnemyList[i]->SetActive(false);
-	}
-
-	m_pEnemyList.push_back(m_pEnemy);
-	
 
 }
 
@@ -1905,7 +1943,7 @@ void CGame::InitLevelController()
 		case 0:
 		{
 			pLevel->SetStartPosition(PLAYER_STARTPOS);
-			pLevel->SetCollisionTriggers(collisionTriggers[0]);
+			pLevel->SetTriggerAreas(collisionTriggers[0]);
 			pLevel->SetBlockedPathList(m_pBlockedPathList);
 			pLevel->SetEnemySpawnPositions(std::vector<D3DXVECTOR3>(enemyStartPos, enemyStartPos + ENEMY_COUNT_PER_ROOM));
 			break;

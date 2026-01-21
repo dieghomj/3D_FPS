@@ -19,8 +19,8 @@ public:
     };
 
 	// 敵の衝突処理用メソッドを追加
-	void SetEnemyList(std::vector<CAnimEnemy*>& enemyList) {
-		m_pEnemyList = &enemyList;
+	void SetEnemyList(std::vector<CAnimEnemy*> enemyList) {
+		m_pEnemyPool = enemyList;
 	}
 
 	void UpdateEnemyCollisions();
@@ -57,7 +57,7 @@ protected:
 	CPlayer* m_pPlayer;
 	D3DXVECTOR3 m_prevPlayerPos;
 private:
-	std::vector<CAnimEnemy*>* m_pEnemyList;
+	std::vector<CAnimEnemy*> m_pEnemyPool;
 
 #if _DEBUG
 public:

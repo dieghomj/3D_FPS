@@ -52,9 +52,7 @@ void CStage::Draw(SCENE_DATA& sceneData)
 
 void CStage::UpdateEnemyCollisions()
 {
-    if (!m_pEnemyList) return;
-
-    for (auto pEnemy : *m_pEnemyList)
+    for (auto pEnemy : m_pEnemyPool)
     {
         if (!pEnemy || pEnemy->IsDead()) continue;
 

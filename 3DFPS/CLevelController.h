@@ -18,24 +18,12 @@ public:
 
 	void Restart();
 
-	void SetPlayer(CPlayer* player) {
-		m_pPlayer = player;
-		m_pStage->SetPlayer(*m_pPlayer);
-		for (int i = 0; i < LEVEL_COUNT; ++i) {
-			m_pLevels[i]->SetPlayer(m_pPlayer);
-		}
-	};
+	void SetPlayer(CPlayer* player);;
 
-	void SetCurrentLevel(int levelIndex) { 
-		m_CurrentLevel = levelIndex; 
-		m_pStage->AttachMesh(*m_pLevels[m_CurrentLevel]->GetStageMesh());
-		m_pPlayer->SetPosition(m_pLevels[m_CurrentLevel]->GetStartPosition());
-		Restart();
-	};
-	void SetStageScale(float scale) {
-		m_pStage->SetScale(scale);
-	};
+	void SetCurrentLevel(int levelIndex);;
+	void SetStageScale(float scale) { m_pStage->SetScale(scale); };
 	CLevel* GetCurrentLevel() const { return m_pLevels[m_CurrentLevel]; };
+	CStage* GetStage() const { return m_pStage; };
 
 private:
 

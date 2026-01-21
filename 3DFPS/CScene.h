@@ -28,10 +28,7 @@ public:
 	virtual void Update();
 	virtual void Draw() = 0;
 
-	// Returns true if mouse should be locked to center (for FPS gameplay)
-	// Override in menu scenes to return false for free mouse movement
 	virtual bool ShouldLockMouse() const { return true; }
-
 	int AddSpotLight(CSpotLight* spotlight);
 	void UpdateSpotLight(CSpotLight* spotlight);
 	bool IsPause() const { return m_IsPause; }
