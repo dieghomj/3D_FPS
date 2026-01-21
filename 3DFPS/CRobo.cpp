@@ -13,6 +13,8 @@ CRobo::CRobo()
 	: CAnimEnemy()
 	, m_PlayerDist(0.0f)
 	, m_AttackCD(ATTACK_CD)
+	, m_HasAttacked(false)
+	
 {
 	m_State = Idle;
 }
@@ -26,7 +28,7 @@ void CRobo::Update()
 {
 
 	m_Shot = false;
-	FacePlayer(m_PlayerDist);
+	FacePlayer(m_PlayerDist, false);
 
 	if (m_HasAttacked)
 	{

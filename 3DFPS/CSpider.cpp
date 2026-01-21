@@ -16,8 +16,8 @@
 
 static constexpr float ATTACK_CD = 2.0f;
 static constexpr float JUMP_ATTACK_CD = 3.0f;
-static constexpr float CHASE_SPEED = 0.1f;
-static constexpr float IDLE_SPEED = 0.015f;
+static constexpr float CHASE_SPEED = 0.3f;
+static constexpr float IDLE_SPEED = 0.025f;
 static constexpr float IDLE_TIMER_MAX = 2.0f;
 static constexpr float JUMP_ATTACK_SPEED = 0.35f;
 static constexpr float HEALTH_MAX = 25.0f;
@@ -169,9 +169,9 @@ void CSpider::IdleBehavior()
 {
 	SetAnimNo(1, BLEND_CHANGE);
 
-	if (m_PlayerDist < 2.3f)
+	if (m_PlayerDist < 3.3f)
 		m_State = Attacking;
-	else if(m_PlayerDist < 50.0f)
+	else if(m_PlayerDist < 500.0f)
 		m_State = Chasing;
 	 
 }

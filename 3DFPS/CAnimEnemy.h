@@ -79,7 +79,7 @@ public:
 
 protected:
 
-	void FacePlayer(float& distance);
+	void FacePlayer(float& distance, bool invert = true);
 
 protected:
 	D3DXVECTOR3 m_PlayerPos;

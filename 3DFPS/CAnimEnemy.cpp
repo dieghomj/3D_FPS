@@ -147,7 +147,7 @@ void CAnimEnemy::Draw(SCENE_DATA& sceneData)
 	CAnimCharacter::Draw(sceneData);
 }
 
-void CAnimEnemy::FacePlayer(float& distance)
+void CAnimEnemy::FacePlayer(float& distance, bool invert)
 {
 	D3DXVECTOR3 toPlayer = m_PlayerPos - GetPosition();
 	distance = D3DXVec3Length(&toPlayer);
@@ -157,5 +157,8 @@ void CAnimEnemy::FacePlayer(float& distance)
 
 	float angle = (atan2f(m_vForward.x, m_vForward.z) - atan2f(prevFwd.x, prevFwd.z));
 
-	SetRotation(0.0f, D3DXToRadian(180.f) + GetRotation().y + angle , 0.0f);
+	if(invert)
+		SetRotation(0.0f, D3DXToRadian(180.f) + GetRotation().y + angle , 0.0f);
+	else
+		SetRotation(0.0f, GetRotation().y + angle, 0.0f);
 }
