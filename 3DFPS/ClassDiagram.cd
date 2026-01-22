@@ -1,0 +1,495 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CFont" Collapsed="true">
+    <Position X="40" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CBAIAAEAgICAEEBAAAAAICACAwABiCAAEBwD0BgAAAA=</HashCode>
+      <FileName>CFont.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDebugText" Collapsed="true">
+    <Position X="33" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAIAAEAAICAEEAAgAAAIAACAwABiCAAABoCUBgAAAA=</HashCode>
+      <FileName>CDebugText.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDirectX11" Collapsed="true">
+    <Position X="34.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gACAAAUIAAAAKXACAAAAAAgEAQBAAGgACCQAgVAQAAA=</HashCode>
+      <FileName>CDirectX11.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDirectX9" Collapsed="true">
+    <Position X="36.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAEAAAAAAAAQAAAAAAAEgAAAAAABAAAAA=</HashCode>
+      <FileName>CDirectX9.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CEffect" Collapsed="true">
+    <Position X="38.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAEiAAAQAgAkAAAAABYABAQMIkigoAAgAgAAAAA=</HashCode>
+      <FileName>CEffect.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CGameObject" Collapsed="true">
+    <Position X="15.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQAgAACACCAAoCgEAAAIAAAAAIAAggAIAgAAoAAAEA=</HashCode>
+      <FileName>CGameObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CStaticMeshObject" Collapsed="true">
+    <Position X="13" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QIYAAAEBAAkAIwAkEAEAAAAQACEAAAAACAAJAAnAAAA=</HashCode>
+      <FileName>CStaticMeshObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CCharacter" Collapsed="true">
+    <Position X="17.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEAIgIAgQFAAQAAABIAgAABESAAACAIAiAACA=</HashCode>
+      <FileName>CCharacter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPlayer" Collapsed="true">
+    <Position X="22" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KaQAAFbOBoODhgQBoQAyCRBYBU4gQGAgAGCAGiRqBAE=</HashCode>
+      <FileName>CPlayer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CItem" Collapsed="true">
+    <Position X="4" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEBAAAAAAAAgAAAAAAAAAAEIAAAAgABAAAAQAAAAA=</HashCode>
+      <FileName>CItem.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CHealthItem" Collapsed="true">
+    <Position X="4" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAAAAAAAAgAACAAAAAAAEYAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CHealthItem.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CStage" Collapsed="true">
+    <Position X="6.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQABAAAAAEBijAAAAAAAhAgAAIAEgAIECAAAAUAlAA=</HashCode>
+      <FileName>CStage.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBlockedPath" Collapsed="true">
+    <Position X="8.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AKQAAAAAAAAAggAAIAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CBlockedPath.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CShot" Collapsed="true">
+    <Position X="10.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQQAQAIAAAIAggAAAAAEAAAAAADAAAACAACAAACEAE=</HashCode>
+      <FileName>CShot.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CUIObject" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAEAAAAAQgAAAgAAAAAAAABAAACFAAEAIAAAAAA=</HashCode>
+      <FileName>CUIObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSpriteObject" Collapsed="true">
+    <Position X="24.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAAAAAAAgAAAAAAAAAAgAAAAAABAAECIAAAAAA=</HashCode>
+      <FileName>CSpriteObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSkinMeshObject" Collapsed="true">
+    <Position X="26.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAkAAAEAIgAAIAGAAAAQAAAAAAAAAEAEAAgAIAA=</HashCode>
+      <FileName>CSkinMeshObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CAnimCharacter" Collapsed="true">
+    <Position X="16.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAggAgAAAMgAAAAIQAAIAAABAAAQAAIACAAEMEAA=</HashCode>
+      <FileName>CAnimCharacter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CAnimEnemy" Collapsed="true">
+    <Position X="15.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIRABEAKCVADIgAgABAAEQIAQEgCACYAAEAACCAQACA=</HashCode>
+      <FileName>CAnimEnemy.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CAnimPlayer" Collapsed="true">
+    <Position X="19.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABcAgACAAMAIAgMgAAgAAwgAAEEBAEEQIAAIBQBCAAE=</HashCode>
+      <FileName>CAnimPlayer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSpider" Collapsed="true">
+    <Position X="13" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQACAAAwIAAAgAgAAAAAABAAOAAAIABAAABAAQSBMA=</HashCode>
+      <FileName>CSpider.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoss" Collapsed="true">
+    <Position X="15.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BiQBAIEAUgIEUgAgACEAQAAAAOAIUA0AACQAgBpSAEA=</HashCode>
+      <FileName>CBoss.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CRobo" Collapsed="true">
+    <Position X="17.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQACAAAwIAAAhAgAAAAAAAAAOAQAQAAAAAAAABCBAE=</HashCode>
+      <FileName>CRobo.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSound" Collapsed="true">
+    <Position X="34.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgCAAAAECAAYAAAAAAAAAEEAAACGACAoAAAIACQAAQ=</HashCode>
+      <FileName>CSound.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSoundManager" Collapsed="true">
+    <Position X="36.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAIQAAYAAAEAAAADAAAAACAIAQgARAQAAA=</HashCode>
+      <FileName>CSoundManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoundingCube" Collapsed="true">
+    <Position X="31.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAgCgAICAAAgAAAAAAAAAEAggAAAACAhEEAAA=</HashCode>
+      <FileName>CBoundingCube.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBoundingSphere" Collapsed="true">
+    <Position X="33" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAACACAIAAAAAAAAAAAAAAAgAgAAAAACAAiAAAA=</HashCode>
+      <FileName>CBoundingSphere.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CCollider" Collapsed="true">
+    <Position X="36.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAgAACBAAAAAAgMAAAEBABIEQAEggQhACCAhAQAAA=</HashCode>
+      <FileName>CCollider.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDebugBBox" Collapsed="true">
+    <Position X="38.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABIQAAAAIAIAgEAAAAACAAAQAQABAAACAAAiABAQAAA=</HashCode>
+      <FileName>CDebugBBox.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDebugBSphere" Collapsed="true">
+    <Position X="40" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAABAJAIAgEAAAAACAAAAAQABAAAAAAAiABEQAAA=</HashCode>
+      <FileName>CDebugBSphere.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDebugColliderRender" Collapsed="true">
+    <Position X="31.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAgACAgAAAAAAAAAAAAABAIAABAAACABEAAAA=</HashCode>
+      <FileName>CDebugColliderRender.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSprite2D" Collapsed="true">
+    <Position X="40" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAgAECEICAQEEgAgAAIAASAwBB2igAgRAGEhAAACE=</HashCode>
+      <FileName>CSprite2D.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSprite3D" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAgAECQICGQEEgAiAAIAACAwADyigAgRACEhAAACA=</HashCode>
+      <FileName>CSprite3D.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDecal" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAIAAAAAAQAAAAAQAAAAAAiAIAAAAA=</HashCode>
+      <FileName>CDecal.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSkinMesh" Collapsed="true">
+    <Position X="31.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABgQggjAgCiAoWkkIARBJ0IJgRSLg6ioBBAKFjkBAQA=</HashCode>
+      <FileName>CSkinMesh.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MY_HIERARCHY" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="38.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAIAAAAAAAAAAQAAAAABAEAAAAAAAAAAAA=</HashCode>
+      <FileName>CSkinMeshParser.h</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="D3DXPARSER" Collapsed="true">
+    <Position X="36.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACkAAAFEAAAgAQ4UQAIAAAogAOE0IAECAEQGD0JAQA=</HashCode>
+      <FileName>CSkinMeshParser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CStaticMesh" Collapsed="true">
+    <Position X="31.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AhhEQAABEKSBIWAAYAUAISAAAwCDgigAARAKFhEEAAA=</HashCode>
+      <FileName>CStaticMesh.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CMain" Collapsed="true">
+    <Position X="36.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>YAYAIAAIICOQAAgAAEQIAAAAAAAAAEAAAIAAQBAAAgA=</HashCode>
+      <FileName>CMain.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CResultScene" Collapsed="true">
+    <Position X="0.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EIQEACAAICAQAgAAAgAAAAAAAIEAAEAQAAAAKBMAAIA=</HashCode>
+      <FileName>CResult.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CMenu" Collapsed="true">
+    <Position X="3" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EMQEAAAgACISQgACCgAAAAAQAAACAMgWAAAACBIAAIA=</HashCode>
+      <FileName>CMenu.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CGame" Collapsed="true">
+    <Position X="5.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>WpQcMFhMxiO71towMYERBQDIBQpfiOzFx4SccNz/BhA=</HashCode>
+      <FileName>CGame.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CGameOver" Collapsed="true">
+    <Position X="7.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EIQEgCAAICAQAwAAAgAAAAAAAAIAAEAQAAAACBMAAIA=</HashCode>
+      <FileName>CGameOver.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CRay" Collapsed="true">
+    <Position X="38.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAgQACAACAAGAAAAAAAAAAAwAByCAAABACABAAAAA=</HashCode>
+      <FileName>CRay.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTime" Collapsed="true">
+    <Position X="33" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEABAAHAAQABAAACUAAIgAAAwAAAggAiAgAIQAA=</HashCode>
+      <FileName>CTime.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CCamera" Collapsed="true">
+    <Position X="28.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQUCBIAgAgIAAtEgBIIAIAAAQIgAcAAgBwlAAIQAAkI=</HashCode>
+      <FileName>CCamera.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CCameraController" Collapsed="true">
+    <Position X="34.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EEYAgCGCACiAAACAAAAAIwEAAAAAAggAAAQiAAAAgAA=</HashCode>
+      <FileName>CCameraController.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CXInput" Collapsed="true">
+    <Position X="34.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAGCGTBAAACAwBAAAASAJAgQAIEmAEIAAIIAQE=</HashCode>
+      <FileName>CXInput.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CInput" Collapsed="true">
+    <Position X="31.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwCAAAAAAwAAAAAAAAAAAQAIAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>CInput.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSpotLight" Collapsed="true">
+    <Position X="38.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQBAAACESIIIIAAABIAIQAAAAAAAoCAIDiCABgACQA=</HashCode>
+      <FileName>CSpotLight.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CScene" Collapsed="true">
+    <Position X="4" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEwBAGgQACGQAoAEAAQAgAQAEAgAA0gAACAgABIBAAg=</HashCode>
+      <FileName>CScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSceneManager" Collapsed="true">
+    <Position X="40" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAIAAAAAAAggCIAAAAAAAAAAQAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>CSceneManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CLevel" Collapsed="true">
+    <Position X="33" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GAQAAwACAAABAhABCAAAQEBBVAAABAEAEQoyCATgAAQ=</HashCode>
+      <FileName>CLevel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CLevelController" Collapsed="true">
+    <Position X="34.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQgAAEAAAABBhAAAAAAAAAAAAAAAAAABEAKAAAAABA=</HashCode>
+      <FileName>CLevelController.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSkybox" Collapsed="true">
+    <Position X="33" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAABAECAAEAACAACAAAAIQQBCCCAQBACABgAAAA=</HashCode>
+      <FileName>CSkybox.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="MY_SKINMATERIAL" Collapsed="true">
+    <Position X="31.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAgGAAAAAgAAAEQAACAAAAAAAAAAAEwAAAA=</HashCode>
+      <FileName>CSkinMeshParser.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="BONE" Collapsed="true">
+    <Position X="31.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAUAAAAAAAAAAAAQAAAAAAAAAgAAQAAAAACA=</HashCode>
+      <FileName>CSkinMeshParser.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SKIN_PARTS_MESH" Collapsed="true">
+    <Position X="31.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAEgAAAREAACAAAABAAAACAAAAAAAEAQAEAAAAA=</HashCode>
+      <FileName>CSkinMeshParser.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="MYFRAME" Collapsed="true">
+    <Position X="33" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAYAA=</HashCode>
+      <FileName>CSkinMeshParser.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="MYMESHCONTAINER" Collapsed="true">
+    <Position X="34.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAIAAAAQAAAAAACAACAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>CSkinMeshParser.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="RAY" Collapsed="true">
+    <Position X="38.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAYAgAAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CRay.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="CROSSRAY" Collapsed="true">
+    <Position X="36.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CRay.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="CAMERA" Collapsed="true">
+    <Position X="33" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Global.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="LIGHT" Collapsed="true">
+    <Position X="40" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAABAAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Global.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FOG" Collapsed="true">
+    <Position X="38.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAKAAAAAAAAAACAABAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Global.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SPOT_LIGHT" Collapsed="true">
+    <Position X="33" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQAAAAAAAAAIBAAAAAAAAAAIAAAAAAAAAAAAAEBAAAA=</HashCode>
+      <FileName>Global.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SCENE_DATA" Collapsed="true">
+    <Position X="40" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACgAAAAAAAAAAAAAAAAgIAIAAEAABAAEAAAAAAAAA=</HashCode>
+      <FileName>Global.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Pair" Collapsed="true">
+    <Position X="36.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>Global.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="CGameStats" Collapsed="true">
+    <Position X="34.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABEABQhRgAgAAAAABAAAAAAAAEgBAAAAAAAAA=</HashCode>
+      <FileName>CGameStats.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="enCBSlot" Collapsed="true">
+    <Position X="31.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAQAAAAAAAAE=</HashCode>
+      <FileName>CSkinMesh.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

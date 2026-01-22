@@ -9,7 +9,7 @@ constexpr float ENEMY_SHOT_SPEED = 1.2f;
 constexpr int STAGE_TIMER = 2 * 60; // minutes
 const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
 		D3DXVECTOR3(0.f, 25.f, -95.f),
-		D3DXVECTOR3(0.f, 25.f, -95.f),
+		D3DXVECTOR3(0.f, 25.f, -45.f),
 		D3DXVECTOR3(0.f, 25.f, -35.f),
 		D3DXVECTOR3(0.f, 25.f, -95.f),
 };
