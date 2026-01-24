@@ -17,15 +17,17 @@ const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
 const std::vector<CLevel::COLLISION_TRIGGER> collisionTriggers[3] = {
 	
 	{
-		{ D3DXVECTOR3(0.f, 5.f, 270.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
+		{ D3DXVECTOR3(0.f, 5.f, 250.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
 		{ D3DXVECTOR3(0.f, 5.f, 505.f), D3DXVECTOR3(50.f, 20.f, 10.f), {1}, false, true },
 		{ D3DXVECTOR3(0.f, 8.f, 700.f), D3DXVECTOR3(50.f, 20.f, 10.f), {2}, false, true }
 	},
 	
-	{},
+	{	
+		{ D3DXVECTOR3(0.f, 5.f, 270.f), D3DXVECTOR3(100.f, 50.f, 10.f), {}, false, false },
+	},
 
 	{
-		{ D3DXVECTOR3(0.f, 1.f, 5.f), D3DXVECTOR3(500.f, 500.f, 500.f), {0, 1}, false, false },
+		{ D3DXVECTOR3(0.f, 1.f, 5.f),	 D3DXVECTOR3(500.f, 500.f, 500.f), {0, 1}, false, false },
 		{ D3DXVECTOR3(0.f, 5.f, 1070.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, true, false },
 		{ D3DXVECTOR3(0.f, 5.f, 1070.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, true, false },
 	}
@@ -38,24 +40,28 @@ const CLevel::GOAL levelGoals[3] = {
 	{ D3DXVECTOR3(0.f, 8.f, 800.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
 };
 
-const D3DXVECTOR3 enemyStartPos[LEVEL_COUNT][4] = {
+const D3DXVECTOR3 enemyStartPos[LEVEL_COUNT][16] = {
 	{
-		D3DXVECTOR3(-13.f,15.f,230.f),
-		D3DXVECTOR3(13.f,15.f,230.f),
-		D3DXVECTOR3(-13.f,15.f,265.f),
-		D3DXVECTOR3(13.f,15.f,265.f),
+		D3DXVECTOR3( 39.f,		19.f,	231.f),
+		D3DXVECTOR3( 5.3f,		19.f,	231.f),
+		D3DXVECTOR3( -32.8f,	19.f,	231.f),
+		D3DXVECTOR3( 10.8f,		19.f,	320.f),
+		D3DXVECTOR3( -5.6f,		19.f,	320.f),
+		D3DXVECTOR3( -39.f,		19.f,	320.f),
+		D3DXVECTOR3( 5.3f,		19.f,	320.f),
+		D3DXVECTOR3( 32.8f,		19.f,	320.f),
 	},
 	{	
-		D3DXVECTOR3(-13.f,15.f,230.f),
-		D3DXVECTOR3(13.f,15.f,230.f),
-		D3DXVECTOR3(-13.f,15.f,265.f),
-		D3DXVECTOR3(13.f,15.f,265.f),
+		D3DXVECTOR3( -13.f,	15.f,	230.f),
+		D3DXVECTOR3( 13.f,	15.f,	230.f),
+		D3DXVECTOR3( -13.f,	15.f,	265.f),
+		D3DXVECTOR3( 13.f,	15.f,	265.f),
 	},
 	{
-		D3DXVECTOR3(0.f,15.f,1.f),
-		D3DXVECTOR3(13.f,15.f,230.f),
-		D3DXVECTOR3(-13.f,15.f,265.f),
-		D3DXVECTOR3(13.f,15.f,265.f),
+		D3DXVECTOR3( 0.f,	15.f,	1.f),
+		D3DXVECTOR3( 13.f,	15.f,	230.f),
+		D3DXVECTOR3( -13.f,	15.f,	265.f),
+		D3DXVECTOR3( 13.f,	15.f,	265.f),
 	}
 };
 
@@ -196,11 +202,11 @@ void CGame::Create()
 	m_EnemyGroups [0] = {
 
 		{
-			4,
+			8,
 			false,
 			false,
 			7.f,
-			{new CSpider, new CSpider, new CSpider, new CSpider} // enemies will be spawned later
+			{new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider,} // enemies will be spawned later
 		},
 	};
 
@@ -474,6 +480,7 @@ void CGame::Start()
 	InitPlayer();
 	InitLevelController();
 	InitEnemy();
+	//CSoundManager::PlayLoop(CSoundManager::BGM_Game);
 
 	m_pPlayer->InitPlayer();
 	m_pPlayer->SetPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
@@ -485,6 +492,12 @@ void CGame::Start()
 	m_comboCount = 0;
 	m_deathCount = 0;
 	m_stageTimer = STAGE_TIMER;
+
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PistolShot1, 3, m_hWnd, 200);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_ShotgunShot, 3, m_hWnd, 100);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_Step2, 3,		m_hWnd, 200);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_Step3, 3,		m_hWnd, 200);
+	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerHit, 1,	m_hWnd, 200);
 
 	CGameStats::Reset();
 }
@@ -503,6 +516,8 @@ void CGame::Update()
 	
 	if (CheckRestartStatus())
 	{
+		CSoundManager::Stop(CSoundManager::BGM_Game);
+		CSoundManager::PlaySE(CSoundManager::BGM_Restart);
 		Restart();
 		return;
 	}
@@ -510,6 +525,8 @@ void CGame::Update()
 	if (m_pLevelController->GetCurrentLevel()->IsCleared())
 	{
 		SaveStats();
+		CSoundManager::Stop(CSoundManager::BGM_Game);
+		CSoundManager::PlaySE(CSoundManager::SE_Clear);
 		m_pManager->ChangeScene("RESULT");
 	}
 
@@ -616,6 +633,29 @@ void CGame::Update()
 	playerVel.y = 0.f;
 	float playerVelLen = D3DXVec3Length(&playerVel);
 
+	static float stepTimer = 0.f;
+
+	if (playerVelLen > 0.2f && m_pPlayer->IsGrounded() && !m_pPlayer->IsSliding() && !m_pPlayer->IsDashing())
+	{
+		if (stepTimer <= 0.f)
+		{
+			stepTimer = 800.f - (playerVelLen * 100.f); // 速度に応じて足音の間隔を変える
+			if (stepTimer < 350.f)
+			{
+				stepTimer = 350.f; // 最小間隔
+			}
+			float randChoice = distFloat(m_RandomGen);
+			if (randChoice < 0.5f)
+				CSoundManager::PlaySEPoly(CSoundManager::SE_Step3);
+			else
+				CSoundManager::PlaySEPoly(CSoundManager::SE_Step2);
+		}
+		else
+		{
+			stepTimer -= FPS;
+		}
+	}
+	
 	static float fovY = D3DX_PI / 4.0f;
 	if (m_pPlayer->IsDashing() && playerVelLen > 0.1f)
 	{
@@ -671,6 +711,7 @@ void CGame::HandleGameOver()
 	{
 		// Time's up - handle game over
 		SaveStats();
+		CSoundManager::Stop(CSoundManager::BGM_Game);
 		m_pManager->ChangeScene("GAMEOVER");
 	}
 }
@@ -721,6 +762,10 @@ void CGame::HandlePlayerDashEffect()
 
 void CGame::Restart()
 {
+	CSoundManager::PlaySE(CSoundManager::BGM_Restart);
+	CSoundManager::Stop(CSoundManager::BGM_Game);
+	CSoundManager::PlayLoop(CSoundManager::BGM_Game);
+	
 	m_pPlayer->InitPlayer();
 	m_pPlayer->SetPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
 	m_pStage->RestartPlayerPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
@@ -1099,11 +1144,13 @@ void CGame::HandleWeapon()
 		switch (currWeapon)
 		{
 		case 0: // Pistol
+			CSoundManager::PlaySEPoly(CSoundManager::SE_PistolShot1);
 			IsShotHit(shotRay, hitDist, hitPos, normal, impact);
 			m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), camForward, m_pCamera->GetYaw());
 			break;
 		
 		case 1: // Shotgun
+			CSoundManager::PlaySEPoly(CSoundManager::SE_ShotgunShot);
 
 			for (int i = 0; i < PELLET_COUNT; ++i)
 			{
@@ -1239,6 +1286,7 @@ void CGame::HandleWeaponPos()
 void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact)
 {
 
+	
 	for (auto& enemy : m_pEnemyPool)
 	{
 		if (enemy->IsDead() || !enemy->IsActive()) continue;
@@ -1280,7 +1328,6 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 #pragma region Collision Methods
 bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& distance, bool doubleCollision)
 {
-
 	D3DXVECTOR3 posA = charaA->GetPosition();
 	D3DXVECTOR3 posB = charaB->GetPosition();
 	float radiusA = charaA->GetRadius();
@@ -1300,25 +1347,65 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& dista
 		D3DXVec3Normalize(&pushDir, &diff);
 
 		float overlap = minDist - distance;
+		
+		// Full separation with slight buffer to prevent repeated collision
+		float separationBuffer = 0.02f;
+		float totalPush = overlap + separationBuffer;
 
-		// プレイヤーを押し出す（敵は動かない、または重量に応じて分配）
-		D3DXVECTOR3 correction = pushDir * overlap * 0.5f;
-
-		D3DXVECTOR3 newPos = posA + correction;
-		newPos.y = posA.y; // Y座標を保持
-
-		D3DXVECTOR3 newEnemyPos = posB - correction * 1.5f; // 敵も少し押し出す
-
-		charaB->SetPosition(newEnemyPos);
 		if (doubleCollision)
 		{
-			charaA->SetPosition(newPos);
+			// Both objects move - split the correction
+			D3DXVECTOR3 correctionA = pushDir * (totalPush * 0.5f);
+			D3DXVECTOR3 correctionB = -pushDir * (totalPush * 0.5f);
+
+			D3DXVECTOR3 newPosA = posA + correctionA;
+			D3DXVECTOR3 newPosB = posB + correctionB;
+			newPosA.y = posA.y;
+			newPosB.y = posB.y;
+
+			charaA->SetPosition(newPosA);
+			charaB->SetPosition(newPosB);
+
+			// Dampen velocity in collision direction
+			D3DXVECTOR3 velA = charaA->GetVelocity();
+			D3DXVECTOR3 velB = charaB->GetVelocity();
+			
+			float velDotA = D3DXVec3Dot(&velA, &pushDir);
+			float velDotB = D3DXVec3Dot(&velB, &pushDir);
+			
+			// Remove velocity component pushing into each other
+			if (velDotA < 0.f)
+			{
+				velA -= pushDir * velDotA * 0.8f;
+				charaA->SetVelocity(velA);
+			}
+			if (velDotB > 0.f)
+			{
+				velB -= pushDir * velDotB * 0.8f;
+				charaB->SetVelocity(velB);
+			}
+		}
+		else
+		{
+			// Only charaB moves (enemy pushed away from player)
+			D3DXVECTOR3 correction = -pushDir * totalPush;
+			D3DXVECTOR3 newPosB = posB + correction;
+			newPosB.y = posB.y;
+			charaB->SetPosition(newPosB);
+
+			// Dampen enemy velocity toward player
+			D3DXVECTOR3 velB = charaB->GetVelocity();
+			float velDot = D3DXVec3Dot(&velB, &pushDir);
+			if (velDot > 0.f)
+			{
+				velB -= pushDir * velDot * 0.9f;
+				charaB->SetVelocity(velB);
+			}
 		}
 		return true;
 	}
 
 	return false;
-
 }
 
 bool CGame::HandleCubeCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara)
@@ -1512,17 +1599,23 @@ void CGame::HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara
 }
 void CGame::HandlePlayerEnemyCollision()
 {
-	for (auto pEnemy : m_pEnemyPool)
+	const int MAX_COLLISION_ITERATIONS = 3;
+	
+	for (int iteration = 0; iteration < MAX_COLLISION_ITERATIONS; ++iteration)
 	{
-		if (!pEnemy || pEnemy->IsDead() || !pEnemy->IsActive()) continue;
-
-		CCollider* pEnemyCollider = pEnemy->GetCollider();
-		float distance = 0.f;
-		bool collided = false;
-
-		// コライダーがある場合はコライダーベースの衝突判定を使用
-		if (pEnemyCollider)
+		bool hadCollision = false;
+		
+		for (auto pEnemy : m_pEnemyPool)
 		{
+			if (!pEnemy || pEnemy->IsDead() || !pEnemy->IsActive()) continue;
+
+			CCollider* pEnemyCollider = pEnemy->GetCollider();
+			float distance = 0.f;
+			bool collided = false;
+
+			// コライダーがある場合はコライダーベースの衝突判定を使用
+			if (pEnemyCollider)
+			{
 			collided = HandleColliderCollision(pEnemy, m_pPlayer, true);
 			
 			// 距離計算（ダメージ判定用）
@@ -1542,34 +1635,49 @@ void CGame::HandlePlayerEnemyCollision()
 			}
 			else
 			{
-				HandleCollision(m_pPlayer, pEnemy, distance, false);
-				collided = (distance <= m_pPlayer->GetRadius() + pEnemy->GetRadius());
+				// Push enemy away from player (doubleCollision = false)
+				collided = HandleCollision(m_pPlayer, pEnemy, distance, false);
 			}
 		}
 
-		// ダメージ処理
-		if (collided && pEnemy->GetState() == CAnimEnemy::Attacking)
-		{
-			float damage = 5.5f;
-			if (typeid(*pEnemy) == typeid(CBoss))
+			if (collided)
 			{
-				damage = 10.f;
+				hadCollision = true;
+				
+				// ダメージ処理 (only on first iteration to avoid multiple damage)
+				if (iteration == 0 && ((pEnemy->GetState() == CAnimEnemy::Attacking) || (pEnemy->GetState() == CAnimEnemy::Jumping)))
+				{
+					float damage = 5.5f;
+					if (typeid(*pEnemy) == typeid(CBoss))
+					{
+						damage = 12.f;
+					}
+					m_pPlayer->ApplyDamage(damage);
+					if(m_pPlayer->IsDamaged())
+						CSoundManager::PlaySEPoly(CSoundManager::SE_PlayerHit);
+					m_highestCombo = max(m_highestCombo, m_comboCount);
+					m_comboCount = 0;
+				}
 			}
-			m_pPlayer->ApplyDamage(damage);
-			m_highestCombo = max(m_highestCombo, m_comboCount);
-			m_comboCount = 0;
 		}
+		
+		// If no collisions this iteration, we're done
+		if (!hadCollision) break;
 	}
 }
 
 void CGame::HandleEnemyEnemyCollision()
 {
+	const int MAX_COLLISION_ITERATIONS = 2;
 	size_t enemyCount = m_pEnemyPool.size();
-	float distance = 0.f;
-
-	for (size_t i = 0; i < enemyCount; ++i)
+	
+	for (int iteration = 0; iteration < MAX_COLLISION_ITERATIONS; ++iteration)
 	{
-		if (!m_pEnemyPool[i] || m_pEnemyPool[i]->IsDead()) continue;
+		bool hadCollision = false;
+		
+		for (size_t i = 0; i < enemyCount; ++i)
+		{
+			if (!m_pEnemyPool[i] || m_pEnemyPool[i]->IsDead()) continue;
 
 		if(typeid(*m_pEnemyPool[i]) == typeid(CBoss))
 		{
@@ -1587,17 +1695,23 @@ void CGame::HandleEnemyEnemyCollision()
 
 			auto& enemyA = m_pEnemyPool[i];
 			auto& enemyB = m_pEnemyPool[j];
-			HandleCollision(enemyA, enemyB, distance);
+			float distance = 0.f;
+			if (HandleCollision(enemyA, enemyB, distance, true))
+			{
+				hadCollision = true;
+			}
 		}
 	}
-
+		
+		if (!hadCollision) break;
+	}
 }
 #pragma endregion
 
 void CGame::HandleEnemySpawning()
 {
 
-	const float SPIDER_SCALE = 6.f;
+	const float SPIDER_SCALE = 4.5f;
 	const float ROBO_SCALE = 0.01f;
 	const float BOSS_SCALE = 2.f;
 
@@ -1714,10 +1828,10 @@ void CGame::HandleEnemyGroupCleared()
 
 void CGame::SetupBlockedPath()
 {
-	m_pBlockedPathList[0]->SetScale(12.f, 5.f, 9.f);
-	m_pBlockedPathList[1]->SetScale(12.f, 5.f, 9.f);
+	m_pBlockedPathList[0]->SetScale(12.f, 5.f, 7.f);
+	m_pBlockedPathList[1]->SetScale(12.f, 5.f, 7.f);
 	m_pBlockedPathList[0]->SetPosition(D3DXVECTOR3(0.f, 9.5f, 219.f));
-	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 9.5f, 307.f));
+	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 9.5f, 336.f));
 }
 
 void CGame::SetupTriggers()
