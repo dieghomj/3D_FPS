@@ -177,12 +177,14 @@ void CStage::HandleFloorCollisions()
 
     if (IsHitForRay(downRay, &distance, &hitPoint, &hitNormal))
     {
-        // Floor found - update player's floor height
+        // Floor found - update player's floor height AND normal
         m_pPlayer->SetFloorY(hitPoint.y);
+        m_pPlayer->SetFloorNormal(hitNormal);
     }
     else
     {
         m_pPlayer->SetFloorY(-FLT_MAX); // No floor detected
+        m_pPlayer->SetFloorNormal(D3DXVECTOR3(0.f, 1.f, 0.f));  // Default to flat
     }
 }
 

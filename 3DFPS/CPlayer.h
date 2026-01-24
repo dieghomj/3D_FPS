@@ -24,6 +24,7 @@ public:
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
 	void SetFloorY(float y) { m_FloorY = y; }
+	void SetFloorNormal(const D3DXVECTOR3& normal) { m_FloorNormal = normal; }
 	void SetCeilingY(float y) { m_CeilingY = y; }
 	int SetCurrentWeapon(int weaponIndex) { return m_currWeapon = weaponIndex; }
 
@@ -39,7 +40,8 @@ public:
 	bool IsJumping() const { return m_IsJumping; }
 	bool IsDashing() const { return m_IsDashing; }
 	bool IsGrounded() const { return m_IsOnGround; };	//デバッグ用
-
+	bool IsSliding() const { return m_IsSliding; }
+	bool IsDamaged() const { return m_IsDamaged; }
 
 	D3DXVECTOR3 GetForwardVector() const { return m_Forward; }
 	D3DXVECTOR3 GetRightVector() const { return m_Right; }
@@ -122,12 +124,17 @@ private:
 	bool m_IsDashing = false;
 	bool m_IsCrouching = false;
 	bool m_IsSliding = false;
+	bool m_IsDamaged = false;
 
 	bool m_InvFrame = false;
 	float m_InvFrameTimer = 0.0f;
 	
 	float m_FloorY = 0.f;
 	float m_CeilingY = FLT_MAX;
+
+	// Slope handling
+	D3DXVECTOR3 m_FloorNormal = D3DXVECTOR3(0.f, 1.f, 0.f);
+	float m_GroundedTimer = 0.f;  // "Coyote time" for slopes
 
 	CROSSRAY* m_pHeadCrossRay;
 };
