@@ -4,10 +4,10 @@ static constexpr float CHASE_SPEED = 0.1f;
 static constexpr float RUN_AWAY_SPEED = 0.2f;
 static constexpr float IDLE_SPEED = 0.015f;
 static constexpr float IDLE_TIMER_MAX = 2.0f;
-static constexpr float HEALTH_MAX = 10.0f;
+static constexpr float HEALTH_MAX = 8.0f;
 static constexpr float ATTACK_RANGE = 249.f;
 static constexpr float RUN_AWAY_RANGE = 20.f;
-static constexpr float ATTACK_CD = 3.0f;
+static constexpr float ATTACK_CD = 2.0f;
 
 CRobo::CRobo()
 	: CAnimEnemy()
@@ -16,6 +16,7 @@ CRobo::CRobo()
 	, m_HasAttacked(false)
 	
 {
+	m_Health = HEALTH_MAX;
 	m_State = Idle;
 }
 
@@ -76,7 +77,7 @@ void CRobo::Draw(SCENE_DATA& sceneData)
 }
 
 void CRobo::ApplyDamage(int damage)
-{
+ {
 
 	m_Health-= damage;
 	if (m_State != Damaged)

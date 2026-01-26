@@ -431,6 +431,15 @@ void CPlayer::UpdateAxis()
 	UpdateRayY(m_vPosition.y - m_Height * 0.95f);
 	UpdateCrossRay(*m_pHeadCrossRay, m_vPosition.y  + 0.1f);
 	UpdateCrossRay(*m_pCrossRay, m_vPosition.y - m_Height * 0.5f);
+	m_pRayY->Axis = -m_FloorNormal;
+	for (int i = 0; i < CROSSRAY::enDir::max; i++)
+	{
+		D3DXVECTOR3 dir;
+		D3DXVec3Cross(&dir, &m_pRayY->Axis, &m_pCrossRay->Ray[i].Axis);
+		D3DXVec3Normalize(&dir, &dir);
+		m_pCrossRay->Ray[i].Axis = dir;
+		m_pHeadCrossRay->Ray[i].Axis = dir;
+	}
 
 }
 

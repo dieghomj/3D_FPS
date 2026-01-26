@@ -498,9 +498,9 @@ void CStaticMeshObject::ClampDirection(float* dir)
 		*dir -= D3DX_PI * 2.f;	//2ƒÎ(360‹)•ªˆø‚­
 	}
 
-	if (*dir > D3DX_PI * 2.f)
+	if (*dir < -D3DX_PI * 2.f)
 	{
 		//Ä‹AŠÖ”
-		ClampDirection(dir);
+		*dir += D3DX_PI * 2.f;
 	}
 }

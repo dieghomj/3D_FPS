@@ -6,7 +6,7 @@ constexpr int PROJECTILE_COUNT_MAX = 32;
 constexpr int PLAYER_AMMO_MAX = 999;
 constexpr int ENEMY_COUNT_MAX = 64;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
-constexpr float ENEMY_SHOT_SPEED = 1.2f;
+constexpr float ENEMY_SHOT_SPEED = 1.8f;
 constexpr int STAGE_TIMER = 2 * 60; // minutes
 
 const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
@@ -20,12 +20,12 @@ const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT]
 	
 	{
 		{ D3DXVECTOR3(0.f, 5.f, 250.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
-		{ D3DXVECTOR3(0.f, 5.f, 505.f), D3DXVECTOR3(50.f, 20.f, 10.f), {1}, false, true },
-		{ D3DXVECTOR3(0.f, 8.f, 700.f), D3DXVECTOR3(50.f, 20.f, 10.f), {2}, false, true }
 	},
 	
 	{	
-		{ D3DXVECTOR3(0.f, 5.f, 270.f), D3DXVECTOR3(100.f, 50.f, 10.f), {}, false, false },
+		{ D3DXVECTOR3(0.f, 5.f, 120.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
+		{ D3DXVECTOR3(0.f, 42.6f, 290.f), D3DXVECTOR3(100.f, 50.f, 10.f), {2}, false, false },
+		{ D3DXVECTOR3(0.f, 42.6f, 578.f), D3DXVECTOR3(100.f, 50.f, 10.f), {3,4}, false, false },
 	},
 
 	{
@@ -46,10 +46,11 @@ const std::vector<CGame::BLOCKED_PATH_TRANS> BLOCKEDPATH_LIST[LEVEL_COUNT] =
 	},
 
 	{
-		{ D3DXVECTOR3(0.f, 9.5f, 219.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 9.5f, 88.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 9.5f, 175.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 42.6f, 563.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 42.6f, 563.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 42.6f, 767.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
 	},
 
 	{
@@ -64,6 +65,7 @@ const CLevel::GOAL LevelGoals[LEVEL_COUNT] = {
 };
 
 const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
+	//LEVEL 1
 	{
 		D3DXVECTOR3( 39.f,		10.f,	231.f),
 		D3DXVECTOR3( 5.3f,		10.f,	231.f),
@@ -74,17 +76,40 @@ const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
 		D3DXVECTOR3( 5.3f,		10.f,	320.f),
 		D3DXVECTOR3( 32.8f,		10.f,	320.f),
 	},
+	//LEVEL 2
 	{	
-		D3DXVECTOR3( -13.f,	15.f,	230.f),
-		D3DXVECTOR3( 13.f,	15.f,	230.f),
-		D3DXVECTOR3( -13.f,	15.f,	265.f),
-		D3DXVECTOR3( 13.f,	15.f,	265.f),
+		//FIRST AREA
+		D3DXVECTOR3(-47.f,	48.f,	108.f),
+		D3DXVECTOR3( 47.f,	68.f,	159.8f),
+		D3DXVECTOR3(-18.f,	12.f,	200.f),
+		D3DXVECTOR3( 18.f,	12.f,	200.f),
+
+		//SECOND AREA
+		D3DXVECTOR3(-188.6,	42.6f,	495.f),
+		D3DXVECTOR3(-188.6,	42.6f,	436.f),
+		D3DXVECTOR3(-188.6,	42.6f,	408.f),
+		D3DXVECTOR3(-188.6,	42.6f,	350.f),
+
+		D3DXVECTOR3( 188.6,	42.6f,	495.f),
+		D3DXVECTOR3( 188.6,	42.6f,	436.f),
+		D3DXVECTOR3( 188.6,	42.6f,	408.f),
+		D3DXVECTOR3( 188.6,	42.6f,	350.f),
+		
+		//THIRD AREA
+		D3DXVECTOR3( 128.6,	42.6f,	700.f),
+		D3DXVECTOR3( 128.6,	42.6f,	636.f),
+		D3DXVECTOR3( 128.6,	42.6f,	608.f),
+		D3DXVECTOR3( 128.6,	42.6f,	650.f),
+		
+		D3DXVECTOR3(-128.6,	42.6f,	700.f),
+		D3DXVECTOR3(-128.6,	42.6f,	636.f),
+		D3DXVECTOR3(-128.6,	42.6f,	608.f),
+		D3DXVECTOR3(-128.6,	42.6f,	650.f),
 	},
+
+	//BOSS LEVEL
 	{
 		D3DXVECTOR3( 0.f,	15.f,	1.f),
-		D3DXVECTOR3( 13.f,	15.f,	230.f),
-		D3DXVECTOR3( -13.f,	15.f,	265.f),
-		D3DXVECTOR3( 13.f,	15.f,	265.f),
 	}
 };
 
@@ -245,8 +270,24 @@ void CGame::Create()
 			false,
 			false,
 			7.f,
-			{new CRobo, new CRobo, new CRobo, new CRobo}
+			{new CRobo, new CRobo, new CSpider, new CSpider}
 		},
+		{
+			8,
+			false,
+			false,
+			7.f,
+			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo}
+		},
+
+		{
+			8,
+			false,
+			false,
+			7.f,
+			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo}
+		},
+
 	};
 
 	m_EnemyGroups[2] = {
@@ -664,6 +705,7 @@ void CGame::Update()
 		if (pEnemyShot->IsHit(m_pPlayer->GetCollider(), m_pPlayer->GetRadius()))
 		{
 			m_pPlayer->ApplyDamage(20.f);
+			//Apply knockback to player
 			pEnemyShot->SetDisplay(false);
 		}
 	}
@@ -865,7 +907,7 @@ void CGame::Draw()
 	{
 		if (typeid(*pEnemy) == typeid(CRobo))
 		{
-			//HandleEnemyShotLoadAnim(dynamic_cast<CRobo*>(pEnemy));
+			HandleEnemyShotLoadAnim(dynamic_cast<CRobo*>(pEnemy));
 		}
 
 		if (typeid(*pEnemy) == typeid(CBoss))
@@ -1189,23 +1231,21 @@ void CGame::HandleEnemyShotLoadAnim(CRobo* pEnemy)
 	{
 		float scale = pEnemy->GetAttackCD() * 0.5f;
 		D3DXVECTOR3 vScale = D3DXVECTOR3(scale, scale, scale);
-		D3DXVECTOR3 vPos = pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.5f, 0.f) - pEnemy->GetForward() * 3.5f;
+		D3DXVECTOR3 vPos = pEnemy->GetPosition() + D3DXVECTOR3(0.f, 4.5f, 0.f) - pEnemy->GetForward() * 3.5f;
 
-		if (CEffect::IsPlaying(enemyShotLoadHandle))
-		{
-			CEffect::SetScale(enemyShotLoadHandle, vScale);
-			CEffect::SetLocation(enemyShotLoadHandle, vPos);
-		}
-		else
-		{
-			enemyShotLoadHandle = CEffect::Play(CEffect::MagmaEffect, vPos);
-			CEffect::SetScale(enemyShotLoadHandle, vScale);
-		}
+		m_pEnemyShotMesh->SetScale(vScale);
+		m_pEnemyShotMesh->SetPosition(vPos);
 
-	}
-	else
-	{
-		CEffect::Stop(enemyShotLoadHandle);
+		D3DXMATRIX& mView = m_SceneInfo.mView;
+		D3DXMATRIX& mProj = m_SceneInfo.mProj;
+		LIGHT globalLight = m_SceneInfo.Light;
+		D3DXVECTOR3 camPos = m_SceneInfo.Camera.vPosition;
+		FOG fog = m_SceneInfo.Fog;
+		SPOT_LIGHT* pSpotLightArray = m_SceneInfo.pSpotLightArray;
+		int lightCount = m_SceneInfo.SpotLightNum;
+
+
+		m_pEnemyShotMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 	}
 }
 #pragma region Player Weapon Methods
@@ -1213,18 +1253,20 @@ void CGame::HandleEnemyShotLoadAnim(CRobo* pEnemy)
 void CGame::HandleWeapon()
 {
 	HandleWeaponPos();
-
+	int currWeapon = m_pPlayer->GetCurrentWeapon();
 	D3DXVECTOR3 camForward = m_pCamera->GetForward();
 	D3DXVECTOR3 bulletDir = camForward;
 	D3DXVec3Normalize(&bulletDir, &bulletDir);
-	D3DXVECTOR3 shotEffPos = m_pPlayerWeapon->GetPosition() + bulletDir * 0.25f + D3DXVECTOR3(0.f, 0.1f, 0.f);
+	D3DXVECTOR3 shotEffPos;
+	D3DXVECTOR3 pistolMuzzleOffset = bulletDir * 0.25f + D3DXVECTOR3(0.f, 0.1f, 0.f);
+	D3DXVECTOR3 shotgunMuzzleOffset = bulletDir * 0.7f + D3DXVECTOR3(0.f, 0.1f, 0.f);
+	//m_pPlayerWeapon->GetPosition() + bulletDir * 0.25f + D3DXVECTOR3(0.f, 0.1f, 0.f)
 	BULLET_IMPACT impact;
 
 	impact.lifeTime = FPS * 1000; // 5 seconds
 
 	if (m_pPlayer->IsShot())
 	{
-		int currWeapon = m_pPlayer->GetCurrentWeapon();
 
 		RAY shotRay;
 		shotRay.Position = m_pPlayer->GetPosition();;
@@ -1242,6 +1284,7 @@ void CGame::HandleWeapon()
 		switch (currWeapon)
 		{
 		case 0: // Pistol
+			shotEffPos = m_pPlayerWeapon->GetPosition() + pistolMuzzleOffset;
 			CSoundManager::PlaySEPoly(CSoundManager::SE_PistolShot1);
 			IsShotHit(shotRay, hitDist, hitPos, normal, impact);
 			m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), camForward, m_pCamera->GetYaw());
@@ -1249,7 +1292,7 @@ void CGame::HandleWeapon()
 		
 		case 1: // Shotgun
 			CSoundManager::PlaySEPoly(CSoundManager::SE_ShotgunShot);
-
+			shotEffPos = m_pPlayerWeapon->GetPosition() + shotgunMuzzleOffset;
 			for (int i = 0; i < PELLET_COUNT; ++i)
 			{
 				// Generate random spread
@@ -1280,17 +1323,20 @@ void CGame::HandleWeapon()
 				}
 
 			break;
-
-		default:
-			break;
 		}
-		
 		m_shotHandle = CEffect::Play(CEffect::PistolShotEffect, shotEffPos);
-		CEffect::SetSpeed(m_shotHandle, 2.5f);
+		CEffect::SetSpeed(m_shotHandle, 5.5f);
 		CEffect::SetRotation(m_shotHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
 		CEffect::SetScale(m_shotHandle, D3DXVECTOR3(0.025f, 0.025, 0.025));
+	}
 
-	
+	switch (currWeapon)
+	{
+		case 0: // Pistol
+			CEffect::SetLocation(m_shotHandle, m_pPlayerWeapon->GetPosition() + pistolMuzzleOffset);
+		case 1: // Shotgun
+			CEffect::SetLocation(m_shotHandle, m_pPlayerWeapon->GetPosition() + shotgunMuzzleOffset);
+		break;
 	}
 }
 void CGame::HandleWeaponPos()

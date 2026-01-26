@@ -15,6 +15,7 @@ CShot::~CShot()
 
 void CShot::Update()
 {
+	RotateAnim(16.6f, 1.0f); 
 	if (m_Display == true) {
 		//ˆÚ“®•ûŒü‚ÉˆÚ“®‘¬“x‚ğ‚©‚¯‡‚í‚¹‚½‚à‚Ì‚ğÀ•W‚É”½‰f
 		m_vPosition += m_MoveDirection * m_MoveSpeed;

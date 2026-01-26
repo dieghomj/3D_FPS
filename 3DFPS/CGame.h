@@ -86,7 +86,6 @@ private:
 	void HandleWeaponPos();
 	void HandleWeapon();
 	void IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact);
-	void ProcessShotgunBlast(const D3DXVECTOR3& origin, const D3DXVECTOR3& forward, int pelletCount, float spreadAngle);
 
 	void HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara);
 	bool HandleCubeCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara);

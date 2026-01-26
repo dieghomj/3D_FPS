@@ -174,7 +174,6 @@ void CStage::HandleFloorCollisions()
 
     FLOAT distance;
     D3DXVECTOR3 hitPoint, hitNormal;
-
     if (IsHitForRay(downRay, &distance, &hitPoint, &hitNormal))
     {
         // Floor found - update player's floor height AND normal

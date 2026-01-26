@@ -428,6 +428,8 @@ int CBoss::GetRandomMorphShape()
 
 void CBoss::Die()
 {
+	m_IsAlive = false;
+	m_State = Dead;
 }
 
 void CBoss::ApplyDamage(int damage)
