@@ -16,17 +16,33 @@ public:
 	{
 		BGM_Title,	//タイトルBGM.
 		BGM_Game,	//ゲームBGM.
+		BGM_Level1,//レベル1BGM.
+		BGM_Level2,//レベル2BGM.
+		BGM_Level3,//レベル2BGM.
+		BGM_Boss,//レベル2BGM.
+
+		BGM_GameOver,//ゲームオーバー音.
+		BGM_Restart,//リスタート音.
+		
+		SE_Clear,		//リザルト音
+		
+		SE_PlayerHit,	//プレイヤーダメージ音
+
 		SE_Select,	//選択音.
 		SE_Decide,	//決定音.
-		SE_Step,	//足音.
-		SE_GameOver,//ゲームオーバー音.
+		
+		SE_Step1,	//足音.
+		SE_Step2,
+		SE_Step3,
+
+		SE_Alarm,	//警告音.
+
 		SE_ItemGet,	//アイテム取得音
-		SE_GhostIdle,	//ゴースト待機音
-		SE_GhostChase,	//ゴースト追跡音
-		SE_GhostDamage,	//ゴーストダメージ音
-		SE_GhostDead,	//ゴースト死亡音
-		SE_Flashlight,	//懐中電灯音
-		SE_Result,		//リザルト音
+		SE_PistolShot1,	//ピストル発射音
+		SE_PistolShot2,//ピストル発射音2
+		SE_ShotgunShot,//ショットガン発射音\
+
+		SE_BossSE1,
 
 		//音が増えたら「ここ」に追加してください.
 		max,		//最大数.
@@ -67,7 +83,7 @@ public:
 		CSoundManager::GetInstance()->m_pSound[list]->Stop();
 	}
 
-	bool CreateVoicePool(enList list, int count, HWND hWnd);
+	bool CreateVoicePool(enList list, int count, HWND hWnd, DWORD durationMs);
 	static void PlaySEPoly(enList list) {
 		CSoundManager::GetInstance()->PlayFromPool(list);
 	}
@@ -90,9 +106,12 @@ private:
 		TCHAR alias[32]{};
 	};
 	SoundInfo m_SoundInfo[enList::max]{};
-	struct VoicePool {
+	struct VoicePool
+	{
 		std::vector<CSound*> voices;
-		size_t index = 0;
+		std::vector<DWORD> playStartTimes;  // Track when each voice started playing
+		DWORD estimatedDuration;            // Estimated duration in ms
+		size_t index;
 	};
 
 	std::unordered_map<int, VoicePool> m_voicePools;

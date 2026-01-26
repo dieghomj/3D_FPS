@@ -28,6 +28,7 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 {
 	//サウンドデータの読み込み
 	CSoundManager::GetInstance()->Load(m_hWnd);
+
 	m_Fog.Mode = D3DFOG_LINEAR;
 
 }

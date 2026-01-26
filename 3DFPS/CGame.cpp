@@ -42,14 +42,14 @@ const CLevel::GOAL levelGoals[3] = {
 
 const D3DXVECTOR3 enemyStartPos[LEVEL_COUNT][16] = {
 	{
-		D3DXVECTOR3( 39.f,		19.f,	231.f),
-		D3DXVECTOR3( 5.3f,		19.f,	231.f),
-		D3DXVECTOR3( -32.8f,	19.f,	231.f),
-		D3DXVECTOR3( 10.8f,		19.f,	320.f),
-		D3DXVECTOR3( -5.6f,		19.f,	320.f),
-		D3DXVECTOR3( -39.f,		19.f,	320.f),
-		D3DXVECTOR3( 5.3f,		19.f,	320.f),
-		D3DXVECTOR3( 32.8f,		19.f,	320.f),
+		D3DXVECTOR3( 39.f,		10.f,	231.f),
+		D3DXVECTOR3( 5.3f,		10.f,	231.f),
+		D3DXVECTOR3( -32.8f,	10.f,	231.f),
+		D3DXVECTOR3( 10.8f,		10.f,	320.f),
+		D3DXVECTOR3( -5.6f,		10.f,	320.f),
+		D3DXVECTOR3( -39.f,		10.f,	320.f),
+		D3DXVECTOR3( 5.3f,		10.f,	320.f),
+		D3DXVECTOR3( 32.8f,		10.f,	320.f),
 	},
 	{	
 		D3DXVECTOR3( -13.f,	15.f,	230.f),
@@ -1286,29 +1286,53 @@ void CGame::HandleWeaponPos()
 void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact)
 {
 
-	
+	float minDistance = FLT_MAX;
+	CAnimEnemy* hitEnemy = nullptr;
+
 	for (auto& enemy : m_pEnemyPool)
 	{
+
 		if (enemy->IsDead() || !enemy->IsActive()) continue;
 		if (enemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 		{
-			impact.position = hitPos;
-			impact.normal = normal;
-			impact.isEnemyHit = true;
-			enemy->ApplyDamage(5.f);
-			if (enemy->IsDead())
+			if (hitDist < minDistance)
 			{
-				//CEffect::Play(CEffect::EnemyDeathEffect, enemy->GetPosition());
-				m_enemyKillCount++;
-				m_comboCount++;
+				minDistance = hitDist;
+				hitEnemy = enemy;
+				continue;
 			}
-			enemyHitHandle = CEffect::Play(CEffect::HitEffect, hitPos);
-			CEffect::SetSpeed(enemyHitHandle, 2.0f);
-			CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+
 			//debugHitShotList.push_back(hitPos);
 			//m_bulletImpactList.push_back(impact);
-			return;
 		}
+	}
+
+	if (minDistance != FLT_MAX && hitEnemy != nullptr)
+	{
+		impact.position = hitPos;
+		impact.normal = normal;
+		impact.isEnemyHit = true;
+		hitEnemy->ApplyDamage(5.f);
+		if (hitEnemy->IsDead())
+		{
+			//CEffect::Play(CEffect::EnemyDeathEffect, enemy->GetPosition());
+			m_enemyKillCount++;
+			m_comboCount++;
+		}
+		int currWeapon = m_pPlayer->GetCurrentWeapon();
+		switch (currWeapon)
+		{
+		case 0: // Pistol
+			enemyHitHandle = CEffect::Play(CEffect::PistolShotEffect, hitPos);
+			// Hit detected
+			break;
+		case 1: // Shotgun
+			enemyHitHandle = CEffect::Play(CEffect::ExplosionEffect, hitPos);
+			break;
+		}
+		CEffect::SetSpeed(enemyHitHandle, 2.0f);
+		CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+		return;
 	}
 
 	if (m_pLevelController->GetStage()->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
@@ -1316,10 +1340,12 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		impact.position = hitPos;
 		impact.normal = normal;
 		impact.isEnemyHit = false;
-		// Hit detected
 		//debugHitShotList.push_back(hitPos);
 		m_bulletImpactList.push_back(impact);
+		enemyHitHandle = CEffect::Play(CEffect::HitEffect, hitPos);
 	}
+	CEffect::SetSpeed(enemyHitHandle, 2.0f);
+	CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
 	
 }
 

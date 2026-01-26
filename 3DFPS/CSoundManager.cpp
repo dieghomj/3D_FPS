@@ -29,23 +29,33 @@ bool CSoundManager::Load( HWND hWnd )
 	{
 		int listNo;				//enList列挙型を設定.
 		const TCHAR path[256];	//ファイルの名前(パス付き).
-		const TCHAR alias[32];	//エイリアス名.
+		const TCHAR alias[256];	//エイリアス名.
 	};
 	SoundList SList[] =
 	{
-		{ enList::BGM_Title		, _T("Data\\Sound\\BGM\\game.wav"),				_T("BGM_Title")},
-		{ enList::BGM_Game		, _T("Data\\Sound\\BGM\\menu.mp3"),				_T("BGM_Game")},
-		{ enList::SE_Select		, _T("Data\\Sound\\SE\\select.wav"),			_T("SE_Select")},
+		{ enList::BGM_Game		, _T("Data\\Sound\\BGM\\game.mp3"),				_T("BGM_Title")},
+		{ enList::BGM_Title		, _T("Data\\Sound\\BGM\\menu.mp3"),				_T("BGM_Game")},
+		{ enList::BGM_GameOver	, _T("Data\\Sound\\BGM\\gameover.mp3"),			_T("BGM_GameOver")},
+		{ enList::BGM_Restart	, _T("Data\\Sound\\BGM\\restart.mp3"),			_T("BGM_Restart")},
+
+		{ enList::SE_Clear		, _T("Data\\Sound\\SE\\clear.wav"),				_T("SE_Clear")},
+		{ enList::SE_Select		, _T("Data\\Sound\\SE\\select.mp3"),			_T("SE_Select")},
 		{ enList::SE_Decide		, _T("Data\\Sound\\SE\\confirm.wav"),			_T("SE_Decide")},
-		{ enList::SE_Step		, _T("Data\\Sound\\SE\\Footstep.wav"),			_T("SE_Step")},
-		{ enList::SE_GameOver	, _T("Data\\Sound\\SE\\scream.wav"),			_T("SE_GameOver")},
-		{ enList::SE_ItemGet	, _T("Data\\Sound\\SE\\item.wav"),				_T("SE_ItemGet")},
-		{ enList::SE_GhostIdle	, _T("Data\\Sound\\SE\\enemyIdling.wav"),		_T("SE_GhostIdle")},
-		{ enList::SE_GhostChase	, _T("Data\\Sound\\SE\\enemyAttacking.wav"),	_T("SE_GhostChase")},
-		{ enList::SE_GhostDamage, _T("Data\\Sound\\SE\\enemyDamage.wav"),		_T("SE_GhostDamage")},
-		{ enList::SE_GhostDead	, _T("Data\\Sound\\SE\\enemyDead.wav"),			_T("SE_GhostDead")},
-		{ enList::SE_Flashlight	, _T("Data\\Sound\\SE\\Flashlight.wav"),		_T("SE_Flashlight")},
-		{ enList::SE_Result		, _T("Data\\Sound\\SE\\result.wav"),			_T("SE_Result")},
+
+		{ enList::SE_Step1		, _T("Data\\Sound\\SE\\footstep1.wav"),			_T("SE_Step1")},
+		{ enList::SE_Step2		, _T("Data\\Sound\\SE\\footstep2.wav"),			_T("SE_Step2")},
+		{ enList::SE_Step3		, _T("Data\\Sound\\SE\\footstep3.wav"),			_T("SE_Step3")},
+
+		{ enList::SE_Alarm		, _T("Data\\Sound\\SE\\alarm.mp3"),				_T("SE_Alarm")},
+
+		{ enList::SE_PlayerHit		, _T("Data\\Sound\\SE\\player_hit.wav"),		_T("SE_PlayerHit")},
+		{ enList::SE_PistolShot1	, _T("Data\\Sound\\SE\\pistol_shot1.wav"),		_T("SE_PistolShot1")},
+		{ enList::SE_PistolShot2	, _T("Data\\Sound\\SE\\pistol_shot2.wav"),		_T("SE_PistolShot2")},
+		{ enList::SE_ShotgunShot	, _T("Data\\Sound\\SE\\shotgun_shot1.wav"),		_T("SE_ShotgunShot")},
+		
+		{ enList::SE_BossSE1 	, _T("Data\\Sound\\SE\\bossSE1.wav"),				_T("SE_BossSE1") },
+
+		{ enList::SE_ItemGet	, _T("Data\\Sound\\SE\\item.wav"),					_T("SE_ItemGet")},
 
 	};
 	//配列の最大要素数を算出 (配列全体のサイズ/配列1つ分のサイズ).
@@ -88,7 +98,7 @@ void CSoundManager::Release()
 	m_voicePools.clear();
 }
 
-bool CSoundManager::CreateVoicePool(enList list, int count, HWND hWnd)
+bool CSoundManager::CreateVoicePool(enList list, int count, HWND hWnd, DWORD durationMs)
 {
 	if (count <= 0) return false;
 
@@ -113,11 +123,13 @@ bool CSoundManager::CreateVoicePool(enList list, int count, HWND hWnd)
 
 	VoicePool pool;
 	pool.voices.reserve(static_cast<size_t>(count));
+	pool.playStartTimes.resize(static_cast<size_t>(count), 0);
+	pool.estimatedDuration = durationMs;  
 	for (int i = 0; i < count; ++i)
 	{
 		CSound* s = new CSound();
 		TCHAR alias[64] = _T("");
-		wsprintf(alias, _T("%s_%d"), info.alias, i); // 例: SE_Shot_0
+		wsprintf(alias, _T("%s_%d"), info.alias, i); 
 
 		if (!s->Open(info.path, alias, hWnd))
 		{
@@ -147,10 +159,24 @@ void CSoundManager::PlayFromPool(enList list)
 	}
 
 	VoicePool& pool = it->second;
-	CSound* voice = pool.voices[pool.index];
-	if (voice)
+	const size_t poolSize = pool.voices.size();
+	DWORD now = timeGetTime();
+
+	for (size_t i = 0; i < poolSize; ++i)
 	{
-		voice->PlaySE();
+		size_t idx = (pool.index + i) % poolSize;
+		DWORD elapsed = now - pool.playStartTimes[idx];
+
+		if (elapsed >= pool.estimatedDuration || pool.playStartTimes[idx] == 0)
+		{
+			CSound* voice = pool.voices[idx];
+			if (voice)
+			{
+				voice->PlaySE();
+				pool.playStartTimes[idx] = now;
+			}
+			pool.index = (idx + 1) % poolSize;
+			return;
+		}
 	}
-	pool.index = (pool.index + 1) % pool.voices.size();
 }

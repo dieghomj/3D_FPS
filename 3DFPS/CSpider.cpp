@@ -19,7 +19,7 @@ static constexpr float JUMP_ATTACK_CD = 3.0f;
 static constexpr float CHASE_SPEED = 0.3f;
 static constexpr float IDLE_SPEED = 0.025f;
 static constexpr float IDLE_TIMER_MAX = 2.0f;
-static constexpr float JUMP_ATTACK_SPEED = 0.35f;
+static constexpr float JUMP_ATTACK_SPEED = 0.85f;
 static constexpr float HEALTH_MAX = 25.0f;
 static constexpr float DAMAGE_TIMER_MAX = 0.5f;
 
@@ -38,6 +38,7 @@ CSpider::~CSpider()
 
 void CSpider::InitEnemy()
 {
+	m_Radius = 1.8f;
 	m_Health = HEALTH_MAX;
 	m_IsAlive = true;
 	CAnimEnemy::InitEnemy();
@@ -161,7 +162,7 @@ void CSpider::ChasePlayer()
 	m_vPosition = GetPosition() + m_vForward * -CHASE_SPEED;
 	if (m_PlayerDist < 0.5f)
 		m_State = Attacking;
-	else if (m_PlayerDist < 15.0f)
+	else if (m_PlayerDist < 35.0f)
 		m_State = Jumping;
 }
 
