@@ -176,6 +176,7 @@
     <ClCompile Include="CGameStats.cpp" />
     <ClCompile Include="CHealthItem.cpp" />
     <ClCompile Include="CItem.cpp" />
+    <ClCompile Include="CLaserShot.cpp" />
     <ClCompile Include="CLevel.cpp" />
     <ClCompile Include="CLevelController.cpp" />
     <ClCompile Include="CMain.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="CGameStats.h" />
     <ClInclude Include="CHealthItem.h" />
     <ClInclude Include="CItem.h" />
+    <ClInclude Include="CLaserShot.h" />
     <ClInclude Include="CLevel.h" />
     <ClInclude Include="CLevelController.h" />
     <ClInclude Include="CMain.h" />
