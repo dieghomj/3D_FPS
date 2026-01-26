@@ -25,6 +25,11 @@ class CGame :
 {
 public:
 
+	struct BLOCKED_PATH_TRANS{
+		D3DXVECTOR3 position = D3DXVECTOR3(0.f, 0.f, 0.f);
+		D3DXVECTOR3 scale = D3DXVECTOR3(1.f, 1.f, 1.f);
+	};
+
 	struct BULLET_IMPACT {
 
 		D3DXVECTOR3 position = D3DXVECTOR3(0.f,0.f,0.f);
@@ -161,10 +166,12 @@ private:
 		CStaticMesh* m_pCubeMesh;
 	//GOAL
 		CLevel::GOAL m_Goal;
-	//LIGHTNING
+	//BLOCKED PATH
+		//Sprite
 		CSprite3D* m_pLightningSprite;
 		CBlockedPath* m_pLightning;
-		std::vector<CBlockedPath*> m_pBlockedPathList;
+		//List
+		std::vector<CBlockedPath*> m_pBlockedPathList[LEVEL_COUNT];
 	//TRIGGERS
 		std::vector<CLevel::COLLISION_TRIGGER> m_CollisionTriggerList;
 
@@ -183,6 +190,8 @@ private:
 		CStaticMesh* m_pSpiderMesh;
 		CStaticMesh* m_pRoboMesh;
 		CStaticMesh* m_pBossMesh;
+
+		CStaticMesh* m_pEnemyShotMesh;
 
 		CSkinMesh* m_pSpiderSkinMesh;
 		CSkinMesh* m_pRoboSkinMesh;

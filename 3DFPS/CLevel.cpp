@@ -156,7 +156,7 @@ void CLevel::HandleBlockedPath()
 	//	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
 	//	{
 	//		if (m_pEnemyPool[i]->IsActive() == false)
-	//			m_pEnemyPool[i]->SpawnAt(enemyStartPos[i]);
+	//			m_pEnemyPool[i]->SpawnAt(ENEMY_STARTPOS[i]);
 	//	}
 	//}
 }

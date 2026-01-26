@@ -12,9 +12,10 @@ struct CGameStats
 
 	enum LEVEL_SELECTION
 	{
-		LEVEL_1 = 0,
-		LEVEL_2 = 1,
-		LEVEL_3 = 2,
+		LEVEL_0 = 0,
+		LEVEL_1 = 1,
+		LEVEL_2 = 2,
+		LEVEL_3 = 3,
 		LEVEL_COUNT
 	};
 
@@ -30,6 +31,7 @@ struct CGameStats
 	static int HighestScore;            // highest score ever achieved
 	static DIFFICULTY Difficulty;
 	static int LevelSelection;
+	static bool UnlockedLevel[LEVEL_COUNT];
 
 	// Compute total score with combo bonus
 	static void ComputeScore()
@@ -107,9 +109,6 @@ struct CGameStats
 	//	}
 	//}
 
-
-
-
 };
 
 inline int CGameStats::EnemiesKilled = 0;
@@ -121,3 +120,4 @@ inline int CGameStats::Score = 0;                   // total score for current r
 inline int CGameStats::HighestScore = 0;            // highest score ever achieved
 inline CGameStats::DIFFICULTY CGameStats::Difficulty = DIFF_NORMAL;
 inline int CGameStats::LevelSelection = 0;
+inline bool CGameStats::UnlockedLevel[CGameStats::LEVEL_COUNT] = { true, false, false, false };

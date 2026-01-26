@@ -7,14 +7,15 @@ constexpr int ENEMY_COUNT_MAX = 64;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
 constexpr float ENEMY_SHOT_SPEED = 1.2f;
 constexpr int STAGE_TIMER = 2 * 60; // minutes
+
 const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
 		D3DXVECTOR3(0.f, 25.f, -95.f),
-		D3DXVECTOR3(0.f, 25.f, -45.f),
+		D3DXVECTOR3(0.f, 25.f, -35.f),
 		D3DXVECTOR3(0.f, 25.f, -35.f),
 		D3DXVECTOR3(0.f, 25.f, -95.f),
 };
 
-const std::vector<CLevel::COLLISION_TRIGGER> collisionTriggers[3] = {
+const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT] = {
 	
 	{
 		{ D3DXVECTOR3(0.f, 5.f, 250.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
@@ -34,13 +35,34 @@ const std::vector<CLevel::COLLISION_TRIGGER> collisionTriggers[3] = {
 
 };
 
-const CLevel::GOAL levelGoals[3] = {
-	{ D3DXVECTOR3(0.f, 8.f, 400.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
-	{ D3DXVECTOR3(0.f, 8.f, 920.f), D3DXVECTOR3(100.f, 100.f, 10.f), false },
-	{ D3DXVECTOR3(0.f, 8.f, 800.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
+
+const std::vector<CGame::BLOCKED_PATH_TRANS> BLOCKEDPATH_LIST[LEVEL_COUNT] =
+{
+
+	{
+		{ D3DXVECTOR3(0.f, 9.5f, 219.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+	},
+
+	{
+		{ D3DXVECTOR3(0.f, 9.5f, 219.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
+	},
+
+	{
+	},
+
 };
 
-const D3DXVECTOR3 enemyStartPos[LEVEL_COUNT][16] = {
+const CLevel::GOAL LevelGoals[LEVEL_COUNT] = {
+	{ D3DXVECTOR3(0.f, 8.f, 400.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
+	{ D3DXVECTOR3(0.f, 8.f, 920.f), D3DXVECTOR3(100.f, 100.f, 10.f), false },
+	{ D3DXVECTOR3(0.f, 8.f, 920.f), D3DXVECTOR3(100.f, 100.f, 10.f), false },
+};
+
+const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
 	{
 		D3DXVECTOR3( 39.f,		10.f,	231.f),
 		D3DXVECTOR3( 5.3f,		10.f,	231.f),
@@ -157,6 +179,8 @@ void CGame::Create()
 	m_pCrossHairUI = new CUIObject();
 	m_pHealthBarSprite = new CSprite2D();
 	m_pHealthBarUI = new CUIObject();
+	m_pPainSprite = new CSprite2D();
+	m_pPainUI = new CUIObject();
 
 	m_pSkybox = new CSkybox();
 
@@ -177,15 +201,18 @@ void CGame::Create()
 	m_pCubeMesh = new CStaticMesh();
 	m_pLightningSprite = new CSprite3D();
 	m_pLightning = new CBlockedPath();
-	m_pBlockedPathList.reserve(32);
 
-	for (int i = 0; i < 32; ++i)
+	for (int i = 0; i < LEVEL_COUNT; ++i)
 	{
-		CBlockedPath* pBlockedPath = new CBlockedPath();
-		m_pBlockedPathList.push_back(pBlockedPath);
+		for (int j = 0; j < BLOCKEDPATH_LIST[i].size(); ++j)
+		{
+			CBlockedPath* pBlockedPath = new CBlockedPath();
+			m_pBlockedPathList[i].push_back(pBlockedPath);
+		}
 	}
 
 	m_pEnemyMesh = new CStaticMesh();
+	m_pEnemyShotMesh = new CStaticMesh();
 	m_pSpiderMesh = new CStaticMesh();
 	m_pRoboMesh = new CStaticMesh();
 	m_pBossMesh = new CStaticMesh();
@@ -210,6 +237,17 @@ void CGame::Create()
 		},
 	};
 
+	m_EnemyGroups[1] = {
+
+		{
+			4,
+			false,
+			false,
+			7.f,
+			{new CRobo, new CRobo, new CRobo, new CRobo}
+		},
+	};
+
 	m_EnemyGroups[2] = {
 
 		{
@@ -217,7 +255,7 @@ void CGame::Create()
 			false,
 			false,
 			7.f,
-			{new CBoss} // enemies will be spawned later
+			{new CBoss} 
 		},
 	};
 
@@ -423,7 +461,7 @@ void CGame::Release()
 	SAFE_DELETE(m_pCubeMesh);
 	SAFE_DELETE(m_pLightningSprite);
 	SAFE_DELETE(m_pLightning);
-	for (auto pBlockedPath : m_pBlockedPathList)
+	for (auto pBlockedPath : m_pBlockedPathList[CGameStats::LevelSelection])
 	{
 		SAFE_DELETE(pBlockedPath);
 	}
@@ -525,6 +563,8 @@ void CGame::Update()
 	if (m_pLevelController->GetCurrentLevel()->IsCleared())
 	{
 		SaveStats();
+		if(CGameStats::LevelSelection + 1 < LEVEL_COUNT)
+		CGameStats::UnlockedLevel[CGameStats::LevelSelection + 1] = true;
 		CSoundManager::Stop(CSoundManager::BGM_Game);
 		CSoundManager::PlaySE(CSoundManager::SE_Clear);
 		m_pManager->ChangeScene("RESULT");
@@ -549,7 +589,7 @@ void CGame::Update()
 	//	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
 	//	{
 	//		if (m_pEnemyPool[i]->IsActive() == false)
-	//			m_pEnemyPool[i]->SpawnAt(enemyStartPos[i]);
+	//			m_pEnemyPool[i]->SpawnAt(ENEMY_STARTPOS[i]);
 	//	}
 	//}
 	 
@@ -824,7 +864,7 @@ void CGame::Draw()
 	{
 		if (typeid(*pEnemy) == typeid(CRobo))
 		{
-			HandleEnemyShotLoadAnim(dynamic_cast<CRobo*>(pEnemy));
+			//HandleEnemyShotLoadAnim(dynamic_cast<CRobo*>(pEnemy));
 		}
 
 		if (typeid(*pEnemy) == typeid(CBoss))
@@ -855,11 +895,11 @@ void CGame::Draw()
 	//ライトニングエフェクト、パターンアニメーション.（塞がれた道用）
 	m_pLightningSprite->SetPatternNo(0,(int)(m_pTime->GetTotalTime() * 0.01f) % 11);
 
-	m_pBlockedPathList[0]->UpdateCollider();
-	m_pBlockedPathList[0]->Draw(m_SceneInfo);
-
-	m_pBlockedPathList[1]->UpdateCollider();
-	m_pBlockedPathList[1]->Draw(m_SceneInfo);
+	for (auto pBlockedPath : m_pBlockedPathList[CGameStats::LevelSelection])
+	{
+		pBlockedPath->Draw(m_SceneInfo);
+		pBlockedPath->UpdateCollider();
+	}
 	
 	DrawUI();
 
@@ -1021,6 +1061,27 @@ void CGame::DrawUI()
 
 	m_pCrossHairUI->Draw();
 
+	static float painAlpha = 0.f;
+	float painObjectiveAlpha = 0.f;
+	float painSpeed = 0.f;
+	float painIncreaseSpeed = 3.0f;
+	float painDecaySpeed = 0.5f;
+	if(m_pPlayer->IsDamaged() && !m_pPlayer->IsDashing())
+	{
+		painObjectiveAlpha += 1.7f;
+		painSpeed = painIncreaseSpeed;
+	}
+	else
+	{
+		painObjectiveAlpha = 0.0f;
+		painSpeed = painDecaySpeed;
+	}
+
+	painAlpha += (painObjectiveAlpha - painAlpha) * painSpeed * FPS / 1000.f;
+
+	m_pPainSprite->SetAlpha(painAlpha);
+	m_pPainUI->Draw();
+
 	m_pDx11->SetDepth(true);
 }
 
@@ -1072,14 +1133,15 @@ void CGame::DrawEnemyShots()
 			continue;
 		}
 
-		if (CEffect::IsPlaying(enemyShotEffectHandles[i]))
-		{
-			CEffect::SetLocation(enemyShotEffectHandles[i], m_pEnemyShotList[i]->GetPosition());
-		}
-		else
-		{
-			enemyShotEffectHandles[i] = CEffect::Play(CEffect::MagmaEffect, m_pEnemyShotList[i]->GetPosition());
-		}
+		//if (CEffect::IsPlaying(enemyShotEffectHandles[i]))
+		//{
+		//	CEffect::SetLocation(enemyShotEffectHandles[i], m_pEnemyShotList[i]->GetPosition());
+		//}
+		//else
+		//{
+		//	enemyShotEffectHandles[i] = CEffect::Play(CEffect::MagmaEffect, m_pEnemyShotList[i]->GetPosition());
+		//}
+		m_pEnemyShotList[i]->Draw(m_SceneInfo);
 	}
 }
 
@@ -1132,7 +1194,7 @@ void CGame::HandleWeapon()
 		shotRay.Position = m_pPlayer->GetPosition();;
 	
 		shotRay.Axis = camForward;
-		shotRay.Length = 100.f;
+		shotRay.Length = 500.f;
 		shotRay.RotationY = 0;
 
 		float hitDist = 0.f;
@@ -1331,7 +1393,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 			break;
 		}
 		CEffect::SetSpeed(enemyHitHandle, 2.0f);
-		CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+		CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.8f, 0.8f, 0.8f));
 		return;
 	}
 
@@ -1345,7 +1407,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		enemyHitHandle = CEffect::Play(CEffect::HitEffect, hitPos);
 	}
 	CEffect::SetSpeed(enemyHitHandle, 2.0f);
-	CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.5f, 0.5f, 0.5f));
+	CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.8f, 0.8f, 0.8f));
 	
 }
 
@@ -1763,7 +1825,7 @@ void CGame::HandleEnemySpawning()
 					enemy->SetScale(BOSS_SCALE);
 				
 				enemy->InitEnemy();
-				enemy->SpawnAt(enemyStartPos[currLevelIndex][poolCount]);
+				enemy->SpawnAt(ENEMY_STARTPOS[currLevelIndex][poolCount]);
 				m_pEnemyPool.push_back(enemy);
 			}
 
@@ -1799,7 +1861,7 @@ void CGame::HandleEnemyShooting()
 	//RANGED ENEMY SHOOTING
 	for (auto pEnemy : m_pEnemyPool)
 	{
-		D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.5f, 0.f) - pEnemy->GetPosition();
+		D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.2f, 0.f) - (pEnemy->GetPosition() + D3DXVECTOR3(0.f, 7.f, 0.f));
 		D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
 
 		if(typeid(*pEnemy) != typeid(CRobo))
@@ -1808,7 +1870,7 @@ void CGame::HandleEnemyShooting()
 		if(pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
 		{
 			m_pEnemyShotList[NextEnemyShot()]->Reload(
-				pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f),
+				pEnemy->GetPosition() + D3DXVECTOR3(0.f, 7.f, 0.f),
 				dirToPlayer,
 				pEnemy->GetRotation().y);
 		}
@@ -1839,11 +1901,11 @@ void CGame::HandleEnemyGroupCleared()
 		{
 			group.isCleared = true;
 
-			auto pathIndices = collisionTriggers[CGameStats::LevelSelection][i].blockedPathIndices;
+			auto pathIndices = COLLISION_TRIGGER_LIST[CGameStats::LevelSelection][i].blockedPathIndices;
 			
 			for (auto index : pathIndices)
 			{
-				m_pBlockedPathList[index]->SetActive(false);
+				m_pBlockedPathList[CGameStats::LevelSelection][index]->SetActive(false);
 			}
 
 		}
@@ -1854,10 +1916,19 @@ void CGame::HandleEnemyGroupCleared()
 
 void CGame::SetupBlockedPath()
 {
-	m_pBlockedPathList[0]->SetScale(12.f, 5.f, 7.f);
-	m_pBlockedPathList[1]->SetScale(12.f, 5.f, 7.f);
-	m_pBlockedPathList[0]->SetPosition(D3DXVECTOR3(0.f, 9.5f, 219.f));
-	m_pBlockedPathList[1]->SetPosition(D3DXVECTOR3(0.f, 9.5f, 336.f));
+
+	int i = 0;
+	for (int i = 0; i < BLOCKEDPATH_LIST[CGameStats::LevelSelection].size(); i++)
+	{
+		auto pBlockedPath = m_pBlockedPathList[CGameStats::LevelSelection][i];
+		float scaleX = BLOCKEDPATH_LIST[CGameStats::LevelSelection][i].scale.x;
+		float scaleY = BLOCKEDPATH_LIST[CGameStats::LevelSelection][i].scale.y;
+		float scaleZ = BLOCKEDPATH_LIST[CGameStats::LevelSelection][i].scale.z;
+		D3DXVECTOR3 pos = BLOCKEDPATH_LIST[CGameStats::LevelSelection][i].position;
+		pBlockedPath->SetScale( scaleX, scaleY, scaleZ );
+		pBlockedPath->SetPosition(pos);
+	}
+
 }
 
 void CGame::SetupTriggers()
@@ -1955,6 +2026,12 @@ HRESULT CGame::LoadUIAssets()
 	staminaBarState.Base = { 128.f, 43.0f };
 	staminaBarState.Stride = { 128.f, 43.0f };
 
+	CSprite2D::SPRITE_STATE damageEffectState = {};
+	damageEffectState.Disp = { WND_W, WND_H};
+	damageEffectState.Base = { 1920.f, 1080.f};
+	damageEffectState.Stride = { 1920.f, 1080.f };
+
+
 	if (FAILED(m_pHealthBarSprite->Init(*m_pDx11, L"Data\\Texture\\Health.png", healthBarState)))
 	{
 		return E_FAIL;
@@ -1970,6 +2047,12 @@ HRESULT CGame::LoadUIAssets()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pPainSprite->Init(*m_pDx11, L"Data\\Texture\\pain.png", damageEffectState)))
+	{
+		return E_FAIL;
+	}
+
+	m_pPainUI->AttachSprite(*m_pPainSprite);
 	m_pHealthBarUI->AttachSprite(*m_pHealthBarSprite);
 	m_pStaminaBarUI->AttachSprite(*m_pStaminaBarSprite);
 	m_pCrossHairUI->AttachSprite(*m_pCrossHairSprite);
@@ -2086,7 +2169,7 @@ void CGame::InitStage()
 	m_pStage->SetPlayer(*m_pPlayer);
 	m_pStage->SetEnemyList(m_pEnemyPool);
 
-	for (auto pBlockedPath : m_pBlockedPathList)
+	for (auto pBlockedPath : m_pBlockedPathList[CGameStats::LevelSelection])
 	{
 		pBlockedPath->AttachMesh(*m_pCubeMesh);
 		pBlockedPath->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
@@ -2127,6 +2210,11 @@ HRESULT CGame::LoadEnemiesMesh()
 	}
 
 	if (FAILED(m_pBossMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Enemy\\BrainRobot\\brain-robot.x")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pEnemyShotMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Weapons\\Spike\\spike.x")))
 	{
 		return E_FAIL;
 	}
@@ -2176,7 +2264,7 @@ HRESULT CGame::LoadEnemiesMesh()
 
 	for (auto pEnemyShot : m_pEnemyShotList)
 	{
-		pEnemyShot->AttachMesh(*m_pSphereMesh);
+		pEnemyShot->AttachMesh(*m_pEnemyShotMesh);
 		pEnemyShot->CreateCollider(CCollider::COLLIDER_SHAPE_SPHERE);
 	}
 
@@ -2258,20 +2346,14 @@ void CGame::InitLevelController()
 		m_pLevelController->SetCurrentLevel(i);
 		auto pLevel = m_pLevelController->GetCurrentLevel();
 		pLevel->SetStage(m_pStageMeshes[i]);
-		pLevel->SetGoal(levelGoals[i]);
+		pLevel->SetGoal(LevelGoals[i]);
 
 		switch (i)
 		{
-		case 0:
-		{
-			pLevel->SetStartPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
-			pLevel->SetTriggerAreas(collisionTriggers[CGameStats::LevelSelection]);
-			pLevel->SetBlockedPathList(m_pBlockedPathList);
-			break;
-		}
 		default:
 			pLevel->SetStartPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
-			pLevel->SetTriggerAreas(collisionTriggers[CGameStats::LevelSelection]);
+			pLevel->SetTriggerAreas(COLLISION_TRIGGER_LIST[CGameStats::LevelSelection]);
+			pLevel->SetBlockedPathList(m_pBlockedPathList[CGameStats::LevelSelection]);
 			break;
 		}
 
@@ -2312,7 +2394,7 @@ void CGame::DrawDebugColliders()
 	}
 
 	// Draw blocked path colliders
-	for (auto pBlockedPath : m_pBlockedPathList)
+	for (auto pBlockedPath : m_pBlockedPathList[CGameStats::LevelSelection])
 	{
 		if (!pBlockedPath || !pBlockedPath->IsActive())
 			continue;

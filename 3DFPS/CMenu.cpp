@@ -51,8 +51,8 @@ HRESULT CMenu::LoadData()
 
 	CSprite2D::SPRITE_STATE BackGroundSS = {
 		{WND_W, WND_H},
-		{610,570},
-		{604,560},
+		{1024,1024},
+		{1024,1024},
 	};
 
 	CSprite2D::SPRITE_STATE MenuBGSS = {
@@ -199,6 +199,17 @@ void CMenu::UpdateMainMenu()
 
 void CMenu::UpdateLevelSelect()
 {
+
+	if (GetAsyncKeyState('G') & 0x0001)
+	{
+		CSoundManager::PlaySE(CSoundManager::SE_Alarm);
+		for(int i = 0; i < LEVEL_COUNT; i++)
+		{
+			CGameStats::UnlockedLevel[i] = true;
+		}
+		return;
+	}
+
 	// Navigate levels (UP/DOWN) - include BACK option
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
@@ -248,29 +259,26 @@ void CMenu::UpdateLevelSelect()
 		m_MenuState = STATE_MAIN_MENU;
 	}
 
-	// Confirm selection
 	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Decide);
 
-		// Check if BACK is selected
 		if (m_SelectedLevel == LEVEL_BACK)
 		{
 			m_MenuState = STATE_MAIN_MENU;
 			return;
 		}
 
-		// Apply selections (only for unlocked levels)
-
-		CGameStats::LevelSelection = m_SelectedLevel;
-
-		// Begin fade to game
-		m_IsFading = true;
-		m_FadeAlpha = 0.0f;
-		m_FadeSpeed = 0.1f;
-		if (m_pFadeSprite)
+		if (CGameStats::UnlockedLevel[m_SelectedLevel])
 		{
-			m_pFadeSprite->SetAlpha(0.0f);
+			CGameStats::LevelSelection = m_SelectedLevel;
+			m_IsFading = true;
+			m_FadeAlpha = 0.0f;
+			m_FadeSpeed = 0.1f;
+			if (m_pFadeSprite)
+			{
+				m_pFadeSprite->SetAlpha(0.0f);
+			}
 		}
 	}
 }
@@ -285,7 +293,10 @@ void CMenu::DrawLevelSelect()
 	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 140), 90.0f, 60.0f);
 
 	// Level names
-	const TCHAR* levelNames[] = { _T("Level 0 - Tutorial"), _T("Level 1 - [LOCKED]"), _T("Level 2 - [LOCKED]"), _T("Level 3 - [LOCKED]")};
+	const TCHAR* levelNames[] = {	_T("TUTORIAL"), 
+									_T("LEVEL 1"),
+									_T("LEVEL 2"), 
+									_T("LEVEL 3")};
 
 	float startY = static_cast<float>(WND_H / 2 - 80);
 	for (int i = 0; i < LEVEL_COUNT; i++)
@@ -296,16 +307,12 @@ void CMenu::DrawLevelSelect()
 			m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
 
 		TCHAR levelText[64];
-		_stprintf_s(levelText, _T("> %s"), levelNames[i]);
+		if(CGameStats::UnlockedLevel[i])
+			_stprintf_s(levelText, _T("> %s"), levelNames[i]);
+		else
+			_stprintf_s(levelText, _T("> %s - [LOCKED]"), levelNames[i]);
 		m_pMenuFont->Render(levelText, static_cast<float>(WND_W / 2 - 120), startY + (i * 50.0f), 35.0f);
 	}
-
-	// Difficulty selector
-	//m_pMenuFont->SetColor(0.8f, 0.8f, 0.2f);
-	//const TCHAR* diffNames[] = { _T("EASY"), _T("NORMAL"), _T("HARD") };
-	//TCHAR diffText[128];
-	//_stprintf_s(diffText, _T("< DIFFICULTY: %s >"), diffNames[m_SelectedDifficulty]);
-	//m_pMenuFont->Render(diffText, static_cast<float>(WND_W / 2 - 140), startY + (LEVEL_COUNT * 50.0f) + 20.0f, 35.0f);
 
 	// BACK option
 	float backY = startY + (LEVEL_COUNT * 50.0f) + 80.0f;
