@@ -16,7 +16,7 @@ static constexpr float SHOOT_MINION_RANGE = 100.f;
 static constexpr float MORPH_ATTACK_RANGE = 20.f;
 
 static constexpr float SLAM_CD = 4.0f;
-static constexpr float SHOOT_MINION_CD = 3.0f;
+static constexpr float SHOOT_MINION_CD = 0.5f;
 static constexpr float MORPH_ATTACK_CD = 88.0f;
 
 static constexpr float MORPH_ATTACK_WIDTH = 55.5f;
@@ -52,6 +52,16 @@ CBoss::CBoss()
 	, m_CurrentAttackState(0)
 	, m_CurrentShape(0)
 	, m_OriginalScale(4.9f, 4.9f, 4.9f)
+	, m_DeathTimer(0.0f)
+	, m_DeathDuration(3.0f)
+	, m_DeathSinkDepth(6.0f)
+	, m_DeathStartY(0.0f)
+	, m_MorphMoveTimer(0.0f)
+	, m_SlamPatternCount(0)
+	, m_SlamPatternTarget(2)
+	, m_ShootPatternTimer(0.0f)
+	, m_LowHPPatternActive(false)
+	, m_LowHPSequenceStep(0)
 
 {
 
@@ -69,6 +79,7 @@ void CBoss::InitEnemy()
 {
 	CAnimEnemy::InitEnemy();
 	m_Health = 300.0f;
+	m_Health = 500.0f;
 	m_IsAlive = true;
 	m_RotationSpeed = 0.03f;
 	m_vScale = m_OriginalScale;
@@ -85,14 +96,56 @@ void CBoss::InitEnemy()
 	m_SlamCD = SLAM_CD;
 	m_SpawnFlag = false;
 	m_GroundSlammed = false;
+	m_DeathTimer = 0.0f;
+	m_DeathStartY = m_vPosition.y;
+	m_MorphMoveTimer = 0.0f;
+	m_SlamPatternCount = 0;
+	m_SlamPatternTarget = 2 + (m_RandomGen() % 2);
+	m_ShootPatternTimer = 0.0f;
+	m_LowHPPatternActive = false;
+	m_LowHPSequenceStep = 0;
 }
 
 
 void CBoss::Update()
 {
+	if (IsActive() == false)
+	{
+		return;
+	}
+
 	if (m_FloorY <= -FLT_MAX)
 	{
 		m_FloorY = 2.0f;
+	}
+
+	float dt = FPS / 1000.f;
+
+	if (m_State == Dying)
+	{
+		m_DeathTimer += dt;
+		VibrateAnim(dt, 0.08f, 12.0f);
+
+		float targetY = (m_FloorY <= -FLT_MAX) ? (m_DeathStartY - m_DeathSinkDepth) : (m_FloorY - m_DeathSinkDepth);
+		float t = m_DeathTimer / m_DeathDuration;
+		if (t > 1.0f)
+			t = 1.0f;
+
+		m_vPosition.y = m_DeathStartY + (targetY - m_DeathStartY) * t;
+
+		if (m_DeathTimer >= m_DeathDuration)
+		{
+			m_State = Dead;
+			SetActive(false);
+			m_vPosition = D3DXVECTOR3(0.0f, -100.0f, 0.0f);
+		}
+		return;
+	}
+
+	// High-HP shoot phase timer accumulation
+	if (m_CurrentAttack == SHOOT && m_MinionShot)
+	{
+		m_ShootPatternTimer += dt;
 	}
 
 	if ((m_CurrentAttack != MORPH))
@@ -108,10 +161,15 @@ void CBoss::Update()
 			m_MinionShot = false;
 			m_ShootMinionCD = SHOOT_MINION_CD;
 			m_State = Idle;
+			if (m_LowHPPatternActive)
+			{
+				// ensure next attack in low-HP loop runs after shooting
+				m_LowHPSequenceStep = 2; // next is slam
+			}
 		}
 	}
 
-	else if (m_Morphed)
+	else if (m_Morphed && m_State != Attacking)
 	{
 		m_MorphAttackCD += 0.016f;
 		ScaleMorphAnim(0.016f, 0.25f, 2.0f);
@@ -144,7 +202,7 @@ void CBoss::Update()
 
 	
 	
-	float dt = FPS/1000.f;
+
 	//UpDownAnim(dt, 0.25f, 1.0f);
 	//ScaleMorphAnim(dt, 7.25f, 2.0f);
 
@@ -216,27 +274,7 @@ void CBoss::Attack()
 	{
 
 	case MORPH:
-		
-		switch (m_CurrentAttackState)
-		{
-			case START:
-				m_MorphSweepStartPosition = m_vPosition;
-				MorphAttack();
-				break;
-			case SLAM:
-				MorphSlam();
-				break;
-			case SWEEP:
-				MorphSweep();
-				break;
-			case RECOVER:
-				MorphRecover();
-				break;
-		default:
-			MorphAttack();
-			break;
-		}
-
+		MorphAttack();
 		break;
 	case GROUNDSLAM:
 		GroundSlam();
@@ -258,40 +296,121 @@ void CBoss::ChasePlayer()
 	toPlayer.y = 0.0f;
 	dist = D3DXVec3Length(&toPlayer);
 
-	if (m_Morphed && m_Health <= 200.f)
+
+	// Low HP pattern: Morph -> Shoot -> Slam loop
+	if (m_Health <= 100.f)
 	{
-		m_State = Attacking;
-		m_CurrentAttack = SHOOT;
+		m_LowHPPatternActive = true;
+		if (m_State != Attacking)
+		{
+			switch (m_LowHPSequenceStep)
+			{
+			case 0:
+				m_CurrentAttack = MORPH;
+				m_CurrentAttackState = START;
+				break;
+			case 1:
+				m_CurrentAttack = SHOOT;
+				break;
+			case 2:
+				m_CurrentAttack = GROUNDSLAM;
+				break;
+			default:
+				m_CurrentAttack = MORPH;
+				m_LowHPSequenceStep = 0;
+				break;
+			}
+			m_State = Attacking;
+		}
 		return;
 	}
-	else if(dist <= MORPH_ATTACK_RANGE && m_Health <= 200.f)
-	{
-		m_State = Attacking;
-		m_CurrentAttackState = START;
-		m_CurrentAttack = MORPH;
-		return;
-	}
-	else if (dist <= SLAM_RANGE)
+
+	// High HP pattern: Slam 2-3 times, then shoot for ~10s, repeat
+	m_LowHPPatternActive = false;
+	if (m_SlamPatternCount < m_SlamPatternTarget)
 	{
 		m_State = Attacking;
 		m_CurrentAttack = GROUNDSLAM;
 		return;
 	}
 
-	m_vPosition += -m_vForward * CHASE_SPEED;
+	if (m_ShootPatternTimer < 10.0f)
+	{
+		m_State = Attacking;
+		m_CurrentAttack = SHOOT;
+		return;
+	}
 
+	// Reset pattern after shooting phase
+	m_SlamPatternCount = 0;
+	m_SlamPatternTarget = 2 + (m_RandomGen() % 2);
+	m_ShootPatternTimer = 0.0f;
+	m_State = Attacking;
+	m_CurrentAttack = GROUNDSLAM;
 }
 
 
 // Morph attack logic
 void CBoss::MorphAttack()
 {
+	float dt = FPS / 1000.f;
 
-	m_CurrentShape = MORPH_HORIZONTAL;
-	m_vScale = D3DXVECTOR3(MORPH_ATTACK_WIDTH, MORPH_ATTACK_HEIGHT, 4.9f);
-	m_vRotation = D3DXVECTOR3(0.f, 45.f, 0.f);
-	MorphSlam();
-	m_CurrentAttack = MORPH;
+	if (m_CurrentAttackState == START)
+	{
+		// Step 1: return to start position before morph charge
+		if (!MoveToPosition(m_StartPosition, CHASE_SPEED * 1.2f))
+		{
+			return;
+		}
+
+		// Step 2: rotate and enlarge before rushing the player
+		m_vRotation.y += D3DXToRadian(45.0f);
+		m_CurrentAttackState = SWEEP;
+		m_MorphMoveTimer = 0.0f;
+		m_MorphAttackCount = 0;
+		m_MorphAttackCD = 0.f;
+		m_Morphed = true;
+		m_vScale = D3DXVECTOR3(MORPH_ATTACK_WIDTH, MORPH_ATTACK_HEIGHT, 4.9f);
+		m_CurrentAttack = MORPH;
+	}
+
+	m_MorphMoveTimer += dt;
+
+	// Move toward player while enlarged
+	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
+	dirToPlayer.y = 0.0f;
+	if (D3DXVec3LengthSq(&dirToPlayer) > 1e-4f)
+	{
+		D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
+		m_vPosition += dirToPlayer * MORPH_ATTACK_SPEED;
+	}
+
+	// Keep a subtle morph scaling animation while charging
+	ScaleMorphAnim(dt, 0.25f, 2.0f);
+
+	// After ~2 seconds, move back to start and begin ranged attack
+	if (m_MorphMoveTimer >= 2.0f)
+	{
+		m_MorphMoveTimer = 0.0f;
+		m_CurrentAttackState = RECOVER;
+	}
+
+	// Recover phase: return to start then start shooting
+	if (m_CurrentAttackState == RECOVER)
+	{
+		if (!MoveToPosition(m_StartPosition, CHASE_SPEED * 1.2f))
+		{
+			return;
+		}
+
+		m_vScale = m_OriginalScale;
+		m_CurrentAttackState = START;
+		m_Morphed = false;
+		m_CurrentAttack = SHOOT;
+		m_Attacked = false;
+		m_LowHPSequenceStep = 1; // next in low-HP loop is shoot
+		return;
+	}
 
 }
 
@@ -377,6 +496,15 @@ void CBoss::GroundSlam()
 	if(m_SlamCD < SLAM_CD)
 		return;
 
+	// Chase player horizontally while performing the slam
+	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
+	dirToPlayer.y = 0.0f;
+	if (D3DXVec3LengthSq(&dirToPlayer) > 1e-4f)
+	{
+		D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
+		m_vPosition += dirToPlayer * (CHASE_SPEED * 0.9f);
+	}
+
 	m_SlamAnimTime += 0.016f;
 	if (m_SlamAnimTime >= 0.5f && IsGrounded() == false)
 	{
@@ -388,9 +516,17 @@ void CBoss::GroundSlam()
 	{
 		m_GroundSlammed = true;
 		m_Attacked = true;
+		if (!m_LowHPPatternActive)
+		{
+			m_SlamPatternCount++;
+		}
 		m_SlamAnimTime = 0.f;
 		m_SlamCD = 0.f;
 		m_State = Idle;
+		if (m_LowHPPatternActive)
+		{
+			m_LowHPSequenceStep = 0; // loop back to morph
+		}
 		return;
 	}
 	VibrateAnim(0.016f, 0.05f, 9.50f);
@@ -410,6 +546,11 @@ void CBoss::ShootMinions()
 	m_Attacked = true;
 	m_ShootMinionCD = 0.f;
 
+	if (m_LowHPPatternActive)
+	{
+		m_LowHPSequenceStep = 2; // next should be slam
+	}
+
 }
 
 int CBoss::NextPhase()
@@ -428,13 +569,36 @@ int CBoss::GetRandomMorphShape()
 
 void CBoss::Die()
 {
+	if (m_State == Dying || m_State == Dead)
+	{
+		return;
+	}
+
 	m_IsAlive = false;
-	m_State = Dead;
+	m_State = Dying;
+	m_DeathTimer = 0.0f;
+	m_DeathStartY = m_vPosition.y;
+	m_Shot = false;
+	m_Attacked = true;
 }
 
 void CBoss::ApplyDamage(int damage)
 {
+	if (m_State == Dying || m_State == Dead)
+	{
+		return;
+	}
+
 	m_Health -= damage;
+
+	// Small knockback opposite current facing
+	D3DXVECTOR3 knockDir = m_vForward;
+	knockDir.y = 0.0f;
+	if (D3DXVec3LengthSq(&knockDir) > 1e-4f)
+	{
+		D3DXVec3Normalize(&knockDir, &knockDir);
+		m_vPosition += knockDir * 0.35f;
+	}
 	if (m_Health <= 0.0f)
 	{
 		m_Health = 0.0f;

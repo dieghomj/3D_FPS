@@ -60,6 +60,7 @@ public:
 	CROSSRAY GetHeadCrossRay() const { return *m_pHeadCrossRay; }
 
 	void ApplyDamage(float damage);
+	void ApplyKnockback(const D3DXVECTOR3& sourcePos, float strength);
 	void ApplyHeal(float heal) { m_Health += heal;  }
 	void ApplyStamina(float stamina) { m_DashTimer += stamina; }
 	void ApplyAmmo(int ammo) { return; };

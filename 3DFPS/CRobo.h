@@ -10,6 +10,7 @@ public:
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
 	virtual void ApplyDamage(int damage) override;
+	virtual void InitEnemy() override;
 	float GetAttackCD() const
 	{
 		return m_AttackCD;
@@ -28,6 +29,12 @@ private:
 
 	float m_AttackCD;
 	bool m_HasAttacked;
+
+	// Death effect parameters
+	float m_DeathTimer;
+	float m_DeathDuration;
+	float m_DeathSinkDepth;
+	float m_DeathStartY;
 
 #if _DEBUG
 	public:

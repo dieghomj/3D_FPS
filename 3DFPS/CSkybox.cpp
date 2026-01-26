@@ -34,21 +34,16 @@ HRESULT CSkybox::Init(CDirectX11& dx11, LPCTSTR lpCubemapFile)
 
 	if (FAILED(CreateShader()))
 	{
-		OutputDebugString(_T("CSkybox: Failed to create shaders\n"));
 		return E_FAIL;
 	}
 
 	if (FAILED(CreateBuffers()))
 	{
-		OutputDebugString(_T("CSkybox: Failed to create buffers\n"));
 		return E_FAIL;
 	}
 
-	// Cubemap loading is optional - skybox will just not render if it fails
 	if (FAILED(LoadCubemap(lpCubemapFile)))
 	{
-		OutputDebugString(_T("CSkybox: Cubemap not loaded - skybox will be disabled\n"));
-		// Return S_OK anyway so the game can continue without skybox
 		return S_OK;
 	}
 

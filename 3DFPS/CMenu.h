@@ -24,7 +24,6 @@ private:
 		LEVEL_1 = 0,
 		LEVEL_2,
 		LEVEL_3,
-		LEVEL_4,
 		LEVEL_COUNT,
 
 		LEVEL_BACK
@@ -63,6 +62,8 @@ private:
 	CSprite2D* m_pMenuBGSprite;
 	CUIObject* m_pFade;
 	CSprite2D* m_pFadeSprite;
+	CSprite2D* m_pCursorSprite;
+	CUIObject* m_pCursor;
 
 	// Menu state
 	MENU_STATE m_MenuState;

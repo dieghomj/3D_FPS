@@ -35,7 +35,8 @@ void CMenu::Create()
 	m_pMenuBG = new CUIObject();
 	m_pMenuOption = new CUIObject();
 	m_pMenuBGSprite = new CSprite2D;
-
+	m_pCursorSprite = new CSprite2D();
+	m_pCursor = new CUIObject();
 	// Fade overlay
 	m_pFade = new CUIObject();
 	m_pFadeSprite = new CSprite2D();
@@ -61,6 +62,12 @@ HRESULT CMenu::LoadData()
 		{360,80},
 	};
 
+	CSprite2D::SPRITE_STATE CursorSS = {
+		{32, 32},
+		{512, 512},
+		{512, 512},
+	};
+
 	if (FAILED(m_pMenuBGSprite->Init(*m_pDx11,
 		_T("Data\\Texture\\UI\\MenuBG.png"), BackGroundSS)))
 	{
@@ -78,8 +85,14 @@ HRESULT CMenu::LoadData()
 		m_pFadeSprite->Init(*m_pDx11, _T("Data\\Texture\\UI\\MenuBG.png"), FadeSS);
 	}
 
-	m_pMenuBG->AttachSprite(*m_pMenuBGSprite);
+	if(FAILED(m_pCursorSprite->Init(*m_pDx11,
+		_T("Data\\Texture\\Cross.png"), CursorSS)))
+	{
+		return E_FAIL;
+	}
 
+	m_pMenuBG->AttachSprite(*m_pMenuBGSprite);
+	m_pCursor->AttachSprite(*m_pCursorSprite);
 	m_pFadeSprite->SetAlpha(0.0f);
 	m_pFade->AttachSprite(*m_pFadeSprite);
 
@@ -116,7 +129,6 @@ void CMenu::Start()
 
 void CMenu::Update()
 {
-	CScene::Update();
 
 	CSoundManager::PlayLoop(CSoundManager::BGM_Title);
 
@@ -160,10 +172,53 @@ void CMenu::Update()
 		UpdateLevelSelect();
 		break;
 	}
+
+	// Update cursor position based on selected option
+	D3DXVECTOR3 cursorPos;
+	cursorPos.x = m_mousePos.x;
+	cursorPos.y = m_mousePos.y;
+	cursorPos.z = 1.0f;
+	m_pCursor->SetPosition(cursorPos);
+	CScene::Update();
+	
 }
 
 void CMenu::UpdateMainMenu()
 {
+	// Mouse hover selection
+	float optionX = static_cast<float>(WND_W / 2 - 160);
+	float optionWidth = 320.0f;
+	float optionHeight = 50.0f;
+
+	float startY = static_cast<float>(WND_H / 2 - 40);
+	float exitY  = static_cast<float>(WND_H / 2 + 60);
+
+	auto isInside = [&](float x, float y, float w, float h)
+	{
+		return (m_mousePos.x >= x && m_mousePos.x <= x + w && m_mousePos.y >= y && m_mousePos.y <= y + h);
+	};
+
+	if (isInside(optionX, startY, optionWidth, optionHeight))
+	{
+		m_SelectedOption = MENU_OPTION_START;
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Decide);
+			m_MenuState = STATE_LEVEL_SELECT;
+			m_SelectedLevel = LEVEL_1;
+		}
+	}
+	else if (isInside(optionX, exitY, optionWidth, optionHeight))
+	{
+		m_SelectedOption = MENU_OPTION_EXIT;
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Decide);
+			PostQuitMessage(0);
+			return;
+		}
+	}
+
 	// Navigate options
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
@@ -199,6 +254,55 @@ void CMenu::UpdateMainMenu()
 
 void CMenu::UpdateLevelSelect()
 {
+	float optionX = static_cast<float>(WND_W / 2 - 200);
+	float optionWidth = 400.0f;
+	float optionHeight = 40.0f;
+	float startY = static_cast<float>(WND_H / 2 - 80);
+	float backY = startY + (LEVEL_COUNT * 50.0f) + 80.0f;
+
+	auto isInside = [&](float x, float y, float w, float h)
+	{
+		return (m_mousePos.x >= x && m_mousePos.x <= x + w && m_mousePos.y >= y && m_mousePos.y <= y + h);
+	};
+
+	// Hover/select level options with mouse
+	for (int i = 0; i < LEVEL_COUNT; i++)
+	{
+		float y = startY + (i * 50.0f) - 15.0f;
+		if (isInside(optionX, y, optionWidth, optionHeight))
+		{
+			m_SelectedLevel = i;
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+			{
+				CSoundManager::PlaySE(CSoundManager::SE_Decide);
+				if (CGameStats::UnlockedLevel[m_SelectedLevel])
+				{
+					CGameStats::LevelSelection = m_SelectedLevel;
+					m_IsFading = true;
+					m_FadeAlpha = 0.0f;
+					m_FadeSpeed = 0.1f;
+					if (m_pFadeSprite)
+					{
+						m_pFadeSprite->SetAlpha(0.0f);
+					}
+				}
+				return;
+			}
+		}
+	}
+
+	// BACK option hover/click
+	if (isInside(optionX, backY - 15.0f, optionWidth, optionHeight))
+	{
+		m_SelectedLevel = LEVEL_BACK;
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Select);
+			m_MenuState = STATE_MAIN_MENU;
+			return;
+		}
+	}
+
 
 	if (GetAsyncKeyState('G') & 0x0001)
 	{
@@ -295,8 +399,7 @@ void CMenu::DrawLevelSelect()
 	// Level names
 	const TCHAR* levelNames[] = {	_T("TUTORIAL"), 
 									_T("LEVEL 1"),
-									_T("LEVEL 2"), 
-									_T("LEVEL 3")};
+									_T("LEVEL 2")};
 
 	float startY = static_cast<float>(WND_H / 2 - 80);
 	for (int i = 0; i < LEVEL_COUNT; i++)
@@ -333,6 +436,7 @@ void CMenu::Draw()
 {
 	m_pDx11->SetDepth(false);
 	m_pMenuBG->Draw();
+	m_pCursor->Draw();
 
 	switch (m_MenuState)
 	{

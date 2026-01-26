@@ -42,7 +42,7 @@ CScene* CSceneManager::ChangeScene(const char* name, bool release)
 
 	if (FAILED(m_pCurrentScene->LoadData()))
 	{
-		throw std::runtime_error("Failed to load scene data");
+		OutputDebugString(_T("シーン切り替えのデータロードにエラー発生した"));
 	}
 
 	if (m_pCurrentScene)

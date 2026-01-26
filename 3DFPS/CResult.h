@@ -42,6 +42,10 @@ private:
 	float m_BGScrollOffset;
 	float m_BGScrollSpeed;
 
+	// Cursor
+	CUIObject* m_pCursor;
+	CSprite2D* m_pCursorSprite;
+
 	// Fade
 	CUIObject* m_pFade;
 	CSprite2D* m_pFadeSprite;

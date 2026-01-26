@@ -101,4 +101,16 @@ private:
 	float m_SlamCD;
 	float m_ShootMinionCD;
 
+	float m_DeathTimer;
+	float m_DeathDuration;
+	float m_DeathSinkDepth;
+	float m_DeathStartY;
+	float m_MorphMoveTimer;
+
+	int m_SlamPatternCount;
+	int m_SlamPatternTarget;
+	float m_ShootPatternTimer;
+	bool m_LowHPPatternActive;
+	int m_LowHPSequenceStep;
+
 };

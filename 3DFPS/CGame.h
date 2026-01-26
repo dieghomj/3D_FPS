@@ -60,6 +60,8 @@ public:
 	void DrawDecals(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 	virtual void Update() override;
 
+	void GameClear();
+
 	void HandleGameOver();
 	bool CheckRestartStatus();
 	void Restart();

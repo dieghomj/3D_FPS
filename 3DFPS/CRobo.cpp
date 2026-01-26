@@ -14,6 +14,10 @@ CRobo::CRobo()
 	, m_PlayerDist(0.0f)
 	, m_AttackCD(ATTACK_CD)
 	, m_HasAttacked(false)
+	, m_DeathTimer(0.0f)
+	, m_DeathDuration(2.0f)
+	, m_DeathSinkDepth(3.0f)
+	, m_DeathStartY(0.0f)
 	
 {
 	m_Health = HEALTH_MAX;
@@ -30,6 +34,30 @@ void CRobo::Update()
 
 	m_Shot = false;
 	FacePlayer(m_PlayerDist, false);
+
+	float dtLocal = FPS / 1000.f;
+
+	// Dying effect: sink into ground similar to boss
+	if (m_State == Dying)
+	{
+		m_DeathTimer += dtLocal;
+		VibrateAnim(dtLocal, 0.05f, 6.0f);
+
+		float targetY = (m_FloorY <= -FLT_MAX) ? (m_DeathStartY - m_DeathSinkDepth) : (m_FloorY - m_DeathSinkDepth);
+		float t = m_DeathTimer / m_DeathDuration;
+		if (t > 1.0f) t = 1.0f;
+
+		m_vPosition.y = m_DeathStartY + (targetY - m_DeathStartY) * t;
+
+		if (m_DeathTimer >= m_DeathDuration)
+		{
+			m_State = Dead;
+			SetActive(false);
+			m_vPosition = D3DXVECTOR3(0.0f, -100.0f, 0.0f);
+		}
+		CAnimEnemy::Update();
+		return;
+	}
 
 	if (m_HasAttacked)
 	{
@@ -94,10 +122,24 @@ void CRobo::ApplyDamage(int damage)
 
 }
 
+void CRobo::InitEnemy()
+{
+	CAnimEnemy::InitEnemy();
+	m_Health = HEALTH_MAX;
+	m_IsAlive = true;
+	m_State = Idle;
+	m_AttackCD = ATTACK_CD;
+	m_HasAttacked = false;
+	m_DeathTimer = 0.0f;
+	m_DeathStartY = m_vPosition.y;
+}
+
 void CRobo::Die()
 {
 	m_IsAlive = false;
-	m_State = Dead;
+	m_State = Dying;
+	m_DeathTimer = 0.0f;
+	m_DeathStartY = m_vPosition.y;
 }
 
 void CRobo::Attack()

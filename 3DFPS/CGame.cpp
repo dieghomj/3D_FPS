@@ -1,6 +1,7 @@
 #include "CGame.h"
 #include "CSpider.h"
 #include "CLaserShot.h"
+#include "CBoss.h"
 
 constexpr int PROJECTILE_COUNT_MAX = 32;
 constexpr int PLAYER_AMMO_MAX = 999;
@@ -29,9 +30,7 @@ const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT]
 	},
 
 	{
-		{ D3DXVECTOR3(0.f, 1.f, 5.f),	 D3DXVECTOR3(500.f, 500.f, 500.f), {0, 1}, false, false },
-		{ D3DXVECTOR3(0.f, 5.f, 1070.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, true, false },
-		{ D3DXVECTOR3(0.f, 5.f, 1070.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, true, false },
+		{ D3DXVECTOR3(0.f, 1.f, 5.f),	 D3DXVECTOR3(500.f, 500.f, 500.f), {}, false, false },
 	}
 
 };
@@ -560,7 +559,7 @@ void CGame::Start()
 	InitPlayer();
 	InitLevelController();
 	InitEnemy();
-	//CSoundManager::PlayLoop(CSoundManager::BGM_Game);
+	CSoundManager::PlayLoop(CSoundManager::BGM_Game);
 
 	m_pPlayer->InitPlayer();
 	m_pPlayer->SetPosition(PLAYER_STARTPOS[CGameStats::LevelSelection]);
@@ -578,11 +577,12 @@ void CGame::Start()
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_Step2, 3,		m_hWnd, 200);
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_Step3, 3,		m_hWnd, 200);
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerHit, 1,	m_hWnd, 200);
-
+	
 	CGameStats::Reset();
 }
 
-
+static bool hasRestarted = false;
+static bool needToRestart = false;
 
 void CGame::Update()
 {
@@ -596,20 +596,24 @@ void CGame::Update()
 	
 	if (CheckRestartStatus())
 	{
+		needToRestart = true;
 		CSoundManager::Stop(CSoundManager::BGM_Game);
-		CSoundManager::PlaySE(CSoundManager::BGM_Restart);
-		Restart();
+		CSoundManager::PlayLoop(CSoundManager::BGM_Restart);
+
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		{
+			CSoundManager::Stop(CSoundManager::BGM_Restart);
+			hasRestarted = true;
+			needToRestart = false;
+			Restart();
+		}
 		return;
 	}
 
 	if (m_pLevelController->GetCurrentLevel()->IsCleared())
 	{
-		SaveStats();
-		if(CGameStats::LevelSelection + 1 < LEVEL_COUNT)
-		CGameStats::UnlockedLevel[CGameStats::LevelSelection + 1] = true;
-		CSoundManager::Stop(CSoundManager::BGM_Game);
-		CSoundManager::PlaySE(CSoundManager::SE_Clear);
-		m_pManager->ChangeScene("RESULT");
+		GameClear();
+		return;
 	}
 
 	HandleGameOver();
@@ -693,6 +697,23 @@ void CGame::Update()
 	HandleEnemyShooting();
 	HandleEnemyGroupCleared();
 
+	// Boss level clear: wait for boss death animation to finish, then go to result
+	if (CGameStats::LevelSelection == 2)
+	{
+		for (auto pEnemy : m_pEnemyPool)
+		{
+			if (!pEnemy || typeid(*pEnemy) != typeid(CBoss))
+				continue;
+
+			CBoss* pBoss = dynamic_cast<CBoss*>(pEnemy);
+			if (pBoss && pBoss->GetState() == CAnimEnemy::Dead)
+			{
+				GameClear();
+				return;
+			}
+		}
+	}
+
 	for(auto pBullet : m_pBulletList)
 	{
 		pBullet->Update();
@@ -705,7 +726,7 @@ void CGame::Update()
 		if (pEnemyShot->IsHit(m_pPlayer->GetCollider(), m_pPlayer->GetRadius()))
 		{
 			m_pPlayer->ApplyDamage(20.f);
-			//Apply knockback to player
+			m_pPlayer->ApplyKnockback(pEnemyShot->GetPosition(), 3.5f);
 			pEnemyShot->SetDisplay(false);
 		}
 	}
@@ -788,6 +809,16 @@ void CGame::Update()
 	CScene::Update();
 }
 
+void CGame::GameClear()
+{
+	SaveStats();
+	if (CGameStats::LevelSelection + 1 < LEVEL_COUNT)
+		CGameStats::UnlockedLevel[CGameStats::LevelSelection + 1] = true;
+	CSoundManager::Stop(CSoundManager::BGM_Game);
+	CSoundManager::PlaySE(CSoundManager::SE_Clear);
+	m_pManager->ChangeScene("RESULT");
+}
+
 void CGame::HandleGameOver()
 {
 	if (m_stageTimer <= 0.f)
@@ -845,7 +876,6 @@ void CGame::HandlePlayerDashEffect()
 
 void CGame::Restart()
 {
-	CSoundManager::PlaySE(CSoundManager::BGM_Restart);
 	CSoundManager::Stop(CSoundManager::BGM_Game);
 	CSoundManager::PlayLoop(CSoundManager::BGM_Game);
 	
@@ -871,6 +901,14 @@ void CGame::Restart()
 void CGame::Draw()
 {
 	m_pCamera->Draw(m_SceneInfo);
+
+	if(needToRestart)
+	{
+		m_pFont->SetColor(1.f, 1.0, 1.f);
+		TCHAR textOnScreen[256] = _T("PRESS [ MOUSE BUTTON ] FOR RESTART");
+		m_pFont->Render(textOnScreen, WND_W / 2 - 200, WND_H / 2, 32.f);
+		return;
+	}
 
 	// Render skybox first (before other objects)
 	if (m_pSkybox)
@@ -1157,7 +1195,10 @@ void CGame::DrawUI()
 	}
 
 	painAlpha += (painObjectiveAlpha - painAlpha) * painSpeed * FPS / 1000.f;
-
+	if(needToRestart )
+	{
+		painAlpha = 0.0f;
+	}
 	m_pPainSprite->SetAlpha(painAlpha);
 	m_pPainUI->Draw();
 
@@ -1279,8 +1320,8 @@ void CGame::HandleWeapon()
 		D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
 		D3DXVECTOR3 normal = D3DXVECTOR3(0.f, 0.f, 0.f);
 
-		const int PELLET_COUNT = 8;
-		const float SPREAD_ANGLE = D3DXToRadian(5.0f);
+		const int PELLET_COUNT = 4;
+		const float SPREAD_ANGLE = D3DXToRadian(10.0f);
 		switch (currWeapon)
 		{
 		case 0: // Pistol
@@ -1310,7 +1351,7 @@ void CGame::HandleWeapon()
 				RAY pelletRay;
 				pelletRay.Position = m_pPlayer->GetPosition();
 				pelletRay.Axis = spreadDir;
-				pelletRay.Length = 100.f;
+				pelletRay.Length = 90.f;
 				pelletRay.RotationY = 0;
 				float hitDist = 0.f;
 				D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
@@ -1430,17 +1471,127 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 	float minDistance = FLT_MAX;
 	CAnimEnemy* hitEnemy = nullptr;
 
+	// Broad-phase: use collider box (preferred) or radius to cull before precise hit
+	D3DXVECTOR3 rayDir = shotRay.Axis;
+	D3DXVec3Normalize(&rayDir, &rayDir);
+	float rayLen = shotRay.Length;
+
+	auto RayIntersectsAABB = [](const D3DXVECTOR3& origin, const D3DXVECTOR3& dir, float maxLen,
+		const D3DXVECTOR3& bmin, const D3DXVECTOR3& bmax, float& outT) -> bool
+	{
+		float tmin = 0.0f;
+		float tmax = maxLen;
+		const float EPS = 1e-6f;
+
+		for (int axis = 0; axis < 3; ++axis)
+		{
+			float o = (&origin.x)[axis];
+			float d = (&dir.x)[axis];
+			float minv = (&bmin.x)[axis];
+			float maxv = (&bmax.x)[axis];
+
+			if (fabsf(d) < EPS)
+			{
+				if (o < minv || o > maxv) return false;
+			}
+			else
+			{
+				float invD = 1.0f / d;
+				float t1 = (minv - o) * invD;
+				float t2 = (maxv - o) * invD;
+				if (t1 > t2) std::swap(t1, t2);
+				tmin = max(tmin, t1);
+				tmax = min(tmax, t2);
+				if (tmax < tmin) return false;
+			}
+		}
+		outT = tmin;
+		return tmin <= maxLen && tmax >= 0.0f;
+	};
+
 	for (auto& enemy : m_pEnemyPool)
 	{
 		if (enemy->IsDead() || !enemy->IsActive()) continue;
-		if (enemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
+
+		bool broadPhaseHit = true;
+		bool usedColliderHit = false;
+		float colliderHitDist = 0.0f;
+		D3DXVECTOR3 colliderHitPos(0,0,0);
+		D3DXVECTOR3 colliderNormal(0,1,0);
+		if (CCollider* col = enemy->GetCollider())
 		{
-			if (hitDist < minDistance)
+			if (col->GetShape() == CCollider::COLLIDER_SHAPE_CUBE)
 			{
-				minDistance = hitDist;
-				hitEnemy = enemy;
-				continue;
+				CBoundingCube* box = col->GetBBox();
+				if (box)
+				{
+					D3DXVECTOR3 bmin = box->GetMin();
+					D3DXVECTOR3 bmax = box->GetMax();
+					if (RayIntersectsAABB(shotRay.Position, rayDir, rayLen, bmin, bmax, colliderHitDist))
+					{
+						broadPhaseHit = true;
+						colliderHitPos = shotRay.Position + rayDir * colliderHitDist;
+						// Approximate normal by which face is closest
+						D3DXVECTOR3 center = (bmin + bmax) * 0.5f;
+						D3DXVECTOR3 local = colliderHitPos - center;
+						D3DXVECTOR3 halfExtents = (bmax - bmin) * 0.5f;
+						float dx = fabsf(local.x) - halfExtents.x;
+						float dy = fabsf(local.y) - halfExtents.y;
+						float dz = fabsf(local.z) - halfExtents.z;
+						if (dx > dy && dx > dz)
+							colliderNormal = D3DXVECTOR3((local.x > 0) ? 1.f : -1.f, 0.f, 0.f);
+						else if (dy > dz)
+							colliderNormal = D3DXVECTOR3(0.f, (local.y > 0) ? 1.f : -1.f, 0.f);
+						else
+							colliderNormal = D3DXVECTOR3(0.f, 0.f, (local.z > 0) ? 1.f : -1.f);
+
+						usedColliderHit = true;
+					}
+					else
+					{
+						broadPhaseHit = false;
+					}
+				}
 			}
+			else if (col->GetShape() == CCollider::COLLIDER_SHAPE_SPHERE)
+			{
+				CBoundingSphere* sph = col->GetBSphere();
+				if (sph)
+				{
+					D3DXVECTOR3 toCenter = sph->GetPosition() - shotRay.Position;
+					float r = sph->GetRadius();
+					float t = D3DXVec3Dot(&toCenter, &rayDir);
+					if (t < -r || t > rayLen + r)
+						broadPhaseHit = false;
+					else
+					{
+						D3DXVECTOR3 closest = shotRay.Position + rayDir * t;
+						D3DXVECTOR3 diff = sph->GetPosition() - closest;
+						broadPhaseHit = (D3DXVec3LengthSq(&diff) <= r * r);
+					}
+				}
+			}
+		}
+
+		if (!broadPhaseHit)
+			continue;
+
+		// Use collider hit if we already have it, otherwise fall back to mesh ray test
+		if (usedColliderHit)
+		{
+			hitDist = colliderHitDist;
+			hitPos = colliderHitPos;
+			normal = colliderNormal;
+		}
+		else if (!enemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
+		{
+			continue;
+		}
+
+		if (hitDist < minDistance)
+		{
+			minDistance = hitDist;
+			hitEnemy = enemy;
 		}
 	}
 
@@ -1460,9 +1611,11 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		{
 		case 0: // Pistol
 			enemyHitHandle = CEffect::Play(CEffect::PistolShotEffect, hitPos);
+			CEffect::SetRotation(enemyHitHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
 			break;
 		case 1: // Shotgun
 			enemyHitHandle = CEffect::Play(CEffect::ExplosionEffect, hitPos);
+			CEffect::SetRotation(enemyHitHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
 			break;
 		}
 		CEffect::SetSpeed(enemyHitHandle, 2.0f);
@@ -1896,7 +2049,12 @@ void CGame::HandleEnemySpawning()
 				if (typeid(*enemy) == typeid(CRobo))
 					enemy->SetScale(ROBO_SCALE);
 				if (typeid(*enemy) == typeid(CBoss))
+				{
 					enemy->SetScale(BOSS_SCALE);
+					CSoundManager::PlaySE(CSoundManager::SE_BossSE1);
+				}
+				else 
+					CSoundManager::PlaySE(CSoundManager::SE_ItemGet);
 				
 				enemy->InitEnemy();
 				enemy->SpawnAt(ENEMY_STARTPOS[currLevelIndex][poolCount]);
@@ -1917,18 +2075,7 @@ void CGame::HandleEnemyShooting()
 
 	if (m_pBoss->IsShot())
 	{
-		if(m_bossShotIndex > m_pBossShotList.size()-1)
-		{
-			m_bossShotIndex = 0;
-		}
-		auto minion = m_pBossShotList[m_bossShotIndex++];
-		if (minion->IsActive() && !minion->IsDead())
-			return;
-		minion->InitEnemy();
-		minion->SpawnAt(
-			m_pBoss->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f));
-		minion->SetPlayerPos(m_pPlayer->GetPosition());
-		minion->LaunchAtPlayer(0.9f);
+
 		
 	}
 	
@@ -1938,16 +2085,39 @@ void CGame::HandleEnemyShooting()
 		D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.2f, 0.f) - (pEnemy->GetPosition() + D3DXVECTOR3(0.f, 7.f, 0.f));
 		D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
 
-		if(typeid(*pEnemy) != typeid(CRobo))
-			continue;
-
-		if(pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
+		if (typeid(*pEnemy) == typeid(CRobo))
 		{
-			m_pEnemyShotList[NextEnemyShot()]->Reload(
-				pEnemy->GetPosition() + D3DXVECTOR3(0.f, 7.f, 0.f),
-				dirToPlayer,
-				pEnemy->GetRotation().y);
+			if(pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
+			{
+				m_pEnemyShotList[NextEnemyShot()]->Reload(
+					pEnemy->GetPosition() + D3DXVECTOR3(0.f, 7.f, 0.f),
+					dirToPlayer,
+					pEnemy->GetRotation().y);
+			}
+			continue;
 		}
+		if (typeid(*pEnemy) == typeid(CBoss))
+		{
+			if (pEnemy->IsActive() && !pEnemy->IsDead() && pEnemy->IsShot())
+			{
+				if (m_bossShotIndex > m_pBossShotList.size() - 1)
+				{
+					m_bossShotIndex = 0;
+				}
+				auto minion = m_pBossShotList[m_bossShotIndex++];
+				if (minion->IsActive() && !minion->IsDead())
+					continue;
+				minion->InitEnemy();
+				minion->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
+				minion->SpawnAt(
+					pEnemy->GetPosition() + D3DXVECTOR3(0.f, 2.f, 0.f));
+				minion->SetPlayerPos(m_pPlayer->GetPosition());
+				minion->LaunchAtPlayer(0.9f);
+				m_pEnemyPool.push_back(minion);
+			}
+			continue;
+		}
+
 
 	}
 
@@ -2336,7 +2506,8 @@ HRESULT CGame::LoadEnemiesMesh()
 		else if (typeid(*pBossShot) == typeid(CRobo))
 		{
 			pBossShot = dynamic_cast<CRobo*>(pBossShot);
-			pBossShot->AttachMesh(*m_pSphereMesh);
+			pBossShot->AttachMesh(*m_pRoboMesh);
+			pBossShot->AttachSkinMesh(*m_pRoboSkinMesh);
 		}
 	}
 
@@ -2350,6 +2521,9 @@ HRESULT CGame::LoadEnemiesMesh()
 }
 void CGame::InitEnemy()
 {
+	const float SPIDER_SCALE = 4.5f;
+	const float ROBO_SCALE = 0.01f;
+	const float BOSS_SCALE = 2.f;
 
 	//敵の非アクティブ化.
 	for (auto pEnemy : m_pEnemyPool)
@@ -2357,8 +2531,23 @@ void CGame::InitEnemy()
 		pEnemy->InitEnemy();
 		pEnemy->SetActive(false);
 		pEnemy->SetPosition(0.f, -100.f, -500.f);
+
+
 	}
 	m_pEnemyPool.clear();
+
+	for (auto pBossShot : m_pBossShotList)
+	{
+		pBossShot->InitEnemy();
+		pBossShot->SetActive(false);
+		pBossShot->SetPosition(0.f, -100.f, -500.f);
+		if (typeid(*pBossShot) == typeid(CSpider))
+			pBossShot->SetScale(SPIDER_SCALE);
+		if (typeid(*pBossShot) == typeid(CRobo))
+			pBossShot->SetScale(ROBO_SCALE);
+		if (typeid(*pBossShot) == typeid(CBoss))
+			pBossShot->SetScale(BOSS_SCALE);
+	}
 
 	for (auto& group : m_EnemyGroups[CGameStats::LevelSelection])
 	{

@@ -613,4 +613,16 @@ void CPlayer::ApplyDamage(float damage) {
 	}
 }
 
+void CPlayer::ApplyKnockback(const D3DXVECTOR3& sourcePos, float strength)
+{
+	D3DXVECTOR3 knockDir = m_vPosition - sourcePos;
+	knockDir.y = 0.f;
+	if (D3DXVec3LengthSq(&knockDir) > 1e-4f)
+	{
+		D3DXVec3Normalize(&knockDir, &knockDir);
+		m_Velocity += knockDir * strength;
+		m_Inertia += knockDir * strength * 0.5f;
+	}
+}
+
 

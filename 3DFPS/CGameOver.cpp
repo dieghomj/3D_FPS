@@ -7,6 +7,8 @@ CGameOver::CGameOver(CDirectX9& dx9, CDirectX11& dx11, HWND hWnd, CTime& time, C
 	, m_Font(nullptr)
 	, m_pBG(nullptr)
 	, m_pBGSprite(nullptr)
+	, m_pCursor(nullptr)
+	, m_pCursorSprite(nullptr)
 	, m_BGScrollOffset(0.0f)
 	, m_BGScrollSpeed(0.0005f)
 	, m_pFade(nullptr)
@@ -24,6 +26,8 @@ CGameOver::~CGameOver()
 	SAFE_DELETE(m_Font);
 	SAFE_DELETE(m_pBG);
 	SAFE_DELETE(m_pBGSprite);
+	SAFE_DELETE(m_pCursor);
+	SAFE_DELETE(m_pCursorSprite);
 	SAFE_DELETE(m_pFade);
 	SAFE_DELETE(m_pFadeSprite);
 }
@@ -37,6 +41,8 @@ void CGameOver::Create()
 	m_Font = new CFont();
 	m_pBG = new CUIObject();
 	m_pBGSprite = new CSprite2D();
+	m_pCursor = new CUIObject();
+	m_pCursorSprite = new CSprite2D();
 	m_pFade = new CUIObject();
 	m_pFadeSprite = new CSprite2D();
 }
@@ -62,6 +68,20 @@ HRESULT CGameOver::LoadData()
 	}
 
 	m_pBG->AttachSprite(*m_pBGSprite);
+
+	// Cursor sprite
+	CSprite2D::SPRITE_STATE CursorSS = {
+		{32, 32},
+		{512, 512},
+		{512, 512},
+	};
+
+	if (FAILED(m_pCursorSprite->Init(*m_pDx11,
+		_T("Data\\Texture\\Cross.png"), CursorSS)))
+	{
+		return E_FAIL;
+	}
+	m_pCursor->AttachSprite(*m_pCursorSprite);
 
 	// Fade overlay
 	CSprite2D::SPRITE_STATE FadeSS = {
@@ -114,6 +134,17 @@ void CGameOver::Update()
 
 	m_pBG->Update();
 
+	// Update cursor position
+	if (m_pCursor)
+	{
+		D3DXVECTOR3 cursorPos;
+		cursorPos.x = m_mousePos.x;
+		cursorPos.y = m_mousePos.y;
+		cursorPos.z = 1.0f;
+		m_pCursor->SetPosition(cursorPos);
+		m_pCursor->Update();
+	}
+
 	// Handle fade transition
 	if (m_IsFading)
 	{
@@ -141,6 +172,48 @@ void CGameOver::Update()
 			m_pFadeSprite->SetAlpha(m_FadeAlpha);
 		}
 		return;
+	}
+
+	// Mouse hover/click for options
+	float optionX = static_cast<float>(WND_W / 2 - 200);
+	float optionWidth = 400.0f;
+	float optionHeight = 45.0f;
+	float optionY = static_cast<float>(WND_H / 2 + 20);
+
+	auto isInside = [&](float x, float y, float w, float h)
+	{
+		return (m_mousePos.x >= x && m_mousePos.x <= x + w && m_mousePos.y >= y && m_mousePos.y <= y + h);
+	};
+
+	if (isInside(optionX, optionY - 10.0f, optionWidth, optionHeight))
+	{
+		m_SelectedOption = GAMEOVER_OPTION_RETRY;
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Decide);
+			m_IsFading = true;
+			m_FadeAlpha = 0.0f;
+			m_GoToRetry = true;
+			if (m_pFadeSprite)
+			{
+				m_pFadeSprite->SetAlpha(0.0f);
+			}
+		}
+	}
+	else if (isInside(optionX, optionY + 40.0f, optionWidth, optionHeight))
+	{
+		m_SelectedOption = GAMEOVER_OPTION_MAIN_MENU;
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Decide);
+			m_IsFading = true;
+			m_FadeAlpha = 0.0f;
+			m_GoToRetry = false;
+			if (m_pFadeSprite)
+			{
+				m_pFadeSprite->SetAlpha(0.0f);
+			}
+		}
 	}
 
 	// Navigate options
@@ -180,6 +253,11 @@ void CGameOver::Draw()
 
 	// Draw scrolling background
 	m_pBG->Draw();
+
+	if (m_pCursor)
+	{
+		m_pCursor->Draw();
+	}
 
 	m_Font->SetAlpha(1.0f);
 
