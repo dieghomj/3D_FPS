@@ -1,5 +1,6 @@
 #include "CGame.h"
 #include "CSpider.h"
+#include "CLaserShot.h"
 
 constexpr int PROJECTILE_COUNT_MAX = 32;
 constexpr int PLAYER_AMMO_MAX = 999;
@@ -486,7 +487,7 @@ void CGame::Release()
 	SAFE_DELETE(m_pBulletLaser);
 	SAFE_DELETE(m_pPistolMesh);
 	SAFE_DELETE(m_pShotgunMesh);
-	
+
 
 #if _DEBUG
 	SAFE_DELETE(m_pDebugColliderRender);
@@ -903,11 +904,47 @@ void CGame::Draw()
 	
 	DrawUI();
 
+	m_pFont->SetColor(1.f, 1.0, 1.f);
 	TCHAR textOnScreen[256] = _T("");
 	float seconds = static_cast<int>(m_stageTimer) % 60;
 	float minutes = static_cast<int>(m_stageTimer) / 60;
 	_stprintf_s(textOnScreen, _T("TIME: %02.f:%02.f"), minutes, seconds);
 	m_pFont->Render(textOnScreen, WND_W - 32 * 9, 40, 32.f);
+	_stprintf_s(textOnScreen, _T("COMBO: %d "), m_comboCount);
+	
+	const float comboAnimationDuration = 500.f;
+	static int prevCombo = 0;
+	static float timer = comboAnimationDuration;
+	static float fontSize = 32.f;
+
+	if(prevCombo != m_comboCount)
+	{
+		timer = 0.f;
+		prevCombo = m_comboCount;
+		//CSoundManager::PlaySE(CSoundManager::SE_ComboIncrease);
+	}
+	else {
+
+		if (timer < comboAnimationDuration)
+		{
+			timer += 16.666f;
+			fontSize += 1.f;
+			m_pFont->SetColor(1.f, 0.f, 0.f);
+
+		}
+		else
+		{
+			if(fontSize > 32.f)
+				fontSize-= 32.f - fontSize * 0.5 * 0.166;
+			if (fontSize < 32.f)
+				fontSize = 32.f;
+			m_pFont->SetColor(1.f, 1.0, 1.f);
+		}
+	}
+
+	if(m_comboCount != 0)
+		m_pFont->Render(textOnScreen, WND_W - 49 * 9, WND_H/2 - 50.f, fontSize);
+
 
 #if _DEBUG
 
@@ -1181,7 +1218,6 @@ void CGame::HandleWeapon()
 	D3DXVECTOR3 bulletDir = camForward;
 	D3DXVec3Normalize(&bulletDir, &bulletDir);
 	D3DXVECTOR3 shotEffPos = m_pPlayerWeapon->GetPosition() + bulletDir * 0.25f + D3DXVECTOR3(0.f, 0.1f, 0.f);
-	CEffect::SetLocation(m_shotHandle, shotEffPos);
 	BULLET_IMPACT impact;
 
 	impact.lifeTime = FPS * 1000; // 5 seconds
@@ -1241,7 +1277,7 @@ void CGame::HandleWeapon()
 				IsShotHit(pelletRay, hitDist, hitPos, normal, impact);
 				// Spawn bullet visual for each pellet
 				m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), spreadDir, m_pCamera->GetYaw());
-			}
+				}
 
 			break;
 
@@ -1320,10 +1356,8 @@ void CGame::HandleWeaponPos()
 	{
 		if (playerVelLen > 0.2f)
 		{
-
 			//Add effects to gun when moving here!!!
 			weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.009); // Bobbing effect when moving
-
 		}
 		else
 		{
@@ -1347,13 +1381,11 @@ void CGame::HandleWeaponPos()
 }
 void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVECTOR3& normal, CGame::BULLET_IMPACT& impact)
 {
-
 	float minDistance = FLT_MAX;
 	CAnimEnemy* hitEnemy = nullptr;
 
 	for (auto& enemy : m_pEnemyPool)
 	{
-
 		if (enemy->IsDead() || !enemy->IsActive()) continue;
 		if (enemy->IsHitForRay(shotRay, &hitDist, &hitPos, &normal))
 		{
@@ -1363,9 +1395,6 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 				hitEnemy = enemy;
 				continue;
 			}
-
-			//debugHitShotList.push_back(hitPos);
-			//m_bulletImpactList.push_back(impact);
 		}
 	}
 
@@ -1377,7 +1406,6 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		hitEnemy->ApplyDamage(5.f);
 		if (hitEnemy->IsDead())
 		{
-			//CEffect::Play(CEffect::EnemyDeathEffect, enemy->GetPosition());
 			m_enemyKillCount++;
 			m_comboCount++;
 		}
@@ -1386,7 +1414,6 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		{
 		case 0: // Pistol
 			enemyHitHandle = CEffect::Play(CEffect::PistolShotEffect, hitPos);
-			// Hit detected
 			break;
 		case 1: // Shotgun
 			enemyHitHandle = CEffect::Play(CEffect::ExplosionEffect, hitPos);
@@ -1402,7 +1429,6 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		impact.position = hitPos;
 		impact.normal = normal;
 		impact.isEnemyHit = false;
-		//debugHitShotList.push_back(hitPos);
 		m_bulletImpactList.push_back(impact);
 		enemyHitHandle = CEffect::Play(CEffect::HitEffect, hitPos);
 	}
@@ -1681,10 +1707,12 @@ void CGame::HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara
 		resolvedPos.z += pushDir * penetrationZ;
 		playerVelocity.z = 0.f;
 	}
-
+	
 	pChara->SetPosition(resolvedPos);
 	pChara->SetVelocity(playerVelocity);
 }
+
+
 void CGame::HandlePlayerEnemyCollision()
 {
 	const int MAX_COLLISION_ITERATIONS = 3;
@@ -1704,29 +1732,29 @@ void CGame::HandlePlayerEnemyCollision()
 			// コライダーがある場合はコライダーベースの衝突判定を使用
 			if (pEnemyCollider)
 			{
-			collided = HandleColliderCollision(pEnemy, m_pPlayer, true);
+				collided = HandleColliderCollision(pEnemy, m_pPlayer, true);
 			
 			// 距離計算（ダメージ判定用）
-			D3DXVECTOR3 diff = m_pPlayer->GetPosition() - pEnemy->GetPosition();
-			diff.y = 0.0f;
-			distance = D3DXVec3Length(&diff);
-		}
-		else
-		{
-			// コライダーがない場合は従来の球ベースの衝突判定
-			if (typeid(*pEnemy) == typeid(CBoss))
-			{
-				collided = HandleCubeCollisions(pEnemy, m_pPlayer);
 				D3DXVECTOR3 diff = m_pPlayer->GetPosition() - pEnemy->GetPosition();
 				diff.y = 0.0f;
 				distance = D3DXVec3Length(&diff);
 			}
 			else
 			{
-				// Push enemy away from player (doubleCollision = false)
-				collided = HandleCollision(m_pPlayer, pEnemy, distance, false);
+				// コライダーがない場合は従来の球ベースの衝突判定
+				if (typeid(*pEnemy) == typeid(CBoss))
+				{
+					collided = HandleCubeCollisions(pEnemy, m_pPlayer);
+					D3DXVECTOR3 diff = m_pPlayer->GetPosition() - pEnemy->GetPosition();
+					diff.y = 0.0f;
+					distance = D3DXVec3Length(&diff);
+				}
+				else
+				{
+					// Push enemy away from player (doubleCollision = false)
+					collided = HandleCollision(m_pPlayer, pEnemy, distance, false);
+				}
 			}
-		}
 
 			if (collided)
 			{
@@ -1969,6 +1997,10 @@ int CGame::NextEnemyShot()
 void CGame::SaveStats()
 {
 	CGameStats::EnemiesKilled = m_enemyKillCount;
+	if (m_highestCombo <= m_comboCount)
+	{
+		m_highestCombo = m_comboCount;
+	}
 	CGameStats::HighestCombo = m_highestCombo;
 	CGameStats::RemainingTime = static_cast<int>(m_stageTimer);
 	CGameStats::DeathCounter = m_deathCount;
@@ -1989,9 +2021,9 @@ HRESULT CGame::LoadSceneAssets()
 	}
 
 	if (FAILED(CEffect::GetInstance()->LoadData()))
-	{
+		{
 		return E_FAIL;
-	}
+		}
 
 	if (FAILED(LoadUtilityMesh())) {
 		return E_FAIL;
@@ -2020,12 +2052,12 @@ HRESULT CGame::LoadUIAssets()
 	crossHairState.Disp = { 32.f, 32.f };
 	crossHairState.Base = { 512.f, 512.f };
 	crossHairState.Stride = { 512.f, 512.f };
-
+	
 	CSprite2D::SPRITE_STATE staminaBarState = {};
 	staminaBarState.Disp = { 300.f, 45.6f };
 	staminaBarState.Base = { 128.f, 43.0f };
 	staminaBarState.Stride = { 128.f, 43.0f };
-
+	
 	CSprite2D::SPRITE_STATE damageEffectState = {};
 	damageEffectState.Disp = { WND_W, WND_H};
 	damageEffectState.Base = { 1920.f, 1080.f};
@@ -2038,7 +2070,7 @@ HRESULT CGame::LoadUIAssets()
 	}
 
 	if (FAILED(m_pStaminaBarSprite->Init(*m_pDx11, L"Data\\Texture\\dash.png", staminaBarState)))
-	{
+		{
 		return E_FAIL;
 	}
 
@@ -2112,7 +2144,7 @@ void CGame::InitSpriteAssets()
 	m_pLightning->SetScale(3.f);
 	m_pLightning->SetScale(10.f, 5.f, 3.f);
 	m_pLightning->CreateCollider(CCollider::COLLIDER_SHAPE_CUBE);
-}
+		}
 
 HRESULT CGame::LoadUtilityMesh()
 {
@@ -2360,7 +2392,7 @@ void CGame::InitLevelController()
 	}
 
 	m_pLevelController->SetCurrentLevel(CGameStats::LevelSelection);
-}	
+}
 
 #if _DEBUG
 void CGame::DrawDebugColliders()

@@ -9,7 +9,7 @@ static constexpr float UPDOWN_AMPLITUDE = 0.25f;
 static constexpr float SCALEMORPH_AMPLITUDE = 7.25f;
 
 static constexpr float IDLE_SPEED = 0.01f;
-static constexpr float CHASE_SPEED = 0.39f;
+static constexpr float CHASE_SPEED = 0.44f;
 
 static constexpr float SLAM_RANGE = 1.0f;
 static constexpr float SHOOT_MINION_RANGE = 100.f;
@@ -21,7 +21,7 @@ static constexpr float MORPH_ATTACK_CD = 88.0f;
 
 static constexpr float MORPH_ATTACK_WIDTH = 55.5f;
 static constexpr float MORPH_ATTACK_HEIGHT = 15.0f;
-static constexpr float MORPH_ATTACK_AREA = 36.f;
+static constexpr float MORPH_ATTACK_AREA = 106.f;
 static constexpr float MORPH_ATTACK_SPEED = 0.5f;
 
 static constexpr float SLAM_ATTACK_DURATION = 1.5f;
@@ -159,6 +159,7 @@ void CBoss::Update()
 		m_SpawnFlag = true;
 		if (RecoverPosition())
 		{
+			m_StartPosition = m_vPosition;
 			m_State = Idle;
 		}
 		break;
@@ -257,7 +258,7 @@ void CBoss::ChasePlayer()
 	toPlayer.y = 0.0f;
 	dist = D3DXVec3Length(&toPlayer);
 
-	if (dist >= SHOOT_MINION_RANGE && m_Health <= 200.f)
+	if (m_Morphed && m_Health <= 200.f)
 	{
 		m_State = Attacking;
 		m_CurrentAttack = SHOOT;
@@ -285,23 +286,12 @@ void CBoss::ChasePlayer()
 // Morph attack logic
 void CBoss::MorphAttack()
 {
-	m_CurrentAttackState = START;
-	//m_CurrentShape = GetRandomMorphShape();
-	m_CurrentShape = MORPH_HORIZONTAL;
-	switch (m_CurrentShape)
-	{
-	case MORPH_HORIZONTAL:
-		m_vScale = D3DXVECTOR3(MORPH_ATTACK_WIDTH, MORPH_ATTACK_HEIGHT, 4.9f);
-		MorphSlam();
-		m_CurrentAttack = MORPH;
-		break;
-	case MORPH_VERTICAL:
-		m_vScale = D3DXVECTOR3(4.9f, MORPH_ATTACK_HEIGHT, MORPH_ATTACK_WIDTH);
-		MorphSlam();
-		m_CurrentAttack = MORPH;
-		break;
-	}
 
+	m_CurrentShape = MORPH_HORIZONTAL;
+	m_vScale = D3DXVECTOR3(MORPH_ATTACK_WIDTH, MORPH_ATTACK_HEIGHT, 4.9f);
+	m_vRotation = D3DXVECTOR3(0.f, 45.f, 0.f);
+	MorphSlam();
+	m_CurrentAttack = MORPH;
 
 }
 
@@ -327,49 +317,35 @@ void CBoss::MorphSlam()
 
 }
 
-// Morph sweep logic
-// Extend scale and sweep side to side
 void CBoss::MorphSweep()
 {
+	if (MoveToPosition(m_StartPosition, CHASE_SPEED) &&
+		m_CurrentAttackState == START)
+		return;
 	m_CurrentAttackState = SWEEP;
 	if(m_MorphAttackCount >= 3)
 	{
-		MorphRecover();
+		MorphRecover(); 
+		m_Morphed = false;
 		m_MorphAttackCount = 0;
 		return;
 	}
 	static float dirSpeed = (rand() % 2) == 0 ? 1 : -1;
-	switch (m_CurrentShape)
+	static float distance = 0.f;
+	static D3DXVECTOR3 accumVector = D3DXVECTOR3(0.f,0.f,0.f);
+	if (distance >= MORPH_ATTACK_AREA)
 	{
-	case MORPH_HORIZONTAL:
-		if (m_vPosition.z >= m_MorphSweepStartPosition.z + MORPH_ATTACK_AREA)
-		{
-			dirSpeed = -1;
-			m_MorphAttackCount++;
-		}
-		else if (m_vPosition.z <= -(m_MorphSweepStartPosition.z + MORPH_ATTACK_AREA))
-		{
-			dirSpeed = 1;
-			m_MorphAttackCount++;
-		}
-		m_vPosition.z += dirSpeed * MORPH_ATTACK_SPEED;
-		break;
-	case MORPH_VERTICAL:
-		if (m_vPosition.x >= m_MorphSweepStartPosition.x + MORPH_ATTACK_AREA)
-		{
-			dirSpeed = -1;
-			m_MorphAttackCount++;
-		}
-		else if (m_vPosition.x <= -(m_MorphSweepStartPosition.x + MORPH_ATTACK_AREA))
-		{
-			dirSpeed = 1;
-			m_MorphAttackCount++;
-		}
-		m_vPosition.x += dirSpeed * MORPH_ATTACK_SPEED;
-		break;
-	default:
-		break;
+		dirSpeed = -1;
+		m_MorphAttackCount++;
 	}
+	else if (distance <= -(MORPH_ATTACK_AREA))
+	{
+		dirSpeed = 1;
+		m_MorphAttackCount++;
+	}
+	accumVector += m_vForward * dirSpeed * MORPH_ATTACK_SPEED;
+	distance = D3DXVec3Length(&accumVector);
+	m_vPosition += m_vForward * dirSpeed * MORPH_ATTACK_SPEED;
 
 }
 
@@ -462,4 +438,23 @@ void CBoss::ApplyDamage(int damage)
 		m_Health = 0.0f;
 		Die();
 	}
+}
+
+bool CBoss::MoveToPosition(const D3DXVECTOR3& targetPos, float speed)
+{
+	D3DXVECTOR3 direction = targetPos - m_vPosition;
+	float distance = D3DXVec3Length(&direction);
+
+	// –Ú•WˆÊ’u‚É“ž’B‚µ‚½ê‡
+	if (distance <= speed)
+	{
+		m_vPosition = targetPos;
+		return true;
+	}
+
+	// •ûŒü‚ð³‹K‰»‚µ‚ÄˆÚ“®
+	D3DXVec3Normalize(&direction, &direction);
+	m_vPosition += direction * speed;
+
+	return false;
 }

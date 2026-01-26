@@ -16,6 +16,8 @@ public:
 	virtual void Die() override;
 	virtual void ApplyDamage(int damage) override;
 
+	bool MoveToPosition(const D3DXVECTOR3& targetPos, float speed);
+
 private:
 
 	enum AttackState {
@@ -82,6 +84,7 @@ private:
 	float m_GroundSlamHeight;
 
 	D3DXVECTOR3 m_OriginalScale;
+	D3DXVECTOR3 m_StartPosition;
 	D3DXVECTOR3 m_MorphSweepStartPosition;
 
 	int m_MorphAttackCount;

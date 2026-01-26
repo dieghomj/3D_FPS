@@ -20,7 +20,7 @@ static constexpr float CHASE_SPEED = 0.3f;
 static constexpr float IDLE_SPEED = 0.025f;
 static constexpr float IDLE_TIMER_MAX = 2.0f;
 static constexpr float JUMP_ATTACK_SPEED = 0.85f;
-static constexpr float HEALTH_MAX = 25.0f;
+static constexpr float HEALTH_MAX = 8.f;
 static constexpr float DAMAGE_TIMER_MAX = 0.5f;
 
 CSpider::CSpider()

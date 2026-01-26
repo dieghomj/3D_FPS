@@ -140,9 +140,13 @@ private:
 	//HEALTH BAR
 		CSprite2D* m_pHealthBarSprite;
 		CUIObject* m_pHealthBarUI;
+	//HURT EFFECT
 		CSprite2D* m_pPainSprite;
 		CUIObject* m_pPainUI;
-	
+	//DASH EFFECT
+		CSprite2D* m_pDashEffectSprite;
+		CUIObject* m_pDashEffectUI;
+
 	//--------------------
 	//----LEVEL---
 	//--------------------
