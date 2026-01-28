@@ -3,30 +3,33 @@
 static constexpr float SPAWN_OFFSET = -8.f; // 16ms per frame ~ 60FPS
 
 static constexpr float FLIGHT_HEIGHT = 22.0f;
-static constexpr float RECOVER_SPEED = 0.1f;
+static constexpr float RECOVER_SPEED = 0.3f;
 
 static constexpr float UPDOWN_AMPLITUDE = 0.25f;
 static constexpr float SCALEMORPH_AMPLITUDE = 7.25f;
 
-static constexpr float IDLE_SPEED = 0.01f;
-static constexpr float CHASE_SPEED = 0.44f;
+static constexpr float IDLE_SPEED = 0.91f;
+static constexpr float CHASE_SPEED = 0.74f;
 
 static constexpr float SLAM_RANGE = 1.0f;
 static constexpr float SHOOT_MINION_RANGE = 100.f;
 static constexpr float MORPH_ATTACK_RANGE = 20.f;
 
-static constexpr float SLAM_CD = 4.0f;
+static constexpr float SLAM_CD = 1.0f;
 static constexpr float SHOOT_MINION_CD = 0.5f;
 static constexpr float MORPH_ATTACK_CD = 88.0f;
 
 static constexpr float MORPH_ATTACK_WIDTH = 55.5f;
 static constexpr float MORPH_ATTACK_HEIGHT = 15.0f;
-static constexpr float MORPH_ATTACK_AREA = 106.f;
-static constexpr float MORPH_ATTACK_SPEED = 0.5f;
+static constexpr float MORPH_ATTACK_AREA = 5.f;
+static constexpr float MORPH_ATTACK_SPEED = 1.0f;
 
 static constexpr float SLAM_ATTACK_DURATION = 1.5f;
 
 static constexpr float SLAM_SPEED = 0.9f;
+static constexpr float DASH_CHARGE_TIME = 0.7f;
+static constexpr float DASH_SPEED = 2.8f;
+static constexpr float DASH_MAX_TRAVEL = 60.0f;
 
 CBoss::CBoss()
 	: CAnimEnemy()
@@ -44,6 +47,9 @@ CBoss::CBoss()
 	, m_CurrentAttack(0)
 	, m_CurrentPhase(0)
 	, m_SlamAnimTime(0.0f)
+	, m_DashChargeTimer(0.0f)
+	, m_DashTravel(0.0f)
+	, m_DashDirection(0.f, 0.f, 0.f)
 	, m_MorphAttackCD(0.0f)
 	, m_SlamCD(SLAM_CD)
 	, m_ShootMinionCD(0.0f)
@@ -104,6 +110,9 @@ void CBoss::InitEnemy()
 	m_ShootPatternTimer = 0.0f;
 	m_LowHPPatternActive = false;
 	m_LowHPSequenceStep = 0;
+	m_DashChargeTimer = 0.0f;
+	m_DashTravel = 0.0f;
+	m_DashDirection = D3DXVECTOR3(0.f, 0.f, 0.f);
 }
 
 
@@ -164,7 +173,7 @@ void CBoss::Update()
 			if (m_LowHPPatternActive)
 			{
 				// ensure next attack in low-HP loop runs after shooting
-				m_LowHPSequenceStep = 2; // next is slam
+				m_LowHPSequenceStep = 1; // next is morph
 			}
 		}
 	}
@@ -197,6 +206,13 @@ void CBoss::Update()
 			m_SlamCD = SLAM_CD;
 		}
 		return;
+	}
+
+	// Dash strike cooldown/recovery handling
+	if (m_CurrentAttack == DASH_STRIKE && m_State != Attacking)
+	{
+		m_DashChargeTimer = 0.f;
+		m_DashTravel = 0.f;
 	}
 		
 
@@ -282,6 +298,9 @@ void CBoss::Attack()
 	case SHOOT:
 		ShootMinions();
 		break;
+	case DASH_STRIKE:
+		DashStrike();
+		break;
 	default:
 		break;
 	}
@@ -298,7 +317,7 @@ void CBoss::ChasePlayer()
 
 
 	// Low HP pattern: Morph -> Shoot -> Slam loop
-	if (m_Health <= 100.f)
+	if (m_Health <= 250.f)
 	{
 		m_LowHPPatternActive = true;
 		if (m_State != Attacking)
@@ -306,17 +325,18 @@ void CBoss::ChasePlayer()
 			switch (m_LowHPSequenceStep)
 			{
 			case 0:
-				m_CurrentAttack = MORPH;
-				m_CurrentAttackState = START;
+				m_CurrentAttack = SHOOT;
 				break;
 			case 1:
-				m_CurrentAttack = SHOOT;
+				m_CurrentAttack = DASH_STRIKE;
+				m_CurrentAttackState = START;
 				break;
 			case 2:
 				m_CurrentAttack = GROUNDSLAM;
+				m_CurrentAttackState = START;
 				break;
 			default:
-				m_CurrentAttack = MORPH;
+				m_CurrentAttack = SHOOT;
 				m_LowHPSequenceStep = 0;
 				break;
 			}
@@ -358,7 +378,7 @@ void CBoss::MorphAttack()
 	if (m_CurrentAttackState == START)
 	{
 		// Step 1: return to start position before morph charge
-		if (!MoveToPosition(m_StartPosition, CHASE_SPEED * 1.2f))
+		if (!MoveToPosition(m_StartPosition, IDLE_SPEED))
 		{
 			return;
 		}
@@ -374,12 +394,20 @@ void CBoss::MorphAttack()
 		m_CurrentAttack = MORPH;
 	}
 
+	// Engage sweep phase logic (spawns minions, sweeps, then slams)
+	if (m_CurrentAttackState == SWEEP)
+	{
+		MorphSweep();
+		return;
+	}
+
 	m_MorphMoveTimer += dt;
 
 	// Move toward player while enlarged
 	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
 	dirToPlayer.y = 0.0f;
-	if (D3DXVec3LengthSq(&dirToPlayer) > 1e-4f)
+	float distToPlayer = D3DXVec3Length(&dirToPlayer);
+	if (distToPlayer > 35.f)
 	{
 		D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
 		m_vPosition += dirToPlayer * MORPH_ATTACK_SPEED;
@@ -388,17 +416,16 @@ void CBoss::MorphAttack()
 	// Keep a subtle morph scaling animation while charging
 	ScaleMorphAnim(dt, 0.25f, 2.0f);
 
-	// After ~2 seconds, move back to start and begin ranged attack
-	if (m_MorphMoveTimer >= 2.0f)
+	if (m_MorphMoveTimer >= 0.5f)
 	{
 		m_MorphMoveTimer = 0.0f;
 		m_CurrentAttackState = RECOVER;
 	}
 
-	// Recover phase: return to start then start shooting
+	// Recover phase (fallback): return to start then transition to slam loop
 	if (m_CurrentAttackState == RECOVER)
 	{
-		if (!MoveToPosition(m_StartPosition, CHASE_SPEED * 1.2f))
+		if (!MoveToPosition(m_StartPosition, IDLE_SPEED ))
 		{
 			return;
 		}
@@ -406,9 +433,9 @@ void CBoss::MorphAttack()
 		m_vScale = m_OriginalScale;
 		m_CurrentAttackState = START;
 		m_Morphed = false;
-		m_CurrentAttack = SHOOT;
+		m_CurrentAttack = GROUNDSLAM;
 		m_Attacked = false;
-		m_LowHPSequenceStep = 1; // next in low-HP loop is shoot
+		m_LowHPSequenceStep = 0; // reset to shoot after slam
 		return;
 	}
 
@@ -441,30 +468,45 @@ void CBoss::MorphSweep()
 	if (MoveToPosition(m_StartPosition, CHASE_SPEED) &&
 		m_CurrentAttackState == START)
 		return;
+
+	static bool spawnedMinions = false;
+	if (m_CurrentAttackState != SWEEP)
+	{
+		spawnedMinions = false;
+	}
+
+	// stay enlarged during sweep
+	m_vScale = D3DXVECTOR3(MORPH_ATTACK_WIDTH, MORPH_ATTACK_HEIGHT, 4.9f);
 	m_CurrentAttackState = SWEEP;
-	if(m_MorphAttackCount >= 3)
+
+	if (!spawnedMinions)
 	{
-		MorphRecover(); 
-		m_Morphed = false;
-		m_MorphAttackCount = 0;
-		return;
+		ShootMinions();
+		spawnedMinions = true;
 	}
-	static float dirSpeed = (rand() % 2) == 0 ? 1 : -1;
-	static float distance = 0.f;
-	static D3DXVECTOR3 accumVector = D3DXVECTOR3(0.f,0.f,0.f);
-	if (distance >= MORPH_ATTACK_AREA)
+
+	// sweep/charge toward player until within slam distance
+	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
+	dirToPlayer.y = 0.f;
+	float distToPlayer = D3DXVec3Length(&dirToPlayer);
+	if (distToPlayer > 35.f)
 	{
-		dirSpeed = -1;
-		m_MorphAttackCount++;
+		if (distToPlayer > 1e-4f)
+		{
+			D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
+			m_vPosition += dirToPlayer * MORPH_ATTACK_SPEED;
+		}
 	}
-	else if (distance <= -(MORPH_ATTACK_AREA))
+	else
 	{
-		dirSpeed = 1;
-		m_MorphAttackCount++;
+		// close enough: transition to slam over the player's position
+		m_vPosition.x = m_PlayerPos.x;
+		m_vPosition.z = m_PlayerPos.z;
+		m_CurrentAttack = GROUNDSLAM;
+		m_CurrentAttackState = START;
+		m_State = Attacking;
+		spawnedMinions = false;
 	}
-	accumVector += m_vForward * dirSpeed * MORPH_ATTACK_SPEED;
-	distance = D3DXVec3Length(&accumVector);
-	m_vPosition += m_vForward * dirSpeed * MORPH_ATTACK_SPEED;
 
 }
 
@@ -487,6 +529,65 @@ void CBoss::MorphRecover()
 	}
 }
 
+void CBoss::DashStrike()
+{
+	// Phase 1: move to offset distance and telegraph
+	if (m_CurrentAttackState == START)
+	{
+		D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
+		dirToPlayer.y = 0.f;
+		float dist = D3DXVec3Length(&dirToPlayer);
+		if (dist > 1e-4f)
+		{
+			D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
+			D3DXVECTOR3 targetPos = m_PlayerPos - dirToPlayer * 35.f;
+			MoveToPosition(targetPos, CHASE_SPEED);
+		}
+		m_DashChargeTimer += 0.016f;
+		VibrateAnim(0.016f, 0.05f, 6.0f);
+		if (m_DashChargeTimer >= DASH_CHARGE_TIME)
+		{
+			m_DashChargeTimer = 0.f;
+			m_DashTravel = 0.f;
+			m_DashDirection = m_PlayerPos - m_vPosition;
+			m_DashDirection.y = 0.f;
+			if (D3DXVec3LengthSq(&m_DashDirection) > 1e-4f)
+			{
+				D3DXVec3Normalize(&m_DashDirection, &m_DashDirection);
+			}
+			else
+			{
+				m_DashDirection = D3DXVECTOR3(0.f, 0.f, 1.f);
+			}
+			m_CurrentAttackState = DASHING;
+		}
+		return;
+	}
+
+	// Phase 2: dash forward
+	if (m_CurrentAttackState == DASHING)
+	{
+		D3DXVECTOR3 delta = m_DashDirection * DASH_SPEED;
+		m_vPosition += delta;
+		m_DashTravel += D3DXVec3Length(&delta);
+		VibrateAnim(0.016f, 0.03f, 8.0f);
+
+		D3DXVECTOR3 toPlayer = m_PlayerPos - m_vPosition;
+		toPlayer.y = 0.f;
+		float distToPlayer = D3DXVec3Length(&toPlayer);
+		if (distToPlayer < SLAM_RANGE + 1.0f || m_DashTravel >= DASH_MAX_TRAVEL)
+		{
+			m_vPosition.x = m_PlayerPos.x;
+			m_vPosition.z = m_PlayerPos.z;
+			m_CurrentAttack = GROUNDSLAM;
+			m_CurrentAttackState = START;
+			m_State = Attacking;
+			m_DashChargeTimer = 0.f;
+			m_DashTravel = 0.f;
+		}
+	}
+}
+
 // Slam attack logic
 // Move up for a brief moment and slam down quickly
 // Check if player is within SLAM_RANGE
@@ -499,10 +600,10 @@ void CBoss::GroundSlam()
 	// Chase player horizontally while performing the slam
 	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
 	dirToPlayer.y = 0.0f;
-	if (D3DXVec3LengthSq(&dirToPlayer) > 1e-4f)
+	if (D3DXVec3Length(&dirToPlayer) > 1e-4f)
 	{
 		D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
-		m_vPosition += dirToPlayer * (CHASE_SPEED * 0.9f);
+		m_vPosition += dirToPlayer * (CHASE_SPEED );
 	}
 
 	m_SlamAnimTime += 0.016f;
@@ -525,7 +626,7 @@ void CBoss::GroundSlam()
 		m_State = Idle;
 		if (m_LowHPPatternActive)
 		{
-			m_LowHPSequenceStep = 0; // loop back to morph
+			m_LowHPSequenceStep = 0; // reset to shoot after slam
 		}
 		return;
 	}
@@ -541,6 +642,15 @@ void CBoss::ShootMinions()
 	if (m_MinionShot)
 		return;
 
+	// Return to center/start before shooting and reset scale
+	if (!MoveToPosition(m_StartPosition, IDLE_SPEED))
+	{
+		m_vScale = m_OriginalScale;
+		return;
+	}
+
+	m_vScale = m_OriginalScale;
+
 	m_Shot = true;
 	m_MinionShot = true;
 	m_Attacked = true;
@@ -548,7 +658,7 @@ void CBoss::ShootMinions()
 
 	if (m_LowHPPatternActive)
 	{
-		m_LowHPSequenceStep = 2; // next should be slam
+		m_LowHPSequenceStep = 1; // next should be dash strike
 	}
 
 }

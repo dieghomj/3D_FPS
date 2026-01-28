@@ -28,30 +28,39 @@ CSkybox::~CSkybox()
 
 HRESULT CSkybox::Init(CDirectX11& dx11, LPCTSTR lpCubemapFile)
 {
+	m_initialized = false;
 	m_pDx11 = &dx11;
 	m_pDevice11 = dx11.GetDevice();
 	m_pContext11 = dx11.GetContext();
 
+	if (!m_pDevice11 || !m_pContext11)
+		return E_FAIL;
+
 	if (FAILED(CreateShader()))
 	{
+		OutputDebugString(_T("CSkybox: Failed to create shaders\n"));
 		return E_FAIL;
 	}
 
 	if (FAILED(CreateBuffers()))
 	{
+		OutputDebugString(_T("CSkybox: Failed to create buffers\n"));
 		return E_FAIL;
 	}
 
 	if (FAILED(LoadCubemap(lpCubemapFile)))
 	{
-		return S_OK;
+		OutputDebugString(_T("CSkybox: Cubemap not loaded - skybox will be disabled\n"));
+		return S_OK; // intentional: allow game to run without skybox
 	}
 
+	m_initialized = true;
 	return S_OK;
 }
 
 void CSkybox::Release()
 {
+	m_initialized = false;
 	SAFE_RELEASE(m_pVertexShader);
 	SAFE_RELEASE(m_pPixelShader);
 	SAFE_RELEASE(m_pInputLayout);
@@ -355,8 +364,10 @@ HRESULT CSkybox::LoadCubemap(LPCTSTR lpCubemapFile)
 
 void CSkybox::Render(const D3DXMATRIX& mView, const D3DXMATRIX& mProj, const D3DXVECTOR3& camPos)
 {
-	// Don't render if resources are not initialized
-	if (!m_pCubemapSRV || !m_pVertexShader || !m_pPixelShader)
+	if (!m_initialized ||
+		!m_pContext11 || !m_pConstantBuffer || !m_pVertexBuffer || !m_pIndexBuffer ||
+		!m_pInputLayout || !m_pSamplerState || !m_pDepthStencilState || !m_pRasterizerState ||
+		!m_pVertexShader || !m_pPixelShader || !m_pCubemapSRV)
 	{
 		return;
 	}

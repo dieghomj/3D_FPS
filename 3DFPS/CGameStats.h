@@ -32,6 +32,7 @@ struct CGameStats
 	static DIFFICULTY Difficulty;
 	static int LevelSelection;
 	static bool UnlockedLevel[LEVEL_COUNT];
+	static float LevelTimer[LEVEL_COUNT];
 
 	// Compute total score with combo bonus
 	static void ComputeScore()
@@ -121,3 +122,4 @@ inline int CGameStats::HighestScore = 0;            // highest score ever achiev
 inline CGameStats::DIFFICULTY CGameStats::Difficulty = DIFF_NORMAL;
 inline int CGameStats::LevelSelection = 0;
 inline bool CGameStats::UnlockedLevel[CGameStats::LEVEL_COUNT] = { true, false, false, false };
+inline float CGameStats::LevelTimer[CGameStats::LEVEL_COUNT] = { 2.f * 60.f, 3.5f * 60.f, 2.f * 60.f, 0.f };

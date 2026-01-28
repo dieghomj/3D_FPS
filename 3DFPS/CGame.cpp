@@ -8,7 +8,6 @@ constexpr int PLAYER_AMMO_MAX = 999;
 constexpr int ENEMY_COUNT_MAX = 64;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
 constexpr float ENEMY_SHOT_SPEED = 1.8f;
-constexpr int STAGE_TIMER = 2 * 60; // minutes
 
 const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
 		D3DXVECTOR3(0.f, 25.f, -95.f),
@@ -20,7 +19,7 @@ const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
 const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT] = {
 	
 	{
-		{ D3DXVECTOR3(0.f, 5.f, 250.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
+		{ D3DXVECTOR3(0.f, 5.f, 280.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
 	},
 	
 	{	
@@ -47,9 +46,9 @@ const std::vector<CGame::BLOCKED_PATH_TRANS> BLOCKEDPATH_LIST[LEVEL_COUNT] =
 	{
 		{ D3DXVECTOR3(0.f, 9.5f, 88.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
 		{ D3DXVECTOR3(0.f, 9.5f, 175.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 42.6f, 563.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 42.6f, 563.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 42.6f, 767.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 39.6f, 563.f), D3DXVECTOR3(20.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 39.6f, 563.f), D3DXVECTOR3(20.f, 5.f, 7.f) },
+		{ D3DXVECTOR3(0.f, 39.6f, 767.f), D3DXVECTOR3(20.f, 5.f, 7.f) },
 	},
 
 	{
@@ -66,9 +65,9 @@ const CLevel::GOAL LevelGoals[LEVEL_COUNT] = {
 const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
 	//LEVEL 1
 	{
-		D3DXVECTOR3( 39.f,		10.f,	231.f),
-		D3DXVECTOR3( 5.3f,		10.f,	231.f),
-		D3DXVECTOR3( -32.8f,	10.f,	231.f),
+		D3DXVECTOR3( 39.f,		10.f,	221.f),
+		D3DXVECTOR3( 5.3f,		10.f,	221.f),
+		D3DXVECTOR3( -32.8f,	10.f,	221.f),
 		D3DXVECTOR3( 10.8f,		10.f,	320.f),
 		D3DXVECTOR3( -5.6f,		10.f,	320.f),
 		D3DXVECTOR3( -39.f,		10.f,	320.f),
@@ -80,8 +79,8 @@ const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
 		//FIRST AREA
 		D3DXVECTOR3(-47.f,	48.f,	108.f),
 		D3DXVECTOR3( 47.f,	68.f,	159.8f),
-		D3DXVECTOR3(-18.f,	12.f,	200.f),
-		D3DXVECTOR3( 18.f,	12.f,	200.f),
+		D3DXVECTOR3(-18.f,	12.f,	180.f),
+		D3DXVECTOR3( 18.f,	12.f,	180.f),
 
 		//SECOND AREA
 		D3DXVECTOR3(-188.6,	42.6f,	495.f),
@@ -104,6 +103,11 @@ const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
 		D3DXVECTOR3(-128.6,	42.6f,	636.f),
 		D3DXVECTOR3(-128.6,	42.6f,	608.f),
 		D3DXVECTOR3(-128.6,	42.6f,	650.f),
+
+		D3DXVECTOR3(-50.6,	42.6f,	650.f),
+		D3DXVECTOR3(-30.6,	42.6f,	650.f),
+		D3DXVECTOR3( 30.6,	42.6f,	650.f),
+		D3DXVECTOR3( 50.6,	42.6f,	650.f),
 	},
 
 	//BOSS LEVEL
@@ -280,11 +284,11 @@ void CGame::Create()
 		},
 
 		{
-			8,
+			12,
 			false,
 			false,
 			7.f,
-			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo}
+			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CSpider, new CSpider, new CSpider, new CSpider}
 		},
 
 	};
@@ -572,7 +576,7 @@ void CGame::Start()
 	m_enemyKillCount = 0;
 	m_comboCount = 0;
 	m_deathCount = 0;
-	m_stageTimer = STAGE_TIMER;
+	m_stageTimer = CGameStats::LevelTimer[CGameStats::LevelSelection];
 
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PistolShot1, 3, m_hWnd, 200);
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_ShotgunShot, 3, m_hWnd, 100);
@@ -1602,23 +1606,25 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		impact.position = hitPos;
 		impact.normal = normal;
 		impact.isEnemyHit = true;
-		hitEnemy->ApplyDamage(5.f);
-		if (hitEnemy->IsDead())
-		{
-			m_enemyKillCount++;
-			m_comboCount++;
-		}
 		int currWeapon = m_pPlayer->GetCurrentWeapon();
+		
 		switch (currWeapon)
 		{
 		case 0: // Pistol
+			hitEnemy->ApplyDamage(8.f);
 			enemyHitHandle = CEffect::Play(CEffect::PistolShotEffect, hitPos);
 			CEffect::SetRotation(enemyHitHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
 			break;
 		case 1: // Shotgun
+			hitEnemy->ApplyDamage(3.f);
 			enemyHitHandle = CEffect::Play(CEffect::ExplosionEffect, hitPos);
 			CEffect::SetRotation(enemyHitHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
 			break;
+		}
+		if (hitEnemy->IsDead())
+		{
+			m_enemyKillCount++;
+			m_comboCount++;
 		}
 		CEffect::SetSpeed(enemyHitHandle, 2.0f);
 		CEffect::SetScale(enemyHitHandle, D3DXVECTOR3(0.8f, 0.8f, 0.8f));
@@ -2042,6 +2048,10 @@ void CGame::HandleEnemySpawning()
 		{
 			m_EnemyGroups[currLevelIndex][i].isSpawned = true;
 			auto enemyList = m_EnemyGroups[currLevelIndex][i].enemies;
+			if (currLevelIndex != 2)
+			{
+				CSoundManager::PlaySE(CSoundManager::SE_Alarm);
+			}
 			for(auto enemy : enemyList)
 			{
 				int poolCount = static_cast<int>(m_pEnemyPool.size());

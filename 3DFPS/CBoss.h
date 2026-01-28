@@ -24,6 +24,8 @@ private:
 		START,
 		SLAM,
 		SWEEP,
+		CHARGE,
+		DASHING,
 		RECOVER,
 	};
 
@@ -37,6 +39,7 @@ private:
 		MORPH,
 		GROUNDSLAM,
 		SHOOT,
+		DASH_STRIKE,
 		ATTACK_COUNT,
 	};
 	enum MorphShape {
@@ -56,6 +59,7 @@ private:
 
 	void GroundSlam();
 	void ShootMinions();
+	void DashStrike();
 
 	int NextPhase();
 
@@ -96,6 +100,9 @@ private:
 	int m_CurrentPhase;
 
 	float m_SlamAnimTime;
+	float m_DashChargeTimer;
+	float m_DashTravel;
+	D3DXVECTOR3 m_DashDirection;
 
 	float m_MorphAttackCD;
 	float m_SlamCD;

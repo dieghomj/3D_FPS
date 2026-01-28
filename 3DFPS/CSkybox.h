@@ -64,4 +64,6 @@ private:
 	// Depth stencil states for rendering skybox
 	ID3D11DepthStencilState*	m_pDepthStencilState;
 	ID3D11RasterizerState*		m_pRasterizerState;
+
+	bool                        m_initialized = false;
 };

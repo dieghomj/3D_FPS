@@ -22,6 +22,7 @@ CRobo::CRobo()
 {
 	m_Health = HEALTH_MAX;
 	m_State = Idle;
+	SetAnimSpeed(0.0002f);
 }
 
 CRobo::~CRobo()
