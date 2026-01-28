@@ -239,62 +239,70 @@ void CStage::HandleSweptCollisions(const D3DXVECTOR3& frameStartPos)
 
     if (moveDistance < 0.01f) return;
 
-    const float PLAYER_RADIUS = 0.4f;
+	const float PLAYER_RADIUS = 0.4f;
 
-    RAY movementRay;
-    movementRay.Position = frameStartPos;
-    movementRay.Position.y -= m_pPlayer->GetHeight() * 0.5f;  // Center height
+	auto SweepAndResolve = [&](float heightOffset)
+	{
+		RAY movementRay;
+		movementRay.Position = frameStartPos;
+		movementRay.Position.y += heightOffset;
 
-    D3DXVec3Normalize(&movementRay.Axis, &horizontalMovement);
-    movementRay.Length = moveDistance + PLAYER_RADIUS;
-    movementRay.RotationY = 0.f;
+		D3DXVec3Normalize(&movementRay.Axis, &horizontalMovement);
+		movementRay.Length = moveDistance + PLAYER_RADIUS;
+		movementRay.RotationY = 0.f;
 
-    FLOAT hitDistance;
-    D3DXVECTOR3 hitPoint, hitNormal;
+		FLOAT hitDistance;
+		D3DXVECTOR3 hitPoint, hitNormal;
 
 #if _DEBUG
-    debugSweptRay = movementRay;
-    debugSweptHit = false;
+		debugSweptRay = movementRay;
+		debugSweptHit = false;
 #endif
 
-    if (IsHitForRay(movementRay, &hitDistance, &hitPoint, &hitNormal))
-    {
+		if (IsHitForRay(movementRay, &hitDistance, &hitPoint, &hitNormal))
+		{
 #if _DEBUG
-        debugSweptHit = true;
+			debugSweptHit = true;
 #endif
-        float safeDistance = max(0.f, hitDistance - PLAYER_RADIUS - 0.05f);
+			float safeDistance = max(0.f, hitDistance - PLAYER_RADIUS - 0.05f);
 
-        if (safeDistance < moveDistance)
-        {
-            D3DXVECTOR3 safePos = frameStartPos;
+			if (safeDistance < moveDistance)
+			{
+				D3DXVECTOR3 safePos = frameStartPos;
 
-            if (moveDistance > 0.001f)
-            {
-                D3DXVECTOR3 moveDir;
-                D3DXVec3Normalize(&moveDir, &horizontalMovement);
-                safePos.x += moveDir.x * safeDistance;
-                safePos.z += moveDir.z * safeDistance;
-            }
+				if (moveDistance > 0.001f)
+				{
+					D3DXVECTOR3 moveDir;
+					D3DXVec3Normalize(&moveDir, &horizontalMovement);
+					safePos.x += moveDir.x * safeDistance;
+					safePos.z += moveDir.z * safeDistance;
+				}
 
-            // Add small push away from wall
-            safePos.x += hitNormal.x * 0.05f;
-            safePos.z += hitNormal.z * 0.05f;
-            safePos.y = currentPos.y;  // Preserve current Y
+				// Add small push away from wall
+				safePos.x += hitNormal.x * 0.05f;
+				safePos.z += hitNormal.z * 0.05f;
+				safePos.y = currentPos.y;  // Preserve current Y
 
-            // Kill velocity toward wall
-            D3DXVECTOR3 velocity = m_pPlayer->GetVelocity();
-            float velDotNormal = D3DXVec3Dot(&velocity, &hitNormal);
-            if (velDotNormal < 0.f)
-            {
-                velocity.x -= hitNormal.x * velDotNormal;
-                velocity.z -= hitNormal.z * velDotNormal;
-                m_pPlayer->SetVelocity(velocity);
-            }
+				// Kill velocity toward wall
+				D3DXVECTOR3 velocity = m_pPlayer->GetVelocity();
+				float velDotNormal = D3DXVec3Dot(&velocity, &hitNormal);
+				if (velDotNormal < 0.f)
+				{
+					velocity.x -= hitNormal.x * velDotNormal;
+					velocity.z -= hitNormal.z * velDotNormal;
+					m_pPlayer->SetVelocity(velocity);
+				}
 
-            m_pPlayer->SetPosition(safePos.x, safePos.y, safePos.z);
-            m_pPlayer->UpdateAxis();
-        }
-    }
+				m_pPlayer->SetPosition(safePos.x, safePos.y, safePos.z);
+				m_pPlayer->UpdateAxis();
+			}
+		}
+	};
+
+	// Lower/mid sweep
+	SweepAndResolve(-m_pPlayer->GetHeight() * 0.5f);
+	// Upper sweep to catch overhead blockers (e.g., low openings)
+	SweepAndResolve(0.0f);
 }
 
 void CStage::HandleEnemyWallCollisions(CAnimEnemy* pEnemy)

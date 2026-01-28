@@ -1755,7 +1755,7 @@ bool CGame::HandleCubeCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara
 	const float playerHeight = pChara->GetHeight();
 	D3DXVECTOR3 playerPos = pChara->GetPosition();
 	const float playerFeet = playerPos.y - playerHeight;
-	const float playerHead = playerPos.y + playerHeight * 0.3f;
+	const float playerHead = playerPos.y + playerHeight;
 
 	const bool overlapX = (playerPos.x + playerRadius) > minBound.x && (playerPos.x - playerRadius) < maxBound.x;
 	const bool overlapZ = (playerPos.z + playerRadius) > minBound.z && (playerPos.z - playerRadius) < maxBound.z;
@@ -1873,7 +1873,7 @@ void CGame::HandleWallCollisions(CStaticMeshObject* pMeshObj, CCharacter* pChara
 	const float playerHeight = pChara->GetHeight();
 	D3DXVECTOR3 playerPos = pChara->GetPosition();
 	const float playerFeet = playerPos.y - playerHeight;
-	const float playerHead = playerPos.y + playerHeight * 0.3f;
+	const float playerHead = playerPos.y + playerHeight;
 
 	const bool overlapX = (playerPos.x + playerRadius) > minBound.x && (playerPos.x - playerRadius) < maxBound.x;
 	const bool overlapZ = (playerPos.z + playerRadius) > minBound.z && (playerPos.z - playerRadius) < maxBound.z;
