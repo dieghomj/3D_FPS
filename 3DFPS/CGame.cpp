@@ -361,6 +361,9 @@ void CGame::Create()
 		m_pDx11->GetDevice(),
 		m_pDx11->GetContext());
 
+	m_pSphereMesh = new CStaticMesh();
+
+
 #ifdef _DEBUG
 
 	for (int i = 0; i < 4; ++i)
@@ -373,7 +376,6 @@ void CGame::Create()
 		m_pPrevCrossRay[i] = new CRay();
 	}
 	m_pPlayerRayY = new CRay();
-	m_pSphereMesh = new CStaticMesh();
 	debugRay = new CRay();
 	debugShotRay = new CRay();
 	m_pDebugColliderRender = new CDebugColliderRender();
