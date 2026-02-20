@@ -163,6 +163,7 @@
     <ClCompile Include="CCameraController.cpp" />
     <ClCompile Include="CCharacter.cpp" />
     <ClCompile Include="CCollider.cpp" />
+    <ClCompile Include="CDataReader.cpp" />
     <ClCompile Include="CDebugBBox.cpp" />
     <ClCompile Include="CDebugBSphere.cpp" />
     <ClCompile Include="CDebugColliderRender.cpp" />
@@ -186,6 +187,7 @@
     <ClCompile Include="CRobo.cpp" />
     <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
+    <ClCompile Include="CSettings.cpp" />
     <ClCompile Include="CShot.cpp" />
     <ClCompile Include="CSkinMesh.cpp" />
     <ClCompile Include="CSkinMeshObject.cpp" />
@@ -227,6 +229,7 @@
     <ClInclude Include="CCameraController.h" />
     <ClInclude Include="CCharacter.h" />
     <ClInclude Include="CCollider.h" />
+    <ClInclude Include="CDataReader.h" />
     <ClInclude Include="CDebugBBox.h" />
     <ClInclude Include="CDebugBSphere.h" />
     <ClInclude Include="CDebugColliderRender.h" />
@@ -250,6 +253,7 @@
     <ClInclude Include="CRobo.h" />
     <ClInclude Include="CScene.h" />
     <ClInclude Include="CSceneManager.h" />
+    <ClInclude Include="CSettings.h" />
     <ClInclude Include="CShot.h" />
     <ClInclude Include="CSkinMesh.h" />
     <ClInclude Include="CSkinMeshObject.h" />

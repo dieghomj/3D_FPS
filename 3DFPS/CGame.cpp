@@ -15,7 +15,6 @@ const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
 		D3DXVECTOR3(0.f, 25.f, -35.f),
 		D3DXVECTOR3(0.f, 25.f, -95.f),
 };
-
 const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT] = {
 	
 	{
@@ -33,8 +32,6 @@ const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT]
 	}
 
 };
-
-
 const std::vector<CGame::BLOCKED_PATH_TRANS> BLOCKEDPATH_LIST[LEVEL_COUNT] =
 {
 
@@ -55,13 +52,11 @@ const std::vector<CGame::BLOCKED_PATH_TRANS> BLOCKEDPATH_LIST[LEVEL_COUNT] =
 	},
 
 };
-
 const CLevel::GOAL LevelGoals[LEVEL_COUNT] = {
 	{ D3DXVECTOR3(0.f, 8.f, 400.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
 	{ D3DXVECTOR3(0.f, 8.f, 920.f), D3DXVECTOR3(100.f, 100.f, 10.f), false },
 	{ D3DXVECTOR3(0.f, 8.f, 920.f), D3DXVECTOR3(100.f, 100.f, 10.f), false },
 };
-
 const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
 	//LEVEL 1
 	{
@@ -114,12 +109,6 @@ const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
 	{
 		D3DXVECTOR3( 0.f,	15.f,	1.f),
 	}
-};
-
-const D3DXVECTOR3 itemPos[2] =
-{
-	D3DXVECTOR3(0.f, 1.45f, 75.9f),
-	D3DXVECTOR3(0.f, 1.45f, 150.9f),
 };
 
 bool wasStuck = false;
@@ -261,7 +250,6 @@ void CGame::Create()
 			8,
 			false,
 			false,
-			7.f,
 			{new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider,} // enemies will be spawned later
 		},
 	};
@@ -272,14 +260,12 @@ void CGame::Create()
 			4,
 			false,
 			false,
-			7.f,
 			{new CRobo, new CRobo, new CSpider, new CSpider}
 		},
 		{
 			8,
 			false,
 			false,
-			7.f,
 			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo}
 		},
 
@@ -287,7 +273,6 @@ void CGame::Create()
 			12,
 			false,
 			false,
-			7.f,
 			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CSpider, new CSpider, new CSpider, new CSpider}
 		},
 
@@ -299,7 +284,6 @@ void CGame::Create()
 			1,
 			false,
 			false,
-			7.f,
 			{new CBoss} 
 		},
 	};
@@ -388,40 +372,16 @@ void CGame::Create()
 
 HRESULT CGame::LoadData()
 {
-	if (FAILED(LoadSceneAssets()))
-	{
-		return E_FAIL;
-	}
+	HRESULT hr = S_OK;
 
-	if(FAILED(LoadUIAssets()))
-	{
-		return E_FAIL;
-	}
+	hr &= LoadSceneAssets();
+	hr &= LoadUIAssets();
+	hr &= LoadSpriteAssets();
+	hr &= LoadUtilityMesh();
+	hr &= LoadStageMesh();
+	hr &= LoadEnemiesMesh();
+	hr &= LoadPlayerAsset();
 
-	if(FAILED(LoadSpriteAssets()))
-	{
-		return E_FAIL;
-	}
-	
-	if(FAILED(LoadUtilityMesh()))
-	{
-		return E_FAIL;
-	}
-	
-	if(FAILED(LoadStageMesh()))
-	{
-		return E_FAIL;
-	}
-	
-	if(FAILED(LoadEnemiesMesh()))
-	{
-		return E_FAIL;
-	}
-	
-	if(FAILED(LoadPlayerAsset()))
-	{
-		return E_FAIL;
-	}
 
 //デバッグ用
 #if _DEBUG
@@ -429,21 +389,12 @@ HRESULT CGame::LoadData()
 	// Initialize debug collider renderer
 	if (m_pDebugColliderRender)
 	{
-		if (FAILED(m_pDebugColliderRender->Init(*m_pDx11)))
-		{
-			return E_FAIL;
-		}
+		hr &= m_pDebugColliderRender->Init(*m_pDx11);
 	}
 
-	if (FAILED(m_pItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ammo\\AMMO.x")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pHealthItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Wall\\WallCol.x")))
-	{
-		return E_FAIL;
-	}
+	hr &= m_pItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Ammo\\AMMO.x");
+	
+	hr &= m_pHealthItemMesh->Init(*m_pDx9, *m_pDx11, L"Data\\Mesh\\Static\\Wall\\WallCol.x");
 
 	m_pHealthItem->AttachMesh(*m_pHealthItemMesh);
 
@@ -483,7 +434,7 @@ HRESULT CGame::LoadData()
 
 #endif
 
-	return S_OK;
+	return hr;
 }
 
 void CGame::Release()
@@ -624,43 +575,6 @@ void CGame::Update()
 
 	HandleGameOver();
 
-	//if (m_enemyKillCount >= ENEMY_COUNT_PER_ROOM)
-	//{
-	//	for (auto pBlockedPath : m_pBlockedPathList)
-	//	{
-	//		if (pBlockedPath->IsActive() == true)
-	//		{
-	//			pBlockedPath->SetActive(false);
-	//		}
-	//	}
-	//	return;
-	//}
-
-	//if (m_pBlockedPathList[0]->IsActive() == true)
-	//{
-	//	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
-	//	{
-	//		if (m_pEnemyPool[i]->IsActive() == false)
-	//			m_pEnemyPool[i]->SpawnAt(ENEMY_STARTPOS[i]);
-	//	}
-	//}
-	 
-	
-	//m_pGround->Update();
-
-	//for (auto pBossShot : m_pBossShotList)
-	//{
-	//	if (pBossShot->IsActive())
-	//	{
-	//		pBossShot->Update();
-	//		pBossShot->SetPlayerPos(m_pPlayer->GetPosition());
-	//	}
-	//}
-
-	//m_pEnemyPool[1]->Update();
-	//m_pBoss->RotateAnim(m_pTime->GetFixedDeltaTime(), D3DXToRadian(30.f));
-	//m_pBoss->UpDownAnim(m_pTime->GetTotalTime(), 0.02f, 0.005f);
-
 	m_pPlayer->Update();
 	m_pPlayer->UpdateCollider();
 	
@@ -685,10 +599,6 @@ void CGame::Update()
 	m_pCameraController->Update(0);
 
 	HandleWeapon();
-
-	//m_pBoss->Update();
-	//m_pBoss->SetPlayerPos(m_pPlayer->GetPosition());
-
 	HandleEnemySpawning();
 
 	for (auto pEnemy : m_pEnemyPool)
@@ -742,44 +652,10 @@ void CGame::Update()
 	D3DXVECTOR3 playerVel = m_pPlayer->GetVelocity();
 	playerVel.y = 0.f;
 	float playerVelLen = D3DXVec3Length(&playerVel);
-
 	static float stepTimer = 0.f;
-
-	if (playerVelLen > 0.2f && m_pPlayer->IsGrounded() && !m_pPlayer->IsSliding() && !m_pPlayer->IsDashing())
-	{
-		if (stepTimer <= 0.f)
-		{
-			stepTimer = 800.f - (playerVelLen * 100.f); // 速度に応じて足音の間隔を変える
-			if (stepTimer < 350.f)
-			{
-				stepTimer = 350.f; // 最小間隔
-			}
-			float randChoice = distFloat(m_RandomGen);
-			if (randChoice < 0.5f)
-				CSoundManager::PlaySEPoly(CSoundManager::SE_Step3);
-			else
-				CSoundManager::PlaySEPoly(CSoundManager::SE_Step2);
-		}
-		else
-		{
-			stepTimer -= FPS;
-		}
-	}
-	
+	HandleStepSE(playerVelLen, stepTimer);
 	static float fovY = D3DX_PI / 4.0f;
-	if (m_pPlayer->IsDashing() && playerVelLen > 0.1f)
-	{
-		// FOV拡大
-		float targetFovY = D3DX_PI / 3.0f; // 
-		fovY += (targetFovY - fovY) * FPS / 1000.f; // スムーズに拡大
-	}
-	else
-	{
-		// FOV通常戻し
-		float normalFovY = D3DX_PI / 4.0f;
-		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // スムーズに戻す
-	}
-
+	HandleDynamicFov(playerVelLen, fovY);
 	m_pCamera->SetFieldOfView(fovY);
 
 #if _DEBUG
@@ -814,6 +690,7 @@ void CGame::Update()
 #endif
 	CScene::Update();
 }
+
 
 void CGame::GameClear()
 {
@@ -2187,15 +2064,6 @@ void CGame::SetupBlockedPath()
 
 }
 
-void CGame::SetupTriggers()
-{
-
-}
-void CGame::SetupGoal()
-{
-
-}
-
 int CGame::NextBullet()
 {
 	if(m_bulletIndex >= PLAYER_AMMO_MAX - 1)
@@ -2441,8 +2309,6 @@ void CGame::InitStage()
 	}
 
 	SetupBlockedPath();
-	SetupGoal();
-	SetupTriggers();
 
 }
 
@@ -2640,6 +2506,47 @@ void CGame::InitLevelController()
 
 	m_pLevelController->SetCurrentLevel(CGameStats::LevelSelection);
 }
+
+void CGame::HandleDynamicFov(float playerVelLen, float& fovY)
+{
+	if (m_pPlayer->IsDashing() && playerVelLen > 0.1f)
+	{
+		// FOV拡大
+		float targetFovY = D3DX_PI / 3.0f; // 
+		fovY += (targetFovY - fovY) * FPS / 1000.f; // スムーズに拡大
+	}
+	else
+	{
+		// FOV通常戻し
+		float normalFovY = D3DX_PI / 4.0f;
+		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // スムーズに戻す
+	}
+}
+
+void CGame::HandleStepSE(float playerVelLen, float& stepTimer)
+{
+	if (playerVelLen > 0.2f && m_pPlayer->IsGrounded() && !m_pPlayer->IsSliding() && !m_pPlayer->IsDashing())
+	{
+		if (stepTimer <= 0.f)
+		{
+			stepTimer = 800.f - (playerVelLen * 100.f); // 速度に応じて足音の間隔を変える
+			if (stepTimer < 350.f)
+			{
+				stepTimer = 350.f; // 最小間隔
+			}
+			float randChoice = distFloat(m_RandomGen);
+			if (randChoice < 0.5f)
+				CSoundManager::PlaySEPoly(CSoundManager::SE_Step3);
+			else
+				CSoundManager::PlaySEPoly(CSoundManager::SE_Step2);
+		}
+		else
+		{
+			stepTimer -= FPS;
+		}
+	}
+}
+
 
 #if _DEBUG
 void CGame::DrawDebugColliders()

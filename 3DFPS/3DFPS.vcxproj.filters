@@ -312,6 +312,9 @@
     <ClCompile Include="CShot.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
     </ClCompile>
+    <ClCompile Include="CLaserShot.cpp" />
+    <ClCompile Include="CDataReader.cpp" />
+    <ClCompile Include="CSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -491,6 +494,9 @@
     <ClInclude Include="CShot.h">
       <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
     </ClInclude>
+    <ClInclude Include="CLaserShot.h" />
+    <ClInclude Include="CDataReader.h" />
+    <ClInclude Include="CSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">
@@ -526,5 +532,8 @@
     <FxCompile Include="Data\Shader\Skybox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

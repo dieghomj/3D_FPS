@@ -43,7 +43,6 @@ public:
 		int count = 0;
 		bool isSpawned = false;
 		bool isCleared = false;
-		float scale = 1;
 		std::vector<CAnimEnemy*> enemies;
 	};
 
@@ -59,6 +58,7 @@ public:
 	void DrawUI();
 	void DrawDecals(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 	virtual void Update() override;
+
 
 	void GameClear();
 
@@ -98,11 +98,11 @@ private:
 	void HandleEnemySpawning();
 	void HandleEnemyShooting();
 	void HandleEnemyGroupCleared();
+	void HandleDynamicFov(float playerVelLen, float& fovY);
+	void HandleStepSE(float playerVelLen, float& stepTimer);
+
 
 	//void HandleWallCollisions(CCharacter* character);
-
-	void SetupTriggers();
-	void SetupGoal();
 	void SetupBlockedPath();
 
 	void DrawEnemyShots();
