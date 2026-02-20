@@ -2,6 +2,7 @@
 #include "CStage.h"
 #include "CPlayer.h"
 #include "CBlockedPath.h"
+#include "CDataReader.h"
 
 class CGame;
 
@@ -34,6 +35,9 @@ public:
 
 	bool IsCleared() const { return m_IsCleared; }
 
+	// Load level data from CDataReader
+	void LoadFromData(const CDataReader& dataReader, int levelID);
+
 	void SetStage(CStaticMesh* pStageMesh) { m_pStageMesh = pStageMesh; };
 	void SetPlayer(CPlayer* player) { m_pPlayer = player; };
 	void SetGoal(GOAL goal) { m_Goal = goal; };
@@ -54,8 +58,9 @@ public:
 	int GetTriggerAreaCount() const { return static_cast<int>(m_TriggerAreas.size()); }
 	CStaticMesh* GetStageMesh() const { return m_pStageMesh; }
 	D3DXVECTOR3 GetStartPosition() const { return m_StartPosition; }
-	
-
+	float GetTimer() const { return m_Timer; }
+	GOAL GetGoal() const { return m_Goal; }
+	const std::vector<D3DXVECTOR3>& GetEnemySpawnPositions() const { return m_EnemySpawnPosition; }
 
 private:
 
@@ -65,14 +70,15 @@ private:
 	bool IsPlayerInTriggerArea(const CLevel::GOAL& trigger);
 	void UpdateBlockedPaths();
 	void HandleBlockedPath();
+
 private:
 
 	bool m_IsCleared;
-
+	int m_LevelID;
 	float m_StageScale;
+	float m_Timer;
 
 	D3DXVECTOR3 m_StartPosition;
-
 
 	CStaticMesh* m_pStageMesh;
 

@@ -3,6 +3,11 @@
 
 CLevel::CLevel()
 	: m_IsCleared(false)
+	, m_LevelID(0)
+	, m_StageScale(1.0f)
+	, m_Timer(180.f)
+	, m_StartPosition(D3DXVECTOR3(0.f, 0.f, 0.f))
+	, m_pStageMesh(nullptr)
 	, m_pPlayer(nullptr)
 	, m_Goal()
 	, m_pBlockedPathList()
@@ -16,8 +21,46 @@ CLevel::~CLevel()
 
 void CLevel::Init()
 {
-
 	m_IsCleared = false;
+}
+
+void CLevel::LoadFromData(const CDataReader& dataReader, int levelID)
+{
+	m_LevelID = levelID;
+
+	// Load level base data
+	const CDataReader::LevelData* levelData = dataReader.GetLevelData(levelID);
+	if (levelData)
+	{
+		m_StartPosition = levelData->playerStartPos;
+		m_Timer = levelData->timer;
+
+		m_Goal.position = levelData->goalPos;
+		m_Goal.size = levelData->goalScale;
+		m_Goal.isReached = false;
+	}
+
+	// Load triggers
+	m_TriggerAreas.clear();
+	auto triggers = dataReader.GetTriggersForLevel(levelID);
+	for (const auto& triggerData : triggers)
+	{
+		COLLISION_TRIGGER trigger;
+		trigger.position = triggerData.position;
+		trigger.size = triggerData.scale;
+		trigger.blockedPathIndices = triggerData.blockedPathIndices;
+		trigger.isTriggered = false;
+		trigger.blockBehindPlayer = false;
+		m_TriggerAreas.push_back(trigger);
+	}
+
+	// Load enemy spawn positions
+	m_EnemySpawnPosition.clear();
+	auto enemySpawns = dataReader.GetEnemySpawnsForLevel(levelID);
+	for (const auto& spawnData : enemySpawns)
+	{
+		m_EnemySpawnPosition.push_back(spawnData.position);
+	}
 }
 
 void CLevel::Update()
@@ -36,6 +79,7 @@ void CLevel::Draw()
 void CLevel::Restart()
 {
 	m_IsCleared = false;
+	m_Goal.isReached = false;
 	for (auto& trigger : m_TriggerAreas)
 	{
 		trigger.isTriggered = false;
@@ -139,24 +183,4 @@ void CLevel::UpdateBlockedPaths()
 
 void CLevel::HandleBlockedPath()
 {
-	//if (m_enemyKillCount >= ENEMY_COUNT_PER_ROOM)
-	//{
-	//	for (auto pBlockedPath : m_pBlockedPathList)
-	//	{
-	//		if (pBlockedPath->IsActive() == true)
-	//		{
-	//			pBlockedPath->SetActive(false);
-	//		}
-	//	}
-	//	return;
-	//}
-
-	//if (m_pBlockedPathList[0]->IsActive() == true)
-	//{
-	//	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
-	//	{
-	//		if (m_pEnemyPool[i]->IsActive() == false)
-	//			m_pEnemyPool[i]->SpawnAt(ENEMY_STARTPOS[i]);
-	//	}
-	//}
 }
