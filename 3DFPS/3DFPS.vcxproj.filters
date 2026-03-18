@@ -255,9 +255,6 @@
     <ClCompile Include="CGameOver.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="CGameStats.cpp">
-      <Filter>Source\GameStats</Filter>
-    </ClCompile>
     <ClCompile Include="Util.cpp">
       <Filter>Source\Common</Filter>
     </ClCompile>
@@ -312,7 +309,6 @@
     <ClCompile Include="CShot.cpp">
       <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
     </ClCompile>
-    <ClCompile Include="CLaserShot.cpp" />
     <ClCompile Include="CDataReader.cpp" />
     <ClCompile Include="CSettings.cpp" />
   </ItemGroup>
@@ -494,7 +490,6 @@
     <ClInclude Include="CShot.h">
       <Filter>Source\GameObject\StaticMeshObject\Shot</Filter>
     </ClInclude>
-    <ClInclude Include="CLaserShot.h" />
     <ClInclude Include="CDataReader.h" />
     <ClInclude Include="CSettings.h" />
   </ItemGroup>

@@ -179,7 +179,24 @@ bool CDataReader::LoadEnemyGroupData(const std::wstring& filename)
 
 bool CDataReader::LoadSettingsData(const std::wstring& filename)
 {
-	// Implement settings data loading if needed
+	std::ifstream file(filename);
+	if (!file.is_open())
+	{
+		return false;
+	}
+	std::string line;
+	std::getline(file, line); // Skip header
+
+	while (std::getline(file, line))
+	{
+		if (line.empty()) continue;
+		auto tokens = ParseCSVLine(line);
+		if (tokens.size() < 3) continue;
+
+
+	}
+
+	file.close();
 	return true;
 }
 

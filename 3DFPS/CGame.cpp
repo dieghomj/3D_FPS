@@ -15,6 +15,7 @@ const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
 		D3DXVECTOR3(0.f, 25.f, -35.f),
 		D3DXVECTOR3(0.f, 25.f, -95.f),
 };
+
 const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT] = {
 	
 	{

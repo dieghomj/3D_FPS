@@ -59,7 +59,7 @@
   <Class Name="CPlayer" Collapsed="true">
     <Position X="22" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>KaQAAFbOBoODhgQBoQAyCRBYBU4gQGAgAGCAGiRqBAE=</HashCode>
+      <HashCode>KaRAAFbOBseDhgQBoQAyCRhYBU4gQGAgAGCAGiVqBAE=</HashCode>
       <FileName>CPlayer.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -87,7 +87,7 @@
   <Class Name="CBlockedPath" Collapsed="true">
     <Position X="8.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AKQAAAAAAAAAggAAIAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AKQAAAAAAAAAAgAEIAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>CBlockedPath.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -150,14 +150,14 @@
   <Class Name="CBoss" Collapsed="true">
     <Position X="15.25" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BiQBAIEAUgIEUgAgACEAQAAAAOAIUA0AACQAgBpSAEA=</HashCode>
+      <HashCode>DmQBAIkAUoIEUgAggDEAQAAAAOAIWg0MACQAgFpyAGA=</HashCode>
       <FileName>CBoss.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CRobo" Collapsed="true">
     <Position X="17.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQQACAAAwIAAAhAgAAAAAAAAAOAQAQAAAAAAAABCBAE=</HashCode>
+      <HashCode>AQQACAAAwIAAAhAgAAAAAAAAAOAQAQgMAAAAAABSBAE=</HashCode>
       <FileName>CRobo.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -178,7 +178,7 @@
   <Class Name="CBoundingCube" Collapsed="true">
     <Position X="31.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABAAAAAAgCgAICAAAgAAAAAAAAAEAggAAAACAhEEAAA=</HashCode>
+      <HashCode>gBAAAAAB0CgAIqAAAggAAAAAIAAEAghAQAACEhEEAAA=</HashCode>
       <FileName>CBoundingCube.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -192,14 +192,14 @@
   <Class Name="CCollider" Collapsed="true">
     <Position X="36.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgAAgAACBAAAAAAgMAAAEBABIEQAEggQhACCAhAQAAA=</HashCode>
+      <HashCode>AgAAgAACBAAAAAAgMAAAEBABIEQAEgyQlGiCAhAQAAA=</HashCode>
       <FileName>CCollider.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CDebugBBox" Collapsed="true">
     <Position X="38.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABIQAAAAIAIAgEAAAAACAAAQAQABAAACAAAiABAQAAA=</HashCode>
+      <HashCode>ABIQAAAAIAIAgEAAAAACAAAQAQABABACAAAiABAYAAA=</HashCode>
       <FileName>CDebugBBox.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -277,28 +277,28 @@
   <Class Name="CResultScene" Collapsed="true">
     <Position X="0.75" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EIQEACAAICAQAgAAAgAAAAAAAIEAAEAQAAAAKBMAAIA=</HashCode>
+      <HashCode>EIQEACAAICAQAgAAAgAAAAAAAIEAAEAQAAAAKRMEAIA=</HashCode>
       <FileName>CResult.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CMenu" Collapsed="true">
     <Position X="3" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EMQEAAAgACISQgACCgAAAAAQAAACAMgWAAAACBIAAIA=</HashCode>
+      <HashCode>EMQEAAAgACISQgACCgAAAAAQAAACAMgWAAAACRIEAIA=</HashCode>
       <FileName>CMenu.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CGame" Collapsed="true">
     <Position X="5.25" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>WpQcMFhMxiO71towMYERBQDIBQpfiOzFx4SccNz/BhA=</HashCode>
+      <HashCode>WpQcMFhMxyu71to1MYETBQDIBQpfiOzFxQSccN3/BhA=</HashCode>
       <FileName>CGame.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CGameOver" Collapsed="true">
     <Position X="7.5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EIQEgCAAICAQAwAAAgAAAAAAAAIAAEAQAAAACBMAAIA=</HashCode>
+      <HashCode>EIQEgCAAICAQAwAAAgAAAAAAAAIAAEAQAAAACRMEAIA=</HashCode>
       <FileName>CGameOver.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -368,21 +368,21 @@
   <Class Name="CLevel" Collapsed="true">
     <Position X="33" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>GAQAAwACAAABAhABCAAAQEBBVAAABAEAEQoyCATgAAQ=</HashCode>
+      <HashCode>GAQAAwACAAABAhABCAAQQEBBVAQIBAEAEQoyCETgAAQ=</HashCode>
       <FileName>CLevel.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CLevelController" Collapsed="true">
     <Position X="34.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAQgAAEAAAABBhAAAAAAAAAAAAAAAAAABEAKAAAAABA=</HashCode>
+      <HashCode>kAQgAAEAAAABBhAQAAAAAAAAAIAAAAAABEAKAACAABA=</HashCode>
       <FileName>CLevelController.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CSkybox" Collapsed="true">
     <Position X="33" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABAAAAABAECAAEAACAACAAAAIQQBCCCAQBACABgAAAA=</HashCode>
+      <HashCode>ABAAAAAFAECAAEAACAACAAAAIQQBCCCAQBACABgAAAA=</HashCode>
       <FileName>CSkybox.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -480,7 +480,7 @@
   <Struct Name="CGameStats" Collapsed="true">
     <Position X="34.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAABEABQhRgAgAAAAABAAAAAAAAEgBAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAABEABQhRgAgAAAAABIAAAAAAAEgBAAAAAAABA=</HashCode>
       <FileName>CGameStats.h</FileName>
     </TypeIdentifier>
   </Struct>
