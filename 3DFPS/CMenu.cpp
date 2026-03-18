@@ -191,7 +191,8 @@ void CMenu::UpdateMainMenu()
 	float optionHeight = 50.0f;
 
 	float startY = static_cast<float>(WND_H / 2 - 40);
-	float exitY  = static_cast<float>(WND_H / 2 + 60);
+	float settingsY = static_cast<float>(WND_H / 2 + 20);
+	float exitY  = static_cast<float>(WND_H / 2 + 80);
 
 	auto isInside = [&](float x, float y, float w, float h)
 	{
@@ -206,6 +207,15 @@ void CMenu::UpdateMainMenu()
 			CSoundManager::PlaySE(CSoundManager::SE_Decide);
 			m_MenuState = STATE_LEVEL_SELECT;
 			m_SelectedLevel = LEVEL_1;
+		}
+	}
+	else if (isInside(optionX, settingsY, optionWidth, optionHeight))
+	{
+		m_SelectedOption = MENU_OPTION_SETTINGS;
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		{
+			CSoundManager::PlaySE(CSoundManager::SE_Decide);
+			m_pManager->ChangeScene("SETTINGS");
 		}
 	}
 	else if (isInside(optionX, exitY, optionWidth, optionHeight))
@@ -244,6 +254,11 @@ void CMenu::UpdateMainMenu()
 			// Go to level select screen
 			m_MenuState = STATE_LEVEL_SELECT;
 			m_SelectedLevel = LEVEL_1;
+		}
+		else if (m_SelectedOption == MENU_OPTION_SETTINGS)
+		{
+			// Go to settings
+			m_pManager->ChangeScene("SETTINGS");
 		}
 		else if (m_SelectedOption == MENU_OPTION_EXIT)
 		{
@@ -474,6 +489,16 @@ void CMenu::DrawMainMenu()
 	_stprintf_s(startText, _T("> START GAME"));
 	m_pMenuFont->Render(startText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 - 20), 40.0f);
 
+	// Settings option
+	if (m_SelectedOption == MENU_OPTION_SETTINGS)
+		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
+	else
+		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
+
+	TCHAR settingsText[64];
+	_stprintf_s(settingsText, _T("> SETTINGS"));
+	m_pMenuFont->Render(settingsText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 + 40), 40.0f);
+
 	// Exit option
 	if (m_SelectedOption == MENU_OPTION_EXIT)
 		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
@@ -482,7 +507,7 @@ void CMenu::DrawMainMenu()
 
 	TCHAR exitText[64];
 	_stprintf_s(exitText, _T("> EXIT"));
-	m_pMenuFont->Render(exitText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 + 80), 40.0f);
+	m_pMenuFont->Render(exitText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 + 100), 40.0f);
 
 	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
 	TCHAR instructText[128];

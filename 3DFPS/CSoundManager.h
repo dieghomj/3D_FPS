@@ -78,6 +78,13 @@ public:
 	static void SetVolume(enList list, int volume) {
 		CSoundManager::GetInstance()->m_pSound[list]->SetVolume(volume);
 	}
+
+	static void SetGlobalVolume(int volume) {
+		for (int i = 0; i < enList::max; ++i) {
+			CSoundManager::SetVolume(static_cast<enList>(i), volume);
+		}
+	}
+	
 	//’âŽ~‚·‚é.
 	static void Stop( enList list ) {
 		CSoundManager::GetInstance()->m_pSound[list]->Stop();

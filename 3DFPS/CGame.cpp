@@ -2,6 +2,7 @@
 #include "CSpider.h"
 #include "CLaserShot.h"
 #include "CBoss.h"
+#include "CSettings.h"
 
 constexpr int PROJECTILE_COUNT_MAX = 32;
 constexpr int PLAYER_AMMO_MAX = 999;
@@ -186,6 +187,7 @@ CGame::~CGame()
 
 void CGame::Create()
 {
+	m_pDataReader = new CDataReader();
 
 	m_pCamera = new CCamera();
 	m_pCameraController = new CCameraController(m_pCamera);
@@ -251,7 +253,7 @@ void CGame::Create()
 			8,
 			false,
 			false,
-			{new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider,} // enemies will be spawned later
+			{new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider,} 
 		},
 	};
 
@@ -495,6 +497,7 @@ void CGame::Release()
 
 void CGame::Start()
 {
+
 	//ƒ‰ƒCƒgÝ’è
 	float lightIntensity	= 1.055f;
 	D3DXVECTOR3 lightDir	= D3DXVECTOR3(0.2f, -1.0f, 0.5f);
@@ -584,7 +587,7 @@ void CGame::Update()
 	float mSense = 0.f;
 	if (m_pPlayer->IsDashing())
 	{
-		mSense = 0.045f;
+		mSense = 0.45 * m_mouseSense;
 	}
 	else
 	{
@@ -592,7 +595,7 @@ void CGame::Update()
 	}
 	if (m_pPlayer->IsJumping())
 	{
-		mSense -= 0.05f;
+		mSense -= 0.01 * m_mouseSense;
 	}
 
 	m_pCameraController->FirstPersonCamera(m_pPlayer, m_mouseDelta, m_mouseSense - mSense);

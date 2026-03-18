@@ -10,6 +10,7 @@ class CMenu;
 class CGame;
 class CGameOverScene;
 class CResultScene;
+class CSettingsScene;
 class CTest;
 
 /**************************************************
@@ -56,6 +57,7 @@ private:
 	CScene*			m_pTitle;
 	CScene*			m_pResult;
 	CScene*			m_pMenu;
-	
+	CScene*			m_pSettings;
+
 	CTime*			m_pTime;
 };

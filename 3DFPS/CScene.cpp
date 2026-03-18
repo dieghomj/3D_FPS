@@ -1,7 +1,7 @@
 #include "CDirectX9.h"
 #include "CDirectX11.h"
-
 #include "CScene.h"
+#include "CSettings.h"
 
 CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: m_pDx9			(&pDx9)
@@ -23,13 +23,22 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	, m_mouseSeudoPos	({ WND_W / 2,WND_H / 2 })
 	, m_mouseBeforePos	({ 0, 0 })
 	, m_mouseDelta		({ 0, 0 })
-	, m_mouseSense		( 0.1f )
+	, m_mouseSense		( 0.0f )
 
 {
 	//サウンドデータの読み込み
 	CSoundManager::GetInstance()->Load(m_hWnd);
 
 	m_Fog.Mode = D3DFOG_LINEAR;
+
+	m_pDataReader = new CDataReader();
+	m_pDataReader->LoadData(L"Data\\CSV");
+
+	CDataReader::SettingsData settingsData = m_pDataReader->GetSettingsData();
+	CSettings::SetConfigData(settingsData.mouseSensitivity, settingsData.volume);
+
+	CSoundManager::SetGlobalVolume(CSettings::GetVolume());
+	m_mouseSense = CSettings::GetMouseSensitivity();
 
 }
 
@@ -93,6 +102,13 @@ void CScene::UpdateMousePos()
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 	ScreenToClient(m_hWnd, &mousePos);
+	RECT windowRect;
+	GetClientRect(m_hWnd, &windowRect);
+	ClientToScreen(m_hWnd, (LPPOINT)&windowRect.left);
+	ClientToScreen(m_hWnd, (LPPOINT)&windowRect.right);
+	ClipCursor(&windowRect);
+
+	float sensititiy = CSettings::GetMouseSensitivity();
 
 	if (ShouldLockMouse())
 	{
@@ -100,8 +116,8 @@ void CScene::UpdateMousePos()
 		POINT center = { WND_W / 2, WND_H / 2 };
 		m_mouseDelta.x = mousePos.x - center.x;
 		m_mouseDelta.y = mousePos.y - center.y;
-		m_mouseSeudoPos.x += m_mouseDelta.x;
-		m_mouseSeudoPos.y += m_mouseDelta.y;
+		m_mouseSeudoPos.x += m_mouseDelta.x * sensititiy;
+		m_mouseSeudoPos.y += m_mouseDelta.y * sensititiy;
 		// Reset cursor to center
 		ClientToScreen(m_hWnd, &center);
 		SetCursorPos(center.x, center.y);
@@ -109,10 +125,12 @@ void CScene::UpdateMousePos()
 	else
 	{
 		// Free mouse movement for menus
-		m_mouseDelta.x = mousePos.x - m_mouseBeforePos.x;
-		m_mouseDelta.y = mousePos.y - m_mouseBeforePos.y;
-		m_mouseBeforePos = mousePos;
+		m_mouseDelta.x = (mousePos.x - m_mouseBeforePos.x);
+		m_mouseDelta.y = (mousePos.y - m_mouseBeforePos.y);
 		m_mousePos = mousePos;
+		m_mousePos.x += m_mouseDelta.x * sensititiy;
+		m_mousePos.y += m_mouseDelta.y * sensititiy;
+		m_mouseBeforePos = m_mousePos;
 	}
 }
 
@@ -131,4 +149,12 @@ const TCHAR* CScene::DifficultyToText(CGameStats::DIFFICULTY d)
 	default:                  return _T("NORMAL");
 	}
 
+}
+
+void CScene::SaveSettings(float mouseSensitivity, float volume)
+{
+	CDataReader::SettingsData settings;
+	settings.mouseSensitivity = mouseSensitivity;
+	settings.volume = volume;
+	m_pDataReader->SetSettingsData(settings);
 }

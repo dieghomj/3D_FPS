@@ -8,6 +8,7 @@
 #include "CCameraController.h"
 #include "CSpotLight.h"
 #include "CGameStats.h"
+#include "CDataReader.h"
 
 /********************************************************************************
 *	ゲームシーンクラス.
@@ -34,6 +35,7 @@ public:
 	bool IsPause() const { return m_IsPause; }
 	POINT GetMouseSeudoPos();
 	static const TCHAR* DifficultyToText(CGameStats::DIFFICULTY d);
+	void SaveSettings(float mouseSensitivity, float volume);
 
 private :
 
@@ -59,6 +61,9 @@ protected:
 	SCENE_DATA		m_SceneInfo;
 
 	bool			m_IsPause = false;
+
+	//DATA READER
+	CDataReader* m_pDataReader;
 
 	//mouse入力
 	POINT			m_mousePos;

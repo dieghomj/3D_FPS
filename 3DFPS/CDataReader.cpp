@@ -3,8 +3,11 @@
 
 constexpr static int MAX_LINE_LENGTH = 256;
 
+static std::wstring settingsDirectory = L"";
+
 bool CDataReader::LoadData(const std::wstring& dataDirectory)
 {
+
 	Clear();
 
 	bool success = true;
@@ -14,7 +17,9 @@ bool CDataReader::LoadData(const std::wstring& dataDirectory)
 	success &= LoadBlockedPathData(dataDirectory + L"\\bPathData.csv");
 	success &= LoadEnemySpawnData(dataDirectory + L"\\enemyData.csv");
 	success &= LoadEnemyGroupData(dataDirectory + L"\\enemyGroupData.csv");
-	success &= LoadSettingsData(dataDirectory + L"\\settingsData.csv");
+	success &= LoadSettingsData(dataDirectory + L"\\settings.csv");
+	
+	settingsDirectory = dataDirectory + L"\\settings.csv";
 
 	return success;
 }
@@ -191,9 +196,9 @@ bool CDataReader::LoadSettingsData(const std::wstring& filename)
 	{
 		if (line.empty()) continue;
 		auto tokens = ParseCSVLine(line);
-		if (tokens.size() < 3) continue;
-
-
+		if (tokens.size() < 2) continue;
+		m_SettingsData.mouseSensitivity = ParseFloat(tokens[0]);
+		m_SettingsData.volume = ParseInt(tokens[1]);
 	}
 
 	file.close();
@@ -275,6 +280,25 @@ std::vector<CDataReader::EnemyGroupData> CDataReader::GetEnemyGroupsForLevel(int
 		}
 	}
 	return result;
+}
+
+void CDataReader::SetSettingsData(const SettingsData& settings)
+{
+
+	std::ofstream file(settingsDirectory);
+	if (!file.is_open())
+	{
+		return;
+	}
+
+	// Write header
+	file << "mouseSensitivity,volume\n";
+
+	// Write settings data
+	file << settings.mouseSensitivity << "," << settings.volume << "\n";
+
+	file.close();
+
 }
 
 void CDataReader::Clear()

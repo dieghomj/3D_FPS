@@ -5,7 +5,7 @@ class CSettings
 
 public:
 
-	static void SetConfigData();
+	static void SetConfigData(float mouseSense, int volume);
 
 	static float GetMouseSensitivity() { return m_mouseSensitivity; }
 	static int GetVolume() { return m_volume; }
@@ -13,6 +13,8 @@ public:
 private:
 
 	CSettings();
+	CSettings(const CSettings&) = delete;
+	CSettings& operator=(const CSettings&) = delete;
 	~CSettings();
 
 	static bool ParseConfigData();

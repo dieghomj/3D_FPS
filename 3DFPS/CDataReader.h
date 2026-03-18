@@ -53,14 +53,14 @@ public :
 		int enemyCount = 0;
 	};
 
+	struct SettingsData
+	{
+		float mouseSensitivity = 1.f;
+		int volume = 500;
+	};	
+
 	bool LoadData(const std::wstring& dataDirectory);
 
-	bool LoadLevelData(const std::wstring& filename);
-	bool LoadTriggerData(const std::wstring& filename);
-	bool LoadBlockedPathData(const std::wstring& filename);
-	bool LoadEnemySpawnData(const std::wstring& filename);
-	bool LoadEnemyGroupData(const std::wstring& filename);
-	bool LoadSettingsData(const std::wstring& filename);
 	//bool LoadPlayerData(const std::wstring& filename);
 
 	const LevelData* GetLevelData(int levelID) const;
@@ -68,16 +68,22 @@ public :
 	int GetLevelCount() const { return static_cast<int>( m_LevelData.size()); }
 
 	std::vector<TriggerData> GetTriggersForLevel(int levelID) const;
-
 	std::vector<BlockedPathData> GetBlockedPathsForLevel(int levelID) const;
-
 	std::vector<EnemySpawnData> GetEnemySpawnsForLevel(int levelID) const;
 	std::vector<EnemySpawnData> GetEnemySpawnsForGroup(int levelID, int groupID) const;
-
 	std::vector<EnemyGroupData> GetEnemyGroupsForLevel(int levelID) const;
+
+	SettingsData GetSettingsData() const { return m_SettingsData; }
+	void SetSettingsData(const SettingsData& settings);
 
 private:
 
+	bool LoadLevelData(const std::wstring& filename);
+	bool LoadTriggerData(const std::wstring& filename);
+	bool LoadBlockedPathData(const std::wstring& filename);
+	bool LoadEnemySpawnData(const std::wstring& filename);
+	bool LoadEnemyGroupData(const std::wstring& filename);
+	bool LoadSettingsData(const std::wstring& filename);
 	void Clear();
 	std::vector<std::string> ParseCSVLine(const std::string& line);
 	std::vector<int> ParseIntList(const std::string& str, char delimiter = ';');
@@ -86,12 +92,12 @@ private:
 	std::string Trim(const std::string& str);
 
 private:
-	std::vector<LevelData>		m_LevelData;
+	std::vector<LevelData>			m_LevelData;
 	std::vector<TriggerData>		m_TriggersData;
 	std::vector<BlockedPathData>	m_BPathData;
-	std::vector<EnemySpawnData>	m_EnemyData;
-	std::vector<EnemyGroupData>	m_EnemyGroupsData;
-
+	std::vector<EnemySpawnData>		m_EnemyData;
+	std::vector<EnemyGroupData>		m_EnemyGroupsData;
+	SettingsData					m_SettingsData;
 
 };
 
