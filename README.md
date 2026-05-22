@@ -74,7 +74,7 @@ Visual Studio の C++ ソリューションです。
 
 必要なもの:
 - Visual Studio 2022
-- Windows 10 SDK
+- Windows 10 SDK 10.0.19041.0 以上
 - `DXSDK_DIR` で設定した DirectX SDK
 - 同梱の `Effekseer` ヘッダとライブラリ
 
