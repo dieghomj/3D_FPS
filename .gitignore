@@ -366,3 +366,4 @@ FodyWeavers.xsd
 
 # Local player save data (high score)
 highscore.dat
+/dist
