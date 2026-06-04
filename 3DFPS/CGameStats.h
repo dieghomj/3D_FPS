@@ -80,7 +80,7 @@ struct CGameStats
 		if (Score > HighestScore)
 		{
 			HighestScore = Score;
-			//SaveHighestScore();
+			SaveHighScore();
 		}
 	}
 
@@ -100,15 +100,29 @@ struct CGameStats
 		Score = 0;
 	}
 
-	//void SaveHighestScore()
-	//{
-	//	std::ofstream ofs("highest_score.dat", std::ios::binary);
-	//	if (ofs.is_open())
-	//	{
-	//		ofs.write(reinterpret_cast<const char*>(&HighestScore), sizeof(HighestScore));
-	//		ofs.close();
-	//	}
-	//}
+	// Load the saved high score at startup (highscore.dat in the working
+	// directory). No file yet -> HighestScore stays 0.
+	static void LoadHighScore()
+	{
+		std::ifstream ifs("highscore.dat", std::ios::binary);
+		if (ifs.is_open())
+		{
+			int saved = 0;
+			ifs.read(reinterpret_cast<char*>(&saved), sizeof(saved));
+			if (ifs.gcount() == sizeof(saved) && saved > HighestScore)
+				HighestScore = saved;
+		}
+	}
+
+	// Persist the current high score to disk.
+	static void SaveHighScore()
+	{
+		std::ofstream ofs("highscore.dat", std::ios::binary | std::ios::trunc);
+		if (ofs.is_open())
+		{
+			ofs.write(reinterpret_cast<const char*>(&HighestScore), sizeof(HighestScore));
+		}
+	}
 
 };
 

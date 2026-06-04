@@ -2,6 +2,8 @@
 #include "CSpider.h"
 #include "CLaserShot.h"
 #include "CBoss.h"
+#include "CDataReader.h"
+#include "CGameStats.h"
 
 constexpr int PROJECTILE_COUNT_MAX = 32;
 constexpr int PLAYER_AMMO_MAX = 999;
@@ -9,107 +11,16 @@ constexpr int ENEMY_COUNT_MAX = 64;
 constexpr int ENEMY_COUNT_PER_ROOM = 4;
 constexpr float ENEMY_SHOT_SPEED = 1.8f;
 
-const D3DXVECTOR3  PLAYER_STARTPOS[4] = {
-		D3DXVECTOR3(0.f, 25.f, -95.f),
-		D3DXVECTOR3(0.f, 25.f, -35.f),
-		D3DXVECTOR3(0.f, 25.f, -35.f),
-		D3DXVECTOR3(0.f, 25.f, -95.f),
-};
-const std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT] = {
-	
-	{
-		{ D3DXVECTOR3(0.f, 5.f, 280.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
-	},
-	
-	{	
-		{ D3DXVECTOR3(0.f, 5.f, 120.f), D3DXVECTOR3(100.f, 50.f, 10.f), {0, 1}, false, false },
-		{ D3DXVECTOR3(0.f, 42.6f, 290.f), D3DXVECTOR3(100.f, 50.f, 10.f), {2}, false, false },
-		{ D3DXVECTOR3(0.f, 42.6f, 578.f), D3DXVECTOR3(100.f, 50.f, 10.f), {3,4}, false, false },
-	},
-
-	{
-		{ D3DXVECTOR3(0.f, 1.f, 5.f),	 D3DXVECTOR3(500.f, 500.f, 500.f), {}, false, false },
-	}
-
-};
-const std::vector<CGame::BLOCKED_PATH_TRANS> BLOCKEDPATH_LIST[LEVEL_COUNT] =
-{
-
-	{
-		{ D3DXVECTOR3(0.f, 9.5f, 219.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 9.5f, 336.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
-	},
-
-	{
-		{ D3DXVECTOR3(0.f, 9.5f, 88.f), D3DXVECTOR3(12.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 9.5f, 175.f), D3DXVECTOR3(18.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 39.6f, 563.f), D3DXVECTOR3(20.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 39.6f, 563.f), D3DXVECTOR3(20.f, 5.f, 7.f) },
-		{ D3DXVECTOR3(0.f, 39.6f, 767.f), D3DXVECTOR3(20.f, 5.f, 7.f) },
-	},
-
-	{
-	},
-
-};
-const CLevel::GOAL LevelGoals[LEVEL_COUNT] = {
-	{ D3DXVECTOR3(0.f, 8.f, 400.f), D3DXVECTOR3(10.f, 10.f, 10.f), false },
-	{ D3DXVECTOR3(0.f, 8.f, 920.f), D3DXVECTOR3(100.f, 100.f, 10.f), false },
-	{ D3DXVECTOR3(0.f, 8.f, 920.f), D3DXVECTOR3(100.f, 100.f, 10.f), false },
-};
-const std::vector<D3DXVECTOR3> ENEMY_STARTPOS[LEVEL_COUNT] = {
-	//LEVEL 1
-	{
-		D3DXVECTOR3( 39.f,		10.f,	221.f),
-		D3DXVECTOR3( 5.3f,		10.f,	221.f),
-		D3DXVECTOR3( -32.8f,	10.f,	221.f),
-		D3DXVECTOR3( 10.8f,		10.f,	320.f),
-		D3DXVECTOR3( -5.6f,		10.f,	320.f),
-		D3DXVECTOR3( -39.f,		10.f,	320.f),
-		D3DXVECTOR3( 5.3f,		10.f,	320.f),
-		D3DXVECTOR3( 32.8f,		10.f,	320.f),
-	},
-	//LEVEL 2
-	{	
-		//FIRST AREA
-		D3DXVECTOR3(-47.f,	48.f,	108.f),
-		D3DXVECTOR3( 47.f,	68.f,	159.8f),
-		D3DXVECTOR3(-18.f,	12.f,	180.f),
-		D3DXVECTOR3( 18.f,	12.f,	180.f),
-
-		//SECOND AREA
-		D3DXVECTOR3(-188.6,	42.6f,	495.f),
-		D3DXVECTOR3(-188.6,	42.6f,	436.f),
-		D3DXVECTOR3(-188.6,	42.6f,	408.f),
-		D3DXVECTOR3(-188.6,	42.6f,	350.f),
-
-		D3DXVECTOR3( 188.6,	42.6f,	495.f),
-		D3DXVECTOR3( 188.6,	42.6f,	436.f),
-		D3DXVECTOR3( 188.6,	42.6f,	408.f),
-		D3DXVECTOR3( 188.6,	42.6f,	350.f),
-		
-		//THIRD AREA
-		D3DXVECTOR3( 128.6,	42.6f,	700.f),
-		D3DXVECTOR3( 128.6,	42.6f,	636.f),
-		D3DXVECTOR3( 128.6,	42.6f,	608.f),
-		D3DXVECTOR3( 128.6,	42.6f,	650.f),
-		
-		D3DXVECTOR3(-128.6,	42.6f,	700.f),
-		D3DXVECTOR3(-128.6,	42.6f,	636.f),
-		D3DXVECTOR3(-128.6,	42.6f,	608.f),
-		D3DXVECTOR3(-128.6,	42.6f,	650.f),
-
-		D3DXVECTOR3(-50.6,	42.6f,	650.f),
-		D3DXVECTOR3(-30.6,	42.6f,	650.f),
-		D3DXVECTOR3( 30.6,	42.6f,	650.f),
-		D3DXVECTOR3( 50.6,	42.6f,	650.f),
-	},
-
-	//BOSS LEVEL
-	{
-		D3DXVECTOR3( 0.f,	15.f,	1.f),
-	}
-};
+//==================================================================
+// Level data.
+//   These are populated at runtime from the CSV files under Data\CSV\
+//   by CGame::LoadLevelDataFromCSV(). See that method for the mapping.
+//==================================================================
+static D3DXVECTOR3                            PLAYER_STARTPOS[LEVEL_COUNT];
+static std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT];
+static std::vector<CDataReader::BLOCKED_PATH> BLOCKEDPATH_LIST[LEVEL_COUNT];
+static CLevel::GOAL                           LevelGoals[LEVEL_COUNT];
+static std::vector<D3DXVECTOR3>               ENEMY_STARTPOS[LEVEL_COUNT];
 
 bool wasStuck = false;
 int stuckFrameCount = 0;
@@ -185,6 +96,9 @@ CGame::~CGame()
 
 void CGame::Create()
 {
+	// Load all level data from CSV before anything that depends on it
+	// (e.g. blocked-path allocation below uses BLOCKEDPATH_LIST sizes).
+	LoadLevelDataFromCSV();
 
 	m_pCamera = new CCamera();
 	m_pCameraController = new CCameraController(m_pCamera);
@@ -243,52 +157,8 @@ void CGame::Create()
 	m_pEnemyPool.reserve(ENEMY_COUNT_MAX);
 	m_pBossShotList.reserve(ENEMY_COUNT_MAX);
 	
-	// Get form csv later
-	m_EnemyGroups [0] = {
-
-		{
-			8,
-			false,
-			false,
-			{new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider, new CSpider,} // enemies will be spawned later
-		},
-	};
-
-	m_EnemyGroups[1] = {
-
-		{
-			4,
-			false,
-			false,
-			{new CRobo, new CRobo, new CSpider, new CSpider}
-		},
-		{
-			8,
-			false,
-			false,
-			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo}
-		},
-
-		{
-			12,
-			false,
-			false,
-			{new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CRobo, new CSpider, new CSpider, new CSpider, new CSpider}
-		},
-
-	};
-
-	m_EnemyGroups[2] = {
-
-		{
-			1,
-			false,
-			false,
-			{new CBoss} 
-		},
-	};
-
-
+	// Enemy spawn groups are built from Data\CSV\enemyGroups.csv
+	// in LoadLevelDataFromCSV(), called at the top of Create().
 
 	for( int i= 0; i < ENEMY_COUNT_MAX; i++)
 	{
@@ -383,7 +253,7 @@ HRESULT CGame::LoadData()
 	hr &= LoadPlayerAsset();
 
 
-//ÉfÉoÉbÉOóp
+//ÔøΩfÔøΩoÔøΩbÔøΩOÔøΩp
 #if _DEBUG
 
 	// Initialize debug collider renderer
@@ -439,7 +309,7 @@ HRESULT CGame::LoadData()
 
 void CGame::Release()
 {
-	//DeleteÉIÉuÉWÉFÉNÉgâï˙.
+	//DeleteÔøΩIÔøΩuÔøΩWÔøΩFÔøΩNÔøΩgÔøΩÔøΩÔøΩ.
 	SAFE_DELETE(m_pFont);
 	SAFE_DELETE(m_pStaminaBarSprite);
 	SAFE_DELETE(m_pStaminaBarUI);
@@ -494,20 +364,20 @@ void CGame::Release()
 
 void CGame::Start()
 {
-	//ÉâÉCÉgê›íË
+	//ÔøΩÔøΩÔøΩCÔøΩgÔøΩ›íÔøΩ
 	float lightIntensity	= 1.055f;
 	D3DXVECTOR3 lightDir	= D3DXVECTOR3(0.2f, -1.0f, 0.5f);
 	
-	//ÉtÉHÉOê›íË
+	//ÔøΩtÔøΩHÔøΩOÔøΩ›íÔøΩ
 	bool fog				= false;
 
-	//ÉJÉÅÉâê›íË.
+	//ÔøΩJÔøΩÔøΩÔøΩÔøΩÔøΩ›íÔøΩ.
 	float fovY				= D3DX_PI / 4.0f;
 	float aspect			= static_cast<float>(WND_W) / static_cast<float>(WND_H);
 	float zn				= 0.1f, 
 		  zf				= 1000.0f;
 
-	//ÉVÅ[Éìèâä˙âª.
+	//ÔøΩVÔøΩ[ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ.
 	InitScene(fovY, aspect, zn, zf, lightIntensity, lightDir, fog);
 
 	InitUI();
@@ -856,7 +726,7 @@ void CGame::Draw()
 
 	DrawDecals(mView, mProj);
 
-	//ÉâÉCÉgÉjÉìÉOÉGÉtÉFÉNÉgÅAÉpÉ^Å[ÉìÉAÉjÉÅÅ[ÉVÉáÉì.Åiç«Ç™ÇÍÇΩìπópÅj
+	//ÔøΩÔøΩÔøΩCÔøΩgÔøΩjÔøΩÔøΩÔøΩOÔøΩGÔøΩtÔøΩFÔøΩNÔøΩgÔøΩAÔøΩpÔøΩ^ÔøΩ[ÔøΩÔøΩÔøΩAÔøΩjÔøΩÔøΩÔøΩ[ÔøΩVÔøΩÔøΩÔøΩÔøΩ.ÔøΩiÔøΩ«ÇÔøΩÔøΩÍÇΩÔøΩÔøΩÔøΩpÔøΩj
 	m_pLightningSprite->SetPatternNo(0,(int)(m_pTime->GetTotalTime() * 0.01f) % 11);
 
 	for (auto pBlockedPath : m_pBlockedPathList[CGameStats::LevelSelection])
@@ -1531,16 +1401,16 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& dista
 	float radiusA = charaA->GetRadius();
 	float radiusB = charaB->GetRadius();
 
-	// XZïΩñ Ç≈ÇÃãóó£åvéZÅiYé≤Çñ≥éãÅj
+	// XZÔøΩÔøΩÔøΩ Ç≈ÇÃãÔøΩÔøΩÔøΩÔøΩvÔøΩZÔøΩiYÔøΩÔøΩÔøΩñ≥éÔøΩÔøΩj
 	D3DXVECTOR3 diff = posA - posB;
 	diff.y = 0.0f;
 	distance = D3DXVec3Length(&diff);
 	float minDist = radiusA + radiusB;
 
-	// è’ìÀåüèo
+	// ÔøΩ’ìÀåÔøΩÔøΩo
 	if (distance < minDist && distance > 0.001f)
 	{
-		// âüÇµèoÇµÉxÉNÉgÉãÇåvéZ
+		// ÔøΩÔøΩÔøΩÔøΩÔøΩoÔøΩÔøΩÔøΩxÔøΩNÔøΩgÔøΩÔøΩÔøΩÔøΩÔøΩvÔøΩZ
 		D3DXVECTOR3 pushDir;
 		D3DXVec3Normalize(&pushDir, &diff);
 
@@ -1692,22 +1562,22 @@ bool CGame::HandleColliderCollision(CStaticMeshObject* pObjA, CCharacter* pChara
 
 	D3DXVECTOR3 penetration(0, 0, 0);
 	
-	// ÉRÉâÉCÉ_Å[ìØémÇÃè’ìÀîªíË
+	// ÔøΩRÔøΩÔøΩÔøΩCÔøΩ_ÔøΩ[ÔøΩÔøΩÔøΩmÔøΩÃè’ìÀîÔøΩÔøΩÔøΩ
 	if (pColliderB->CheckCollision(pColliderA, &penetration))
 	{
 		if (resolveForChara)
 		{
-			// ÉLÉÉÉâÉNÉ^Å[ÇâüÇµèoÇ∑
+			// ÔøΩLÔøΩÔøΩÔøΩÔøΩÔøΩNÔøΩ^ÔøΩ[ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩoÔøΩÔøΩ
 			D3DXVECTOR3 charaPos = pChara->GetPosition();
 			D3DXVECTOR3 charaVel = pChara->GetVelocity();
 
-			// Yï˚å¸ÇÃâüÇµèoÇµÇÕñ≥éãÅiè∞ÇÃè’ìÀÇÕï èàóùÅj
+			// YÔøΩÔøΩÔøΩÔøΩÔøΩÃâÔøΩÔøΩÔøΩÔøΩoÔøΩÔøΩÔøΩÕñÔøΩÔøΩÔøΩÔøΩiÔøΩÔøΩÔøΩÃè’ìÀÇÕï èÔøΩÔøΩÔøΩÔøΩj
 			penetration.y = 0.0f;
 
 			charaPos += penetration;
 			pChara->SetPosition(charaPos);
 
-			// âüÇµèoÇµï˚å¸ÇÃë¨ìxÇÉ[ÉçÇ…Ç∑ÇÈ
+			// ÔøΩÔøΩÔøΩÔøΩÔøΩoÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÃëÔøΩÔøΩxÔøΩÔøΩÔøΩ[ÔøΩÔøΩÔøΩ…ÇÔøΩÔøΩÔøΩ
 			if (fabsf(penetration.x) > 0.001f)
 			{
 				charaVel.x = 0.0f;
@@ -1813,19 +1683,19 @@ void CGame::HandlePlayerEnemyCollision()
 			float distance = 0.f;
 			bool collided = false;
 
-			// ÉRÉâÉCÉ_Å[Ç™Ç†ÇÈèÍçáÇÕÉRÉâÉCÉ_Å[ÉxÅ[ÉXÇÃè’ìÀîªíËÇégóp
+			// ÔøΩRÔøΩÔøΩÔøΩCÔøΩ_ÔøΩ[ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÍçáÔøΩÕÉRÔøΩÔøΩÔøΩCÔøΩ_ÔøΩ[ÔøΩxÔøΩ[ÔøΩXÔøΩÃè’ìÀîÔøΩÔøΩÔøΩÔøΩÔøΩgÔøΩp
 			if (pEnemyCollider)
 			{
 				collided = HandleColliderCollision(pEnemy, m_pPlayer, true);
 			
-			// ãóó£åvéZÅiÉ_ÉÅÅ[ÉWîªíËópÅj
+			// ÔøΩÔøΩÔøΩÔøΩÔøΩvÔøΩZÔøΩiÔøΩ_ÔøΩÔøΩÔøΩ[ÔøΩWÔøΩÔøΩÔøΩÔøΩpÔøΩj
 				D3DXVECTOR3 diff = m_pPlayer->GetPosition() - pEnemy->GetPosition();
 				diff.y = 0.0f;
 				distance = D3DXVec3Length(&diff);
 			}
 			else
 			{
-				// ÉRÉâÉCÉ_Å[Ç™Ç»Ç¢èÍçáÇÕè]óàÇÃãÖÉxÅ[ÉXÇÃè’ìÀîªíË
+				// ÔøΩRÔøΩÔøΩÔøΩCÔøΩ_ÔøΩ[ÔøΩÔøΩÔøΩ»ÇÔøΩÔøΩÍçáÔøΩÕè]ÔøΩÔøΩÔøΩÃãÔøΩÔøΩxÔøΩ[ÔøΩXÔøΩÃè’ìÀîÔøΩÔøΩÔøΩ
 				if (typeid(*pEnemy) == typeid(CBoss))
 				{
 					collided = HandleCubeCollisions(pEnemy, m_pPlayer);
@@ -1844,7 +1714,7 @@ void CGame::HandlePlayerEnemyCollision()
 			{
 				hadCollision = true;
 				
-				// É_ÉÅÅ[ÉWèàóù (only on first iteration to avoid multiple damage)
+				// ÔøΩ_ÔøΩÔøΩÔøΩ[ÔøΩWÔøΩÔøΩÔøΩÔøΩ (only on first iteration to avoid multiple damage)
 				if (iteration == 0 && ((pEnemy->GetState() == CAnimEnemy::Attacking) || (pEnemy->GetState() == CAnimEnemy::Jumping)))
 				{
 					float damage = 5.5f;
@@ -2045,6 +1915,52 @@ void CGame::HandleEnemyGroupCleared()
 
 	}
 
+}
+
+void CGame::LoadLevelDataFromCSV()
+{
+	// Per-level scalars: start position, goal and timer (one row per level).
+	std::vector<CDataReader::LEVEL_INFO> levelInfos;
+	CDataReader::LoadLevelData("Data\\CSV\\levelData.csv", levelInfos);
+	for (const auto& info : levelInfos)
+	{
+		if (info.id < 0 || info.id >= LEVEL_COUNT)
+			continue;
+
+		PLAYER_STARTPOS[info.id]        = info.startPos;
+		LevelGoals[info.id]             = info.goal;
+		CGameStats::LevelTimer[info.id] = info.timer;
+	}
+
+	// Variable-length per-level lists (bucketed by LEVEL_ID).
+	CDataReader::LoadEnemySpawns ("Data\\CSV\\enemySpawns.csv",  ENEMY_STARTPOS,         LEVEL_COUNT);
+	CDataReader::LoadBlockedPaths("Data\\CSV\\blockedPaths.csv", BLOCKEDPATH_LIST,       LEVEL_COUNT);
+	CDataReader::LoadTriggers    ("Data\\CSV\\triggers.csv",     COLLISION_TRIGGER_LIST, LEVEL_COUNT);
+
+	// Enemy spawn groups: build the concrete enemy objects from the CSV archetypes.
+	std::vector<CDataReader::ENEMY_GROUP_DEF> groupDefs[LEVEL_COUNT];
+	CDataReader::LoadEnemyGroups("Data\\CSV\\enemyGroups.csv", groupDefs, LEVEL_COUNT);
+	for (int level = 0; level < LEVEL_COUNT; ++level)
+	{
+		m_EnemyGroups[level].clear();
+		for (const auto& def : groupDefs[level])
+		{
+			ENEMY_GROUP group;
+			group.count     = static_cast<int>(def.enemies.size());
+			group.isSpawned = false;
+			group.isCleared = false;
+			for (CDataReader::ENEMY_TYPE type : def.enemies)
+			{
+				switch (type)
+				{
+				case CDataReader::ENEMY_SPIDER: group.enemies.push_back(new CSpider()); break;
+				case CDataReader::ENEMY_ROBO:   group.enemies.push_back(new CRobo());   break;
+				case CDataReader::ENEMY_BOSS:   group.enemies.push_back(new CBoss());   break;
+				}
+			}
+			m_EnemyGroups[level].push_back(group);
+		}
+	}
 }
 
 void CGame::SetupBlockedPath()
@@ -2403,7 +2319,7 @@ void CGame::InitEnemy()
 	const float ROBO_SCALE = 0.01f;
 	const float BOSS_SCALE = 2.f;
 
-	//ìGÇÃîÒÉAÉNÉeÉBÉuâª.
+	//ÔøΩGÔøΩÃîÔøΩAÔøΩNÔøΩeÔøΩBÔøΩuÔøΩÔøΩ.
 	for (auto pEnemy : m_pEnemyPool)
 	{
 		pEnemy->InitEnemy();
@@ -2511,15 +2427,15 @@ void CGame::HandleDynamicFov(float playerVelLen, float& fovY)
 {
 	if (m_pPlayer->IsDashing() && playerVelLen > 0.1f)
 	{
-		// FOVägëÂ
+		// FOVÔøΩgÔøΩÔøΩ
 		float targetFovY = D3DX_PI / 3.0f; // 
-		fovY += (targetFovY - fovY) * FPS / 1000.f; // ÉXÉÄÅ[ÉYÇ…ägëÂ
+		fovY += (targetFovY - fovY) * FPS / 1000.f; // ÔøΩXÔøΩÔøΩÔøΩ[ÔøΩYÔøΩ…ägÔøΩÔøΩ
 	}
 	else
 	{
-		// FOVí èÌñﬂÇµ
+		// FOVÔøΩ èÔøΩﬂÇÔøΩ
 		float normalFovY = D3DX_PI / 4.0f;
-		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // ÉXÉÄÅ[ÉYÇ…ñﬂÇ∑
+		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // ÔøΩXÔøΩÔøΩÔøΩ[ÔøΩYÔøΩ…ñﬂÇÔøΩ
 	}
 }
 
@@ -2529,10 +2445,10 @@ void CGame::HandleStepSE(float playerVelLen, float& stepTimer)
 	{
 		if (stepTimer <= 0.f)
 		{
-			stepTimer = 800.f - (playerVelLen * 100.f); // ë¨ìxÇ…âûÇ∂Çƒë´âπÇÃä‘äuÇïœÇ¶ÇÈ
+			stepTimer = 800.f - (playerVelLen * 100.f); // ÔøΩÔøΩÔøΩxÔøΩ…âÔøΩÔøΩÔøΩÔøΩƒëÔøΩÔøΩÔøΩÔøΩÃä‘äuÔøΩÔøΩœÇÔøΩÔøΩÔøΩ
 			if (stepTimer < 350.f)
 			{
-				stepTimer = 350.f; // ç≈è¨ä‘äu
+				stepTimer = 350.f; // ÔøΩ≈èÔøΩÔøΩ‘äu
 			}
 			float randChoice = distFloat(m_RandomGen);
 			if (randChoice < 0.5f)

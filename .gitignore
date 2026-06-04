@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /3DFPS/Data/assets credit.txt
 /3DFPS/CBoss_test.txt
+
+# Local player save data (high score)
+highscore.dat

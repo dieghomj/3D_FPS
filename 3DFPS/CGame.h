@@ -25,11 +25,6 @@ class CGame :
 {
 public:
 
-	struct BLOCKED_PATH_TRANS{
-		D3DXVECTOR3 position = D3DXVECTOR3(0.f, 0.f, 0.f);
-		D3DXVECTOR3 scale = D3DXVECTOR3(1.f, 1.f, 1.f);
-	};
-
 	struct BULLET_IMPACT {
 
 		D3DXVECTOR3 position = D3DXVECTOR3(0.f,0.f,0.f);
@@ -103,6 +98,7 @@ private:
 
 
 	//void HandleWallCollisions(CCharacter* character);
+	void LoadLevelDataFromCSV();
 	void SetupBlockedPath();
 
 	void DrawEnemyShots();

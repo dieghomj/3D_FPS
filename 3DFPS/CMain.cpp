@@ -8,24 +8,24 @@
 #include "CResult.h"
 #include "CGameStats.h"
 
-//ƒEƒBƒ“ƒhƒE‚ð‰æ–Ê’†‰›‚Å‹N“®‚ð—LŒø‚É‚·‚é.
+//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½Ê’ï¿½ï¿½ï¿½ï¿½Å‹Nï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½.
 //#define ENABLE_WINDOWS_CENTERING
 
 //=================================================
-//	’è”.
+//	ï¿½è”.
 //=================================================
 const TCHAR WND_TITLE[] = _T( "FAST ATTACK" );
 const TCHAR APP_NAME[]	= _T( "FAST ATTACK" );
 
 
 /********************************************************************************
-*	ƒƒCƒ“ƒNƒ‰ƒX.
+*	ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X.
 **/
 //=================================================
-//	ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
+//	ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^.
 //=================================================
 CMain::CMain()
-	//‰Šú‰»ƒŠƒXƒg.
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½g.
 	: m_hWnd	( nullptr )
 	, m_pDx9	( nullptr )
 	, m_pDx11	( nullptr )
@@ -46,7 +46,7 @@ CMain::CMain()
 
 
 //=================================================
-//	ƒfƒXƒgƒ‰ƒNƒ^.
+//	ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^.
 //=================================================
 CMain::~CMain()
 {
@@ -59,41 +59,44 @@ CMain::~CMain()
 }
 
 
-//XVˆ—.
+//ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½.
 void CMain::Update()
 {
 
-	//XVˆ—.
+	//ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½.
 	m_pSceneManager->Update();
 
-	//ƒoƒbƒNƒoƒbƒtƒ@‚ðƒNƒŠƒA‚É‚·‚é.
+	//ï¿½oï¿½bï¿½Nï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Aï¿½É‚ï¿½ï¿½ï¿½.
 	m_pDx11->ClearBackBuffer();
 
-	//•`‰æˆ—.
+	//ï¿½`ï¿½æˆï¿½ï¿½.
 	m_pSceneManager->Draw();
 	
-	//‰æ–Ê‚É•\Ž¦.
+	//ï¿½ï¿½Ê‚É•\ï¿½ï¿½.
 	m_pDx11->Present();
 
 }
 
 
-//\’zˆ—.
+//ï¿½\ï¿½zï¿½ï¿½ï¿½ï¿½.
 HRESULT CMain::Create()
 {
-	//DirectX9\’z.
+	//DirectX9ï¿½\ï¿½z.
 	if (FAILED(m_pDx9->Create(m_hWnd)))
 	{
 		return E_FAIL;
 	}
 
-	//DirectX11\’z.
+	//DirectX11ï¿½\ï¿½z.
 	if( FAILED( m_pDx11->Create( m_hWnd ) ) )
 	{
 		return E_FAIL;
 	}
 
-	//ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX¶¬
+	// Load the locally saved high score.
+	CGameStats::LoadHighScore();
+
+	//ï¿½Vï¿½[ï¿½ï¿½ï¿½Ç—ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½
 	m_pSceneManager = new CSceneManager();
 
 	m_pMenu = new CMenu(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
@@ -101,19 +104,19 @@ HRESULT CMain::Create()
 	m_pGameOver = new CGameOver(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 	m_pResult = new CResultScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
-	//ƒQ[ƒ€ƒV[ƒ“ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX¶¬.
+	//ï¿½Qï¿½[ï¿½ï¿½ï¿½Vï¿½[ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½.
 	m_pSceneManager->AddScene(m_pMenu, "MENU");
 	m_pSceneManager->AddScene(m_pGame, "GAME");
 	m_pSceneManager->AddScene(m_pResult, "RESULT");
 	m_pSceneManager->AddScene(m_pGameOver,"GAMEOVER");
 
-	//ƒV[ƒ“•ÏX.
+	//ï¿½Vï¿½[ï¿½ï¿½ï¿½ÏX.
 	m_pSceneManager->ChangeScene("MENU");
 
 	return S_OK;
 }
 
-//ƒf[ƒ^ƒ[ƒhˆ—.
+//ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½.
 HRESULT CMain::LoadData()
 {
 
@@ -121,7 +124,7 @@ HRESULT CMain::LoadData()
 }
 
 
-//‰ð•úˆ—.
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 void CMain::Release()
 {
 	if( m_pDx11 != nullptr ){
@@ -133,33 +136,33 @@ void CMain::Release()
 }
 
 
-//ƒƒbƒZ[ƒWƒ‹[ƒv.
+//ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½v.
 void CMain::Loop()
 {
-	//ƒf[ƒ^ƒ[ƒh.
+	//ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½[ï¿½h.
 	if( FAILED( LoadData() )){
 		return;
 	}
 
 	//------------------------------------------------
-	//	ƒtƒŒ[ƒ€ƒŒ[ƒg’²®€”õ.
+	//	ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 	//------------------------------------------------
-	float Rate = 0.0f;	//ƒŒ[ƒg.
+	float Rate = 0.0f;	//ï¿½ï¿½ï¿½[ï¿½g.
 	double dt = 0.0f;
-	DWORD sync_old = timeGetTime();			//‰ß‹ŽŽžŠÔ.
-	DWORD sync_now;							//Œ»ÝŽžŠÔ.
+	DWORD sync_old = timeGetTime();			//ï¿½ß‹ï¿½ï¿½ï¿½ï¿½ï¿½.
+	DWORD sync_now;							//ï¿½ï¿½ï¿½ÝŽï¿½ï¿½ï¿½.
 	m_pTime->Init(FPS);
-	//ŽžŠÔˆ—‚Ì‚½‚ßAÅ¬’PˆÊ‚ð1ƒ~ƒŠ•b‚É•ÏX.
+	//ï¿½ï¿½ï¿½Ôï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ßAï¿½Åï¿½ï¿½Pï¿½Ê‚ï¿½1ï¿½~ï¿½ï¿½ï¿½bï¿½É•ÏX.
 	timeBeginPeriod( 1 );
-	Rate = 1000.0f / static_cast<float>(FPS); //—‘zŽžŠÔ‚ðŽZo.
+	Rate = 1000.0f / static_cast<float>(FPS); //ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½Ô‚ï¿½ï¿½Zï¿½o.
 
-	//ƒƒbƒZ[ƒWƒ‹[ƒv.
+	//ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½v.
 	MSG msg = { 0 };
 	ZeroMemory( &msg, sizeof( msg ) );
 
 	while( msg.message != WM_QUIT )
 	{
-		sync_now = timeGetTime();	//Œ»Ý‚ÌŽžŠÔ‚ðŽæ“¾.
+		sync_now = timeGetTime();	//ï¿½ï¿½ï¿½Ý‚ÌŽï¿½ï¿½Ô‚ï¿½ï¿½æ“¾.
 		m_pTime->Tick();
 
 		if( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
@@ -169,25 +172,25 @@ void CMain::Loop()
 		}
 		else if( m_pTime->FixedTick(dt))
 		{
-			sync_old = sync_now;	//Œ»ÝŽžŠÔ‚É’u‚«Š·‚¦.
+			sync_old = sync_now;	//ï¿½ï¿½ï¿½ÝŽï¿½ï¿½Ô‚É’uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 
-			//XVˆ—.
+			//ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½.
 			Update();
 		}
 	}
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌI—¹.
+	//ï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ÌIï¿½ï¿½.
 	Release();
 }
 
-//ƒEƒBƒ“ƒhƒE‰Šú‰»ŠÖ”.
+//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½.
 HRESULT CMain::InitWindow(
-	HINSTANCE hInstance,	//ƒCƒ“ƒXƒ^ƒ“ƒX.
-	INT x, INT y,			//ƒEƒBƒ“ƒhƒEx,yÀ•W.
-	INT width, INT height)	//ƒEƒBƒ“ƒhƒE•,‚‚³.
+	HINSTANCE hInstance,	//ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½X.
+	INT x, INT y,			//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Ex,yï¿½ï¿½ï¿½W.
+	INT width, INT height)	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½.
 {
-	//ƒEƒBƒ“ƒhƒE‚Ì’è‹`.
+	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ì’ï¿½`.
 	WNDCLASSEX wc;
-	ZeroMemory( &wc, sizeof( wc ) );//‰Šú‰»(0‚ðÝ’è).
+	ZeroMemory( &wc, sizeof( wc ) );//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(0ï¿½ï¿½Ý’ï¿½).
 
 	wc.cbSize			= sizeof( wc );
 	wc.style			= CS_HREDRAW | CS_VREDRAW;
@@ -199,79 +202,79 @@ HRESULT CMain::InitWindow(
 	wc.lpszClassName	= APP_NAME;
 	wc.hIconSm			= LoadIcon( nullptr, IDI_APPLICATION );
 
-	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ðWindows‚É“o˜^.
+	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½Windowsï¿½É“oï¿½^.
 	if( !RegisterClassEx( &wc ) ) {
-		_ASSERT_EXPR( false, _T( "ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ì“o˜^‚ÉŽ¸”s" ) );
+		_ASSERT_EXPR( false, _T( "ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Nï¿½ï¿½ï¿½Xï¿½Ì“oï¿½^ï¿½ÉŽï¿½ï¿½s" ) );
 		return E_FAIL;
 	}
 
 	//--------------------------------------.
-	//	ƒEƒBƒ“ƒhƒE•\Ž¦ˆÊ’u‚Ì’²®.
+	//	ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½\ï¿½ï¿½ï¿½Ê’uï¿½Ì’ï¿½ï¿½ï¿½.
 	//--------------------------------------.
-	//‚±‚ÌŠÖ”“à‚Å‚Ì‚ÝŽg—p‚·‚é\‘¢‘Ì‚ð‚±‚±‚Å’è‹`.
+	//ï¿½ï¿½ï¿½ÌŠÖï¿½ï¿½ï¿½ï¿½Å‚Ì‚ÝŽgï¿½pï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å’ï¿½`.
 	struct RECT_WND
 	{
 		INT x, y, w, h;
 		RECT_WND() : x(), y(), w(), h() {}
-	} rectWindow;//‚±‚±‚É•Ï”éŒ¾‚à‚·‚é.
+	} rectWindow;//ï¿½ï¿½ï¿½ï¿½ï¿½É•Ïï¿½ï¿½éŒ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 
 #ifdef ENABLE_WINDOWS_CENTERING
-	//ƒfƒBƒXƒvƒŒƒC‚Ì•A‚‚³‚ðŽæ“¾.
+	//ï¿½fï¿½Bï¿½Xï¿½vï¿½ï¿½ï¿½Cï¿½Ì•ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾.
 	HWND hDeskWnd = nullptr;
 	RECT recDisplay;
 	hDeskWnd = GetDesktopWindow();
 	GetWindowRect( hDeskWnd, &recDisplay );
 
-	//ƒZƒ“ƒ^ƒŠƒ“ƒO.
-	rectWindow.x = ( recDisplay.right - width ) / 2;	//•\Ž¦ˆÊ’uxÀ•W.
-	rectWindow.y = ( recDisplay.bottom - height ) / 2;	//•\Ž¦ˆÊ’uyÀ•W.
+	//ï¿½Zï¿½ï¿½ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½O.
+	rectWindow.x = ( recDisplay.right - width ) / 2;	//ï¿½\ï¿½ï¿½ï¿½Ê’uxï¿½ï¿½ï¿½W.
+	rectWindow.y = ( recDisplay.bottom - height ) / 2;	//ï¿½\ï¿½ï¿½ï¿½Ê’uyï¿½ï¿½ï¿½W.
 #endif//ENABLE_WINDOWS_CENTERING
 
 	//--------------------------------------.
-	//	ƒEƒBƒ“ƒhƒE—Ìˆæ‚Ì’²®.
+	//	ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ìˆï¿½Ì’ï¿½ï¿½ï¿½.
 	//--------------------------------------.
-	RECT	rect;		//‹éŒ`\‘¢‘Ì.
-	DWORD	dwStyle;	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹.
-	rect.top = 0;			//ã.
-	rect.left = 0;			//¶.
-	rect.right = width;		//‰E.
-	rect.bottom = height;	//‰º.
-	dwStyle = WS_OVERLAPPEDWINDOW;	//ƒEƒBƒ“ƒhƒEŽí•Ê.
+	RECT	rect;		//ï¿½ï¿½`ï¿½\ï¿½ï¿½ï¿½ï¿½.
+	DWORD	dwStyle;	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Xï¿½^ï¿½Cï¿½ï¿½.
+	rect.top = 0;			//ï¿½ï¿½.
+	rect.left = 0;			//ï¿½ï¿½.
+	rect.right = width;		//ï¿½E.
+	rect.bottom = height;	//ï¿½ï¿½.
+	dwStyle = WS_OVERLAPPEDWINDOW;	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½.
 
 	if( AdjustWindowRect(
-		&rect,			//(in)‰æ–ÊƒTƒCƒY‚ª“ü‚Á‚½‹éŒ`\‘¢‘Ì.(out)ŒvŽZŒ‹‰Ê.
-		dwStyle,		//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹.
-		FALSE ) == 0 )	//ƒƒjƒ…[‚ðŽ‚Â‚©‚Ç‚¤‚©‚ÌŽw’è.
+		&rect,			//(in)ï¿½ï¿½ÊƒTï¿½Cï¿½Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½\ï¿½ï¿½ï¿½ï¿½.(out)ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½.
+		dwStyle,		//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Xï¿½^ï¿½Cï¿½ï¿½.
+		FALSE ) == 0 )	//ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½ÌŽwï¿½ï¿½.
 	{
 		MessageBox(
 			nullptr,
-			_T( "ƒEƒBƒ“ƒhƒE—Ìˆæ‚Ì’²®‚ÉŽ¸”s" ),
-			_T( "ƒGƒ‰[ƒƒbƒZ[ƒW" ),
+			_T( "ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ìˆï¿½Ì’ï¿½ï¿½ï¿½ï¿½ÉŽï¿½ï¿½s" ),
+			_T( "ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½W" ),
 			MB_OK );
 		return 0;
 	}
 
-	//ƒEƒBƒ“ƒhƒE‚Ì•‚‚³’²ß.
+	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 	rectWindow.w = rect.right - rect.left;
 	rectWindow.h = rect.bottom - rect.top;
 
-	//ƒEƒBƒ“ƒhƒE‚Ìì¬.
+	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ìì¬.
 	m_hWnd = CreateWindow(
-		APP_NAME,					//ƒAƒvƒŠ–¼.
-		WND_TITLE,					//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹.
-		dwStyle,					//ƒEƒBƒ“ƒhƒEŽí•Ê(•’Ê).
-		rectWindow.x, rectWindow.y,	//•\Ž¦ˆÊ’ux,yÀ•W.
-		rectWindow.w, rectWindow.h,	//ƒEƒBƒ“ƒhƒE•,‚‚³.
-		nullptr,					//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹.
-		nullptr,					//ƒƒjƒ…[Ý’è.
-		hInstance,					//ƒCƒ“ƒXƒ^ƒ“ƒX”Ô†.
-		nullptr );					//ƒEƒBƒ“ƒhƒEì¬Žž‚É”­¶‚·‚éƒCƒxƒ“ƒg‚É“n‚·ƒf[ƒ^.
+		APP_NAME,					//ï¿½Aï¿½vï¿½ï¿½ï¿½ï¿½.
+		WND_TITLE,					//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½^ï¿½Cï¿½gï¿½ï¿½.
+		dwStyle,					//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½).
+		rectWindow.x, rectWindow.y,	//ï¿½\ï¿½ï¿½ï¿½Ê’ux,yï¿½ï¿½ï¿½W.
+		rectWindow.w, rectWindow.h,	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½.
+		nullptr,					//ï¿½eï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½nï¿½ï¿½ï¿½hï¿½ï¿½.
+		nullptr,					//ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½Ý’ï¿½.
+		hInstance,					//ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½Ôï¿½.
+		nullptr );					//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ì¬ï¿½ï¿½ï¿½É”ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½xï¿½ï¿½ï¿½gï¿½É“nï¿½ï¿½ï¿½fï¿½[ï¿½^.
 	if( !m_hWnd ) {
-		_ASSERT_EXPR( false, _T( "ƒEƒBƒ“ƒhƒEì¬Ž¸”s" ) );
+		_ASSERT_EXPR( false, _T( "ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ì¬ï¿½ï¿½ï¿½s" ) );
 		return E_FAIL;
 	}
 
-	//ƒEƒBƒ“ƒhƒE‚Ì•\Ž¦.
+	//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Ì•\ï¿½ï¿½.
 	ShowWindow( m_hWnd, SW_SHOW );
 	UpdateWindow( m_hWnd );
 
@@ -279,7 +282,7 @@ HRESULT CMain::InitWindow(
 }
 
 
-//ƒEƒBƒ“ƒhƒEŠÖ”iƒƒbƒZ[ƒW–ˆ‚Ìˆ—j.
+//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½Öï¿½ï¿½iï¿½ï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½j.
 LRESULT CALLBACK CMain::MsgProc(
 	HWND hWnd, UINT uMsg,
 	WPARAM wParam, LPARAM lParam )
@@ -295,25 +298,25 @@ LRESULT CALLBACK CMain::MsgProc(
 	case WM_SETFOCUS:
 		LockCursorToWindow(hWnd);
 		break;
-	case WM_DESTROY://ƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚½‚Æ‚«.
+	case WM_DESTROY://ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Æ‚ï¿½.
 		// Unlock cursor when the window is destroyed
 		UnlockCursor();
 		ShowCursor(TRUE);
-		//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌI—¹‚ðWindows‚É’Ê’m‚·‚é.
+		//ï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ÌIï¿½ï¿½ï¿½ï¿½Windowsï¿½É’Ê’mï¿½ï¿½ï¿½ï¿½.
 		PostQuitMessage(0);
 		break;
-	case WM_KEYDOWN://ƒL[ƒ{[ƒh‚ª‰Ÿ‚³‚ê‚½‚Æ‚«.
-		//ƒL[•Ê‚Ìˆ—.
+	case WM_KEYDOWN://ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Æ‚ï¿½.
+		//ï¿½Lï¿½[ï¿½Ê‚Ìï¿½ï¿½ï¿½.
 		switch (static_cast<char>(wParam)) {
-		case VK_ESCAPE:	//ESC·°.
+		case VK_ESCAPE:	//ESCï¿½ï¿½.
 			// Unlock cursor when Escape key is pressed
 			UnlockCursor();
 			ShowCursor(TRUE);
 			if (MessageBox(nullptr,
-				_T("ƒQ[ƒ€‚ðI—¹‚µ‚Ü‚·‚©H"),
-				_T("Œx"), MB_YESNO) == IDYES)
+				_T("ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½H"),
+				_T("ï¿½xï¿½ï¿½"), MB_YESNO) == IDYES)
 			{
-				//ƒEƒBƒ“ƒhƒE‚ð”jŠü‚·‚é.
+				//ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 				DestroyWindow(hWnd);
 			}
 			break;
@@ -323,7 +326,7 @@ LRESULT CALLBACK CMain::MsgProc(
 		UnlockCursor();
 		break;
 	}
-	//ƒƒCƒ“‚É•Ô‚·î•ñ.
+	//ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½É•Ô‚ï¿½ï¿½ï¿½ï¿½.
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }
 
