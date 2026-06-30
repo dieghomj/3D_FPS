@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CGameObject.h"
 #include "CStaticMesh.h"
@@ -8,7 +8,7 @@
 #include "CRay.h"
 
 /************************************************************
-*	ƒXƒ^ƒeƒBƒbƒNƒƒbƒVƒ…ƒIƒuƒWƒFƒNƒgƒNƒ‰ƒX.
+*	ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒ¡ãƒƒã‚·ãƒ¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚¯ãƒ©ã‚¹.
 **/
 class CStaticMeshObject
 	: public CGameObject
@@ -18,42 +18,42 @@ public:
 	CStaticMeshObject();
 	virtual ~CStaticMeshObject() override;
 
-	//CGameObject‚Åƒˆ‰¼‘zŠÖ”‚ÌéŒ¾‚ª‚³‚ê‚Ä‚é‚Ì‚Å‚±‚¿‚ç‚Å’è‹`‚ğ‘‚­.
+	//CGameObjectã§ç´”ç²‹ä»®æƒ³é–¢æ•°ã®å®£è¨€ãŒã•ã‚Œã¦ã‚‹ã®ã§ã“ã¡ã‚‰ã§å®šç¾©ã‚’æ›¸ã.
 	virtual void Update() override;
 	virtual void Draw( SCENE_DATA& sceneData ) override;
 
-	//ƒƒbƒVƒ…‚ğÚ‘±‚·‚é.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æ¥ç¶šã™ã‚‹.
 	virtual void AttachMesh( CStaticMesh& pMesh ){
 		m_pMesh = &pMesh;
 	}
-	//ƒƒbƒVƒ…‚ğØ‚è—£‚·.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’åˆ‡ã‚Šé›¢ã™.
 	virtual void DetachMesh(){
 		m_pMesh = nullptr;
 	}
 
 	HRESULT CreateCollider(CCollider::COLLIDER_SHAPE shape);
 
-	//ƒoƒEƒ“ƒfƒBƒ“ƒOƒXƒtƒBƒAæ“¾
+	//ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚¹ãƒ•ã‚£ã‚¢å–å¾—
 	CCollider* GetCollider() const {
 		return m_pCollider;
 	}
 
-	//ƒoƒEƒ“ƒfƒBƒ“ƒOƒXƒtƒBƒA‚ğƒIƒuƒWƒFƒNƒgˆÊ’u‚É‡‚í‚¹‚é
-	//¦ƒ‚ƒfƒ‹‚ÌŒ´“_‚ª’†S‚Ìê‡‚ğ‘z’è
+	//ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚¹ãƒ•ã‚£ã‚¢ã‚’ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä½ç½®ã«åˆã‚ã›ã‚‹
+	//â€»ãƒ¢ãƒ‡ãƒ«ã®åŸç‚¹ãŒä¸­å¿ƒã®å ´åˆã‚’æƒ³å®š
 	void UpdateCollider() {
 		m_pCollider->SetPosition(m_vPosition);
 		m_pCollider->SetRotation(m_vRotation);
 		m_pCollider->SetScale(m_vScale);
 	}
 
-	//ƒŒƒC‚ÆƒƒbƒVƒ…‚Ì“–‚½‚è”»’è
+	//ãƒ¬ã‚¤ã¨ãƒ¡ãƒƒã‚·ãƒ¥ã®å½“ãŸã‚Šåˆ¤å®š
 	bool IsHitForRay(
-		const RAY& pRay,					//ƒŒƒC\‘¢‘Ì
-		float* pDistance,					//(out)‹——£
-		D3DXVECTOR3* pIntersect,			//(out)Œğ·“_
-		D3DXVECTOR3* pNormal = nullptr);	//(out)–@ü(ƒxƒNƒgƒ‹)
+		const RAY& pRay,					//ãƒ¬ã‚¤æ§‹é€ ä½“
+		float* pDistance,					//(out)è·é›¢
+		D3DXVECTOR3* pIntersect,			//(out)äº¤å·®ç‚¹
+		D3DXVECTOR3* pNormal = nullptr);	//(out)æ³•ç·š(ãƒ™ã‚¯ãƒˆãƒ«)
 
-	//•Ç‚©‚ç‚ÌˆÊ’u‚ğŒvZ‚·‚é
+	//å£ã‹ã‚‰ã®ä½ç½®ã‚’è¨ˆç®—ã™ã‚‹
 	void CalculatePositionFromWall(CROSSRAY* pCrossRay);
 
 	void ScaleAnim(float dt, float speed);
@@ -68,14 +68,14 @@ protected:
 
 
 private:
-	//Œğ·ˆÊ’u‚Ìƒ|ƒŠƒSƒ“‚Ì’¸“_‚ğŒ©‚Â‚¯‚é
+	//äº¤å·®ä½ç½®ã®ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ã‚’è¦‹ã¤ã‘ã‚‹
 	HRESULT FindVerticesOnPoly(
 		LPD3DXMESH pMesh,
 		DWORD dwPolyIndex,
-		D3DXVECTOR3* pVertices);	//(out)’¸“_î•ñ
+		D3DXVECTOR3* pVertices);	//(out)é ‚ç‚¹æƒ…å ±
 
-	//‰ñ“]’l’²®i‚PüˆÈã‚µ‚Ä‚¢‚é‚Ì’²®j
-	void ClampDirection(float* dir);	//Ä‹AŠÖ”
+	//å›è»¢å€¤èª¿æ•´ï¼ˆï¼‘å‘¨ä»¥ä¸Šã—ã¦ã„ã‚‹æ™‚ã®èª¿æ•´ï¼‰
+	void ClampDirection(float* dir);	//å†å¸°é–¢æ•°
 
 
 	float m_ScaleAnimTime = 0.0f;

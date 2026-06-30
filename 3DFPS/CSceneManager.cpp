@@ -1,4 +1,4 @@
-#include "CSceneManager.h"
+ï»¿#include "CSceneManager.h"
 #include "CScene.h"
 
 CSceneManager::CSceneManager()
@@ -32,7 +32,7 @@ HRESULT CSceneManager::AddScene(CScene* scene, const char* name)
 
 CScene* CSceneManager::ChangeScene(const char* name, bool release)
 {
-	//‘O‚ÌƒV[ƒ“”j‰ó
+	//å‰ã®ã‚·ãƒ¼ãƒ³ç ´å£Š
 	if (m_pCurrentScene && release)
 	{
 		m_pCurrentScene->Release();
@@ -42,7 +42,7 @@ CScene* CSceneManager::ChangeScene(const char* name, bool release)
 
 	if (FAILED(m_pCurrentScene->LoadData()))
 	{
-		OutputDebugString(_T("ƒV[ƒ“Ø‚è‘Ö‚¦‚Ìƒf[ƒ^ƒ[ƒh‚ÉƒGƒ‰[”­¶‚µ‚½"));
+		OutputDebugString(_T("ã‚·ãƒ¼ãƒ³åˆ‡ã‚Šæ›¿ãˆã®ãƒ‡ãƒ¼ã‚¿ãƒ­ãƒ¼ãƒ‰ã«ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿã—ãŸ"));
 	}
 
 	if (m_pCurrentScene)

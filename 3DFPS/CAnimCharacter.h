@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CCharacter.h"
 #include "CSkinMesh.h"
 
@@ -10,21 +10,21 @@ public:
 
 	enum
 	{
-		NO_FLAG = 0,	//ƒtƒ‰ƒO–³‚µ.
-		FORCE_CHANGE = 1,	//‹­§“I‚ÉƒAƒjƒ[ƒVƒ‡ƒ“‚ğØ‚è‘Ö‚¦‚éƒtƒ‰ƒO.
-		BLEND_CHANGE = 2,	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ğƒuƒŒƒ“ƒh‚µ‚ÄØ‚è‘Ö‚¦‚éƒtƒ‰ƒO.
+		NO_FLAG = 0,	//ãƒ•ãƒ©ã‚°ç„¡ã—.
+		FORCE_CHANGE = 1,	//å¼·åˆ¶çš„ã«ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ãƒ•ãƒ©ã‚°.
+		BLEND_CHANGE = 2,	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ãƒ–ãƒ¬ãƒ³ãƒ‰ã—ã¦åˆ‡ã‚Šæ›¿ãˆã‚‹ãƒ•ãƒ©ã‚°.
 	};
 
 	CAnimCharacter();
 	virtual ~CAnimCharacter() override;
-	//CGameObject‚Åƒˆ‰¼‘zŠÖ”‚ÌéŒ¾‚ª‚³‚ê‚Ä‚é‚Ì‚Å‚±‚¿‚ç‚Å’è‹`‚ğ‘‚­.
+	//CGameObjectã§ç´”ç²‹ä»®æƒ³é–¢æ•°ã®å®£è¨€ãŒã•ã‚Œã¦ã‚‹ã®ã§ã“ã¡ã‚‰ã§å®šç¾©ã‚’æ›¸ã.
 	virtual void InitAnimation();
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
-	//ƒfƒoƒbƒO‚Ì‚İg—p
+	//ãƒ‡ãƒãƒƒã‚°ã®ã¿ä½¿ç”¨
 	void RenderStatic(SCENE_DATA& sceneData);
 	
-	//ƒƒbƒVƒ…‚ğÚ‘±‚·‚é.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æ¥ç¶šã™ã‚‹.
 	void AttachSkinMesh(CSkinMesh& pMesh);
 	void DetachSkinMesh() {
 		m_pSkinMesh = nullptr;
@@ -44,7 +44,7 @@ public:
 
 private:
 
-	LPD3DXANIMATIONCONTROLLER	m_pAnimCtrl;	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰
+	LPD3DXANIMATIONCONTROLLER	m_pAnimCtrl;	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©
 	CSkinMesh* m_pSkinMesh;
 	int m_AnimNo;
 	float m_AnimTime;

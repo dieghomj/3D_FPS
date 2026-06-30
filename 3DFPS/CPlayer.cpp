@@ -1,4 +1,4 @@
-#include "CPlayer.h"
+﻿#include "CPlayer.h"
 
 static constexpr float GRAVITY = 0.0198f;
 static constexpr float FRICTION = 0.0390f;
@@ -17,13 +17,13 @@ static constexpr float CROUCH_SPEED = 0.9f;
 
 static constexpr float JUMP_STRENGTH = 0.58f;
 
-static constexpr float PISTOL_CD = 0.15f; // seconds
-static constexpr float SHOTGUN_CD = 0.15f; // seconds
+static constexpr float PISTOL_CD = 0.15f; // 秒
+static constexpr float SHOTGUN_CD = 0.15f; // 秒
 
 static constexpr float DASH_SPEED = 2.5f;
 static constexpr float DASH_DISTANCE = 5.5f;
-static constexpr float DASH_COOLDOWN = 0.05f; // seconds
-static constexpr float DASH_MAX = 3.f; // seconds
+static constexpr float DASH_COOLDOWN = 0.05f; // 秒
+static constexpr float DASH_MAX = 3.f; // 秒
 
 static constexpr float SLIDE_FRICTION = 0.0003f;
 static constexpr float SLIDE_START_SPEED = 0.01f;
@@ -110,13 +110,13 @@ void CPlayer::Update()
 	float weaponCD = 0.f;
 	switch (m_currWeapon)
 	{
-		case 0: // Pistol
+		case 0: // ピストル
 			weaponCD = PISTOL_CD;
 			break;
-		case 1: // Shotgun
+		case 1: // ショットガン
 			weaponCD = SHOTGUN_CD;
 			break;
-		case 2: // Empty
+		case 2: // 空
 			weaponCD = 0.f;
 			break;
 		default:
@@ -325,12 +325,6 @@ void CPlayer::Move()
 
 	if (!m_IsSliding)
 	{
-		//float length = D3DXVec3Length(&m_Velocity);
-		//if (length > MAX_RUN_SPEED)
-		//{
-		//	D3DXVec3Normalize(&m_Velocity, &m_Velocity);
-		//	m_Velocity = m_Velocity * MAX_RUN_SPEED;
-		//}
 	}
 
 	m_vPosition += m_Velocity ;
@@ -354,13 +348,13 @@ void CPlayer::Shoot()
 
 void CPlayer::Jump()
 {
-	// Allow jump if grounded OR within coyote time grace period
+	// 接地中、またはコヨーテタイム（猶予時間）内であればジャンプを許可する.
 	if ((m_IsOnGround || m_GroundedTimer > 0.f) && !m_IsJumping)
 	{
 		m_State = Jumping;
 		m_Velocity.y = m_JumpStrength;
 		m_IsOnGround = false;
-		m_GroundedTimer = 0.f;  // Consume the grace time
+		m_GroundedTimer = 0.f;  // 猶予時間を消費する.
 		m_IsJumping = true;
 		return;
 	}
@@ -397,20 +391,6 @@ void CPlayer::Slide()
 	D3DXVECTOR3 horizontalVel = D3DXVECTOR3( m_Velocity.x, 0.f, m_Velocity.z);
 	float vel = D3DXVec3Length(&m_Velocity);
 
-	//if (vel < SLIDE_START_SPEED && !m_IsSliding)
-	//{
-	//	return;
-	//}
-
-	//if(vel < 0.1f)
-	//{
-	//	m_IsSliding = false;
-	//	m_Inertia.x = 0.f;
-	//	m_Inertia.z = 0.f;
-	//	return;
-	//}
-	
-
 	m_IsSliding = true;
 	m_MoveSpeed = CROUCH_SPEED;
 	m_Height = CROUCHSIZE;
@@ -444,10 +424,10 @@ void CPlayer::UpdateAxis()
 }
 
 
-// ���C�ɂ�銵���̌������v�Z
+// 摩擦による慣性の減衰を計算
 void CPlayer::CalculateInertia()
 {
-	// ���C�ɂ�銵���̌������v�Z
+	// 摩擦による慣性の減衰を計算
 	if( m_IsSliding )
 	{
 		m_Inertia.x = (m_Inertia.x - (m_Inertia.x * SLIDE_FRICTION));
@@ -459,7 +439,7 @@ void CPlayer::CalculateInertia()
 		m_Inertia.z = (m_Inertia.z - (m_Inertia.z * FRICTION));
 	}
 
-	// ���������ɏ������Ȃ�����0�ɂ���
+	// 慣性が非常に小さくなったら0にする
 	if (m_Inertia.x < 0.0f && m_Inertia.x > -0.00f)
 	{
 		m_Inertia.x = 0.f;
@@ -487,32 +467,32 @@ void CPlayer::HandleAirPhys()
 	float feetY = m_vPosition.y - m_Height;
 	float headY = m_vPosition.y + 0.1f;
 
-	// Increased tolerances for slopes
-	const float GROUND_SNAP_DISTANCE = 0.35f;      // Much larger for slopes
-	const float GROUND_PENETRATION = 0.05f;        // More forgiving penetration
+	// 坂道向けに許容値を大きめに設定する.
+	const float GROUND_SNAP_DISTANCE = 0.35f;      // 坂道向けにかなり大きめ.
+	const float GROUND_PENETRATION = 0.05f;        // めり込みをより寛容に許容する.
 	const float CEILING_BUFFER = 0.01f;
-	const float GROUNDED_GRACE_TIME = 0.1f;        // "Coyote time" for jumping on slopes
-	const float MAX_SLOPE_ANGLE = 0.7f;            // ~45 degrees (cos of angle)
-	const float SLOPE_SLIDE_THRESHOLD = 0.5f;      // Steeper than this = sliding
+	const float GROUNDED_GRACE_TIME = 0.1f;        // 坂道でのジャンプ用「コヨーテタイム」.
+	const float MAX_SLOPE_ANGLE = 0.7f;            // 約45度（角度のコサイン値）.
+	const float SLOPE_SLIDE_THRESHOLD = 0.5f;      // これより急だと滑り落ちる.
 
 	float distanceToFloor = feetY - m_FloorY;
 
-	// Calculate slope angle from floor normal
-	float slopeAngle = m_FloorNormal.y;  // 1.0 = flat, 0.0 = vertical wall
+	// 床の法線から坂道の角度を計算する.
+	float slopeAngle = m_FloorNormal.y;  // 1.0 = 平面、0.0 = 垂直な壁.
 	bool isOnWalkableSlope = slopeAngle >= MAX_SLOPE_ANGLE;
 	bool isOnSteepSlope = slopeAngle < MAX_SLOPE_ANGLE && slopeAngle > SLOPE_SLIDE_THRESHOLD;
 
-	// Ground detection with larger tolerance for slopes
+	// 坂道向けに大きめの許容値で接地判定を行う.
 	if (distanceToFloor >= -GROUND_PENETRATION &&
 		distanceToFloor <= GROUND_SNAP_DISTANCE &&
 		m_Velocity.y <= 0.f &&
 		isOnWalkableSlope)
 	{
-		// On walkable ground - snap to floor
+		// 歩行可能な地面の上にいる - 床にスナップする.
 		m_IsOnGround = true;
 		m_GroundedTimer = GROUNDED_GRACE_TIME;
 		
-		// Smooth snap to floor instead of instant
+		// 瞬時ではなく滑らかに床へスナップする.
 		float snapSpeed = 0.3f;
 		float targetY = m_FloorY + m_Height;
 		m_vPosition.y += (targetY - m_vPosition.y) * snapSpeed;
@@ -527,7 +507,7 @@ void CPlayer::HandleAirPhys()
 	}
 	else if (distanceToFloor < -GROUND_PENETRATION && isOnWalkableSlope)
 	{
-		// Penetrating ground - push up
+		// 地面にめり込んでいる - 上へ押し戻す.
 		m_vPosition.y = m_FloorY + m_Height;
 		m_IsOnGround = true;
 		m_GroundedTimer = GROUNDED_GRACE_TIME;
@@ -537,12 +517,12 @@ void CPlayer::HandleAirPhys()
 	}
 	else if (isOnSteepSlope && distanceToFloor <= GROUND_SNAP_DISTANCE)
 	{
-		// On steep slope - slide down!
-		m_IsOnGround = true;  // Still "grounded" for some purposes
+		// 急な坂道の上にいる - 滑り落ちる！
+		m_IsOnGround = true;  // 一部の処理上はまだ「接地」扱いとする.
 		m_GroundedTimer = GROUNDED_GRACE_TIME;
 		m_IsJumping = false;
 		
-		// Calculate slide direction (down the slope)
+		// 滑る方向（坂を下る向き）を計算する.
 		D3DXVECTOR3 slopeRight;
 		D3DXVECTOR3 up(0.f, 1.f, 0.f);
 		D3DXVec3Cross(&slopeRight, &up, &m_FloorNormal);
@@ -552,25 +532,25 @@ void CPlayer::HandleAirPhys()
 		D3DXVec3Cross(&slideDir, &m_FloorNormal, &slopeRight);
 		D3DXVec3Normalize(&slideDir, &slideDir);
 		
-		// Make sure we slide downward
+		// 必ず下方向へ滑るようにする.
 		if (slideDir.y > 0.f)
 		{
 			slideDir = -slideDir;
 		}
 		
-		// Apply slope sliding force (steeper = faster)
+		// 坂道を滑る力を適用する（急なほど速くなる）.
 		float slideForce = (1.0f - slopeAngle) * GRAVITY * 2.0f;
 		m_Velocity.x += slideDir.x * slideForce;
 		m_Velocity.z += slideDir.z * slideForce;
 		m_Inertia.x += slideDir.x * slideForce * 0.5f;
 		m_Inertia.z += slideDir.z * slideForce * 0.5f;
 		
-		// Slight downward velocity to stay on slope
+		// 坂道から離れないよう、わずかに下向きの速度を与える.
 		m_Velocity.y = -0.1f;
 	}
 	else
 	{
-		// In air
+		// 空中.
 		m_GroundedTimer -= 0.016f;
 		
 		if (m_GroundedTimer <= 0.f)
@@ -590,7 +570,7 @@ void CPlayer::HandleAirPhys()
 		}
 	}
 
-	// Ceiling collision
+	// 天井との当たり判定.
 	if (m_Velocity.y > 0.f)
 	{
 		float distanceToCeiling = m_CeilingY - headY;

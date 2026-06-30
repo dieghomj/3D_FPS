@@ -1,43 +1,43 @@
-#include "CMain.h"
+ï»¿#include "CMain.h"
 #include "Global.h"
 #include "CDirectX11.h"
-#include <crtdbg.h>	//_ASSERT_EXPR()‚Å•K—v.
+#include <crtdbg.h>	//_ASSERT_EXPR()ã§å¿…è¦.
 #include "MyMacro.h"
 
 
 //================================================
-//	ƒƒCƒ“ŠÖ”.
+//	ãƒ¡ã‚¤ãƒ³é–¢æ•°.
 //================================================
 INT WINAPI WinMain(
-	_In_ HINSTANCE hInstance,	//ƒCƒ“ƒXƒ^ƒ“ƒX”Ô†iƒEƒBƒ“ƒhƒE‚Ì”Ô†j.
+	_In_ HINSTANCE hInstance,	//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç•ªå·ï¼ˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç•ªå·ï¼‰.
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ PSTR lpCmdLine,
 	_In_ INT nCmdShow)
 {
 	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
 
-	CMain* pCMain = new CMain();	//‰Šú‰»•ƒNƒ‰ƒXéŒ¾.
+	CMain* pCMain = new CMain();	//åˆæœŸåŒ–ï¼†ã‚¯ãƒ©ã‚¹å®£è¨€.
 
 	if (pCMain != nullptr)
 	{
-		//ƒEƒBƒ“ƒhƒEì¬¬Œ÷‚µ‚½‚ç.
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆæˆåŠŸã—ãŸã‚‰.
 		if( SUCCEEDED(
 			pCMain->InitWindow(
 				hInstance,
 				0, 0,
 				WND_W, WND_H)))
 		{
-			//Dx11—p‚Ì‰Šú‰».
+			//Dx11ç”¨ã®åˆæœŸåŒ–.
 			if( SUCCEEDED( pCMain->Create() ))
 			{
-				//ƒƒbƒZ[ƒWƒ‹[ƒv.
+				//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—.
 				pCMain->Loop();
 			}
 		}
-		//I—¹.
-		pCMain->Release();	//Direct3D‚Ì‰ğ•ú.
+		//çµ‚äº†.
+		pCMain->Release();	//Direct3Dã®è§£æ”¾.
 
-		SAFE_DELETE( pCMain );	//ƒNƒ‰ƒX‚Ì”jŠü.
+		SAFE_DELETE( pCMain );	//ã‚¯ãƒ©ã‚¹ã®ç ´æ£„.
 	}
 
 	return 0;

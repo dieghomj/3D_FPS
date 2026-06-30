@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CSpriteObject.h"
 #include "CStaticMeshObject.h"
 
 /**************************************************
-*	’eƒNƒ‰ƒX
+*	å¼¾ã‚¯ãƒ©ã‚¹
 **/
 class CShot
 	: public CStaticMeshObject
@@ -20,7 +20,7 @@ public:
 	virtual void Update() override;
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
-	//’e‚ğÄİ’è
+	//å¼¾ã‚’å†è¨­å®š
 	void Reload(const D3DXVECTOR3& Pos, const D3DXVECTOR3& Direction, float RotY);
 
 	void SetDisplay(bool disp) { m_Display = disp; }
@@ -31,15 +31,15 @@ public:
 
 	virtual bool IsDisplay() const { return m_Display; }
 
-	float GetCadence() const { return m_Cadence; }		//<---ƒvƒŒƒCƒ„[‚ÌƒNƒ‰ƒX
+	float GetCadence() const { return m_Cadence; }		//<---ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¯ãƒ©ã‚¹
 
 protected:
-	bool		m_Display;			//•\¦Ø‘Ö
-	int			m_DisplayTime;		//•\¦‚·‚éŠÔ
+	bool		m_Display;			//è¡¨ç¤ºåˆ‡æ›¿
+	int			m_DisplayTime;		//è¡¨ç¤ºã™ã‚‹æ™‚é–“
 	
-	D3DXVECTOR3	m_MoveDirection;	//ˆÚ“®•ûŒü
-	float		m_MoveSpeed;		//ˆÚ“®‘¬“x
-	float		m_Cadence;			//˜AË‘¬“x
+	D3DXVECTOR3	m_MoveDirection;	//ç§»å‹•æ–¹å‘
+	float		m_MoveSpeed;		//ç§»å‹•é€Ÿåº¦
+	float		m_Cadence;			//é€£å°„é€Ÿåº¦
 	
 };
 

@@ -1,4 +1,4 @@
-#include "CSkinMeshObject.h"
+ï»¿#include "CSkinMeshObject.h"
 
 CSkinMeshObject::CSkinMeshObject()
 	: m_pMesh			( nullptr )
@@ -35,25 +35,25 @@ void CSkinMeshObject::Draw(
 		return;
 	}
 
-	//•`‰æ’¼‘O‚ÅÀ•W‚â‰ñ“]î•ñ‚È‚Ç‚ğXV.
+	//æç”»ç›´å‰ã§åº§æ¨™ã‚„å›è»¢æƒ…å ±ãªã©ã‚’æ›´æ–°.
 	m_pMesh->SetPosition( m_vPosition );
 	m_pMesh->SetRotation( m_vRotation );
 	m_pMesh->SetScale( m_vScale );
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 	m_pMesh->Render(View, Proj, Light, Camera.vPosition, Fog,
-		m_pAnimCtrl );	//ƒNƒ[ƒ“‚ğİ’è
+		m_pAnimCtrl );	//ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’è¨­å®š
 }
 
-//ƒƒbƒVƒ…‚ğÚ‘±‚·‚é.
+//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æ¥ç¶šã™ã‚‹.
 void CSkinMeshObject::AttachMesh(CSkinMesh& pMesh)
 {
 	m_pMesh = &pMesh;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ğæ“¾
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã‚’å–å¾—
 	LPD3DXANIMATIONCONTROLLER pAC = m_pMesh->GetAnimationController();
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ÌƒNƒ[ƒ“‚ğì¬
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã®ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
 	if (FAILED(
 		pAC->CloneAnimationController(
 			pAC->GetMaxNumAnimationOutputs(),
@@ -62,10 +62,10 @@ void CSkinMeshObject::AttachMesh(CSkinMesh& pMesh)
 			pAC->GetMaxNumEvents(),
 			&m_pAnimCtrl)))
 	{
-		_ASSERT_EXPR(false, L"ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ÌƒNƒ[ƒ“ì¬¸”s");
+		_ASSERT_EXPR(false, L"ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã®ã‚¯ãƒ­ãƒ¼ãƒ³ä½œæˆå¤±æ•—");
 	}
 }
-//ƒƒbƒVƒ…‚ğØ‚è—£‚·.
+//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’åˆ‡ã‚Šé›¢ã™.
 void CSkinMeshObject::DetachMesh()
 {
 	m_pMesh = nullptr;

@@ -1,4 +1,4 @@
-#include "CSpriteObject.h"
+ï»¿#include "CSpriteObject.h"
 
 CSpriteObject::CSpriteObject()
 	: m_pSprite		( nullptr )
@@ -42,12 +42,12 @@ void CSpriteObject::Draw(D3DXMATRIX& View, D3DXMATRIX& Proj)
 		return;
 	}
 
-	//•`‰æ’¼‘O‚ÅÀ•W‚â‰ñ“]î•ñ‚È‚Ç‚ðXV.
+	//æç”»ç›´å‰ã§åº§æ¨™ã‚„å›žè»¢æƒ…å ±ãªã©ã‚’æ›´æ–°.
 	m_pSprite->SetPosition( m_vPosition );
 	m_pSprite->SetRotation( m_vRotation );
 	m_pSprite->SetScale( m_vScale );
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 	m_pSprite->Render( View, Proj );
 }
 

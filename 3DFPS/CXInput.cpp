@@ -1,35 +1,35 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CXInput.h"
 #include <crtdbg.h>
 
-//’l‚ğ”ÍˆÍ“à‚Éû‚ß‚éŠÖ”.
+//å€¤ã‚’ç¯„å›²å†…ã«åã‚ã‚‹é–¢æ•°.
 template<typename T>
 T Clamp(T val, T min, T max)
 {
 	return (val < min) ? min : (max < val) ? max : val;
 }
 
-//KEY—ñ‹“‘Ì‚É‘Î‰‚µ‚½XINPUT_GAMEPAD‚Ìƒe[ƒuƒ‹.
+//KEYåˆ—æŒ™ä½“ã«å¯¾å¿œã—ãŸXINPUT_GAMEPADã®ãƒ†ãƒ¼ãƒ–ãƒ«.
 const WORD KEY_TABLE[CXInput::MAX] =
 {
-	XINPUT_GAMEPAD_DPAD_UP,			//•ûŒüƒpƒbƒh:ã.
-	XINPUT_GAMEPAD_DPAD_DOWN,		//•ûŒüƒpƒbƒh:‰º.
-	XINPUT_GAMEPAD_DPAD_LEFT,		//•ûŒüƒpƒbƒh:¶.
-	XINPUT_GAMEPAD_DPAD_RIGHT,		//•ûŒüƒpƒbƒh:‰E.
-	XINPUT_GAMEPAD_START,			//ƒ{ƒ^ƒ“:ƒXƒ^[ƒg.
-	XINPUT_GAMEPAD_BACK,			//ƒ{ƒ^ƒ“:ƒoƒbƒN.
-	XINPUT_GAMEPAD_LEFT_THUMB,		//ƒ{ƒ^ƒ“:¶ƒXƒeƒBƒbƒN.
-	XINPUT_GAMEPAD_RIGHT_THUMB,		//ƒ{ƒ^ƒ“:‰EƒXƒeƒBƒbƒN.
-	XINPUT_GAMEPAD_LEFT_SHOULDER,	//ƒ{ƒ^ƒ“:LB.
-	XINPUT_GAMEPAD_RIGHT_SHOULDER,	//ƒ{ƒ^ƒ“:RB.
-	XINPUT_GAMEPAD_A,				//ƒ{ƒ^ƒ“:A.
-	XINPUT_GAMEPAD_B,				//ƒ{ƒ^ƒ“:B.
-	XINPUT_GAMEPAD_X,				//ƒ{ƒ^ƒ“:X.
-	XINPUT_GAMEPAD_Y,				//ƒ{ƒ^ƒ“:Y.
+	XINPUT_GAMEPAD_DPAD_UP,			//æ–¹å‘ãƒ‘ãƒƒãƒ‰:ä¸Š.
+	XINPUT_GAMEPAD_DPAD_DOWN,		//æ–¹å‘ãƒ‘ãƒƒãƒ‰:ä¸‹.
+	XINPUT_GAMEPAD_DPAD_LEFT,		//æ–¹å‘ãƒ‘ãƒƒãƒ‰:å·¦.
+	XINPUT_GAMEPAD_DPAD_RIGHT,		//æ–¹å‘ãƒ‘ãƒƒãƒ‰:å³.
+	XINPUT_GAMEPAD_START,			//ãƒœã‚¿ãƒ³:ã‚¹ã‚¿ãƒ¼ãƒˆ.
+	XINPUT_GAMEPAD_BACK,			//ãƒœã‚¿ãƒ³:ãƒãƒƒã‚¯.
+	XINPUT_GAMEPAD_LEFT_THUMB,		//ãƒœã‚¿ãƒ³:å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯.
+	XINPUT_GAMEPAD_RIGHT_THUMB,		//ãƒœã‚¿ãƒ³:å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯.
+	XINPUT_GAMEPAD_LEFT_SHOULDER,	//ãƒœã‚¿ãƒ³:LB.
+	XINPUT_GAMEPAD_RIGHT_SHOULDER,	//ãƒœã‚¿ãƒ³:RB.
+	XINPUT_GAMEPAD_A,				//ãƒœã‚¿ãƒ³:A.
+	XINPUT_GAMEPAD_B,				//ãƒœã‚¿ãƒ³:B.
+	XINPUT_GAMEPAD_X,				//ãƒœã‚¿ãƒ³:X.
+	XINPUT_GAMEPAD_Y,				//ãƒœã‚¿ãƒ³:Y.
 };
 
 //-------------------------------------------------.
-//	ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
+//	ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 //-------------------------------------------------.
 CXInput::CXInput()
 	: m_padId		()
@@ -58,11 +58,11 @@ CXInput::~CXInput()
 }
 
 //-------------------------------------------------.
-//	ƒL[“ü—Í‚ÌXV.
+//	ã‚­ãƒ¼å…¥åŠ›ã®æ›´æ–°.
 //-------------------------------------------------.
 bool CXInput::Update()
 {
-	//ƒL[î•ñ‚ğXV‚·‚é‘O‚É‘Ş”ğ.
+	//ã‚­ãƒ¼æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹å‰ã«é€€é¿.
 	m_stateOld = m_state;
 	if (UpdateStatus() == false) {
 		return false;
@@ -71,7 +71,7 @@ bool CXInput::Update()
 }
 
 //-------------------------------------------------.
-//	I—¹ˆ—.
+//	çµ‚äº†å‡¦ç†.
 //-------------------------------------------------.
 void CXInput::EndProc()
 {
@@ -79,7 +79,7 @@ void CXInput::EndProc()
 }
 
 //-------------------------------------------------.
-//	‰Ÿ‚µ‚½.Just=true‚É‚·‚é‚±‚Æ‚Å‰Ÿ‚µ‚½uŠÔ‚Ìæ“¾‚ª‰Â”\.
+//	æŠ¼ã—ãŸ.Just=trueã«ã™ã‚‹ã“ã¨ã§æŠ¼ã—ãŸç¬é–“ã®å–å¾—ãŒå¯èƒ½.
 //-------------------------------------------------.
 bool CXInput::IsDown(KEY key, bool Just)
 {
@@ -92,7 +92,7 @@ bool CXInput::IsDown(KEY key, bool Just)
 		ret = true;
 
 		if (Just == true) {
-			//¡‰ñ“ü—Í‚Å‘O‰ñ–¢“ü—Í¨‰Ÿ‚µ‚½uŠÔ.
+			//ä»Šå›å…¥åŠ›ã§å‰å›æœªå…¥åŠ›â†’æŠ¼ã—ãŸç¬é–“.
 			if (IsKeyCore(GamePad, m_stateOld) == false) {
 				ret = true;
 			}
@@ -105,13 +105,13 @@ bool CXInput::IsDown(KEY key, bool Just)
 }
 
 //-------------------------------------------------.
-//	—£‚µ‚½.
+//	é›¢ã—ãŸ.
 //-------------------------------------------------.
 bool CXInput::IsUp(KEY key)
 {
 	WORD GamePad = GenerateGamePadValue(key);
 
-	//‘O‰ñ“ü—Í‚Å¡‰ñ–¢“ü—Í¨—£‚µ‚½uŠÔ.
+	//å‰å›å…¥åŠ›ã§ä»Šå›æœªå…¥åŠ›â†’é›¢ã—ãŸç¬é–“.
 	if (IsKeyCore(GamePad, m_stateOld) == true &&
 		IsKeyCore(GamePad, m_state) == false)
 	{
@@ -121,13 +121,13 @@ bool CXInput::IsUp(KEY key)
 }
 
 //-------------------------------------------------.
-//	‰Ÿ‚µ‘±‚¯‚Ä‚¢‚é.
+//	æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹.
 //-------------------------------------------------.
 bool CXInput::IsHold(KEY key)
 {
 	WORD GamePad = GenerateGamePadValue(key);
 
-	//‘O‰ñ“ü—Í‚Å¡‰ñ“ü—Í¨‰Ÿ‚µ‘±‚¯‚Ä‚¢‚é.
+	//å‰å›å…¥åŠ›ã§ä»Šå›å…¥åŠ›â†’æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹.
 	if (IsKeyCore(GamePad, m_stateOld) == true &&
 		IsKeyCore(GamePad, m_state) == true)
 	{
@@ -137,7 +137,7 @@ bool CXInput::IsHold(KEY key)
 }
 
 //-------------------------------------------------.
-//	U“®İ’è.
+//	æŒ¯å‹•è¨­å®š.
 //-------------------------------------------------.	
 bool CXInput::SetVibration(WORD LMotorSpd, WORD RMotorSpd)
 {
@@ -152,7 +152,7 @@ bool CXInput::SetVibration(WORD LMotorSpd, WORD RMotorSpd)
 }
 
 //-------------------------------------------------.
-//	ƒL[“ü—Í‚ÌXV.
+//	ã‚­ãƒ¼å…¥åŠ›ã®æ›´æ–°.
 //-------------------------------------------------.
 bool CXInput::UpdateStatus()
 {
@@ -168,7 +168,7 @@ bool CXInput::UpdateStatus()
 }
 
 //-------------------------------------------------.
-//	IsKeyDown,Up,Repeat“à‚Åg—p‚·‚éŠÖ”.
+//	IsKeyDown,Up,Repeatå†…ã§ä½¿ç”¨ã™ã‚‹é–¢æ•°.
 //-------------------------------------------------.
 bool CXInput::IsKeyCore(WORD GamePad, const XINPUT_STATE& State)
 {
@@ -179,13 +179,13 @@ bool CXInput::IsKeyCore(WORD GamePad, const XINPUT_STATE& State)
 }
 
 //-------------------------------------------------.
-//	KEY—ñ‹“‘Ì‚ğ‘Î‰‚µ‚½XINPUT_GAMEPAD‚Ì’l‚É•ÏŠ·.
+//	KEYåˆ—æŒ™ä½“ã‚’å¯¾å¿œã—ãŸXINPUT_GAMEPADã®å€¤ã«å¤‰æ›.
 //-------------------------------------------------.
 WORD CXInput::GenerateGamePadValue(KEY key)
 {
-	// ”ÍˆÍŠO‚Ìê‡‚ÍƒAƒT[ƒgo‚·.
+	// ç¯„å›²å¤–ã®å ´åˆã¯ã‚¢ã‚µãƒ¼ãƒˆå‡ºã™.
 	if (key < KEY::FIRST || KEY::LAST < key) {
-		_ASSERT_EXPR(false, L"ƒL[‚Ì”ÍˆÍŠO‚ğw’è");
+		_ASSERT_EXPR(false, L"ã‚­ãƒ¼ã®ç¯„å›²å¤–ã‚’æŒ‡å®š");
 	}
 	return KEY_TABLE[key];
 }

@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ğ–³Œø‚É‚·‚é.4005:Ä’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹.4005:å†å®šç¾©.
 #pragma warning(disable:4005)
 
 //DirectX9.
 #include <d3dx9.h>
 
-//ƒ‰ƒCƒuƒ‰ƒŠ“Ç‚İ‚İ.
+//ãƒ©ã‚¤ãƒ–ãƒ©ãƒªèª­ã¿è¾¼ã¿.
 #pragma comment( lib, "winmm.lib" )
 //DirectX9.
 #pragma comment( lib, "d3d9.lib" )
@@ -14,7 +14,7 @@
 
 
 /**************************************************
-*	DirectX9 ƒZƒbƒgƒAƒbƒv.
+*	DirectX9 ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—.
 **/
 class CDirectX9
 {
@@ -22,15 +22,15 @@ public:
 	CDirectX9();
 	~CDirectX9();
 
-	//DirectX9\’z.
+	//DirectX9æ§‹ç¯‰.
 	HRESULT Create( HWND hWnd );
-	//DirectX9‰ğ•ú.
+	//DirectX9è§£æ”¾.
 	void Release();
 
-	//ƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg‚ğæ“¾.
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—.
 	LPDIRECT3DDEVICE9 GetDevice() const { return m_pDevice9; }
 
 
 private:
-	LPDIRECT3DDEVICE9	m_pDevice9;	//ƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg.
+	LPDIRECT3DDEVICE9	m_pDevice9;	//ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ.
 };

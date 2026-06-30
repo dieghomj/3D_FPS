@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CCamera.h"
 
 D3DXVECTOR3 m_Target = D3DXVECTOR3(0.f,0.f,0.f);
@@ -11,8 +11,8 @@ CCamera::CCamera()
 	, m_Yaw			(0.f)
 	, m_NearWindowHeight(0.0f)
 	, m_FarWindowHeight(0.0f)
-	, m_FovY		(D3DX_PI / 4.0f)	// 45‹
-	, m_Aspect		(16.0f / 9.0f)		// ‰ŠúŠù’èBƒŠƒTƒCƒY‚ÉXV„§
+	, m_FovY		(D3DX_PI / 4.0f)	// 45Â°
+	, m_Aspect		(16.0f / 9.0f)		// åˆæœŸæ—¢å®šã€‚ãƒªã‚µã‚¤ã‚ºæ™‚ã«æ›´æ–°æ¨å¥¨
 	, m_NearZ		(0.1f)
 	, m_FarZ		(1000.0f)
 	, m_bStaticCamera(false)
@@ -37,7 +37,7 @@ void CCamera::Draw(SCENE_DATA& sceneData)
 	CAMERA* Camera = &sceneData.Camera;
 	UpdateViewMatrix(*View, *Proj); 
 
-	// ƒJƒƒ‰î•ñ‚ğ\‘¢‘Ì‚ÉŠi”[
+	// ã‚«ãƒ¡ãƒ©æƒ…å ±ã‚’æ§‹é€ ä½“ã«æ ¼ç´
 	Camera->vPosition = m_vPosition;
 	Camera->vLook = m_vLook;
 	Camera->yaw = m_Yaw;
@@ -121,7 +121,7 @@ void CCamera::OffsetRotX(D3DXVECTOR3 pivot, float angle)
 
 void CCamera::Pitch(float pitch)
 {
-	//X²‰ñ“]s—ñ‚ğì¬.
+	//Xè»¸å›è»¢è¡Œåˆ—ã‚’ä½œæˆ.
 	D3DXMATRIX mRot;
 	D3DXMatrixRotationAxis(&mRot, &m_vRight, pitch);
 	D3DXVec3TransformNormal(&m_vUp, &m_vUp, &mRot);
@@ -133,7 +133,7 @@ void CCamera::Pitch(float pitch)
 
 void CCamera::Yaw(float yaw)
 {
-	//Y²‰ñ“]s—ñ‚ğì¬.
+	//Yè»¸å›è»¢è¡Œåˆ—ã‚’ä½œæˆ.
 	D3DXMATRIX mRot;
 	D3DXMatrixRotationY(&mRot, yaw);
 	D3DXVec3TransformNormal(&m_vRight, &m_vRight, &mRot);
@@ -148,20 +148,20 @@ void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 {
 	D3DXVECTOR3 cam_pos = m_vPosition;
 	D3DXVECTOR3 vLookVec = m_vLook;
-	D3DXVECTOR3	vUpVec = m_vUp;	//ã•ûiƒxƒNƒgƒ‹j.
-	D3DXVECTOR3	vRightVec = m_vRight; //‰E•ûiƒxƒNƒgƒ‹j.
+	D3DXVECTOR3	vUpVec = m_vUp;	//ä¸Šæ–¹ï¼ˆãƒ™ã‚¯ãƒˆãƒ«ï¼‰.
+	D3DXVECTOR3	vRightVec = m_vRight; //å³æ–¹ï¼ˆãƒ™ã‚¯ãƒˆãƒ«ï¼‰.
 
 	if (m_bStaticCamera)
 	{
 		D3DXMatrixLookAtLH(
-			&mView,				//(out)ƒrƒ…[ŒvZŒ‹‰Ê.
-			&cam_pos,			//(in)ƒJƒƒ‰‚ÌˆÊ’uƒxƒNƒgƒ‹.
-			&m_vStaticCamTarget,			//(in)’‹“_‚ÌˆÊ’uƒxƒNƒgƒ‹.
-			&vUpVec);			//(in)ã•ûƒxƒNƒgƒ‹.
+			&mView,				//(out)ãƒ“ãƒ¥ãƒ¼è¨ˆç®—çµæœ.
+			&cam_pos,			//(in)ã‚«ãƒ¡ãƒ©ã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«.
+			&m_vStaticCamTarget,			//(in)æ³¨è¦–ç‚¹ã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«.
+			&vUpVec);			//(in)ä¸Šæ–¹ãƒ™ã‚¯ãƒˆãƒ«.
 
-		// ƒvƒƒWƒFƒNƒVƒ‡ƒ“ŒvZiƒŒƒ“ƒYƒpƒ‰ƒ[ƒ^‚ÉŠî‚Ã‚­j
+		// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¨ˆç®—ï¼ˆãƒ¬ãƒ³ã‚ºãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«åŸºã¥ãï¼‰
 		D3DXMatrixPerspectiveFovLH(
-			&mProj,	//(out)ƒvƒƒWƒFƒNƒVƒ‡ƒ“ŒvZŒ‹‰Ê. 
+			&mProj,	//(out)ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¨ˆç®—çµæœ. 
 			m_FovY, m_Aspect, m_NearZ, m_FarZ);
 
 		return;
@@ -181,7 +181,7 @@ void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 	
 	D3DXVECTOR3 vAt = cam_pos + vLookVec;
 
-	// ƒrƒ…[ŒvZ
+	// ãƒ“ãƒ¥ãƒ¼è¨ˆç®—
 	mView(0, 0) = vRightVec.x;
 	mView(1, 0) = vRightVec.y;
 	mView(2, 0) = vRightVec.z;
@@ -202,11 +202,9 @@ void CCamera::UpdateViewMatrix(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 	mView(2, 3) = 0.0f;
 	mView(3, 3) = 1.0f;
 
-	////mView = mNewView;
-
-	// ƒvƒƒWƒFƒNƒVƒ‡ƒ“ŒvZiƒŒƒ“ƒYƒpƒ‰ƒ[ƒ^‚ÉŠî‚Ã‚­j
+	// ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¨ˆç®—ï¼ˆãƒ¬ãƒ³ã‚ºãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«åŸºã¥ãï¼‰
 	D3DXMatrixPerspectiveFovLH(
-		&mProj,	//(out)ƒvƒƒWƒFƒNƒVƒ‡ƒ“ŒvZŒ‹‰Ê. 
+		&mProj,	//(out)ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¨ˆç®—çµæœ. 
 		m_FovY, m_Aspect, m_NearZ, m_FarZ);
 
 }

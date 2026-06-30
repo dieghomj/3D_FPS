@@ -1,13 +1,13 @@
-#pragma once
-#include <crtdbg.h>//_ASSERT_EXPR()‚Å•K—v.
+ï»¿#pragma once
+#include <crtdbg.h>//_ASSERT_EXPR()ã§å¿…è¦.
 
 //===========================================================
-//	ƒ}ƒNƒ.
+//	ãƒžã‚¯ãƒ­.
 //===========================================================
 
-//‰ð•ú.
+//è§£æ”¾.
 #define SAFE_RELEASE(p)	if(p!=nullptr){(p)->Release();(p)=nullptr;}
-//”jŠü.
+//ç ´æ£„.
 #define SAFE_DELETE(p) if(p!=nullptr){delete (p);(p)=nullptr;}
 #define SAFE_DELETE_ARRAY(p)	\
 {								\

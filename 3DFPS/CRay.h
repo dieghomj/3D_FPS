@@ -1,25 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ğ–³Œø‚É‚·‚é.4005:Ä’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹.4005:å†å®šç¾©.
 #pragma warning(disable:4005)
 
-//‘O•ûéŒ¾.
+//å‰æ–¹å®£è¨€.
 class CDirectX11;
 
-//ƒŒƒC\‘¢‘Ì
+//ãƒ¬ã‚¤æ§‹é€ ä½“
 struct RAY
 {
-	D3DXVECTOR3	Axis;		//²
-	D3DXVECTOR3	Position;	//ˆÊ’u
-	float		Length;		//’·‚³
-	float		RotationY;	//Y²‰ñ“]
-	float		RotationX = 0.f;	//X²‰ñ“]
+	D3DXVECTOR3	Axis;		//è»¸
+	D3DXVECTOR3	Position;	//ä½ç½®
+	float		Length;		//é•·ã•
+	float		RotationY;	//Yè»¸å›è»¢
+	float		RotationX = 0.f;	//Xè»¸å›è»¢
 
 	RAY() : Axis(), Position(), Length(), RotationY() {}
-	//RAY() : Axis(), Position(), Length(), RotationY(), RotationX() {}
 };
 
-//ƒŒƒC\‘¢‘Ìi\šj
+//ãƒ¬ã‚¤æ§‹é€ ä½“ï¼ˆåå­—ï¼‰
 struct CROSSRAY
 {
 	enum enDir { ZF, ZB, XL, XR, max };
@@ -39,43 +38,43 @@ struct CROSSRAY
 };
 
 /**************************************************
-*	ƒŒƒCiü•ªj•\¦ƒNƒ‰ƒX.
+*	ãƒ¬ã‚¤ï¼ˆç·šåˆ†ï¼‰è¡¨ç¤ºã‚¯ãƒ©ã‚¹.
 **/
 class CRay
 {
 public:
 	//======================================
-	//	\‘¢‘Ì.
+	//	æ§‹é€ ä½“.
 	//======================================
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒAƒvƒŠ‘¤‚Ì’è‹`.
-	//¦ƒVƒF[ƒ_“à‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Æˆê’v‚µ‚Ä‚¢‚é•K—v‚ ‚è.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ—ãƒªå´ã®å®šç¾©.
+	//â€»ã‚·ã‚§ãƒ¼ãƒ€å†…ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã¨ä¸€è‡´ã—ã¦ã„ã‚‹å¿…è¦ã‚ã‚Š.
 	struct SHADER_CONSTANT_BUFFER
 	{
-		D3DXMATRIX	mWVP;		//ƒ[ƒ‹ƒh,ƒrƒ…[,ƒvƒƒWƒFƒNƒVƒ‡ƒ“‚Ì‡¬•ÏŠ·s—ñ.	
-		D3DXVECTOR4	vColor;		//ƒJƒ‰[iRGBA‚ÌŒ^‚É‡‚í‚¹‚éj.
+		D3DXMATRIX	mWVP;		//ãƒ¯ãƒ¼ãƒ«ãƒ‰,ãƒ“ãƒ¥ãƒ¼,ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ã®åˆæˆå¤‰æ›è¡Œåˆ—.	
+		D3DXVECTOR4	vColor;		//ã‚«ãƒ©ãƒ¼ï¼ˆRGBAã®å‹ã«åˆã‚ã›ã‚‹ï¼‰.
 	};
-	//’¸“_‚Ì\‘¢‘Ì.
+	//é ‚ç‚¹ã®æ§‹é€ ä½“.
 	struct VERTEX
 	{
-		D3DXVECTOR3 Pos;	//’¸“_À•W.
+		D3DXVECTOR3 Pos;	//é ‚ç‚¹åº§æ¨™.
 	};
 
 public:
-	CRay();		//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
-	~CRay();	//ƒfƒXƒgƒ‰ƒNƒ^.
+	CRay();		//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
+	~CRay();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 
-	//‰Šú‰».
+	//åˆæœŸåŒ–.
 	HRESULT Init(CDirectX11& pDx11, RAY& pRay);
 
-	//‰ğ•ú.
+	//è§£æ”¾.
 	void Release();
 
-	//ƒVƒF[ƒ_ì¬.
+	//ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆ.
 	HRESULT CreateShader();
-	//ƒ‚ƒfƒ‹ì¬.
+	//ãƒ¢ãƒ‡ãƒ«ä½œæˆ.
 	HRESULT CreateModel();
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO—p.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ç”¨.
 	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj, RAY Ray, D3DXVECTOR4 Color = D3DXVECTOR4(1.f, 1.f, 1.f, 1.f));
 
 private:
@@ -83,15 +82,15 @@ private:
 	ID3D11Device*			m_pDevice11;
 	ID3D11DeviceContext*	m_pContext11;
 
-	ID3D11VertexShader*		m_pVertexShader;	//’¸“_ƒVƒF[ƒ_.
-	ID3D11InputLayout*		m_pVertexLayout;	//’¸“_ƒŒƒCƒAƒEƒg.
-	ID3D11PixelShader*		m_pPixelShader;		//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
-	ID3D11Buffer*			m_pConstantBuffer;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@.
+	ID3D11VertexShader*		m_pVertexShader;	//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	ID3D11InputLayout*		m_pVertexLayout;	//é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ.
+	ID3D11PixelShader*		m_pPixelShader;		//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
+	ID3D11Buffer*			m_pConstantBuffer;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡.
 
-	ID3D11Buffer*			m_pVertexBuffer;	//’¸“_ƒoƒbƒtƒ@.
+	ID3D11Buffer*			m_pVertexBuffer;	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡.
 
-	D3DXVECTOR3		m_vPosition;	//À•W.
-	D3DXVECTOR3		m_vRotation;	//‰ñ“].
+	D3DXVECTOR3		m_vPosition;	//åº§æ¨™.
+	D3DXVECTOR3		m_vRotation;	//å›è»¢.
 
-	RAY				m_Ray;			//ƒŒƒC\‘¢‘Ì
+	RAY				m_Ray;			//ãƒ¬ã‚¤æ§‹é€ ä½“
 };

@@ -1,7 +1,8 @@
-#include "CDirectX9.h"
+﻿#include "CDirectX9.h"
 #include "CDirectX11.h"
 
 #include "CScene.h"
+#include "CSettings.h"
 
 CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSceneManager& pManager)
 	: m_pDx9			(&pDx9)
@@ -23,10 +24,10 @@ CScene::CScene(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CSce
 	, m_mouseSeudoPos	({ WND_W / 2,WND_H / 2 })
 	, m_mouseBeforePos	({ 0, 0 })
 	, m_mouseDelta		({ 0, 0 })
-	, m_mouseSense		( 0.1f )
+	, m_mouseSense		( CSettings::GetSensitivity() )
 
 {
-	//�T�E���h�f�[�^�̓ǂݍ���
+	//サウンドデータの読み込み
 	CSoundManager::GetInstance()->Load(m_hWnd);
 
 	m_Fog.Mode = D3DFOG_LINEAR;
@@ -38,7 +39,7 @@ CScene::~CScene()
 
 	SAFE_DELETE(m_pCamera);
 
-	//�O���ō쐬���Ă���̂ŁA�����ł͔j�����Ȃ�
+	//外部で作成しているので、ここでは破棄しない
 	m_pManager = nullptr;
 	m_hWnd = nullptr;
 	m_pDx11 = nullptr;
@@ -54,6 +55,9 @@ void CScene::Update()
 	m_SceneInfo.Light = m_GlobalLight;
 	m_SceneInfo.SpotLightNum = static_cast<int>(m_pSpotLightList.size());
 	m_SceneInfo.pSpotLightArray = m_pSpotLightList.empty() ? nullptr : &m_pSpotLightList[0];
+
+	//設定変更が即時反映されるよう、毎フレーム感度を取得する.
+	m_mouseSense = CSettings::GetSensitivity();
 
 	UpdateMousePos();
 
@@ -96,19 +100,19 @@ void CScene::UpdateMousePos()
 
 	if (ShouldLockMouse())
 	{
-		// Calculate delta from center
+		// 画面中央からの差分を計算する
 		POINT center = { WND_W / 2, WND_H / 2 };
 		m_mouseDelta.x = mousePos.x - center.x;
 		m_mouseDelta.y = mousePos.y - center.y;
 		m_mouseSeudoPos.x += m_mouseDelta.x;
 		m_mouseSeudoPos.y += m_mouseDelta.y;
-		// Reset cursor to center
+		// カーソルを画面中央に戻す
 		ClientToScreen(m_hWnd, &center);
 		SetCursorPos(center.x, center.y);
 	}
 	else
 	{
-		// Free mouse movement for menus
+		// メニュー用にマウスを自由に動かせるようにする
 		m_mouseDelta.x = mousePos.x - m_mouseBeforePos.x;
 		m_mouseDelta.y = mousePos.y - m_mouseBeforePos.y;
 		m_mouseBeforePos = mousePos;

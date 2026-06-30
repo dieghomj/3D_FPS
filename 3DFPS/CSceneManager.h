@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <map>
 
 class CScene;
@@ -10,17 +10,17 @@ public:
 	CSceneManager();
 	~CSceneManager();
 
-	//Stacked State Machine’Ç‰Á
+	//ã‚¹ã‚¿ãƒƒã‚¯å¼ã‚¹ãƒ†ãƒ¼ãƒˆãƒã‚·ãƒ³ã®è¿½åŠ 
 	//<----------
 	
-	//ƒV[ƒ“ƒŠƒXƒg‚ÉƒV[ƒ“‚ğ’Ç‰Á
+	//ã‚·ãƒ¼ãƒ³ãƒªã‚¹ãƒˆã«ã‚·ãƒ¼ãƒ³ã‚’è¿½åŠ 
 	HRESULT AddScene(CScene* scene, const char* name);
-	//ƒV[ƒ“•ÏX
+	//ã‚·ãƒ¼ãƒ³å¤‰æ›´
 	CScene* ChangeScene(const char* name, bool release = false);
 
-	//Œ»İ‚ÌƒV[ƒ“XV
+	//ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³æ›´æ–°
 	void Update();
-	//Œ»İ‚ÌƒV[ƒ“•`‰æ
+	//ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³æç”»
 	void Draw();	
 
 private:

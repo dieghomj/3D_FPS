@@ -1,17 +1,17 @@
-#include "CCharacter.h"
+ï»¿#include "CCharacter.h"
 
 CCharacter::CCharacter()
 	: m_Shot		(false)
 	, m_pRayY		( nullptr )
 	, m_pCrossRay	( nullptr )
-	, m_Radius		(0.3f)	//‚Æ‚è‚ ‚¦‚¸0.3‚É‚µ‚Ä‚¨‚­
-	, m_Height		(1.8f)	//‚Æ‚è‚ ‚¦‚¸1.8‚É‚µ‚Ä‚¨‚­
+	, m_Radius		(0.3f)	//ã¨ã‚Šã‚ãˆãš0.3ã«ã—ã¦ãŠã
+	, m_Height		(1.8f)	//ã¨ã‚Šã‚ãˆãš1.8ã«ã—ã¦ãŠã
 	, m_GravityEnabled(true)
 	, m_Velocity(0.f, 0.f, 0.f)
 {
 	m_pRayY = new RAY();
-	m_pRayY->Axis = D3DXVECTOR3(0.f, -1.f, 0.f);	//‰ºŒü‚«‚Ì²
-	m_pRayY->Length = 10.f;		//‚Æ‚è‚ ‚¦‚¸10‚É‚µ‚Ä‚¨‚­
+	m_pRayY->Axis = D3DXVECTOR3(0.f, -1.f, 0.f);	//ä¸‹å‘ãã®è»¸
+	m_pRayY->Length = 10.f;		//ã¨ã‚Šã‚ãˆãš10ã«ã—ã¦ãŠã
 	m_pCrossRay = new CROSSRAY();
 }
 
@@ -33,9 +33,9 @@ void CCharacter::Draw(SCENE_DATA& sceneData)
 
 void CCharacter::UpdateRayY(float posY)
 {
-	//ƒŒƒC‚ÌˆÊ’u‚ğƒvƒŒƒCƒ„[‚ÌÀ•W‚É‚»‚ë‚¦‚é
+	//ãƒ¬ã‚¤ã®ä½ç½®ã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åº§æ¨™ã«ãã‚ãˆã‚‹
 	m_pRayY->Position = m_vPosition;
-	//’n–Ê‚ß‚è‚İ‰ñ”ğ‚Ì‚½‚ßƒvƒŒƒCƒ„[‚ÌˆÊ’u‚æ‚è‚à­‚µã‚É‚µ‚Ä‚¨‚­
+	//åœ°é¢ã‚ã‚Šè¾¼ã¿å›é¿ã®ãŸã‚ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚ˆã‚Šã‚‚å°‘ã—ä¸Šã«ã—ã¦ãŠã
 	m_pRayY->Position.y = m_vPosition.y - m_Height * 0.001f;
 	m_pRayY->RotationY = m_vRotation.y;
 	m_pRayY->Length = m_Height + 0.9f;
@@ -43,7 +43,7 @@ void CCharacter::UpdateRayY(float posY)
 
 void CCharacter::UpdateCrossRay(CROSSRAY& crossRay, float posY)
 {
-	// ƒŒƒC‚Ì’·‚³‚ğ‘¬“x‚É‰‚¶‚Ä•Ï‰»‚³‚¹‚é
+	// ãƒ¬ã‚¤ã®é•·ã•ã‚’é€Ÿåº¦ã«å¿œã˜ã¦å¤‰åŒ–ã•ã›ã‚‹
 	const float RAY_LENGTH = 1.5f;
 
 	for (int dir = 0; dir < CROSSRAY::max; dir++)

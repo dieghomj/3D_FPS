@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 class CSpotLight
 {
 
@@ -11,27 +11,27 @@ public:
 	void Update();
 	void Render(D3DXMATRIX& View, D3DXMATRIX& Proj, LIGHT& Light, D3DXVECTOR3& CameraPos, FOG& Fog);
 
-	//ˆÊ’uæ“¾
+	//ä½ç½®å–å¾—
 	D3DXVECTOR3 GetPosition() const {
 		return m_vPosition;
 	}
-	//•ûŒüæ“¾
+	//æ–¹å‘å–å¾—
 	D3DXVECTOR3 GetDirection() const {
 		return m_vDirection;
 	}
-	//Fæ“¾
+	//è‰²å–å¾—
 	D3DXCOLOR GetColor() const {
 		return m_Color;
 	}
-	//”ÍˆÍæ“¾
+	//ç¯„å›²å–å¾—
 	float GetRange() const {
 		return m_Range;
 	}
-	//“à‘¤Šp“xæ“¾
+	//å†…å´è§’åº¦å–å¾—
 	float GetInnerAngle() const {
 		return m_InnerAngle;
 	}
-	//ŠO‘¤Šp“xæ“¾
+	//å¤–å´è§’åº¦å–å¾—
 	float GetOuterAngle() const {
 		return m_OuterAngle;
 	}
@@ -45,27 +45,27 @@ public:
 	}
 
 
-	//ˆÊ’uİ’è
+	//ä½ç½®è¨­å®š
 	void SetPosition(const D3DXVECTOR3& vPosition) {
 		m_vPosition = vPosition;
 	}
-	//•ûŒüİ’è
+	//æ–¹å‘è¨­å®š
 	void SetDirection(const D3DXVECTOR3& vDirection) {
 		m_vDirection = vDirection;
 	}
-	//Fİ’è
+	//è‰²è¨­å®š
 	void SetColor(const D3DXCOLOR& Color) {
 		m_Color = Color;
 	}
-	//”ÍˆÍİ’è
+	//ç¯„å›²è¨­å®š
 	void SetRange(float Range) {
 		m_Range = Range;
 	}
-	//“à‘¤Šp“xİ’è
+	//å†…å´è§’åº¦è¨­å®š
 	void SetInnerAngle(float InnerAngle) {
 		m_InnerAngle = InnerAngle;
 	}
-	//ŠO‘¤Šp“xİ’è
+	//å¤–å´è§’åº¦è¨­å®š
 	void SetOuterAngle(float OuterAngle) {
 		m_OuterAngle = OuterAngle;
 	}
@@ -80,13 +80,13 @@ public:
 	}
 
 private:
-	D3DXVECTOR3 m_vPosition;	//ˆÊ’u
-	D3DXVECTOR3 m_vDirection;	//•ûŒü
-	D3DXCOLOR	m_Color;		//F
-	float		m_Range;		//”ÍˆÍ
-	float		m_InnerAngle;	//“à‘¤Šp“x
-	float		m_OuterAngle;	//ŠO‘¤Šp“x
-	float		m_Intensity;	//‹­“x
+	D3DXVECTOR3 m_vPosition;	//ä½ç½®
+	D3DXVECTOR3 m_vDirection;	//æ–¹å‘
+	D3DXCOLOR	m_Color;		//è‰²
+	float		m_Range;		//ç¯„å›²
+	float		m_InnerAngle;	//å†…å´è§’åº¦
+	float		m_OuterAngle;	//å¤–å´è§’åº¦
+	float		m_Intensity;	//å¼·åº¦
 	int			m_Index;
 };
 

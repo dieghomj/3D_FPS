@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CStaticMeshObject.h"
 #include "CSprite3D.h"
 #include "CPlayer.h"

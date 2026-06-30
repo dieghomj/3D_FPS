@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CDataReader.h"
 #include <fstream>
 #include <sstream>
@@ -10,7 +10,7 @@ std::vector<std::string> CDataReader::SplitLine(const std::string& line, char de
 	std::string token;
 	while (std::getline(ss, token, delim))
 	{
-		// Strip a trailing carriage return left by Windows line endings.
+		// Windowsの改行コードが残す末尾のキャリッジリターンを除去する
 		if (!token.empty() && token.back() == '\r')
 			token.pop_back();
 		tokens.push_back(token);
@@ -28,7 +28,7 @@ bool CDataReader::LoadLevelData(const char* filePath, std::vector<LEVEL_INFO>& o
 	}
 
 	std::string line;
-	std::getline(file, line); // header
+	std::getline(file, line); // ヘッダー行
 
 	while (std::getline(file, line))
 	{
@@ -62,7 +62,7 @@ bool CDataReader::LoadEnemySpawns(const char* filePath, std::vector<D3DXVECTOR3>
 	}
 
 	std::string line;
-	std::getline(file, line); // header
+	std::getline(file, line); // ヘッダー行
 
 	while (std::getline(file, line))
 	{
@@ -93,7 +93,7 @@ bool CDataReader::LoadBlockedPaths(const char* filePath, std::vector<BLOCKED_PAT
 	}
 
 	std::string line;
-	std::getline(file, line); // header
+	std::getline(file, line); // ヘッダー行
 
 	while (std::getline(file, line))
 	{
@@ -127,7 +127,7 @@ bool CDataReader::LoadTriggers(const char* filePath, std::vector<CLevel::COLLISI
 	}
 
 	std::string line;
-	std::getline(file, line); // header
+	std::getline(file, line); // ヘッダー行
 
 	while (std::getline(file, line))
 	{
@@ -146,7 +146,7 @@ bool CDataReader::LoadTriggers(const char* filePath, std::vector<CLevel::COLLISI
 		trigger.position = D3DXVECTOR3(std::stof(c[1]), std::stof(c[2]), std::stof(c[3]));
 		trigger.size     = D3DXVECTOR3(std::stof(c[4]), std::stof(c[5]), std::stof(c[6]));
 
-		// Blocked-path indices: a ';'-separated list in one field (may be empty).
+		// 通行止めパスのインデックス：1つのフィールド内に';'区切りで列挙（空の場合あり）
 		for (const std::string& idx : SplitLine(c[7], ';'))
 		{
 			if (!idx.empty())
@@ -171,7 +171,7 @@ bool CDataReader::LoadEnemyGroups(const char* filePath, std::vector<ENEMY_GROUP_
 	}
 
 	std::string line;
-	std::getline(file, line); // header
+	std::getline(file, line); // ヘッダー行
 
 	while (std::getline(file, line))
 	{
@@ -190,7 +190,7 @@ bool CDataReader::LoadEnemyGroups(const char* filePath, std::vector<ENEMY_GROUP_
 		if (group < 0)
 			continue;
 
-		// Map the type name to an archetype; skip unknown names.
+		// 種別名をアーキタイプに対応付ける。未知の名前はスキップする
 		ENEMY_TYPE type;
 		if      (c[2] == "SPIDER") type = ENEMY_SPIDER;
 		else if (c[2] == "ROBO")   type = ENEMY_ROBO;
@@ -199,7 +199,7 @@ bool CDataReader::LoadEnemyGroups(const char* filePath, std::vector<ENEMY_GROUP_
 
 		int count = std::stoi(c[3]);
 
-		// Grow the bucket so out[level][group] exists, then append the enemies.
+		// out[level][group]が存在するようにバケットを拡張してから敵を追加する
 		if (group >= static_cast<int>(out[level].size()))
 			out[level].resize(group + 1);
 

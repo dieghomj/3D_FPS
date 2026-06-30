@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CDebugBBox.h"
 
 static const TCHAR* DEBUGLINE_HLSL = _T("Data\\Shader\\DebugLine.hlsl");
@@ -21,7 +21,7 @@ CDebugBBox::~CDebugBBox()
 HRESULT CDebugBBox::Init(ID3D11Device* device)
 {
 	if (FAILED(CreateShader(device))) return E_FAIL;
-	// 12 edges * 2 vertices each = 24 vertices
+	// 12本のエッジ × 各2頂点 = 24頂点
 	const int maxVerts = 24;
 	if (FAILED(CreateBuffers(device, maxVerts))) return E_FAIL;
 	return S_OK;
@@ -46,7 +46,7 @@ HRESULT CDebugBBox::CreateShader(ID3D11Device* device)
 	flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-	// VS
+	// 頂点シェーダー
 	if (FAILED(D3DX11CompileFromFile(DEBUGLINE_HLSL, nullptr, nullptr, "VS_Main", "vs_5_0",
 		flags, 0, nullptr, &vsBlob, &err, nullptr)))
 	{
@@ -59,7 +59,7 @@ HRESULT CDebugBBox::CreateShader(ID3D11Device* device)
 		return E_FAIL;
 	}
 
-	// Input layout
+	// 入力レイアウト
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                          D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -71,7 +71,7 @@ HRESULT CDebugBBox::CreateShader(ID3D11Device* device)
 	}
 	vsBlob->Release();
 
-	// PS
+	// ピクセルシェーダー
 	if (FAILED(D3DX11CompileFromFile(DEBUGLINE_HLSL, nullptr, nullptr, "PS_Main", "ps_5_0",
 		flags, 0, nullptr, &psBlob, &err, nullptr)))
 	{
@@ -85,7 +85,7 @@ HRESULT CDebugBBox::CreateShader(ID3D11Device* device)
 	}
 	psBlob->Release();
 
-	// Constant buffer (VP)
+	// 定数バッファ（VP）
 	D3D11_BUFFER_DESC cbd = {};
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cbd.ByteWidth = sizeof(CBUFFER_VP);
@@ -126,7 +126,7 @@ void CDebugBBox::ApplyVP(ID3D11DeviceContext* ctx, const D3DXMATRIX& mVP)
 
 void CDebugBBox::AppendBox(std::vector<VERTEX>& out, const D3DXVECTOR3& min, const D3DXVECTOR3& max, const D3DXVECTOR4& color)
 {
-	// 8 corners
+	// 8頂点
 	D3DXVECTOR3 p000(min.x, min.y, min.z);
 	D3DXVECTOR3 p100(max.x, min.y, min.z);
 	D3DXVECTOR3 p110(max.x, max.y, min.z);
@@ -137,21 +137,21 @@ void CDebugBBox::AppendBox(std::vector<VERTEX>& out, const D3DXVECTOR3& min, con
 	D3DXVECTOR3 p111(max.x, max.y, max.z);
 	D3DXVECTOR3 p011(min.x, max.y, max.z);
 
-	// 12 edges as line list (24 vertices)
+	// 12本のエッジをラインリストとして（24頂点）
 
-	// bottom face (y=min)
+	// 下面 (y=min)
 	out.push_back({ p000, color }); out.push_back({ p100, color });
 	out.push_back({ p100, color }); out.push_back({ p101, color });
 	out.push_back({ p101, color }); out.push_back({ p001, color });
 	out.push_back({ p001, color }); out.push_back({ p000, color });
 
-	// top face (y=max)
+	// 上面 (y=max)
 	out.push_back({ p010, color }); out.push_back({ p110, color });
 	out.push_back({ p110, color }); out.push_back({ p111, color });
 	out.push_back({ p111, color }); out.push_back({ p011, color });
 	out.push_back({ p011, color }); out.push_back({ p010, color });
 
-	// vertical edges
+	// 垂直エッジ
 	out.push_back({ p000, color }); out.push_back({ p010, color });
 	out.push_back({ p100, color }); out.push_back({ p110, color });
 	out.push_back({ p101, color }); out.push_back({ p111, color });
@@ -169,17 +169,17 @@ void CDebugBBox::DrawBox(ID3D11DeviceContext* ctx,
 	AppendBox(m_TmpVerts, min, max, color);
 	if ((int)m_TmpVerts.size() > m_MaxVBVerts) return;
 
-	// Update VP
+	// VPの更新
 	D3DXMATRIX mVP = mView * mProj;
 	ApplyVP(ctx, mVP);
 
-	// Update VB
+	// 頂点バッファの更新
 	D3D11_MAPPED_SUBRESOURCE mapped{};
 	if (FAILED(ctx->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped))) return;
 	memcpy(mapped.pData, m_TmpVerts.data(), sizeof(VERTEX) * m_TmpVerts.size());
 	ctx->Unmap(m_pVertexBuffer, 0);
 
-	// Bind and draw
+	// バインドして描画
 	UINT stride = sizeof(VERTEX), offset = 0;
 	ctx->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	ctx->IASetInputLayout(m_pLayout);
@@ -190,11 +190,11 @@ void CDebugBBox::DrawBox(ID3D11DeviceContext* ctx,
 	ctx->Draw(static_cast<UINT>(m_TmpVerts.size()), 0);
 }
 
-// �����̃R�[�h�̌�ɒǉ�
+// 既存のコードの後に追加
 
 void CDebugBBox::AppendOBB(std::vector<VERTEX>& out, const D3DXVECTOR3 corners[8], const D3DXVECTOR4& color)
 {
-	// corners�z��̏���:
+	// corners配列の順序:
 	// 0: min.x, min.y, min.z
 	// 1: max.x, min.y, min.z
 	// 2: min.x, max.y, min.z
@@ -204,19 +204,19 @@ void CDebugBBox::AppendOBB(std::vector<VERTEX>& out, const D3DXVECTOR3 corners[8
 	// 6: min.x, max.y, max.z
 	// 7: max.x, max.y, max.z
 
-	// ���� (y=min)
+	// 下面 (y=min)
 	out.push_back({ corners[0], color }); out.push_back({ corners[1], color });
 	out.push_back({ corners[1], color }); out.push_back({ corners[5], color });
 	out.push_back({ corners[5], color }); out.push_back({ corners[4], color });
 	out.push_back({ corners[4], color }); out.push_back({ corners[0], color });
 
-	// ��� (y=max)
+	// 上面 (y=max)
 	out.push_back({ corners[2], color }); out.push_back({ corners[3], color });
 	out.push_back({ corners[3], color }); out.push_back({ corners[7], color });
 	out.push_back({ corners[7], color }); out.push_back({ corners[6], color });
 	out.push_back({ corners[6], color }); out.push_back({ corners[2], color });
 
-	// �����G�b�W
+	// 垂直エッジ
 	out.push_back({ corners[0], color }); out.push_back({ corners[2], color });
 	out.push_back({ corners[1], color }); out.push_back({ corners[3], color });
 	out.push_back({ corners[5], color }); out.push_back({ corners[7], color });
@@ -233,17 +233,17 @@ void CDebugBBox::DrawOBB(ID3D11DeviceContext* ctx,
 	AppendOBB(m_TmpVerts, corners, color);
 	if ((int)m_TmpVerts.size() > m_MaxVBVerts) return;
 
-	// Update VP
+	// VPの更新
 	D3DXMATRIX mVP = mView * mProj;
 	ApplyVP(ctx, mVP);
 
-	// Update VB
+	// 頂点バッファの更新
 	D3D11_MAPPED_SUBRESOURCE mapped{};
 	if (FAILED(ctx->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped))) return;
 	memcpy(mapped.pData, m_TmpVerts.data(), sizeof(VERTEX) * m_TmpVerts.size());
 	ctx->Unmap(m_pVertexBuffer, 0);
 
-	// Bind and draw
+	// バインドして描画
 	UINT stride = sizeof(VERTEX), offset = 0;
 	ctx->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	ctx->IASetInputLayout(m_pLayout);

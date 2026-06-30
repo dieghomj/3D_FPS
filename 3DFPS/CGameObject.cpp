@@ -1,6 +1,6 @@
-#include "CGameObject.h"
+﻿#include "CGameObject.h"
 
-//�R���X�g���N�^.
+//コンストラクタ.
 CGameObject::CGameObject()
 	: m_vPosition	()
 	, m_vRotation	()
@@ -11,7 +11,7 @@ CGameObject::CGameObject()
 {
 }
 
-//�f�X�g���N�^.
+//デストラクタ.
 CGameObject::~CGameObject()
 {
 }
@@ -29,14 +29,14 @@ void CGameObject::CalculateVectors()
         D3DXMATRIX rotX;
         D3DXMatrixRotationX(&rotX, m_vRotation.x);
 
-        // Order: yaw then pitch (rotY first, then rotX)
+        // 順序: ヨー、次にピッチ（rotYを先、次にrotX）.
         D3DXMATRIX rot = rotY * rotX;
 
         D3DXVec3TransformCoord(&forward, &forward, &rot);
         D3DXVec3Normalize(&forward, &forward);
     }
 
-    // ----- Right (yaw only, horizontal strafe) -----
+    // ----- 右方向（ヨーのみ、水平方向の横移動）-----
     D3DXVECTOR3 right = vecX;
     {
         D3DXMATRIX rotY;

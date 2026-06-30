@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ğ–³Œø‚É‚·‚éB4005:Ä’è‹`
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹ã€‚4005:å†å®šç¾©
 #pragma warning(disable:4005)
 
 //---------------------------------------
-// EffekseerŠÖŒWƒwƒbƒ_Aƒ‰ƒCƒuƒ‰ƒŠ
+// Effekseeré–¢ä¿‚ãƒ˜ãƒƒãƒ€ã€ãƒ©ã‚¤ãƒ–ãƒ©ãƒª
 //---------------------------------------
 #include "Effekseer.h"
 #include "EffekseerRendererDX11.h"
@@ -17,8 +17,8 @@
 	#pragma comment(lib,"EffekseerRendererDX11.lib")
 #endif//#ifdef _DEBUG
 
-//ƒGƒCƒŠƒAƒX‚ğ—pˆÓ
-//¦ƒR[ƒh‚ª‰¡‚É’·‚­‚È‚Á‚Ä“Ç‚İ‚Ã‚ç‚¢‚½‚ß
+//ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã‚’ç”¨æ„
+//â€»ã‚³ãƒ¼ãƒ‰ãŒæ¨ªã«é•·ããªã£ã¦èª­ã¿ã¥ã‚‰ã„ãŸã‚
 namespace {
 	namespace Es = ::Effekseer;
 	using EsManagerRef	= ::Es::ManagerRef;
@@ -33,125 +33,125 @@ namespace {
 };
 
 /**************************************************
-*	ƒtƒŠ[ƒ\ƒtƒg Effekseer‚Ìƒf[ƒ^‚ğg‚¤‚½‚ß‚ÌƒNƒ‰ƒX
-*	singleton(ƒVƒ“ƒOƒ‹ƒgƒ“FƒfƒUƒCƒ“ƒpƒ^[ƒ“‚Ì‚P‚Â)‚Åì¬
+*	ãƒ•ãƒªãƒ¼ã‚½ãƒ•ãƒˆ Effekseerã®ãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ã†ãŸã‚ã®ã‚¯ãƒ©ã‚¹
+*	singleton(ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ï¼šãƒ‡ã‚¶ã‚¤ãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ï¼‘ã¤)ã§ä½œæˆ
 **/
 class CEffect
 {
 public:
-	//ƒGƒtƒFƒNƒgí—Ş—ñ‹“Œ^
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç¨®é¡åˆ—æŒ™å‹
 	enum enList
 	{
-		MagmaEffect = 0,	//‰¼‚Åİ’è
-		CircleEffect,		//‰¼‚Åİ’è
-		SpriteEffect,		//‰¼‚Åİ’è
-		AttackEffect,		//‰¼‚Åİ’è
-		BloodEffect,		//‰¼‚Åİ’è
-		DashEffect,			//‰¼‚Åİ’è
-		PistolShotEffect,	//‰¼‚Åİ’è
-		HitEffect,			//‰¼‚Åİ’è
-		ExplosionEffect,		//‰¼‚Åİ’è
-		SparkEffect,			//‰¼‚Åİ’è
+		MagmaEffect = 0,	//ä»®ã§è¨­å®š
+		CircleEffect,		//ä»®ã§è¨­å®š
+		SpriteEffect,		//ä»®ã§è¨­å®š
+		AttackEffect,		//ä»®ã§è¨­å®š
+		BloodEffect,		//ä»®ã§è¨­å®š
+		DashEffect,			//ä»®ã§è¨­å®š
+		PistolShotEffect,	//ä»®ã§è¨­å®š
+		HitEffect,			//ä»®ã§è¨­å®š
+		ExplosionEffect,		//ä»®ã§è¨­å®š
+		SparkEffect,			//ä»®ã§è¨­å®š
 
-		Max			//Å‘å”
+		Max			//æœ€å¤§æ•°
 	};
 
-	//ƒCƒ“ƒXƒ^ƒ“ƒXæ“¾(—Bˆê‚ÌƒAƒNƒZƒXŒo˜H)
+	//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å–å¾—(å”¯ä¸€ã®ã‚¢ã‚¯ã‚»ã‚¹çµŒè·¯)
 	static CEffect* GetInstance()
 	{
-		//—Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é
-		//¦static‚Åì¬‚³‚ê‚½‚Ì‚Å‚Q‰ñ–ÚˆÈ~‚Í‰º‚Ì‚Ps‚Í–³‹‚³‚ê‚é
-		static CEffect s_Instance;	//s_:static‚ÌˆÓ–¡
+		//å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹
+		//â€»staticã§ä½œæˆã•ã‚ŒãŸã®ã§ï¼’å›ç›®ä»¥é™ã¯ä¸‹ã®ï¼‘è¡Œã¯ç„¡è¦–ã•ã‚Œã‚‹
+		static CEffect s_Instance;	//s_:staticã®æ„å‘³
 		return &s_Instance;
 	}
 	~CEffect();
 
-	//\’z
+	//æ§‹ç¯‰
 	HRESULT Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	//ƒf[ƒ^“Ç‚İ‚İ
+	//ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	HRESULT LoadData();
-	//•`‰æ
+	//æç”»
 	void Draw(SCENE_DATA& sceneData);
 
 	//-----------------------------------
-	// •ÏŠ·Œn
+	// å¤‰æ›ç³»
 	//-----------------------------------
-	//ƒxƒNƒ^[
+	//ãƒ™ã‚¯ã‚¿ãƒ¼
 	::EsVec3 ToEfkVector3(const D3DXVECTOR3* pSrcVec3Dx);
 	D3DXVECTOR3 ToDxVector3(const ::EsVec3* pSrcVec3Efk);
-	//s—ñ
+	//è¡Œåˆ—
 	::EsMatrix ToEfkMatrix(const D3DXMATRIX* pSrcMatDx);
 	D3DXMATRIX ToDxMatrix(const ::EsMatrix* pSrcMatEfk);
 
 	//-----------------------------------
-	// §ŒäŒn
+	// åˆ¶å¾¡ç³»
 	//-----------------------------------
-	//Ä¶
+	//å†ç”Ÿ
 	static ::EsHandle Play( enList listNo, const D3DXVECTOR3& pos) {
 		CEffect* pE = CEffect::GetInstance();
 		return pE->m_pManager->Play(pE->m_pEffect[listNo], pos.x, pos.y, pos.z);
 	}
-	// Is it playing?
+	//å†ç”Ÿä¸­ã‹ã©ã†ã‹
 	static bool IsPlaying(::EsHandle handle) {
 		return CEffect::GetInstance()->m_pManager->Exists(handle);
 	}
-	//’â~
+	//åœæ­¢
 	static void Stop(::EsHandle handle) {
 		CEffect::GetInstance()->m_pManager->StopEffect(handle);
 	}
-	//‘S‚Ä’â~
+	//å…¨ã¦åœæ­¢
 	static void StopAll() {
 		CEffect::GetInstance()->m_pManager->StopAllEffects();
 	}
-	//ˆê’â~
+	//ä¸€æ™‚åœæ­¢
 	static void Paused(::EsHandle handle, bool paused) {
 		CEffect::GetInstance()->m_pManager->SetPaused(handle, paused);
 	}
-	//Ä¶‘¬“x‚Ìİ’è
+	//å†ç”Ÿé€Ÿåº¦ã®è¨­å®š
 	static void SetSpeed(::EsHandle handle, float speed) {
 		CEffect::GetInstance()->m_pManager->SetSpeed(handle, speed);
 	}
-	//ˆÊ’u‚ğw’è‚·‚é
+	//ä½ç½®ã‚’æŒ‡å®šã™ã‚‹
 	static void SetLocation(::EsHandle handle, D3DXVECTOR3 pos) {
 		CEffect::GetInstance()->m_pManager->
 			SetLocation(handle, ::EsVec3(pos.x, pos.y, pos.z));
 	}
-	//‰ñ“]‚ğw’è‚·‚é
+	//å›è»¢ã‚’æŒ‡å®šã™ã‚‹
 	static void SetRotation(::EsHandle handle, D3DXVECTOR3 rot) {
 		CEffect::GetInstance()->m_pManager->
 			SetRotation(handle, rot.x, rot.y, rot.z);
 	}
-	//‰ñ“]‚ğw’è‚·‚éi²‰ñ“]j
+	//å›è»¢ã‚’æŒ‡å®šã™ã‚‹ï¼ˆè»¸å›è»¢ï¼‰
 	static void SetRotation(::EsHandle handle, D3DXVECTOR3 vAxis, float angle){
 		CEffect::GetInstance()->m_pManager->
 			SetRotation(handle, ::EsVec3(vAxis.x, vAxis.y, vAxis.z), angle);
 	}
-	//ƒTƒCƒY‚ğw’è‚·‚é
+	//ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã™ã‚‹
 	static void SetScale(::EsHandle handle, D3DXVECTOR3 scale) {
 		CEffect::GetInstance()->m_pManager->
 			SetScale(handle, scale.x, scale.y, scale.z);
 	}
 	
 private:
-	//¶¬‚âƒRƒs[‚ğ‹Ö~‚·‚é
+	//ç”Ÿæˆã‚„ã‚³ãƒ”ãƒ¼ã‚’ç¦æ­¢ã™ã‚‹
 	CEffect();
 	CEffect(const CEffect& rhs) = delete;
 	CEffect& operator = (const CEffect& rhs) = delete;
 
-	//ƒf[ƒ^‰ğ•ú
+	//ãƒ‡ãƒ¼ã‚¿è§£æ”¾
 	HRESULT ReleaseData();
 
-	//ƒrƒ…[s—ñ‚ğİ’è
+	//ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã‚’è¨­å®š
 	void SetViewMatrix(const D3DXMATRIX& mView);
-	//ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğİ’è
+	//ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’è¨­å®š
 	void SetProjectionMatrix(const D3DXMATRIX& mProj);
 
 private:
-	//ƒGƒtƒFƒNƒg‚ğ“®ì‚³‚¹‚é‚½‚ß‚É•K—v
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å‹•ä½œã•ã›ã‚‹ãŸã‚ã«å¿…è¦
 	::EsManagerRef		m_pManager;
 	::EsRendererRef		m_pRenderer;
 
-	//ƒGƒtƒFƒNƒg‚Ìí—Ş‚²‚Æ‚É•K—v
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ç¨®é¡ã”ã¨ã«å¿…è¦
 	::EsEffectRef		m_pEffect[enList::Max];
 };
 

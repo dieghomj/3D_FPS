@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CAnimCharacter.h"
 class CAnimEnemy :
@@ -94,8 +94,8 @@ protected:
 	
 	float m_RotationSpeed;
 
-	// Õ“ËŒŸo—p‚Ìƒƒ“ƒo[
+	// è¡çªæ¤œå‡ºç”¨ã®ãƒ¡ãƒ³ãƒãƒ¼
 	float m_FloorY;
 	D3DXVECTOR3 m_FloorNormal;
-	CROSSRAY* m_pHeadCrossRay;  // “ª•”‚ÌÕ“ËƒŒƒC
+	CROSSRAY* m_pHeadCrossRay;  // é ­éƒ¨ã®è¡çªãƒ¬ã‚¤
 };

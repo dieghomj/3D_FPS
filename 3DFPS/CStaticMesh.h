@@ -1,98 +1,97 @@
-#pragma once
+О╩©#pragma once
 
-//▄x█░┌и┌б┌╒┌д┌л┐R│[┐h∙╙░м┌П√Ё▄Ь┌и┌╥┌И. 4005:█д▓Х▀`.
+//Х╜╕Е▒┼Ц│╚Ц│╓Ц│└Ц│╕Ц│╝Ц┌ЁЦ┐╪Ц┐┴Е┬├Ф·░Ц┌▓Г└║Е┼╧Ц│╚Ц│≥Ц┌▀. 4005:Е├█Е╝ Г╬╘.
 #pragma warning( disable:4005)
 
-//_declspec()	:DLL┌╘┌Г(┼ж░■,┐N┐┴┐X,┐N┐┴┐X┌л┐│┐⌠┐o┼ж░■┌П)┐G┐N┐X┐|│[┐g┌╥┌И.
-//align()		:(▀╜░╖⌠I┌и)16byte ┌е▌g≈p┌╥┌И.
+//_declspec()	:DLLЦ│▀Ц┌┴(И√╒Ф∙╟,Ц┌╞Ц┐╘Ц┌╧,Ц┌╞Ц┐╘Ц┌╧Ц│╝Ц┐║Ц┐ЁЦ┐░И√╒Ф∙╟Ц┌▓)Ц┌╗Ц┌╞Ц┌╧Ц┐²Ц┐╪Ц┐┬Ц│≥Ц┌▀.
+//align()		:(Е╪╥Е┬╤Г └Ц│╚)16byte Ц│╖Д╫©Г■╗Ц│≥Ц┌▀.
 #define ALIGN16	_declspec( align(16) )
 
-//▒O∙Ш░И▄╬.
+//Е┴█Ф√╧Е╝ёХ╗─.
 class CDirectX9;
 class CDirectX11;
 
 
 /**************************************************
-*	┐X┐^┐e┐B┐b┐N┐│┐b┐V┐┘┐N┐┴┐X	
-*	┐│┐b┐V┐┘┐f│[┐^┌П┐t┐@┐C┐▀┌╘┌Г▌Ф┌Х▐o┌╥┬в┌╬┌╞┌иDirectX9┌П▌g≈p┌╥┌И.
-*	┐▄┐⌠┐_┐┼┐⌠┐O(∙`┴Ф)┌м│ADirectX11┌е█s┌╓.
+*	Ц┌╧Ц┌©Ц┐├Ц┌ёЦ┐┐Ц┌╞Ц┐║Ц┐┐Ц┌╥Ц┐╔Ц┌╞Ц┐╘Ц┌╧	
+*	Ц┐║Ц┐┐Ц┌╥Ц┐╔Ц┐┤Ц┐╪Ц┌©Ц┌▓Ц┐∙Ц┌║Ц┌╓Ц┐╚Ц│▀Ц┌┴Е▐√Ц┌┼Е┤╨Ц│≥Г┌╨Ц│═Ц│▒Ц│╚DirectX9Ц┌▓Д╫©Г■╗Ц│≥Ц┌▀.
+*	Ц┐╛Ц┐ЁЦ┐─Ц┐╙Ц┐ЁЦ┌╟(Ф▐▐Г■╩)Ц│╞Ц─│DirectX11Ц│╖Х║▄Ц│├.
 **/
 class CStaticMesh
 {
 public:
 	//======================================
-	//	█\▒╒▒л.
+	//	Ф╖▀И─═Д╫⌠.
 	//======================================
-	//┐R┐⌠┐X┐^┐⌠┐g┐o┐b┐t┐@┌л┐A┐v┐┼▒╓┌л▓Х▀`.
-	//│╕┐V┐F│[┐_⌠Ю┌л┐R┐⌠┐X┐^┐⌠┐g┐o┐b┐t┐@┌ф┬Й▓v┌╣┌д┌╒┌И∙K≈v┌═┌Х.
-	//┐│┐b┐V┐┘▓P┬й┌е⌠n┌╥▐Н∙Я.
+	//Ц┌ЁЦ┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┐┬Ц┐░Ц┐┐Ц┐∙Ц┌║Ц│╝Ц┌╒Ц┐≈Ц┐╙Е│╢Ц│╝Е╝ Г╬╘.
+	//Б─╩Ц┌╥Ц┌╖Ц┐╪Ц┐─Е├┘Ц│╝Ц┌ЁЦ┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┐┬Ц┐░Ц┐┐Ц┐∙Ц┌║Ц│╗Д╦─Х┤╢Ц│≈Ц│╕Ц│└Ц┌▀Е©┘Х╕│Ц│┌Ц┌┼.
+	//Ц┐║Ц┐┐Ц┌╥Ц┐╔Е█≤Д╫█Ц│╖Ф╦║Ц│≥Ф┐┘Е═╠.
 	struct CBUFFER_PER_MESH
 	{
-		D3DXMATRIX	mW;			//┐▐│[┐▀┐h█s≈Я.
-		D3DXMATRIX	mWVP;		//┐▐│[┐▀┐h,┐r┐┘│[,┐v┐█┐W┐F┐N┐V┐┤┐⌠┌л█┤░╛∙о┼╥█s≈Я.	
+		D3DXMATRIX	mW;			//Ц┐╞Ц┐╪Ц┐╚Ц┐┴Х║▄Е┬≈.
+		D3DXMATRIX	mWVP;		//Ц┐╞Ц┐╪Ц┐╚Ц┐┴,Ц┐⌠Ц┐╔Ц┐╪,Ц┐≈Ц┐╜Ц┌╦Ц┌╖Ц┌╞Ц┌╥Ц┐╖Ц┐ЁЦ│╝Е░┬Ф┬░Е╓┴Ф▐⌡Х║▄Е┬≈.	
 	};
-	//┐}┐e┐┼┐A┐▀▓P┬й┌е⌠n┌╥▐Н∙Я.
+	//Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Е█≤Д╫█Ц│╖Ф╦║Ц│≥Ф┐┘Е═╠.
 	struct CBUFFER_PER_MATERIAL
 	{
-		D3DXVECTOR4	Diffuse;	//┐f┐B┐t┐┘│[┐Y░F(┼g▌U■╫▌к░F).
-		D3DXVECTOR4 Ambient;	//┐A┐⌠┐r┐G┐⌠┐g░F(┼б▀╚░F).
-		D3DXVECTOR4	Specular;	//┐X┐y┐L┐┘┐┴░F(▀╬√й■╫▌к░F).
+		D3DXVECTOR4	Diffuse;	//Ц┐┤Ц┌ёЦ┐∙Ц┐╔Ц┐╪Ц┌╨Х┴╡(Ф▀║Ф∙ёЕ▐█Е╟└Х┴╡).
+		D3DXVECTOR4 Ambient;	//Ц┌╒Ц┐ЁЦ┐⌠Ц┌╗Ц┐ЁЦ┐┬Х┴╡(Г▓╟Е╒┐Х┴╡).
+		D3DXVECTOR4	Specular;	//Ц┌╧Ц┐ Ц┌╜Ц┐╔Ц┐╘Х┴╡(И▐║И²╒Е▐█Е╟└Х┴╡).
 	};
-	//┐t┐▄│[┐─▓P┬й┌е⌠n┌╥▐Н∙Я.
-	// ┐J┐│┐┴,┐┴┐C┐g▐Н∙Я┌м┌╠┌╠┌и⌠Э┌Й┌И.
+	//Ц┐∙Ц┐╛Ц┐╪Ц┐═Е█≤Д╫█Ц│╖Ф╦║Ц│≥Ф┐┘Е═╠.
+	// Ц┌╚Ц┐║Ц┐╘,Ц┐╘Ц┌╓Ц┐┬Ф┐┘Е═╠Ц│╞Ц│⌠Ц│⌠Ц│╚Е┘╔Ц┌▄Ц┌▀.
 	struct CBUFFER_PER_FRAME
 	{
-		D3DXVECTOR4	CameraPos;			// ┐J┐│┐┴┬й▓u.
-		D3DXVECTOR4	LightColor;			// ┐┴┐C┐g┌л░F.
-		D3DXVECTOR4	LightDir;			// ┐┴┐C┐g∙Ш▄Э.
-		D3DXVECTOR4	AmbientColor;		// ┼б▀╚▄У┌л░F.
-		D3DXVECTOR4 FogColor;			//┐t┐H┐O┌л░F.
-		D3DXVECTOR4 FogParams;			//┐t┐H┐O┌л┐p┐┴┐││[┐^(x=┼J▌n▀≈≈ё,y=▐I≈╧▀≈≈ё,z=√╒▌g≈p,w=√╒▌g≈p).
-		float		LightIntensity;		// ┐┴┐C┐g┌л▀╜⌠x.
-		float		AffineIntensity;	// ┐A┐t┐B┐⌠┐}┐b┐s┐⌠┐O┌л▀╜⌠x.
-		float		VertexSnapping;		// ▓╦⌠_┐X┐i┐b┐s┐⌠┐O┌л▀╜⌠x.
-		float		_padding;			// ┐p┐f┐B┐⌠┐O.
+		D3DXVECTOR4	CameraPos;			// Ц┌╚Ц┐║Ц┐╘Д╫█Г╫╝.
+		D3DXVECTOR4	LightColor;			// Ц┐╘Ц┌╓Ц┐┬Ц│╝Х┴╡.
+		D3DXVECTOR4	LightDir;			// Ц┐╘Ц┌╓Ц┐┬Ф√╧Е░▒.
+		D3DXVECTOR4	AmbientColor;		// Г▓╟Е╒┐Е┘┴Ц│╝Х┴╡.
+		D3DXVECTOR4 FogColor;			//Ц┐∙Ц┌╘Ц┌╟Ц│╝Х┴╡.
+		D3DXVECTOR4 FogParams;			//Ц┐∙Ц┌╘Ц┌╟Ц│╝Ц┐▒Ц┐╘Ц┐║Ц┐╪Ц┌©(x=И√▀Е╖▀Х╥²И⌡╒,y=Г╣┌Д╨├Х╥²И⌡╒,z=Ф°╙Д╫©Г■╗,w=Ф°╙Д╫©Г■╗).
+		float		LightIntensity;		// Ц┐╘Ц┌╓Ц┐┬Ц│╝Е╪╥Е╨╕.
+		float		AffineIntensity;	// Ц┌╒Ц┐∙Ц┌ёЦ┐ЁЦ┐·Ц┐┐Ц┐■Ц┐ЁЦ┌╟Ц│╝Е╪╥Е╨╕.
+		float		VertexSnapping;		// И═┌Г┌╧Ц┌╧Ц┐┼Ц┐┐Ц┐■Ц┐ЁЦ┌╟Ц│╝Е╪╥Е╨╕.
+		float		_padding;			// Ц┐▒Ц┐┤Ц┌ёЦ┐ЁЦ┌╟.
 	};
 
 	struct SPOT_LIGHT_DATA
 	{
-		D3DXVECTOR4	LightOrigin;	//┐┴┐C┐g┌л┬й▓u.
-		D3DXVECTOR4	LightDir;		//┐┴┐C┐g┌л∙Ш▄Э.
-		D3DXVECTOR4	LightColor;		//┐┴┐C┐g┌л░F.
-		float		fRange;			//┐┴┐C┐g┌л⌠м┌╜▀≈≈ё.
-		float		fInnerCos;	//⌠Ю▒╓┌л┼p⌠x(┼╝▒S┌и▄У┌И■м┬м).
-		float		fOuterCos;	//┼O▒╓┌л┼p⌠x(▐≥│X┌и┬ц┌╜┌х┌И■м┬м).
-		float		fIntensity;		//┐┴┐C┐g┌л▀╜⌠x.
-		//float 		_padding;		//┐p┐f┐B┐⌠┐O.	
+		D3DXVECTOR4	LightOrigin;	//Ц┐╘Ц┌╓Ц┐┬Ц│╝Д╫█Г╫╝.
+		D3DXVECTOR4	LightDir;		//Ц┐╘Ц┌╓Ц┐┬Ц│╝Ф√╧Е░▒.
+		D3DXVECTOR4	LightColor;		//Ц┐╘Ц┌╓Ц┐┬Ц│╝Х┴╡.
+		float		fRange;			//Ц┐╘Ц┌╓Ц┐┬Ц│╝Е╠┼Ц│▐Х╥²И⌡╒.
+		float		fInnerCos;	//Е├┘Е│╢Ц│╝Х╖▓Е╨╕(Е╝▄Е┘╗Ц│╚Е┘┴Ц┌▀Г╞└Е⌡╡).
+		float		fOuterCos;	//Е╓√Е│╢Ц│╝Х╖▓Е╨╕(Е╬░Ц─┘Ц│╚Ф ≈Ц│▐Ц│╙Ц┌▀Г╞└Е⌡╡).
+		float		fIntensity;		//Ц┐╘Ц┌╓Ц┐┬Ц│╝Е╪╥Е╨╕.
 	};
 
 	struct CBUFFER_PER_SPOTLIGHT
 	{
-		SPOT_LIGHT_DATA SpotLights[MAX_LIGHT]; //┐X┐|┐b┐g┐┴┐C┐g■z≈Я.
-		UINT NumSpotLights;        //┐X┐|┐b┐g┐┴┐C┐g┌л░■.
-		D3DXVECTOR3 _padding;     //┐p┐f┐B┐⌠┐O.
+		SPOT_LIGHT_DATA SpotLights[MAX_LIGHT]; //Ц┌╧Ц┐²Ц┐┐Ц┐┬Ц┐╘Ц┌╓Ц┐┬И┘█Е┬≈.
+		UINT NumSpotLights;        //Ц┌╧Ц┐²Ц┐┐Ц┐┬Ц┐╘Ц┌╓Ц┐┬Ц│╝Ф∙╟.
+		D3DXVECTOR3 _padding;     //Ц┐▒Ц┐┤Ц┌ёЦ┐ЁЦ┌╟.
 	};
 
-	//▓╦⌠_┌л█\▒╒▒л.
+	//И═┌Г┌╧Ц│╝Ф╖▀И─═Д╫⌠.
 	struct VERTEX
 	{
-		D3DXVECTOR3 Pos;	//▓╦⌠_█ю∙W.
-		D3DXVECTOR3	Normal;	//√@░Э(┴A┴e▄v▌Z┌и∙K░{).
-		D3DXVECTOR2	UV;		//┐e┐N┐X┐`┐┐█ю∙W.
+		D3DXVECTOR3 Pos;	//И═┌Г┌╧Е╨╖Ф╗≥.
+		D3DXVECTOR3	Normal;	//ФЁ∙Г╥ (И≥╟Е╫╠Х╗┬Г╝≈Ц│╚Е©┘И═┬).
+		D3DXVECTOR2	UV;		//Ц┐├Ц┌╞Ц┌╧Ц┐│Ц┐ёЕ╨╖Ф╗≥.
 	};
-	//┐}┐e┐┼┐A┐▀█\▒╒▒л.
+	//Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Ф╖▀И─═Д╫⌠.
 	struct MY_MATERIAL
 	{
-		D3DXVECTOR4	Diffuse;	//┐f┐B┐t┐┘│[┐Y.
-		D3DXVECTOR4	Ambient;	//┐A┐⌠┐r┐G┐⌠┐g.
-		D3DXVECTOR4	Specular;	//┐X┐y┐L┐┘┐┴.
-		D3DXVECTOR4 Emissive;	//┐G┐~┐b┐V┐u.
-		float		Power;		//┐X┐y┐L┐┘┐┴┐p┐▐│[.
-		TCHAR TextureName[MAX_PATH];	//┐e┐N┐X┐`┐┐┐t┐@┐C┐▀√╪.
-		ID3D11ShaderResourceView* pTexture;//┐e┐N┐X┐`┐┐.
-		DWORD dwNumFace;		//┐}┐e┐┼┐A┐▀┌л┐|┐┼┐S┐⌠░■.
+		D3DXVECTOR4	Diffuse;	//Ц┐┤Ц┌ёЦ┐∙Ц┐╔Ц┐╪Ц┌╨.
+		D3DXVECTOR4	Ambient;	//Ц┌╒Ц┐ЁЦ┐⌠Ц┌╗Ц┐ЁЦ┐┬.
+		D3DXVECTOR4	Specular;	//Ц┌╧Ц┐ Ц┌╜Ц┐╔Ц┐╘.
+		D3DXVECTOR4 Emissive;	//Ц┌╗Ц┐÷Ц┐┐Ц┌╥Ц┐√.
+		float		Power;		//Ц┌╧Ц┐ Ц┌╜Ц┐╔Ц┐╘Ц┐▒Ц┐╞Ц┐╪.
+		TCHAR TextureName[MAX_PATH];	//Ц┐├Ц┌╞Ц┌╧Ц┐│Ц┐ёЦ┐∙Ц┌║Ц┌╓Ц┐╚Е░█.
+		ID3D11ShaderResourceView* pTexture;//Ц┐├Ц┌╞Ц┌╧Ц┐│Ц┐ё.
+		DWORD dwNumFace;		//Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Ц│╝Ц┐²Ц┐╙Ц┌╢Ц┐ЁФ∙╟.
 
-		//┐R┐⌠┐X┐g┐┴┐N┐^.
+		//Ц┌ЁЦ┐ЁЦ┌╧Ц┐┬Ц┐╘Ц┌╞Ц┌©.
 		MY_MATERIAL()
 			: Diffuse		()
 			, Ambient		()
@@ -104,19 +103,19 @@ public:
 			, dwNumFace		( 0 )
 		{
 		}
-		//┐f┐X┐g┐┴┐N┐^.
+		//Ц┐┤Ц┌╧Ц┐┬Ц┐╘Ц┌╞Ц┌©.
 		~MY_MATERIAL() {
 			SAFE_RELEASE( pTexture );
 		}
 	};
 
-	//X┐t┐@┐C┐▀┌л┐█│[┐h┌е∙K≈v│B▌С┌╞▌Ф┌И┌Ю┌л.
+	//XЦ┐∙Ц┌║Ц┌╓Ц┐╚Ц│╝Ц┐╜Ц┐╪Ц┐┴Ц│╖Е©┘Х╕│Ц─┌Е▐≈Ц│▒Е▐√Ц┌▀Ц┌┌Ц│╝.
 	struct MY_MODEL
 	{
-		TCHAR			FileName[64];		//┐t┐@┐C┐▀√╪.
-		LPD3DXMESH		pMesh;				//┐│┐b┐V┐┘┐I┐u┐W┐F┐N┐g.
-		LPD3DXBUFFER	pD3DXMtrlBuffer;	//┐}┐e┐┼┐A┐▀┐o┐b┐t┐@.
-		DWORD			NumMaterials;		//┐}┐e┐┼┐A┐▀░■.
+		TCHAR			FileName[64];		//Ц┐∙Ц┌║Ц┌╓Ц┐╚Е░█.
+		LPD3DXMESH		pMesh;				//Ц┐║Ц┐┐Ц┌╥Ц┐╔Ц┌╙Ц┐√Ц┌╦Ц┌╖Ц┌╞Ц┐┬.
+		LPD3DXBUFFER	pD3DXMtrlBuffer;	//Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Ц┐░Ц┐┐Ц┐∙Ц┌║.
+		DWORD			NumMaterials;		//Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Ф∙╟.
 
 		MY_MODEL()
 			: FileName			()
@@ -131,38 +130,38 @@ public:
 	};
 
 public:
-	CStaticMesh();		//┐R┐⌠┐X┐g┐┴┐N┐^.
-	~CStaticMesh();		//┐f┐X┐g┐┴┐N┐^.
+	CStaticMesh();		//Ц┌ЁЦ┐ЁЦ┌╧Ц┐┬Ц┐╘Ц┌╞Ц┌©.
+	~CStaticMesh();		//Ц┐┤Ц┌╧Ц┐┬Ц┐╘Ц┌╞Ц┌©.
 
 	HRESULT Init( CDirectX9& pDx9, CDirectX11& pDx11, LPCTSTR lpFileName );
 
-	//┴П∙З┼ж░■.
+	//Х╖ёФ■╬И√╒Ф∙╟.
 	void Release();
 
-	//┐▄┐⌠┐_┐┼┐⌠┐O≈p.
+	//Ц┐╛Ц┐ЁЦ┐─Ц┐╙Ц┐ЁЦ┌╟Г■╗.
 	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj,
 		LIGHT& Light, D3DXVECTOR3& CamPos, FOG& Fog, const SPOT_LIGHT* pSpotLightArr, int SpotLightNo);
 
 
-	//█ю∙W▐Н∙Я┌П░щ▓Х.
+	//Е╨╖Ф╗≥Ф┐┘Е═╠Ц┌▓Х╗╜Е╝ .
 	void SetPosition( const D3DXVECTOR3& Pos ) { m_Position = Pos; }
-	//█ю∙Wx┌П░щ▓Х.
+	//Е╨╖Ф╗≥xЦ┌▓Х╗╜Е╝ .
 	void SetPositionX( float x ){ m_Position.x = x; }
-	//█ю∙Wy┌П░щ▓Х.
+	//Е╨╖Ф╗≥yЦ┌▓Х╗╜Е╝ .
 	void SetPositionY( float y ){ m_Position.y = y; }
-	//█ю∙Wz┌П░щ▓Х.
+	//Е╨╖Ф╗≥zЦ┌▓Х╗╜Е╝ .
 	void SetPositionZ( float z ){ m_Position.z = z; }
 
-	//┴Я⌠]▐Н∙Я┌П░щ▓Х.
+	//Е⌡·Х╩╒Ф┐┘Е═╠Ц┌▓Х╗╜Е╝ .
 	void SetRotation( const D3DXVECTOR3& Rot ) { m_Rotation = Rot;	}
-	//┴Я⌠]▌╡Y┌П░щ▓Х(Yaw).
+	//Е⌡·Х╩╒Х╩╦YЦ┌▓Х╗╜Е╝ (Yaw).
 	void SetRotationY( float y ){ m_Rotation.y = y; }
-	//┴Я⌠]▌╡X┌П░щ▓Х(Pitch).
+	//Е⌡·Х╩╒Х╩╦XЦ┌▓Х╗╜Е╝ (Pitch).
 	void SetRotationX( float x ){ m_Rotation.x = x; }
-	//┴Я⌠]▌╡Z┌П░щ▓Х(Roll).
+	//Е⌡·Х╩╒Х╩╦ZЦ┌▓Х╗╜Е╝ (Roll).
 	void SetRotationZ( float z ){ m_Rotation.z = z; }
 
-	//┼g▐k▐Н∙Я┌П░щ▓Х.
+	//Ф▀║Г╦╝Ф┐┘Е═╠Ц┌▓Х╗╜Е╝ .
 	void SetScale( const D3DXVECTOR3& Scale ) {	m_Scale = Scale;	}
 	void SetScale( float scale ){
 		m_Scale.x = scale;
@@ -173,71 +172,71 @@ public:
 	D3DXMATRIX GetWorldMatrix() const { return m_mWorld; };
 	void SetWorldMatrix(D3DXMATRIX mWorld) { m_mWorld = mWorld; };
 
-	//┐│┐b┐V┐┘┌П▌Ф⌠╬.
+	//Ц┐║Ц┐┐Ц┌╥Ц┐╔Ц┌▓Е▐√Е╬≈.
 	LPD3DXMESH GetMesh() const { return m_Model.pMesh; }
-	//┐▄┐C┌ф┌л⌠√┌╫┌Х■╩▓Х≈p┌л┐│┐b┐V┐┘┌П▌Ф⌠╬.
+	//Ц┐╛Ц┌╓Ц│╗Ц│╝Е╫⌠Ц│÷Ц┌┼Е┬╓Е╝ Г■╗Ц│╝Ц┐║Ц┐┐Ц┌╥Ц┐╔Ц┌▓Е▐√Е╬≈.
 	LPD3DXMESH GetMeshForRay() const { return m_ModelForRay.pMesh; }
 	
 
 private:
-	//┐│┐b┐V┐┘⌠г┌щ█·┌щ.
+	//Ц┐║Ц┐┐Ц┌╥Ц┐╔Х╙╜Ц│©Х╬╪Ц│©.
 	HRESULT LoadXMesh( LPCTSTR lpFileName );
-	//┐V┐F│[┐_█Л░╛.
+	//Ц┌╥Ц┌╖Ц┐╪Ц┐─Д╫°Ф┬░.
 	HRESULT CreateShader();
-	//┐┌┐f┐▀█Л░╛.
+	//Ц┐╒Ц┐┤Ц┐╚Д╫°Ф┬░.
 	HRESULT CreateModel();
-	//┐}┐e┐┼┐A┐▀█Л░╛.
+	//Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Д╫°Ф┬░.
 	HRESULT CreateMaterials();
-	//┐C┐⌠┐f┐b┐N┐X┐o┐b┐t┐@█Л░╛.
+	//Ц┌╓Ц┐ЁЦ┐┤Ц┐┐Ц┌╞Ц┌╧Ц┐░Ц┐┐Ц┐∙Ц┌║Д╫°Ф┬░.
 	HRESULT CreateIndexBuffer();
-	//▓╦⌠_┐o┐b┐t┐@█Л░╛.
+	//И═┌Г┌╧Ц┐░Ц┐┐Ц┐∙Ц┌║Д╫°Ф┬░.
 	HRESULT CreateVertexBuffer();
-	//┐R┐⌠┐X┐^┐⌠┐g┐o┐b┐t┐@█Л░╛.
+	//Ц┌ЁЦ┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┐┬Ц┐░Ц┐┐Ц┐∙Ц┌║Д╫°Ф┬░.
 	HRESULT CreateConstantBuffer();
-	//┐T┐⌠┐v┐┴█Л░╛.
+	//Ц┌╣Ц┐ЁЦ┐≈Ц┐╘Д╫°Ф┬░.
 	HRESULT CreateSampler();
 
 	D3DXMATRIX BuildWorldMatrix(D3DXMATRIX& mWorld);
 
-	//┐▄┐⌠┐_┐┼┐⌠┐O┼ж░■(┐N┐┴┐X⌠Ю┌е┌л┌щ▌g≈p┌╥┌И).
+	//Ц┐╛Ц┐ЁЦ┐─Ц┐╙Ц┐ЁЦ┌╟И√╒Ф∙╟(Ц┌╞Ц┐╘Ц┌╧Е├┘Ц│╖Ц│╝Ц│©Д╫©Г■╗Ц│≥Ц┌▀).
 	void RenderMesh( D3DXMATRIX& mWorld, D3DXMATRIX& mView, D3DXMATRIX& mProj );
 
 private:
 	//Dx9.
 	CDirectX9*				m_pDx9;
-	LPDIRECT3DDEVICE9		m_pDevice9;	//Dx9┐f┐o┐C┐X┐I┐u┐W┐F┐N┐g.
+	LPDIRECT3DDEVICE9		m_pDevice9;	//Dx9Ц┐┤Ц┐░Ц┌╓Ц┌╧Ц┌╙Ц┐√Ц┌╦Ц┌╖Ц┌╞Ц┐┬.
 
 	//Dx11.
 	CDirectX11*				m_pDx11;
-	ID3D11Device*			m_pDevice11;	//┐f┐o┐C┐X╣лч╪ч╙╦д.
-	ID3D11DeviceContext*	m_pContext11;	//┐f┐o┐C┐X┐R┐⌠┐e┐L┐X┐g.
+	ID3D11Device*			m_pDevice11;	//Ц┐┤Ц┐░Ц┌╓Ц┌╧О╫╣О╬▄О╬·О╫╪О╬·О╫╙О╫╦О╬└.
+	ID3D11DeviceContext*	m_pContext11;	//Ц┐┤Ц┐░Ц┌╓Ц┌╧Ц┌ЁЦ┐ЁЦ┐├Ц┌╜Ц┌╧Ц┐┬.
 
-	ID3D11VertexShader*		m_pVertexShader;	//▓╦⌠_┐V┐F│[┐_.
-	ID3D11InputLayout*		m_pVertexLayout;	//▓╦⌠_┐▄┐C┐A┐E┐g.
-	ID3D11PixelShader*		m_pPixelShader;		//┐s┐N┐Z┐▀┐V┐F│[┐_.
+	ID3D11VertexShader*		m_pVertexShader;	//И═┌Г┌╧Ц┌╥Ц┌╖Ц┐╪Ц┐─.
+	ID3D11InputLayout*		m_pVertexLayout;	//И═┌Г┌╧Ц┐╛Ц┌╓Ц┌╒Ц┌╕Ц┐┬.
+	ID3D11PixelShader*		m_pPixelShader;		//Ц┐■Ц┌╞Ц┌╩Ц┐╚Ц┌╥Ц┌╖Ц┐╪Ц┐─.
 
-	ID3D11Buffer*			m_pCBufferPerMesh;		//┐R┐⌠┐X┐^┐⌠┐g┐o┐b┐t┐@(┐│┐b┐V┐┘√┬).
-	ID3D11Buffer*			m_pCBufferPerMaterial;	//┐R┐⌠┐X┐^┐⌠┐g┐o┐b┐t┐@(┐}┐e┐┼┐A┐▀√┬).
-	ID3D11Buffer*			m_pCBufferPerFrame;		//┐R┐⌠┐X┐^┐⌠┐g┐o┐b┐t┐@(┐t┐▄│[┐─√┬).
-	ID3D11Buffer*			m_pCBufferPerSpotLight;	//┐R┐⌠┐X┐^┐⌠┐g┐o┐b┐t┐@(┐X┐|┐b┐g┐┴┐C┐g√┬).
+	ID3D11Buffer*			m_pCBufferPerMesh;		//Ц┌ЁЦ┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┐┬Ц┐░Ц┐┐Ц┐∙Ц┌║(Ц┐║Ц┐┐Ц┌╥Ц┐╔Ф╞▌).
+	ID3D11Buffer*			m_pCBufferPerMaterial;	//Ц┌ЁЦ┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┐┬Ц┐░Ц┐┐Ц┐∙Ц┌║(Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Ф╞▌).
+	ID3D11Buffer*			m_pCBufferPerFrame;		//Ц┌ЁЦ┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┐┬Ц┐░Ц┐┐Ц┐∙Ц┌║(Ц┐∙Ц┐╛Ц┐╪Ц┐═Ф╞▌).
+	ID3D11Buffer*			m_pCBufferPerSpotLight;	//Ц┌ЁЦ┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┐┬Ц┐░Ц┐┐Ц┐∙Ц┌║(Ц┌╧Ц┐²Ц┐┐Ц┐┬Ц┐╘Ц┌╓Ц┐┬Ф╞▌).
 
-	ID3D11Buffer*			m_pVertexBuffer;	//▓╦⌠_┐o┐b┐t┐@.
-	ID3D11Buffer**			m_ppIndexBuffer;	//┐C┐⌠┐f┐b┐N┐X┐o┐b┐t┐@.
-	ID3D11SamplerState*		m_pSampleLinear;	//┐T┐⌠┐v┐┴:┐e┐N┐X┐`┐┐┌и┼e▌М┐t┐B┐▀┐^┌П┌╘┌╞┌И.
+	ID3D11Buffer*			m_pVertexBuffer;	//И═┌Г┌╧Ц┐░Ц┐┐Ц┐∙Ц┌║.
+	ID3D11Buffer**			m_ppIndexBuffer;	//Ц┌╓Ц┐ЁЦ┐┤Ц┐┐Ц┌╞Ц┌╧Ц┐░Ц┐┐Ц┐∙Ц┌║.
+	ID3D11SamplerState*		m_pSampleLinear;	//Ц┌╣Ц┐ЁЦ┐≈Ц┐╘:Ц┐├Ц┌╞Ц┌╧Ц┐│Ц┐ёЦ│╚Е░└Г╗╝Ц┐∙Ц┌ёЦ┐╚Ц┌©Ц┌▓Ц│▀Ц│▒Ц┌▀.
 
 	MY_MODEL		m_Model;
-	MY_MODEL		m_ModelForRay;	//┐▄┐C┌ф┌л⌠√┌╫┌Х■╩▓Х┌е▌g≈p┌╥┌И.
+	MY_MODEL		m_ModelForRay;	//Ц┐╛Ц┌╓Ц│╗Ц│╝Е╫⌠Ц│÷Ц┌┼Е┬╓Е╝ Ц│╖Д╫©Г■╗Ц│≥Ц┌▀.
 
-	MY_MATERIAL*	m_pMaterials;	//┐}┐e┐┼┐A┐▀█\▒╒▒л.
-	DWORD			m_NumAttr;		//▒╝░╚░■.
-	DWORD			m_AttrID[300];	//▒╝░╚ID │╕300▒╝░╚┌э┌е.
+	MY_MATERIAL*	m_pMaterials;	//Ц┐·Ц┐├Ц┐╙Ц┌╒Ц┐╚Ф╖▀И─═Д╫⌠.
+	DWORD			m_NumAttr;		//Е╠·Ф─╖Ф∙╟.
+	DWORD			m_AttrID[300];	//Е╠·Ф─╖ID Б─╩300Е╠·Ф─╖Ц│╬Ц│╖.
 
-	bool			m_EnableTexture;//┐e┐N┐X┐`┐┐┌═┌Х.
+	bool			m_EnableTexture;//Ц┐├Ц┌╞Ц┌╧Ц┐│Ц┐ёЦ│┌Ц┌┼.
 
-	D3DXVECTOR3		m_Position;	//┬й▓u(x,y,z).
-	D3DXVECTOR3		m_Rotation;	//┴Я⌠]▓l(x,y,z).
-								//│╕x=Pitch, y=Yaw, z=Roll.
-	D3DXVECTOR3		m_Scale;	//┼g▒Е▐k▐╛▓l(x,y,z⌠≥■{).
+	D3DXVECTOR3		m_Position;	//Д╫█Г╫╝(x,y,z).
+	D3DXVECTOR3		m_Rotation;	//Е⌡·Х╩╒Е─╓(x,y,z).
+								//Б─╩x=Pitch, y=Yaw, z=Roll.
+	D3DXVECTOR3		m_Scale;	//Ф▀║Е╓╖Г╦╝Е╟▐Е─╓(x,y,zГ╜┴Е─█).
 
 	D3DXMATRIX		m_mWorld;
 

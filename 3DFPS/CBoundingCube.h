@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CStaticMesh.h"
 
 class CBoundingCube
@@ -14,17 +14,17 @@ public:
 	D3DXVECTOR3 GetMin() const { return m_Min; }
 	D3DXVECTOR3 GetMax() const { return m_Max; }
 
-	// ƒ[ƒJƒ‹À•W‚Ìmin/maxiƒƒbƒVƒ…‚©‚çæ“¾‚µ‚½Œ³‚Ì’lj
+	// ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ã®min/maxï¼ˆãƒ¡ãƒƒã‚·ãƒ¥ã‹ã‚‰å–å¾—ã—ãŸå…ƒã®å€¤ï¼‰
 	D3DXVECTOR3 GetLocalMin() const { return m_LocalMin; }
 	D3DXVECTOR3 GetLocalMax() const { return m_LocalMax; }
 
-	// OBB—pFƒ[ƒ‹ƒhs—ñ‚ğæ“¾
+	// OBBç”¨ï¼šãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’å–å¾—
 	const D3DXMATRIX& GetWorldMatrix() const { return m_WorldMatrix; }
 
-	// ‰ñ“]‚ğl—¶‚µ‚½8’¸“_‚ğæ“¾
+	// å›è»¢ã‚’è€ƒæ…®ã—ãŸ8é ‚ç‚¹ã‚’å–å¾—
 	void GetWorldCorners(D3DXVECTOR3 outCorners[8]) const;
 
-	// OBB—pFƒn[ƒtƒTƒCƒY‚Æ’†S‚ğæ“¾
+	// OBBç”¨ï¼šãƒãƒ¼ãƒ•ã‚µã‚¤ã‚ºã¨ä¸­å¿ƒã‚’å–å¾—
 	D3DXVECTOR3 GetHalfExtents() const;
 	D3DXVECTOR3 GetCenter() const;
 
@@ -43,16 +43,16 @@ private:
 
 private:
 
-	D3DXVECTOR3	m_Position;	// ’†SÀ•W
-	D3DXVECTOR3 m_Rotation;	// ‰ñ“]
-	float	m_Scale;	// Šgk
+	D3DXVECTOR3	m_Position;	// ä¸­å¿ƒåº§æ¨™
+	D3DXVECTOR3 m_Rotation;	// å›è»¢
+	float	m_Scale;	// æ‹¡ç¸®
 
-	D3DXVECTOR3 m_Min;		// ƒ[ƒ‹ƒhAABB‚ÌÅ¬À•W
-	D3DXVECTOR3 m_Max;		// ƒ[ƒ‹ƒhAABB‚ÌÅ‘åÀ•W
+	D3DXVECTOR3 m_Min;		// ãƒ¯ãƒ¼ãƒ«ãƒ‰AABBã®æœ€å°åº§æ¨™
+	D3DXVECTOR3 m_Max;		// ãƒ¯ãƒ¼ãƒ«ãƒ‰AABBã®æœ€å¤§åº§æ¨™
 
-	D3DXVECTOR3 m_LocalMin;	// ƒ[ƒJƒ‹‚ÌÅ¬À•W
-	D3DXVECTOR3 m_LocalMax;	// ƒ[ƒJƒ‹‚ÌÅ‘åÀ•W
+	D3DXVECTOR3 m_LocalMin;	// ãƒ­ãƒ¼ã‚«ãƒ«ã®æœ€å°åº§æ¨™
+	D3DXVECTOR3 m_LocalMax;	// ãƒ­ãƒ¼ã‚«ãƒ«ã®æœ€å¤§åº§æ¨™
 
-	D3DXMATRIX m_WorldMatrix;	// ƒ[ƒ‹ƒh•ÏŠ·s—ñiOBB—pj
+	D3DXMATRIX m_WorldMatrix;	// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ï¼ˆOBBç”¨ï¼‰
 
 };

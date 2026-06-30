@@ -1,8 +1,8 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CDebugBSphere.h"
 #include <d3dcompiler.h>
 
-#include <stdlib.h>	//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š¨Unicode•¶š•ÏŠ·‚Å•K—v.
+#include <stdlib.h>	//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—â†’Unicodeæ–‡å­—å¤‰æ›ã§å¿…è¦.
 #include <locale.h>
 
 static const TCHAR* DEBUGLINE_HLSL = _T("Data\\Shader\\DebugLine.hlsl");
@@ -182,7 +182,7 @@ void CDebugBSphere::DrawSphere(ID3D11DeviceContext* ctx,
     ctx->VSSetShader(m_pVertexShader, nullptr, 0);
     ctx->PSSetShader(m_pPixelShader, nullptr, 0);
 
-    // draw 3 independent rings (no connection lines)
+    // 3ã¤ã®ç‹¬ç«‹ã—ãŸãƒªãƒ³ã‚°ã‚’æç”»ã™ã‚‹ï¼ˆæ¥ç¶šç·šãªã—ï¼‰.
     const UINT vertsPerRing = segments + 1;
     for (UINT r = 0; r < 3; ++r)
         ctx->Draw(vertsPerRing, r * vertsPerRing);

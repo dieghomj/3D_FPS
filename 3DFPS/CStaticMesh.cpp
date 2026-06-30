@@ -1,15 +1,15 @@
-#include "CStaticMesh.h"
+ï»¿#include "CStaticMesh.h"
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 
-#include <stdlib.h>	//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š¨Unicode•¶š•ÏŠ·‚Å•K—v.
+#include <stdlib.h>	//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—â†’Unicodeæ–‡å­—å¤‰æ›ã§å¿…è¦.
 #include <locale.h>
 
 
-//ƒVƒF[ƒ_ƒtƒ@ƒCƒ‹–¼(ƒfƒBƒŒƒNƒgƒŠ‚àŠÜ‚Ş).
+//ã‚·ã‚§ãƒ¼ãƒ€ãƒ•ã‚¡ã‚¤ãƒ«å(ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚‚å«ã‚€).
 const TCHAR SHADER_NAME[] = _T("Data\\Shader\\StaticMesh.hlsl");
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 CStaticMesh::CStaticMesh()
 	: m_pDx9(nullptr)
 	, m_pDevice9(nullptr)
@@ -45,14 +45,14 @@ CStaticMesh::CStaticMesh()
 {
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^.
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 CStaticMesh::~CStaticMesh()
 {
-	//‰ğ•úˆ—.
+	//è§£æ”¾å‡¦ç†.
 	Release();
 }
 
-//‰Šú‰»ŠÖ”.
+//åˆæœŸåŒ–é–¢æ•°.
 HRESULT CStaticMesh::Init(
 	CDirectX9& pDx9, CDirectX11& pDx11, LPCTSTR lpFileName)
 {
@@ -63,27 +63,27 @@ HRESULT CStaticMesh::Init(
 	m_pDevice11 = m_pDx11->GetDevice();
 	m_pContext11 = m_pDx11->GetContext();
 
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ.
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿.
 	if (FAILED(LoadXMesh(lpFileName)))
 	{
 		return E_FAIL;
 	}
-	//ƒ‚ƒfƒ‹ì¬.
+	//ãƒ¢ãƒ‡ãƒ«ä½œæˆ.
 	if (FAILED(CreateModel()))
 	{
 		return E_FAIL;
 	}
-	//ƒVƒF[ƒ_ì¬.
+	//ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆ.
 	if (FAILED(CreateShader()))
 	{
 		return E_FAIL;
 	}
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@ì¬.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ä½œæˆ.
 	if (FAILED(CreateConstantBuffer()))
 	{
 		return E_FAIL;
 	}
-	//ƒTƒ“ƒvƒ‰ì¬.
+	//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 	if (FAILED(CreateSampler()))
 	{
 		return E_FAIL;
@@ -93,62 +93,62 @@ HRESULT CStaticMesh::Init(
 }
 
 
-//ƒƒbƒVƒ…“Ç‚İ‚İ.
+//ãƒ¡ãƒƒã‚·ãƒ¥èª­ã¿è¾¼ã¿.
 HRESULT CStaticMesh::LoadXMesh(LPCTSTR lpFileName)
 {
-	//ƒtƒ@ƒCƒ‹–¼‚ğƒRƒs[.
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ã‚³ãƒ”ãƒ¼.
 	lstrcpy(m_Model.FileName, lpFileName);
 	lstrcpy(m_ModelForRay.FileName, lpFileName);
 
-	//ƒ}ƒeƒŠƒAƒ‹ÊŞ¯Ì§.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ï¾Šï¾ï½¯ï¾Œï½§.
 	LPD3DXBUFFER pD3DXMtrlBuffer = nullptr;
 
-	//Xƒtƒ@ƒCƒ‹‚Ìƒ[ƒh.
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰.
 	if (FAILED(D3DXLoadMeshFromX(
-		lpFileName,					//ƒtƒ@ƒCƒ‹–¼.
-		D3DXMESH_SYSTEMMEM			//ƒVƒXƒeƒ€ƒƒ‚ƒŠ‚É“Ç‚İ‚İ.
+		lpFileName,					//ãƒ•ã‚¡ã‚¤ãƒ«å.
+		D3DXMESH_SYSTEMMEM			//ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ¢ãƒªã«èª­ã¿è¾¼ã¿.
 		| D3DXMESH_32BIT,			//32bit.
 		m_pDevice9, nullptr,
-		&m_Model.pD3DXMtrlBuffer,	//(out)ƒ}ƒeƒŠƒAƒ‹î•ñ.
+		&m_Model.pD3DXMtrlBuffer,	//(out)ãƒãƒ†ãƒªã‚¢ãƒ«æƒ…å ±.
 		nullptr,
-		&m_Model.NumMaterials,		//(out)ƒ}ƒeƒŠƒAƒ‹”.
-		&m_Model.pMesh)))		//(out)ƒƒbƒVƒ…ƒIƒuƒWƒFƒNƒg.
+		&m_Model.NumMaterials,		//(out)ãƒãƒ†ãƒªã‚¢ãƒ«æ•°.
+		&m_Model.pMesh)))		//(out)ãƒ¡ãƒƒã‚·ãƒ¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ.
 	{
-		_ASSERT_EXPR(false, _T("Xƒtƒ@ƒCƒ‹“Ç¸”s"));
+		_ASSERT_EXPR(false, _T("Xãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼å¤±æ•—"));
 		return E_FAIL;
 	}
 
-	//Xƒtƒ@ƒCƒ‹‚Ìƒ[ƒh(ƒŒƒC‚Æ‚Ì”»’è—p‚É•Êİ’è‚Å“Ç‚İ‚Ş).
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰(ãƒ¬ã‚¤ã¨ã®åˆ¤å®šç”¨ã«åˆ¥è¨­å®šã§èª­ã¿è¾¼ã‚€).
 	if (FAILED(D3DXLoadMeshFromX(
-		lpFileName,						//ƒtƒ@ƒCƒ‹–¼.
-		D3DXMESH_SYSTEMMEM,				//ƒVƒXƒeƒ€ƒƒ‚ƒŠ‚É“Ç‚İ‚İ.
+		lpFileName,						//ãƒ•ã‚¡ã‚¤ãƒ«å.
+		D3DXMESH_SYSTEMMEM,				//ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ¢ãƒªã«èª­ã¿è¾¼ã¿.
 		m_pDevice9, nullptr,
-		&m_ModelForRay.pD3DXMtrlBuffer,	//(out)ƒ}ƒeƒŠƒAƒ‹î•ñ.
+		&m_ModelForRay.pD3DXMtrlBuffer,	//(out)ãƒãƒ†ãƒªã‚¢ãƒ«æƒ…å ±.
 		nullptr,
-		&m_ModelForRay.NumMaterials,	//(out)ƒ}ƒeƒŠƒAƒ‹”.
-		&m_ModelForRay.pMesh)))		//(out)ƒƒbƒVƒ…ƒIƒuƒWƒFƒNƒg.
+		&m_ModelForRay.NumMaterials,	//(out)ãƒãƒ†ãƒªã‚¢ãƒ«æ•°.
+		&m_ModelForRay.pMesh)))		//(out)ãƒ¡ãƒƒã‚·ãƒ¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ.
 	{
-		_ASSERT_EXPR(false, _T("Xƒtƒ@ƒCƒ‹“Ç¸”s"));
+		_ASSERT_EXPR(false, _T("Xãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼å¤±æ•—"));
 		return E_FAIL;
 	}
 
 	return S_OK;
 }
 
-//ƒ‚ƒfƒ‹ì¬.
+//ãƒ¢ãƒ‡ãƒ«ä½œæˆ.
 HRESULT CStaticMesh::CreateModel()
 {
-	//ƒ}ƒeƒŠƒAƒ‹ì¬.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ.
 	if (FAILED(CreateMaterials()))
 	{
 		return E_FAIL;
 	}
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ì¬.
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ.
 	if (FAILED(CreateIndexBuffer()))
 	{
 		return E_FAIL;
 	}
-	//’¸“_ƒoƒbƒtƒ@ì¬.
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ.
 	if (FAILED(CreateVertexBuffer()))
 	{
 		return E_FAIL;
@@ -156,10 +156,10 @@ HRESULT CStaticMesh::CreateModel()
 	return S_OK;
 }
 
-//ƒ}ƒeƒŠƒAƒ‹ì¬.
+//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ.
 HRESULT CStaticMesh::CreateMaterials()
 {
-	//ƒtƒ@ƒCƒ‹‚ÌƒpƒX(ƒfƒBƒŒƒNƒgƒŠ)‚ğŠm•Û.
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹(ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª)ã‚’ç¢ºä¿.
 	TCHAR path[MAX_PATH] = _T("");
 	int path_count = lstrlen(m_Model.FileName);
 	for (int k = path_count; k >= 0; k--) {
@@ -172,49 +172,49 @@ HRESULT CStaticMesh::CreateMaterials()
 		}
 	}
 
-	//“Ç‚İ‚ñ‚¾î•ñ‚©‚ç•K—v‚Èî•ñ‚ğ”²‚«o‚·.
+	//èª­ã¿è¾¼ã‚“ã æƒ…å ±ã‹ã‚‰å¿…è¦ãªæƒ…å ±ã‚’æŠœãå‡ºã™.
 	D3DXMATERIAL* d3dxMaterials
 		= static_cast<D3DXMATERIAL*>(m_Model.pD3DXMtrlBuffer->GetBufferPointer());
-	//ƒ}ƒeƒŠƒAƒ‹”•ª‚Ì—Ìˆæ‚ğŠm•Û.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«æ•°åˆ†ã®é ˜åŸŸã‚’ç¢ºä¿.
 	m_pMaterials = new MY_MATERIAL[m_Model.NumMaterials]();
-	//ƒ}ƒeƒŠƒAƒ‹”•ªŒJ‚è•Ô‚µ.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«æ•°åˆ†ç¹°ã‚Šè¿”ã—.
 	for (DWORD No = 0; No < m_Model.NumMaterials; No++)
 	{
-		//ƒ}ƒeƒŠƒAƒ‹î•ñ‚ÌƒRƒs[.
-		//ƒfƒBƒtƒ…[ƒY.
+		//ãƒãƒ†ãƒªã‚¢ãƒ«æƒ…å ±ã®ã‚³ãƒ”ãƒ¼.
+		//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚º.
 		m_pMaterials[No].Diffuse.x = d3dxMaterials[No].MatD3D.Diffuse.r;
 		m_pMaterials[No].Diffuse.y = d3dxMaterials[No].MatD3D.Diffuse.g;
 		m_pMaterials[No].Diffuse.z = d3dxMaterials[No].MatD3D.Diffuse.b;
 		m_pMaterials[No].Diffuse.w = d3dxMaterials[No].MatD3D.Diffuse.a;
-		//ƒAƒ“ƒrƒGƒ“ƒg.
+		//ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆ.
 		m_pMaterials[No].Ambient.x = d3dxMaterials[No].MatD3D.Ambient.r;
 		m_pMaterials[No].Ambient.y = d3dxMaterials[No].MatD3D.Ambient.g;
 		m_pMaterials[No].Ambient.z = d3dxMaterials[No].MatD3D.Ambient.b;
 		m_pMaterials[No].Ambient.w = d3dxMaterials[No].MatD3D.Ambient.a;
-		//ƒXƒyƒLƒ…ƒ‰.
+		//ã‚¹ãƒšã‚­ãƒ¥ãƒ©.
 		m_pMaterials[No].Specular.x = d3dxMaterials[No].MatD3D.Specular.r;
 		m_pMaterials[No].Specular.y = d3dxMaterials[No].MatD3D.Specular.g;
 		m_pMaterials[No].Specular.z = d3dxMaterials[No].MatD3D.Specular.b;
 		m_pMaterials[No].Specular.w = d3dxMaterials[No].MatD3D.Specular.a;
-		//ƒXƒyƒLƒ…ƒ‰ƒpƒ[.
+		//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ‘ãƒ¯ãƒ¼.
 		m_pMaterials[No].Power = d3dxMaterials[No].MatD3D.Power;
-		//ƒGƒ~ƒbƒVƒu.
+		//ã‚¨ãƒŸãƒƒã‚·ãƒ–.
 		m_pMaterials[No].Emissive.x = d3dxMaterials[No].MatD3D.Emissive.r;
 		m_pMaterials[No].Emissive.y = d3dxMaterials[No].MatD3D.Emissive.g;
 		m_pMaterials[No].Emissive.z = d3dxMaterials[No].MatD3D.Emissive.b;
 		m_pMaterials[No].Emissive.w = d3dxMaterials[No].MatD3D.Emissive.a;
 
-		//(‚»‚Ì–Ê‚É)ƒeƒNƒXƒ`ƒƒ‚ª“\‚ç‚ê‚Ä‚¢‚é‚©H.
+		//(ãã®é¢ã«)ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒè²¼ã‚‰ã‚Œã¦ã„ã‚‹ã‹ï¼Ÿ.
 		if (d3dxMaterials[No].pTextureFilename != nullptr
 			&& strlen(d3dxMaterials[No].pTextureFilename) > 0)
 		{
 #ifdef UNICODE
 			WCHAR TexFilename_w[32] = L"";
-			//ƒeƒNƒXƒ`ƒƒ–¼‚ÌƒTƒCƒY‚ğæ“¾.
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£åã®ã‚µã‚¤ã‚ºã‚’å–å¾—.
 			size_t charSize = strlen(d3dxMaterials[No].pTextureFilename) + 1;
-			size_t ret;	//•ÏŠ·‚³‚ê‚½•¶š”.
+			size_t ret;	//å¤‰æ›ã•ã‚ŒãŸæ–‡å­—æ•°.
 
-			//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š‚ÌƒV[ƒPƒ“ƒX‚ğ‘Î‰‚·‚éƒƒCƒh•¶š‚ÌƒV[ƒPƒ“ƒX‚É•ÏŠ·‚µ‚Ü‚·.
+			//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’å¯¾å¿œã™ã‚‹ãƒ¯ã‚¤ãƒ‰æ–‡å­—ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å¤‰æ›ã—ã¾ã™.
 			errno_t err = mbstowcs_s(
 				&ret,
 				TexFilename_w,
@@ -227,22 +227,22 @@ HRESULT CStaticMesh::CreateMaterials()
 			LPTSTR filename = d3dxMaterials[No].pTextureFilename;
 #endif//#ifdef UNICODE
 
-			//ƒeƒNƒXƒ`ƒƒ‚ ‚è‚Ìƒtƒ‰ƒO‚ğ—§‚Ä‚é.
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ã‚Šã®ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹.
 			m_EnableTexture = true;
 
-			//ƒpƒX‚ğƒRƒs[.
+			//ãƒ‘ã‚¹ã‚’ã‚³ãƒ”ãƒ¼.
 			lstrcpy(m_pMaterials[No].TextureName, path);
-			//ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹–¼‚ğ˜AŒ‹.
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«åã‚’é€£çµ.
 			lstrcat(m_pMaterials[No].TextureName, filename);
 
-			//ƒeƒNƒXƒ`ƒƒì¬.
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ.
 			if (FAILED(D3DX11CreateShaderResourceViewFromFile(
-				m_pDevice11, m_pMaterials[No].TextureName,//ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹–¼.
+				m_pDevice11, m_pMaterials[No].TextureName,//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«å.
 				nullptr, nullptr,
-				&m_pMaterials[No].pTexture,//(out)ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg.
+				&m_pMaterials[No].pTexture,//(out)ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ.
 				nullptr)))
 			{
-				_ASSERT_EXPR(false, _T("ƒeƒNƒXƒ`ƒƒì¬¸”s"));
+				_ASSERT_EXPR(false, _T("ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆå¤±æ•—"));
 				return E_FAIL;
 			}
 		}
@@ -252,79 +252,79 @@ HRESULT CStaticMesh::CreateMaterials()
 }
 
 
-//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ì¬.
+//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ.
 HRESULT CStaticMesh::CreateIndexBuffer()
 {
-	D3D11_BUFFER_DESC	bd;	//Dx11ƒoƒbƒtƒ@\‘¢‘Ì.
-	D3D11_SUBRESOURCE_DATA	InitData;//‰Šú‰»ƒf[ƒ^.
+	D3D11_BUFFER_DESC	bd;	//Dx11ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“.
+	D3D11_SUBRESOURCE_DATA	InitData;//åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿.
 
-	//ƒ}ƒeƒŠƒAƒ‹”•ª‚Ì—Ìˆæ‚ğŠm•Û.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«æ•°åˆ†ã®é ˜åŸŸã‚’ç¢ºä¿.
 	m_ppIndexBuffer = new ID3D11Buffer * [m_Model.NumMaterials]();
 	for (DWORD No = 0; No < m_Model.NumMaterials; No++) {
 		m_ppIndexBuffer[No] = nullptr;
 	}
 
-	//ƒƒbƒVƒ…‚Ì‘®«î•ñ‚ğ“¾‚é.
-	//‘®«î•ñ‚ÅƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚©‚ç×‚©‚¢ƒ}ƒeƒŠƒAƒ‹‚²‚Æ‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğ•ª—£‚Å‚«‚é.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã®å±æ€§æƒ…å ±ã‚’å¾—ã‚‹.
+	//å±æ€§æƒ…å ±ã§ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ç´°ã‹ã„ãƒãƒ†ãƒªã‚¢ãƒ«ã”ã¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’åˆ†é›¢ã§ãã‚‹.
 	D3DXATTRIBUTERANGE* pAttrTable = nullptr;
 
-	//ƒƒbƒVƒ…‚Ì–Ê‚¨‚æ‚Ñ’¸“_‚Ì‡”Ô•ÏX‚ğ§Œä‚µAƒpƒtƒH[ƒ}ƒ“ƒX‚ğÅ“K‰»‚·‚é.
-	//D3DXMESHOPT_COMPACT : –Ê‚Ì‡”Ô‚ğ•ÏX‚µAg—p‚³‚ê‚Ä‚¢‚È‚¢’¸“_‚Æ–Ê‚ğíœ‚·‚é.
-	//D3DXMESHOPT_ATTRSORT : ƒpƒtƒH[ƒ}ƒ“ƒX‚ğã‚°‚éˆ×A–Ê‚Ì‡”Ô‚ğ•ÏX‚µ‚ÄÅ“K‰»‚ğs‚¤.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã®é¢ãŠã‚ˆã³é ‚ç‚¹ã®é †ç•ªå¤‰æ›´ã‚’åˆ¶å¾¡ã—ã€ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ã‚’æœ€é©åŒ–ã™ã‚‹.
+	//D3DXMESHOPT_COMPACT : é¢ã®é †ç•ªã‚’å¤‰æ›´ã—ã€ä½¿ç”¨ã•ã‚Œã¦ã„ãªã„é ‚ç‚¹ã¨é¢ã‚’å‰Šé™¤ã™ã‚‹.
+	//D3DXMESHOPT_ATTRSORT : ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ã‚’ä¸Šã’ã‚‹ç‚ºã€é¢ã®é †ç•ªã‚’å¤‰æ›´ã—ã¦æœ€é©åŒ–ã‚’è¡Œã†.
 	m_Model.pMesh->OptimizeInplace(D3DXMESHOPT_COMPACT | D3DXMESHOPT_ATTRSORT,
 		nullptr, nullptr, nullptr, nullptr);
-	//‘®«ƒe[ƒuƒ‹‚Ìæ“¾.
+	//å±æ€§ãƒ†ãƒ¼ãƒ–ãƒ«ã®å–å¾—.
 	m_Model.pMesh->GetAttributeTable(nullptr, &m_NumAttr);
 	pAttrTable = new D3DXATTRIBUTERANGE[m_NumAttr];
 	if (FAILED(m_Model.pMesh->GetAttributeTable(pAttrTable, &m_NumAttr)))
 	{
-		_ASSERT_EXPR(false, _T("‘®«ƒe[ƒuƒ‹æ“¾¸”s"));
+		_ASSERT_EXPR(false, _T("å±æ€§ãƒ†ãƒ¼ãƒ–ãƒ«å–å¾—å¤±æ•—"));
 		return E_FAIL;
 	}
 
-	//“¯‚¶‚­Lock‚µ‚È‚¢‚Ææ‚èo‚¹‚È‚¢.
+	//åŒã˜ãLockã—ãªã„ã¨å–ã‚Šå‡ºã›ãªã„.
 	int* pIndex = nullptr;
 	m_Model.pMesh->LockIndexBuffer(
 		D3DLOCK_READONLY, (void**)&pIndex);
-	//‘®«‚²‚Æ‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğì¬.
+	//å±æ€§ã”ã¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ.
 	for (DWORD No = 0; No < m_NumAttr; No++)
 	{
 		m_AttrID[No] = pAttrTable[No].AttribId;
-		//Dx9‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚©‚ç‚Ìî•ñ‚ÅADx11‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğì¬.
+		//Dx9ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ã®æƒ…å ±ã§ã€Dx11ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ.
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		bd.ByteWidth
-			= sizeof(int) * pAttrTable[No].FaceCount * 3;//–Ê”~3‚Å’¸“_”.
+			= sizeof(int) * pAttrTable[No].FaceCount * 3;//é¢æ•°Ã—3ã§é ‚ç‚¹æ•°.
 		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		bd.CPUAccessFlags = 0;
 		bd.MiscFlags = 0;
-		//‘å‚«‚¢ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@“à‚ÌƒIƒtƒZƒbƒg(~3‚·‚é).
+		//å¤§ãã„ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡å†…ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ(Ã—3ã™ã‚‹).
 		InitData.pSysMem = &pIndex[pAttrTable[No].FaceStart * 3];
 
 		if (FAILED(m_pDevice11->CreateBuffer(
 			&bd, &InitData, &m_ppIndexBuffer[No])))
 		{
-			_ASSERT_EXPR(false, _T("ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ì¬¸”s"));
+			_ASSERT_EXPR(false, _T("ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆå¤±æ•—"));
 			return E_FAIL;
 		}
-		//–Ê‚Ì”‚ğƒRƒs[.
+		//é¢ã®æ•°ã‚’ã‚³ãƒ”ãƒ¼.
 		m_pMaterials[m_AttrID[No]].dwNumFace = pAttrTable[No].FaceCount;
 	}
-	//‘®«ƒe[ƒuƒ‹‚Ìíœ.
+	//å±æ€§ãƒ†ãƒ¼ãƒ–ãƒ«ã®å‰Šé™¤.
 	delete[] pAttrTable;
-	//g—pÏ‚İ‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Ì‰ğ•ú.
+	//ä½¿ç”¨æ¸ˆã¿ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®è§£æ”¾.
 	m_Model.pMesh->UnlockIndexBuffer();
 
 	return S_OK;
 }
 
 
-//’¸“_ƒoƒbƒtƒ@ì¬.
+//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ.
 HRESULT CStaticMesh::CreateVertexBuffer()
 {
-	D3D11_BUFFER_DESC	bd;	//Dx11ƒoƒbƒtƒ@\‘¢‘Ì.
-	D3D11_SUBRESOURCE_DATA	InitData;//‰Šú‰»ƒf[ƒ^.
+	D3D11_BUFFER_DESC	bd;	//Dx11ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“.
+	D3D11_SUBRESOURCE_DATA	InitData;//åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿.
 
-	//Dx9‚Ìê‡Amap‚Å‚Í‚È‚­Lock‚Å’¸“_ƒoƒbƒtƒ@‚©‚çƒf[ƒ^‚ğæ‚èo‚·.
+	//Dx9ã®å ´åˆã€mapã§ã¯ãªãLockã§é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å–ã‚Šå‡ºã™.
 	LPDIRECT3DVERTEXBUFFER9 pVB = nullptr;
 	m_Model.pMesh->GetVertexBuffer(&pVB);
 	DWORD dwStride = m_Model.pMesh->GetNumBytesPerVertex();
@@ -334,9 +334,9 @@ HRESULT CStaticMesh::CreateVertexBuffer()
 		pVB->Lock(0, 0, (VOID**)&pVertices, 0)))
 	{
 		pVertex = (VERTEX*)pVertices;
-		//Dx9‚Ì’¸“_ƒoƒbƒtƒ@‚©‚ç‚Ìî•ñ‚ÅADx11’¸“_ƒoƒbƒtƒ@‚ğì¬.
+		//Dx9ã®é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ã®æƒ…å ±ã§ã€Dx11é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ.
 		bd.Usage = D3D11_USAGE_DEFAULT;
-		//’¸“_‚ğŠi”[‚·‚é‚Ì‚É•K—v‚ÈƒoƒCƒg”.
+		//é ‚ç‚¹ã‚’æ ¼ç´ã™ã‚‹ã®ã«å¿…è¦ãªãƒã‚¤ãƒˆæ•°.
 		bd.ByteWidth = m_Model.pMesh->GetNumBytesPerVertex() * m_Model.pMesh->GetNumVertices();
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bd.CPUAccessFlags = 0;
@@ -345,45 +345,45 @@ HRESULT CStaticMesh::CreateVertexBuffer()
 		if (FAILED(m_pDevice11->CreateBuffer(
 			&bd, &InitData, &m_pVertexBuffer)))
 		{
-			_ASSERT_EXPR(false, _T("’¸“_ƒoƒbƒtƒ@ì¬¸”s"));
+			_ASSERT_EXPR(false, _T("é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆå¤±æ•—"));
 			return E_FAIL;
 		}
 		pVB->Unlock();
 	}
-	SAFE_RELEASE(pVB);	//’¸“_ƒoƒbƒtƒ@‰ğ•ú.
+	SAFE_RELEASE(pVB);	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡è§£æ”¾.
 	return S_OK;
 }
 
-//ƒTƒ“ƒvƒ‰ì¬.
+//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 HRESULT CStaticMesh::CreateSampler()
 {
-	//ƒeƒNƒXƒ`ƒƒ—p‚ÌƒTƒ“ƒvƒ‰\‘¢‘Ì.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”¨ã®ã‚µãƒ³ãƒ—ãƒ©æ§‹é€ ä½“.
 	D3D11_SAMPLER_DESC samDesc;
 	ZeroMemory(&samDesc, sizeof(samDesc));
-	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;// POINT:‚‘¬‚¾‚ª‘e‚¢.
+	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;// POINT:é«˜é€Ÿã ãŒç²—ã„.
 	samDesc.AddressU
-		= D3D11_TEXTURE_ADDRESS_WRAP;//ƒ‰ƒbƒsƒ“ƒOƒ‚[ƒh(WRAP:ŒJ‚è•Ô‚µ).
+		= D3D11_TEXTURE_ADDRESS_WRAP;//ãƒ©ãƒƒãƒ”ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰(WRAP:ç¹°ã‚Šè¿”ã—).
 	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	//MIRROR: ”½“]ŒJ‚è•Ô‚µ.
-	//CLAMP : ’[‚Ì–Í—l‚ğˆø‚«L‚Î‚·.
-	//BORDER: •Ê“r‹«ŠEF‚ğŒˆ‚ß‚é.
+	//MIRROR: åè»¢ç¹°ã‚Šè¿”ã—.
+	//CLAMP : ç«¯ã®æ¨¡æ§˜ã‚’å¼•ãä¼¸ã°ã™.
+	//BORDER: åˆ¥é€”å¢ƒç•Œè‰²ã‚’æ±ºã‚ã‚‹.
 
-	//ƒTƒ“ƒvƒ‰ì¬.
+	//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 	if (FAILED(m_pDevice11->CreateSamplerState(
-		&samDesc, &m_pSampleLinear)))//(out)ƒTƒ“ƒvƒ‰.
+		&samDesc, &m_pSampleLinear)))//(out)ã‚µãƒ³ãƒ—ãƒ©.
 	{
-		_ASSERT_EXPR(false, _T("ƒTƒ“ƒvƒ‰ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ã‚µãƒ³ãƒ—ãƒ©ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
 	return S_OK;
 }
 
-//‰ğ•úŠÖ”.
+//è§£æ”¾é–¢æ•°.
 void CStaticMesh::Release()
 {
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‰ğ•ú.	©ƒoƒO‚é‚Ì‚Å’²¸•K—v.
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡è§£æ”¾.	â†ãƒã‚°ã‚‹ã®ã§èª¿æŸ»å¿…è¦.
 	if (m_ppIndexBuffer != nullptr) {
 		for (int No = m_Model.NumMaterials - 1; No >= 0; No--) {
 			if (m_ppIndexBuffer[No] != nullptr) {
@@ -393,15 +393,15 @@ void CStaticMesh::Release()
 		delete[] m_ppIndexBuffer;
 		m_ppIndexBuffer = nullptr;
 	}
-	//ƒ}ƒeƒŠƒAƒ‹‰ğ•ú.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«è§£æ”¾.
 	if (m_pMaterials != nullptr) {
 		delete[] m_pMaterials;
 		m_pMaterials = nullptr;
 	}
-	//ƒƒbƒVƒ…ƒf[ƒ^‚Ì‰ğ•ú.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã®è§£æ”¾.
 	SAFE_RELEASE(m_Model.pD3DXMtrlBuffer);
 	SAFE_RELEASE(m_Model.pMesh);
-	//ƒƒbƒVƒ…ƒf[ƒ^(ƒŒƒC‚Æ‚Ì”»’è—p)‚Ì‰ğ•ú.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿(ãƒ¬ã‚¤ã¨ã®åˆ¤å®šç”¨)ã®è§£æ”¾.
 	SAFE_RELEASE(m_ModelForRay.pD3DXMtrlBuffer);
 	SAFE_RELEASE(m_ModelForRay.pMesh);
 
@@ -423,8 +423,8 @@ void CStaticMesh::Release()
 }
 
 //===========================================================
-//	HLSLƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İƒVƒF[ƒ_‚ğì¬‚·‚é.
-//	HLSL: High Level Shading Language ‚Ì—ª.
+//	HLSLãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½œæˆã™ã‚‹.
+//	HLSL: High Level Shading Language ã®ç•¥.
 //===========================================================
 HRESULT CStaticMesh::CreateShader()
 {
@@ -436,14 +436,14 @@ HRESULT CStaticMesh::CreateShader()
 		D3D10_SHADER_DEBUG | D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif//#ifdef _DEBUG
 
-	//HLSL‚©‚çƒo[ƒeƒbƒNƒXƒVƒF[ƒ_‚Ìƒuƒƒu‚ğì¬.
+	//HLSLã‹ã‚‰ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ–ãƒ­ãƒ–ã‚’ä½œæˆ.
 	if (m_EnableTexture == true) {
 		if (FAILED(
 			D3DX11CompileFromFile(
 				SHADER_NAME, nullptr, nullptr, "VS_Main", "vs_5_0",
 				uCompileFlag, 0, nullptr, &pCompiledShader, &pErrors, nullptr)))
 		{
-			_ASSERT_EXPR(false, _T("hlsl“Ç‚İ‚İ¸”s"));
+			_ASSERT_EXPR(false, _T("hlslèª­ã¿è¾¼ã¿å¤±æ•—"));
 			return E_FAIL;
 		}
 	}
@@ -453,27 +453,27 @@ HRESULT CStaticMesh::CreateShader()
 				SHADER_NAME, nullptr, nullptr, "VS_NoTex", "vs_5_0",
 				uCompileFlag, 0, nullptr, &pCompiledShader, &pErrors, nullptr)))
 		{
-			_ASSERT_EXPR(false, _T("hlsl“Ç‚İ‚İ¸”s"));
+			_ASSERT_EXPR(false, _T("hlslèª­ã¿è¾¼ã¿å¤±æ•—"));
 			return E_FAIL;
 		}
 	}
 	SAFE_RELEASE(pErrors);
 
-	//ã‹L‚Åì¬‚µ‚½ƒuƒƒu‚©‚çuƒo[ƒeƒbƒNƒXƒVƒF[ƒ_v‚ğì¬.
+	//ä¸Šè¨˜ã§ä½œæˆã—ãŸãƒ–ãƒ­ãƒ–ã‹ã‚‰ã€Œãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ã€ã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateVertexShader(
 			pCompiledShader->GetBufferPointer(),
 			pCompiledShader->GetBufferSize(),
 			nullptr,
-			&m_pVertexShader)))	//(out)ƒo[ƒeƒbƒNƒXƒVƒF[ƒ_.
+			&m_pVertexShader)))	//(out)ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€.
 	{
-		_ASSERT_EXPR(false, _T("ƒo[ƒeƒbƒNƒXƒVƒF[ƒ_ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğ’è‹`.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’å®šç¾©.
 	D3D11_INPUT_ELEMENT_DESC layout[3];
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚Ì”z—ñ—v‘f”‚ğZo.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®é…åˆ—è¦ç´ æ•°ã‚’ç®—å‡º.
 	UINT numElements = 0;
 	if (m_EnableTexture == true)
 	{
@@ -483,7 +483,7 @@ HRESULT CStaticMesh::CreateShader()
 			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
-		numElements = sizeof(tmp) / sizeof(tmp[0]);	//—v‘f”Zo.
+		numElements = sizeof(tmp) / sizeof(tmp[0]);	//è¦ç´ æ•°ç®—å‡º.
 		memcpy_s(layout, sizeof(layout),
 			tmp, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 	}
@@ -494,33 +494,33 @@ HRESULT CStaticMesh::CreateShader()
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,                            0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
-		numElements = sizeof(tmp) / sizeof(tmp[0]);	//—v‘f”Zo.
+		numElements = sizeof(tmp) / sizeof(tmp[0]);	//è¦ç´ æ•°ç®—å‡º.
 		memcpy_s(layout, sizeof(layout),
 			tmp, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 	}
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğì¬.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateInputLayout(
 			layout,
 			numElements,
 			pCompiledShader->GetBufferPointer(),
 			pCompiledShader->GetBufferSize(),
-			&m_pVertexLayout)))	//(out)’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg.
+			&m_pVertexLayout)))	//(out)é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ.
 	{
-		_ASSERT_EXPR(false, _T("’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒgì¬¸”s"));
+		_ASSERT_EXPR(false, _T("é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pCompiledShader);
 
-	//HLSL‚©‚çƒsƒNƒZƒ‹ƒVƒF[ƒ_‚Ìƒuƒƒu‚ğì¬.
+	//HLSLã‹ã‚‰ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ–ãƒ­ãƒ–ã‚’ä½œæˆ.
 	if (m_EnableTexture == true) {
 		if (FAILED(
 			D3DX11CompileFromFile(
 				SHADER_NAME, nullptr, nullptr, "PS_Main", "ps_5_0",
 				uCompileFlag, 0, nullptr, &pCompiledShader, &pErrors, nullptr)))
 		{
-			_ASSERT_EXPR(false, _T("hlsl“Ç‚İ‚İ¸”s"));
+			_ASSERT_EXPR(false, _T("hlslèª­ã¿è¾¼ã¿å¤±æ•—"));
 			return E_FAIL;
 		}
 	}
@@ -530,21 +530,21 @@ HRESULT CStaticMesh::CreateShader()
 				SHADER_NAME, nullptr, nullptr, "PS_NoTex", "ps_5_0",
 				uCompileFlag, 0, nullptr, &pCompiledShader, &pErrors, nullptr)))
 		{
-			_ASSERT_EXPR(false, _T("hlsl“Ç‚İ‚İ¸”s"));
+			_ASSERT_EXPR(false, _T("hlslèª­ã¿è¾¼ã¿å¤±æ•—"));
 			return E_FAIL;
 		}
 	}
 	SAFE_RELEASE(pErrors);
 
-	//ã‹L‚Åì¬‚µ‚½ƒuƒƒu‚©‚çuƒsƒNƒZƒ‹ƒVƒF[ƒ_v‚ğì¬.
+	//ä¸Šè¨˜ã§ä½œæˆã—ãŸãƒ–ãƒ­ãƒ–ã‹ã‚‰ã€Œãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã€ã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreatePixelShader(
 			pCompiledShader->GetBufferPointer(),
 			pCompiledShader->GetBufferSize(),
 			nullptr,
-			&m_pPixelShader)))	//(out)ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
+			&m_pPixelShader)))	//(out)ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
 	{
-		_ASSERT_EXPR(false, _T("ƒsƒNƒZƒ‹ƒVƒF[ƒ_ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pCompiledShader);
@@ -552,79 +552,79 @@ HRESULT CStaticMesh::CreateShader()
 	return S_OK;
 }
 
-//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@ì¬.
+//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ä½œæˆ.
 HRESULT CStaticMesh::CreateConstantBuffer()
 {
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…—p).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥ç”¨).
 	D3D11_BUFFER_DESC cb;
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğw’è.
-	cb.ByteWidth = sizeof(CBUFFER_PER_MESH);	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒTƒCƒY.
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	//‘‚«‚İ‚ÅƒAƒNƒZƒX.
-	cb.MiscFlags = 0;				//‚»‚Ì‘¼‚Ìƒtƒ‰ƒO(–¢g—p).
-	cb.StructureByteStride = 0;		//\‘¢‘Ì‚ÌƒTƒCƒY(–¢g—p).
-	cb.Usage = D3D11_USAGE_DYNAMIC;	//g—p•û–@:’¼Ú‘‚«‚İ.
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡å®š.
+	cb.ByteWidth = sizeof(CBUFFER_PER_MESH);	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º.
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	//æ›¸ãè¾¼ã¿ã§ã‚¢ã‚¯ã‚»ã‚¹.
+	cb.MiscFlags = 0;				//ãã®ä»–ã®ãƒ•ãƒ©ã‚°(æœªä½¿ç”¨).
+	cb.StructureByteStride = 0;		//æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º(æœªä½¿ç”¨).
+	cb.Usage = D3D11_USAGE_DYNAMIC;	//ä½¿ç”¨æ–¹æ³•:ç›´æ¥æ›¸ãè¾¼ã¿.
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Ìì¬.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateBuffer(&cb, nullptr, &m_pCBufferPerMesh)))
 	{
-		_ASSERT_EXPR(false, _T("ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…)ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥)ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒ}ƒeƒŠƒAƒ‹—p).
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğw’è.
-	cb.ByteWidth = sizeof(CBUFFER_PER_MATERIAL);	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒTƒCƒY.
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		//‘‚«‚İ‚ÅƒAƒNƒZƒX.
-	cb.MiscFlags = 0;				//‚»‚Ì‘¼‚Ìƒtƒ‰ƒO(–¢g—p).
-	cb.StructureByteStride = 0;		//\‘¢‘Ì‚ÌƒTƒCƒY(–¢g—p).
-	cb.Usage = D3D11_USAGE_DYNAMIC;	//g—p•û–@:’¼Ú‘‚«‚İ.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒãƒ†ãƒªã‚¢ãƒ«ç”¨).
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡å®š.
+	cb.ByteWidth = sizeof(CBUFFER_PER_MATERIAL);	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º.
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		//æ›¸ãè¾¼ã¿ã§ã‚¢ã‚¯ã‚»ã‚¹.
+	cb.MiscFlags = 0;				//ãã®ä»–ã®ãƒ•ãƒ©ã‚°(æœªä½¿ç”¨).
+	cb.StructureByteStride = 0;		//æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º(æœªä½¿ç”¨).
+	cb.Usage = D3D11_USAGE_DYNAMIC;	//ä½¿ç”¨æ–¹æ³•:ç›´æ¥æ›¸ãè¾¼ã¿.
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Ìì¬.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateBuffer(&cb, nullptr, &m_pCBufferPerMaterial)))
 	{
-		_ASSERT_EXPR(false, _T("ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒ}ƒeƒŠƒAƒ‹—p)ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒãƒ†ãƒªã‚¢ãƒ«ç”¨)ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ÌÚ°Ñ—p).
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğw’è.
-	cb.ByteWidth = sizeof(CBUFFER_PER_FRAME);	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒTƒCƒY.
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	//‘‚«‚İ‚ÅƒAƒNƒZƒX.
-	cb.MiscFlags = 0;				//‚»‚Ì‘¼‚Ìƒtƒ‰ƒO(–¢g—p).
-	cb.StructureByteStride = 0;		//\‘¢‘Ì‚ÌƒTƒCƒY(–¢g—p).
-	cb.Usage = D3D11_USAGE_DYNAMIC;	//g—p•û–@:’¼Ú‘‚«‚İ.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ï¾Œï¾šï½°ï¾‘ç”¨).
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡å®š.
+	cb.ByteWidth = sizeof(CBUFFER_PER_FRAME);	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º.
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	//æ›¸ãè¾¼ã¿ã§ã‚¢ã‚¯ã‚»ã‚¹.
+	cb.MiscFlags = 0;				//ãã®ä»–ã®ãƒ•ãƒ©ã‚°(æœªä½¿ç”¨).
+	cb.StructureByteStride = 0;		//æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º(æœªä½¿ç”¨).
+	cb.Usage = D3D11_USAGE_DYNAMIC;	//ä½¿ç”¨æ–¹æ³•:ç›´æ¥æ›¸ãè¾¼ã¿.
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Ìì¬.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateBuffer(&cb, nullptr, &m_pCBufferPerFrame)))
 	{
-		_ASSERT_EXPR(false, _T("ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒtƒŒ[ƒ€—p)ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ•ãƒ¬ãƒ¼ãƒ ç”¨)ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒXƒbƒ|ƒgƒ‰ƒCƒg–ˆ).
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğw’è.
-	cb.ByteWidth = sizeof(CBUFFER_PER_SPOTLIGHT);	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒTƒCƒY.
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	//‘‚«‚İ‚ÅƒAƒNƒZƒX.
-	cb.MiscFlags = 0;				//‚»‚Ì‘¼‚Ìƒtƒ‰ƒO(–¢g—p).
-	cb.StructureByteStride = 0;		//\‘¢‘Ì‚ÌƒTƒCƒY(–¢g—p).
-	cb.Usage = D3D11_USAGE_DYNAMIC;	//g—p•û–@:’¼Ú‘‚«‚İ.
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Ìì¬.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ã‚¹ãƒƒãƒãƒˆãƒ©ã‚¤ãƒˆæ¯).
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡å®š.
+	cb.ByteWidth = sizeof(CBUFFER_PER_SPOTLIGHT);	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º.
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	//æ›¸ãè¾¼ã¿ã§ã‚¢ã‚¯ã‚»ã‚¹.
+	cb.MiscFlags = 0;				//ãã®ä»–ã®ãƒ•ãƒ©ã‚°(æœªä½¿ç”¨).
+	cb.StructureByteStride = 0;		//æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º(æœªä½¿ç”¨).
+	cb.Usage = D3D11_USAGE_DYNAMIC;	//ä½¿ç”¨æ–¹æ³•:ç›´æ¥æ›¸ãè¾¼ã¿.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateBuffer(&cb, nullptr, &m_pCBufferPerSpotLight)))
 	{
-		_ASSERT_EXPR(false, _T("ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒ‰ƒCƒg—p)ì¬¸”s"));
+		_ASSERT_EXPR(false, _T("ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ©ã‚¤ãƒˆç”¨)ä½œæˆå¤±æ•—"));
 		return E_FAIL;
 	}
 
 	return S_OK;
 }
 
-//ƒŒƒ“ƒ_ƒŠƒ“ƒO—p.
-//¦DirectX“à‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOŠÖ”.
-//  ÅI“I‚É‰æ–Ê‚Éo—Í‚·‚é‚Ì‚Í•ÊƒNƒ‰ƒX‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOŠÖ”‚ª‚â‚é.
+//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ç”¨.
+//â€»DirectXå†…ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°é–¢æ•°.
+//  æœ€çµ‚çš„ã«ç”»é¢ã«å‡ºåŠ›ã™ã‚‹ã®ã¯åˆ¥ã‚¯ãƒ©ã‚¹ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°é–¢æ•°ãŒã‚„ã‚‹.
 void CStaticMesh::Render(
 	D3DXMATRIX& mView, D3DXMATRIX& mProj,
 	LIGHT& Light, D3DXVECTOR3& CamPos, 
@@ -640,55 +640,55 @@ void CStaticMesh::Render(
 	}
 	else
 	{
-		//ƒ[ƒ‹ƒhs—ñì¬.
+		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ä½œæˆ.
 		BuildWorldMatrix(mWorld);
 	}
 
-	//g—p‚·‚éƒVƒF[ƒ_‚ÌƒZƒbƒg.
-	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);	//’¸“_ƒVƒF[ƒ_.
-	m_pContext11->PSSetShader(m_pPixelShader, nullptr, 0);	//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
+	//ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚»ãƒƒãƒˆ.
+	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);	//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	m_pContext11->PSSetShader(m_pPixelShader, nullptr, 0);	//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
 
-	//ƒVƒF[ƒ_‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÉŠeíƒf[ƒ^‚ğ“n‚·.
+	//ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã«å„ç¨®ãƒ‡ãƒ¼ã‚¿ã‚’æ¸¡ã™.
 	D3D11_MAPPED_SUBRESOURCE pData;
 	D3D11_MAPPED_SUBRESOURCE pDataSpot;
-	//ƒoƒbƒtƒ@“à‚Ìƒf[ƒ^‚Ì‘‚«Š·‚¦ŠJn‚ÉMap.
+	//ãƒãƒƒãƒ•ã‚¡å†…ã®ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãæ›ãˆé–‹å§‹æ™‚ã«Map.
 	if (SUCCEEDED(m_pContext11->Map(
 		m_pCBufferPerFrame, 0,
 		D3D11_MAP_WRITE_DISCARD,
 		0, &pData)))
 	{
-		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒtƒŒ[ƒ€—p).
+		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ•ãƒ¬ãƒ¼ãƒ ç”¨).
 		CBUFFER_PER_FRAME cb;
 
 		cb.CameraPos = D3DXVECTOR4(CamPos.x, CamPos.y, CamPos.z, 0.0f);
 
-		//----- ƒ‰ƒCƒgî•ñ -----.
-		cb.LightColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f); // White light
-		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.3f, 0.4f, 1.0f); // Dim ambient
+		//----- ãƒ©ã‚¤ãƒˆæƒ…å ± -----.
+		cb.LightColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f); // ç™½è‰²ã®ãƒ©ã‚¤ãƒˆ
+		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.3f, 0.4f, 1.0f); // æš—ã‚ã®ç’°å¢ƒå…‰
 		cb.LightDir = D3DXVECTOR4(Light.vDirection.x, Light.vDirection.y, Light.vDirection.z, 0.0f);
 		D3DXVec4Normalize(&cb.LightDir, &cb.LightDir);
 		cb.LightIntensity = Light.fIntensity;
 		
 		cb.FogColor = Fog.Color; 
-		cb.FogParams = D3DXVECTOR4(Fog.Start, Fog.End, Fog.Density * Fog.Enable, Fog.Mode); // start, end, density, mode
+		cb.FogParams = D3DXVECTOR4(Fog.Start, Fog.End, Fog.Density * Fog.Enable, Fog.Mode); // é–‹å§‹, çµ‚äº†, å¯†åº¦, ãƒ¢ãƒ¼ãƒ‰
 
-		// --- PSX Effects ---
+		// --- PSX ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ ---
 		cb.AffineIntensity = AFFINE_INTENSITY;
 		cb.VertexSnapping = VERTEX_SNAPPING;
 
 		memcpy_s(
-			pData.pData,	//ƒRƒs[æ‚Ìƒoƒbƒtƒ@.
-			pData.RowPitch,	//ƒRƒs[æ‚Ìƒoƒbƒtƒ@ƒTƒCƒY.
-			(void*)(&cb),	//ƒRƒs[Œ³‚Ìƒoƒbƒtƒ@.
-			sizeof(cb));	//ƒRƒs[Œ³‚Ìƒoƒbƒtƒ@ƒTƒCƒY.
+			pData.pData,	//ã‚³ãƒ”ãƒ¼å…ˆã®ãƒãƒƒãƒ•ã‚¡.
+			pData.RowPitch,	//ã‚³ãƒ”ãƒ¼å…ˆã®ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º.
+			(void*)(&cb),	//ã‚³ãƒ”ãƒ¼å…ƒã®ãƒãƒƒãƒ•ã‚¡.
+			sizeof(cb));	//ã‚³ãƒ”ãƒ¼å…ƒã®ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º.
 
-		//ƒoƒbƒtƒ@“à‚Ìƒf[ƒ^‚Ì‘‚«Š·‚¦I—¹‚ÉUnmap.
+		//ãƒãƒƒãƒ•ã‚¡å†…ã®ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãæ›ãˆçµ‚äº†æ™‚ã«Unmap.
 		m_pContext11->Unmap(m_pCBufferPerFrame, 0);
 	}
 
-	//‚±‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğ‚Ç‚ÌƒVƒF[ƒ_‚Åg—p‚·‚é‚©H.
-	m_pContext11->VSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//’¸“_ƒVƒF[ƒ_.
-	m_pContext11->PSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
+	//ã“ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’ã©ã®ã‚·ã‚§ãƒ¼ãƒ€ã§ä½¿ç”¨ã™ã‚‹ã‹ï¼Ÿ.
+	m_pContext11->VSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	m_pContext11->PSSetConstantBuffers(2, 1, &m_pCBufferPerFrame);	//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
 
 	if (SUCCEEDED(m_pContext11->Map(
 		m_pCBufferPerSpotLight, 0,
@@ -705,7 +705,7 @@ void CStaticMesh::Render(
 
 			light->LightOrigin = in.LightOrigin;
 
-			// •ûŒüƒxƒNƒgƒ‹‚Í³‹K‰»
+			// æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã¯æ­£è¦åŒ–
 			D3DXVECTOR4 dir = in.LightDir;
 			D3DXVec4Normalize(&dir, &dir);
 			light->LightDir = dir;
@@ -714,100 +714,100 @@ void CStaticMesh::Render(
 			light->fRange = in.fRange;
 			light->LightColor = in.LightColor;
 
-			// Šp“x‚ª degree ‚È‚çƒ‰ƒWƒAƒ“‚É•ÏŠ·‚µ‚Ä‚©‚ç cos ‚ğæ‚é
+			// è§’åº¦ãŒ degree ãªã‚‰ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›ã—ã¦ã‹ã‚‰ cos ã‚’å–ã‚‹
 			light->fInnerCos = cosf(in.fInnerAngle);
 			light->fOuterCos = cosf(in.fOuterAngle);
 		}
 
 		memcpy_s(
-			pDataSpot.pData,	//ƒRƒs[æ‚Ìƒoƒbƒtƒ@.
-			pDataSpot.RowPitch,	//ƒRƒs[æ‚Ìƒoƒbƒtƒ@ƒTƒCƒY.
-			(void*)(&cb),	//ƒRƒs[Œ³‚Ìƒoƒbƒtƒ@.
-			sizeof(cb));	//ƒRƒs[Œ³‚Ìƒoƒbƒtƒ@ƒTƒCƒY.
+			pDataSpot.pData,	//ã‚³ãƒ”ãƒ¼å…ˆã®ãƒãƒƒãƒ•ã‚¡.
+			pDataSpot.RowPitch,	//ã‚³ãƒ”ãƒ¼å…ˆã®ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º.
+			(void*)(&cb),	//ã‚³ãƒ”ãƒ¼å…ƒã®ãƒãƒƒãƒ•ã‚¡.
+			sizeof(cb));	//ã‚³ãƒ”ãƒ¼å…ƒã®ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º.
 
-		//ƒoƒbƒtƒ@“à‚Ìƒf[ƒ^‚Ì‘‚«Š·‚¦I—¹‚ÉUnmap.
+		//ãƒãƒƒãƒ•ã‚¡å†…ã®ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãæ›ãˆçµ‚äº†æ™‚ã«Unmap.
 		m_pContext11->Unmap(m_pCBufferPerSpotLight, 0);
 	}
 
-	m_pContext11->VSSetConstantBuffers(3, 1, &m_pCBufferPerSpotLight);	//’¸“_ƒVƒF[ƒ_.
-	m_pContext11->PSSetConstantBuffers(3, 1, &m_pCBufferPerSpotLight);	//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
+	m_pContext11->VSSetConstantBuffers(3, 1, &m_pCBufferPerSpotLight);	//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	m_pContext11->PSSetConstantBuffers(3, 1, &m_pCBufferPerSpotLight);	//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
 
-	//ƒƒbƒVƒ…‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 	RenderMesh(mWorld, mView, mProj);
 }
 
 
-//ƒŒƒ“ƒ_ƒŠƒ“ƒOŠÖ”(ƒNƒ‰ƒX“à‚Å‚Ì‚İg—p‚·‚é).
+//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°é–¢æ•°(ã‚¯ãƒ©ã‚¹å†…ã§ã®ã¿ä½¿ç”¨ã™ã‚‹).
 void CStaticMesh::RenderMesh(
 	D3DXMATRIX& mWorld, D3DXMATRIX& mView, D3DXMATRIX& mProj)
 {
-	//ƒVƒF[ƒ_‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÉŠeíƒf[ƒ^‚ğ“n‚·.
+	//ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã«å„ç¨®ãƒ‡ãƒ¼ã‚¿ã‚’æ¸¡ã™.
 	D3D11_MAPPED_SUBRESOURCE pData;
-	//ƒoƒbƒtƒ@“à‚Ìƒf[ƒ^‚Ì‘‚«Š·‚¦ŠJn‚ÉMap.
+	//ãƒãƒƒãƒ•ã‚¡å†…ã®ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãæ›ãˆé–‹å§‹æ™‚ã«Map.
 	if (SUCCEEDED(m_pContext11->Map(
 		m_pCBufferPerMesh, 0,
 		D3D11_MAP_WRITE_DISCARD,
 		0, &pData)))
 	{
-		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…—p).
+		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥ç”¨).
 		CBUFFER_PER_MESH cb;
 
-		//ƒ[ƒ‹ƒhs—ñ‚ğ“n‚·.
+		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’æ¸¡ã™.
 		cb.mW = mWorld;
 		D3DXMatrixTranspose(&cb.mW, &cb.mW);
 
-		//ƒ[ƒ‹ƒh,ƒrƒ…[,ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğ“n‚·.
+		//ãƒ¯ãƒ¼ãƒ«ãƒ‰,ãƒ“ãƒ¥ãƒ¼,ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’æ¸¡ã™.
 		D3DXMATRIX mWVP = mWorld * mView * mProj;
-		D3DXMatrixTranspose(&mWVP, &mWVP);	//s—ñ‚ğ“]’u‚·‚é.
-		//¦s—ñ‚ÌŒvZ•û–@‚ªDirectX‚ÆGPU‚ÅˆÙ‚È‚é‚½‚ß“]’u‚ª•K—v.
+		D3DXMatrixTranspose(&mWVP, &mWVP);	//è¡Œåˆ—ã‚’è»¢ç½®ã™ã‚‹.
+		//â€»è¡Œåˆ—ã®è¨ˆç®—æ–¹æ³•ãŒDirectXã¨GPUã§ç•°ãªã‚‹ãŸã‚è»¢ç½®ãŒå¿…è¦.
 		cb.mWVP = mWVP;
 
 		memcpy_s(
-			pData.pData,	//ƒRƒs[æ‚Ìƒoƒbƒtƒ@.
-			pData.RowPitch,	//ƒRƒs[æ‚Ìƒoƒbƒtƒ@ƒTƒCƒY.
-			(void*)(&cb),	//ƒRƒs[Œ³‚Ìƒoƒbƒtƒ@.
-			sizeof(cb));	//ƒRƒs[Œ³‚Ìƒoƒbƒtƒ@ƒTƒCƒY.
+			pData.pData,	//ã‚³ãƒ”ãƒ¼å…ˆã®ãƒãƒƒãƒ•ã‚¡.
+			pData.RowPitch,	//ã‚³ãƒ”ãƒ¼å…ˆã®ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º.
+			(void*)(&cb),	//ã‚³ãƒ”ãƒ¼å…ƒã®ãƒãƒƒãƒ•ã‚¡.
+			sizeof(cb));	//ã‚³ãƒ”ãƒ¼å…ƒã®ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º.
 
-		//ƒoƒbƒtƒ@“à‚Ìƒf[ƒ^‚Ì‘‚«Š·‚¦I—¹‚ÉUnmap.
+		//ãƒãƒƒãƒ•ã‚¡å†…ã®ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãæ›ãˆçµ‚äº†æ™‚ã«Unmap.
 		m_pContext11->Unmap(m_pCBufferPerMesh, 0);
 	}
 
-	//‚±‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğ‚Ç‚ÌƒVƒF[ƒ_‚Åg—p‚·‚é‚©H.
-	m_pContext11->VSSetConstantBuffers(0, 1, &m_pCBufferPerMesh);	//’¸“_ƒVƒF[ƒ_.
-	m_pContext11->PSSetConstantBuffers(0, 1, &m_pCBufferPerMesh);	//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
+	//ã“ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’ã©ã®ã‚·ã‚§ãƒ¼ãƒ€ã§ä½¿ç”¨ã™ã‚‹ã‹ï¼Ÿ.
+	m_pContext11->VSSetConstantBuffers(0, 1, &m_pCBufferPerMesh);	//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	m_pContext11->PSSetConstantBuffers(0, 1, &m_pCBufferPerMesh);	//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğƒZƒbƒg.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ã‚»ãƒƒãƒˆ.
 	m_pContext11->IASetInputLayout(m_pVertexLayout);
 
-	//ƒvƒŠƒ~ƒeƒBƒuEƒgƒ|ƒƒW[‚ğƒZƒbƒg.
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ãƒ»ãƒˆãƒãƒ­ã‚¸ãƒ¼ã‚’ã‚»ãƒƒãƒˆ.
 	m_pContext11->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//’¸“_ƒoƒbƒtƒ@‚ğƒZƒbƒg.
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆ.
 	UINT stride = m_Model.pMesh->GetNumBytesPerVertex();
 	UINT offset = 0;
 	m_pContext11->IASetVertexBuffers(
 		0, 1, &m_pVertexBuffer, &stride, &offset);
 
-	//‘®«‚Ì”‚¾‚¯A‚»‚ê‚¼‚ê‚Ì‘®«‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğ•`‰æ.
+	//å±æ€§ã®æ•°ã ã‘ã€ãã‚Œãã‚Œã®å±æ€§ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’æç”».
 	for (DWORD No = 0; No < m_NumAttr; No++)
 	{
-		//g—p‚³‚ê‚Ä‚¢‚È‚¢ƒ}ƒeƒŠƒAƒ‹‘Îô.
+		//ä½¿ç”¨ã•ã‚Œã¦ã„ãªã„ãƒãƒ†ãƒªã‚¢ãƒ«å¯¾ç­–.
 		if (m_pMaterials[m_AttrID[No]].dwNumFace == 0) {
 			continue;
 		}
-		//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒZƒbƒg.
+		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆ.
 		m_pContext11->IASetIndexBuffer(
 			m_ppIndexBuffer[No], DXGI_FORMAT_R32_UINT, 0);
-		//ƒ}ƒeƒŠƒAƒ‹‚ÌŠe—v‘f‚ğƒVƒF[ƒ_‚É“n‚·.
+		//ãƒãƒ†ãƒªã‚¢ãƒ«ã®å„è¦ç´ ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 		D3D11_MAPPED_SUBRESOURCE pDataMat;
 		if (SUCCEEDED(
 			m_pContext11->Map(m_pCBufferPerMaterial,
 				0, D3D11_MAP_WRITE_DISCARD, 0, &pDataMat)))
 		{
-			//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒ}ƒeƒŠƒAƒ‹—p).
+			//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒãƒ†ãƒªã‚¢ãƒ«ç”¨).
 			CBUFFER_PER_MATERIAL cb;
-			//ƒfƒBƒtƒ…[ƒY,ƒAƒ“ƒrƒGƒ“ƒg,ƒXƒyƒLƒ…ƒ‰‚ğƒVƒF[ƒ_‚É“n‚·.
+			//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚º,ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆ,ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 			cb.Diffuse = m_pMaterials[m_AttrID[No]].Diffuse;
 			cb.Ambient = m_pMaterials[m_AttrID[No]].Ambient;
 			cb.Specular = m_pMaterials[m_AttrID[No]].Specular;
@@ -818,24 +818,24 @@ void CStaticMesh::RenderMesh(
 			m_pContext11->Unmap(m_pCBufferPerMaterial, 0);
 		}
 
-		//‚±‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğ‚Ç‚ÌƒVƒF[ƒ_‚Åg‚¤‚©H.
+		//ã“ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’ã©ã®ã‚·ã‚§ãƒ¼ãƒ€ã§ä½¿ã†ã‹ï¼Ÿ.
 		m_pContext11->VSSetConstantBuffers(1, 1, &m_pCBufferPerMaterial);
 		m_pContext11->PSSetConstantBuffers(1, 1, &m_pCBufferPerMaterial);
 
-		//ƒeƒNƒXƒ`ƒƒ‚ğƒVƒF[ƒ_‚É“n‚·.
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 		if (m_pMaterials[m_AttrID[No]].pTexture != nullptr) {
-			//ƒeƒNƒXƒ`ƒƒ‚ª‚ ‚é‚Æ‚«.
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒã‚ã‚‹ã¨ã.
 			m_pContext11->PSSetSamplers(0, 1, &m_pSampleLinear);
 			m_pContext11->PSSetShaderResources(
 				0, 1, &m_pMaterials[m_AttrID[No]].pTexture);
 		}
 		else {
-			//ƒeƒNƒXƒ`ƒƒ‚ª‚È‚¢‚Æ‚«.
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒãªã„ã¨ã.
 			ID3D11ShaderResourceView* pNothing[1] = { 0 };
 			m_pContext11->PSSetShaderResources(0, 1, pNothing);
 		}
 
-		//ƒvƒŠƒ~ƒeƒBƒu(ƒ|ƒŠƒSƒ“)‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO.
+		//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–(ãƒãƒªã‚´ãƒ³)ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 		m_pContext11->DrawIndexed(
 			m_pMaterials[m_AttrID[No]].dwNumFace * 3, 0, 0);
 	}
@@ -843,30 +843,30 @@ void CStaticMesh::RenderMesh(
 
 D3DXMATRIX CStaticMesh::BuildWorldMatrix(D3DXMATRIX& mWorld)
 {
-	//ƒ[ƒ‹ƒhs—ñAƒXƒP[ƒ‹s—ñA‰ñ“]s—ñA•½sˆÚ“®s—ñ.
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã€ã‚¹ã‚±ãƒ¼ãƒ«è¡Œåˆ—ã€å›è»¢è¡Œåˆ—ã€å¹³è¡Œç§»å‹•è¡Œåˆ—.
 	D3DXMATRIX mScale, mRot, mTran;
 	D3DXMATRIX mYaw, mPitch, mRoll;
 
-	//Šg‘åk¬s—ñì¬.
+	//æ‹¡å¤§ç¸®å°è¡Œåˆ—ä½œæˆ.
 	D3DXMatrixScaling(
-		&mScale,	//(out)ŒvZŒ‹‰Ê.
-		m_Scale.x, m_Scale.y, m_Scale.z);	//x,y,z‚»‚ê‚¼‚ê‚ÌŠgk’l.
-	//Y²‰ñ“]s—ñì¬.
+		&mScale,	//(out)è¨ˆç®—çµæœ.
+		m_Scale.x, m_Scale.y, m_Scale.z);	//x,y,zãã‚Œãã‚Œã®æ‹¡ç¸®å€¤.
+	//Yè»¸å›è»¢è¡Œåˆ—ä½œæˆ.
 	D3DXMatrixRotationY(&mYaw, m_Rotation.y);
-	//X²‰ñ“]s—ñì¬.
+	//Xè»¸å›è»¢è¡Œåˆ—ä½œæˆ.
 	D3DXMatrixRotationX(&mPitch, m_Rotation.x);
-	//Z²‰ñ“]s—ñì¬.
+	//Zè»¸å›è»¢è¡Œåˆ—ä½œæˆ.
 	D3DXMatrixRotationZ(&mRoll, m_Rotation.z);
-	//•½sˆÚ“®s—ñì¬.
+	//å¹³è¡Œç§»å‹•è¡Œåˆ—ä½œæˆ.
 	D3DXMatrixTranslation(
-		&mTran,	//(out)ŒvZŒ‹‰Ê.
-		m_Position.x, m_Position.y, m_Position.z);	//x,y,zÀ•W.
+		&mTran,	//(out)è¨ˆç®—çµæœ.
+		m_Position.x, m_Position.y, m_Position.z);	//x,y,zåº§æ¨™.
 
-	//‰ñ“]s—ñ‚ğì¬.
+	//å›è»¢è¡Œåˆ—ã‚’ä½œæˆ.
 	mRot = mYaw * mPitch * mRoll;
 
-	//ƒ[ƒ‹ƒhs—ñì¬.
-	//Šgk~‰ñ“]~ˆÚ“® ¦‡”Ô‚ª‚Æ‚Ä‚à‘åØII.
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ä½œæˆ.
+	//æ‹¡ç¸®Ã—å›è»¢Ã—ç§»å‹• â€»é †ç•ªãŒã¨ã¦ã‚‚å¤§åˆ‡ï¼ï¼.
 	mWorld = mScale * mRot * mTran;
 
 	return mWorld;

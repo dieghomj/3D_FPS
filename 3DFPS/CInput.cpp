@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CInput.h"
 
 CInput::CInput()
@@ -15,9 +15,9 @@ void CInput::Update()
 {
 	for (int i = 0; i < 256; ++i)
 	{
-		//‘O‰ñ‚Ìó‘Ô‚ð•Û‘¶.
+		//å‰å›žã®çŠ¶æ…‹ã‚’ä¿å­˜.
 		m_KeyPrevState[i] = m_KeyState[i];
-		//Œ»Ý‚ÌƒL[‚Ì‰Ÿ‰ºó‘Ô‚ðŽæ“¾.
+		//ç¾åœ¨ã®ã‚­ãƒ¼ã®æŠ¼ä¸‹çŠ¶æ…‹ã‚’å–å¾—.
 		if (GetAsyncKeyState(i) & 0x8000)
 		{
 			m_KeyState[i] = true;

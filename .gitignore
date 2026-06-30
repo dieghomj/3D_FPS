@@ -366,4 +366,6 @@ FodyWeavers.xsd
 
 # Local player save data (high score)
 highscore.dat
+# Local player settings (volume / mouse sensitivity)
+settings.dat
 /dist

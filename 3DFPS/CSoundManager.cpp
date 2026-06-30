@@ -1,10 +1,11 @@
-#include "CSoundManager.h"
+ï»¿#include "CSoundManager.h"
 #include "MyMacro.h"
+#include "CSettings.h"
 
 CSoundManager::CSoundManager()
 	: m_pSound	()
 {
-	//ƒCƒ“ƒXƒ^ƒ“ƒX¶¬.
+	//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆ.
 	for( int i = 0; i < enList::max; i++ )
 	{
 		m_pSound[i] = new CSound();
@@ -15,21 +16,21 @@ CSoundManager::~CSoundManager()
 {
 	Release();
 
-	//ƒCƒ“ƒXƒ^ƒ“ƒX”jŠü.
+	//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç ´æ£„.
 	for( int i = enList::max - 1; i >= 0; i-- )
 	{
 		SAFE_DELETE( m_pSound[i] );
 	}
 }
 
-//ƒTƒEƒ“ƒhƒf[ƒ^“ÇŠÖ”.
+//ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒ¼ã‚¿èª­è¾¼é–¢æ•°.
 bool CSoundManager::Load( HWND hWnd )
 {
 	struct SoundList
 	{
-		int listNo;				//enList—ñ‹“Œ^‚ğİ’è.
-		const TCHAR path[256];	//ƒtƒ@ƒCƒ‹‚Ì–¼‘O(ƒpƒX•t‚«).
-		const TCHAR alias[256];	//ƒGƒCƒŠƒAƒX–¼.
+		int listNo;				//enListåˆ—æŒ™å‹ã‚’è¨­å®š.
+		const TCHAR path[256];	//ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰(ãƒ‘ã‚¹ä»˜ã).
+		const TCHAR alias[256];	//ã‚¨ã‚¤ãƒªã‚¢ã‚¹å.
 	};
 	SoundList SList[] =
 	{
@@ -58,7 +59,7 @@ bool CSoundManager::Load( HWND hWnd )
 		{ enList::SE_ItemGet	, _T("Data\\Sound\\SE\\item.wav"),					_T("SE_ItemGet")},
 
 	};
-	//”z—ñ‚ÌÅ‘å—v‘f”‚ğZo (”z—ñ‘S‘Ì‚ÌƒTƒCƒY/”z—ñ1‚Â•ª‚ÌƒTƒCƒY).
+	//é…åˆ—ã®æœ€å¤§è¦ç´ æ•°ã‚’ç®—å‡º (é…åˆ—å…¨ä½“ã®ã‚µã‚¤ã‚º/é…åˆ—1ã¤åˆ†ã®ã‚µã‚¤ã‚º).
 	int list_max = sizeof( SList ) / sizeof( SList[0] );
 	for( int i = 0; i < list_max; i++ )
 	{
@@ -76,10 +77,10 @@ bool CSoundManager::Load( HWND hWnd )
 	return true;
 }
 
-//ƒTƒEƒ“ƒhƒf[ƒ^‰ğ•úŠÖ”.
+//ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒ¼ã‚¿è§£æ”¾é–¢æ•°.
 void CSoundManager::Release()
 {
-	//ŠJ‚¢‚½‚Æ‹t‡‚Å•Â‚¶‚é.
+	//é–‹ã„ãŸæ™‚ã¨é€†é †ã§é–‰ã˜ã‚‹.
 	for( int i = enList::max - 1; i >= 0; i-- )
 	{
 		if( m_pSound[i] != nullptr )
@@ -102,7 +103,7 @@ bool CSoundManager::CreateVoicePool(enList list, int count, HWND hWnd, DWORD dur
 {
 	if (count <= 0) return false;
 
-	// Šù‘¶ƒv[ƒ‹‚ª‚ ‚ê‚Î”jŠü
+	// æ—¢å­˜ãƒ—ãƒ¼ãƒ«ãŒã‚ã‚Œã°ç ´æ£„
 	auto it = m_voicePools.find(list);
 	if (it != m_voicePools.end())
 	{
@@ -117,7 +118,7 @@ bool CSoundManager::CreateVoicePool(enList list, int count, HWND hWnd, DWORD dur
 	const SoundInfo& info = m_SoundInfo[list];
 	if (info.path[0] == _T('\0') || info.alias[0] == _T('\0'))
 	{
-		// Load‘O
+		// Loadå‰
 		return false;
 	}
 
@@ -177,6 +178,33 @@ void CSoundManager::PlayFromPool(enList list)
 			}
 			pool.index = (idx + 1) % poolSize;
 			return;
+		}
+	}
+}
+
+//è¨­å®š(CSettings)ã®ãƒã‚¹ã‚¿ãƒ¼éŸ³é‡ã‚’å…¨ã‚µã‚¦ãƒ³ãƒ‰ãƒ»å…¨ãƒœã‚¤ã‚¹ãƒ—ãƒ¼ãƒ«ã¸åæ˜ ã™ã‚‹.
+void CSoundManager::ApplyMasterVolume()
+{
+	const int scale = CSettings::VolumeToScale();
+	CSoundManager* self = CSoundManager::GetInstance();
+
+	//é€šå¸¸ã‚µã‚¦ãƒ³ãƒ‰.
+	for (int i = 0; i < enList::max; ++i)
+	{
+		if (self->m_pSound[i] != nullptr)
+		{
+			self->m_pSound[i]->SetVolume(scale);
+		}
+	}
+	//ãƒœã‚¤ã‚¹ãƒ—ãƒ¼ãƒ«ï¼ˆé€£ç¶šå†ç”Ÿç”¨ï¼‰.
+	for (auto& kv : self->m_voicePools)
+	{
+		for (auto* voice : kv.second.voices)
+		{
+			if (voice != nullptr)
+			{
+				voice->SetVolume(scale);
+			}
 		}
 	}
 }

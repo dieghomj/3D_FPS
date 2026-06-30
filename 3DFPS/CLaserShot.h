@@ -1,12 +1,12 @@
-#pragma once
+﻿#pragma once
 
 #include "CSprite3D.h"
 #include "CDirectX11.h"
 
 /**************************************************
-*	Laser Shot Effect Class
-*	Renders a laser beam from start to end position
-*	that fades over time
+*	レーザーショットエフェクトクラス.
+*	始点から終点へレーザービームを描画し、
+*	時間経過とともにフェードさせる.
 **/
 class CLaserShot
 {
@@ -25,31 +25,31 @@ public:
 	CLaserShot();
 	~CLaserShot();
 
-	// Initialize the laser sprite
+	// レーザースプライトを初期化する.
 	HRESULT Init(CDirectX11& pDx11, LPCTSTR lpFileName);
 
-	// Fire a new laser from start to end
+	// 始点から終点へ新しいレーザーを発射する.
 	void Fire(const D3DXVECTOR3& startPos, const D3DXVECTOR3& endPos);
 
-	// Fire a laser with direction and length
+	// 方向と長さを指定してレーザーを発射する.
 	void Fire(const D3DXVECTOR3& startPos, const D3DXVECTOR3& direction, float length);
 
-	// Update laser lifetime and fade
+	// レーザーの寿命とフェードを更新する.
 	void Update(float deltaTime);
 
-	// Render the laser beam
+	// レーザービームを描画する.
 	void Render(D3DXMATRIX& mView, D3DXMATRIX& mProj);
 
-	// Check if laser is still active
+	// レーザーがまだ有効かどうかを確認する.
 	bool IsActive() const { return m_LaserData.isActive; }
 
-	// Set laser properties
+	// レーザーのプロパティを設定する.
 	void SetWidth(float width) { m_Width = width; }
 	void SetLifeTime(float lifeTime) { m_MaxLifeTime = lifeTime; }
 	void SetColor(const D3DXVECTOR4& color) { m_Color = color; }
 
 private:
-	// Create world matrix oriented along the laser direction
+	// レーザーの方向に沿って向きを合わせたワールド行列を作成する.
 	D3DXMATRIX CreateLaserWorldMatrix(const D3DXVECTOR3& startPos, 
 		const D3DXVECTOR3& direction, float length);
 
@@ -72,7 +72,7 @@ private:
 	float m_MaxLifeTime;
 	D3DXVECTOR4 m_Color;
 
-	// Shader constant buffer structure
+	// シェーダのコンスタントバッファ構造体.
 	struct SHADER_CONSTANT_BUFFER
 	{
 		D3DXMATRIX mWVP;
@@ -80,7 +80,7 @@ private:
 		D3DXVECTOR4 vUV;
 	};
 
-	// Vertex structure
+	// 頂点構造体.
 	struct VERTEX
 	{
 		D3DXVECTOR3 Pos;

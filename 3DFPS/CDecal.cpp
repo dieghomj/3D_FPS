@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CDecal.h"
 #include "CDirectX11.h"
 
@@ -16,38 +16,38 @@ CDecal::~CDecal()
 
 HRESULT CDecal::Init(CDirectX11& pDx11, LPCTSTR lpFileName, SPRITE_STATE& pSs)
 {
-	// Store DirectX reference first
+	// まずDirectXの参照を保持する.
 	m_pDx11 = &pDx11;
 	m_pDevice11 = m_pDx11->GetDevice();
 	m_pContext11 = m_pDx11->GetContext();
 
 	m_SpriteState = pSs;
 
-	// Create shader with custom decal shader
+	// カスタムのデカールシェーダでシェーダを作成.
 	if (FAILED(CreateShader()))
 	{
 		return E_FAIL;
 	}
 
-	// Create model (polygon)
+	// モデル（ポリゴン）を作成.
 	if (FAILED(CreateModel()))
 	{
 		return E_FAIL;
 	}
 
-	// Create texture
+	// テクスチャを作成.
 	if (FAILED(CreateTexture(lpFileName)))
 	{
 		return E_FAIL;
 	}
 
-	// Create sampler
+	// サンプラを作成.
 	if (FAILED(CreateSampler()))
 	{
 		return E_FAIL;
 	}
 
-	// Set default fade distance
+	// デフォルトのフェード距離を設定.
 	m_FadeDistance = 5.0f;
 
 	return S_OK;
@@ -62,7 +62,7 @@ HRESULT CDecal::CreateShader()
 	uCompileFlag = D3D10_SHADER_DEBUG | D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif
 
-	// Compile vertex shader from HLSL
+	// HLSLからバーテックスシェーダをコンパイル.
 	if (FAILED(
 		D3DX11CompileFromFile(
 			DECAL_SHADER_NAME,
@@ -79,16 +79,16 @@ HRESULT CDecal::CreateShader()
 	{
 		if (pErrors)
 		{
-			// Output the error message for debugging
+			// デバッグ用にエラーメッセージを出力.
 			OutputDebugStringA((char*)pErrors->GetBufferPointer());
 			SAFE_RELEASE(pErrors);
 		}
-		_ASSERT_EXPR(false, _T("hlsl�ǂݍ��ݎ��s"));
+		_ASSERT_EXPR(false, _T("hlsl読み込み失敗"));
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pErrors);
 
-	// Create vertex shader
+	// バーテックスシェーダを作成.
 	if (FAILED(
 		m_pDevice11->CreateVertexShader(
 			pCompiledShader->GetBufferPointer(),
@@ -97,11 +97,11 @@ HRESULT CDecal::CreateShader()
 			&m_pVertexShader)))
 	{
 		SAFE_RELEASE(pCompiledShader);
-		_ASSERT_EXPR(false, _T("�o�[�e�b�N�X�V�F�[�_�쐬���s"));
+		_ASSERT_EXPR(false, _T("バーテックスシェーダ作成失敗"));
 		return E_FAIL;
 	}
 
-	// Define vertex input layout
+	// 頂点インプットレイアウトを定義.
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{
@@ -123,7 +123,7 @@ HRESULT CDecal::CreateShader()
 	};
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
 
-	// Create input layout
+	// 頂点インプットレイアウトを作成.
 	if (FAILED(
 		m_pDevice11->CreateInputLayout(
 			layout,
@@ -138,7 +138,7 @@ HRESULT CDecal::CreateShader()
 	}
 	SAFE_RELEASE(pCompiledShader);
 
-	// Compile pixel shader from HLSL
+	// HLSLからピクセルシェーダをコンパイル.
 	if (FAILED(
 		D3DX11CompileFromFile(
 			DECAL_SHADER_NAME,
@@ -163,7 +163,7 @@ HRESULT CDecal::CreateShader()
 	}
 	SAFE_RELEASE(pErrors);
 
-	// Create pixel shader
+	// ピクセルシェーダを作成.
 	if (FAILED(
 		m_pDevice11->CreatePixelShader(
 			pCompiledShader->GetBufferPointer(),
@@ -177,7 +177,7 @@ HRESULT CDecal::CreateShader()
 	}
 	SAFE_RELEASE(pCompiledShader);
 
-	// Create constant buffer
+	// コンスタントバッファを作成.
 	D3D11_BUFFER_DESC cb;
 	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cb.ByteWidth = sizeof(SHADER_CONSTANT_BUFFER);

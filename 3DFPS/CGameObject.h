@@ -1,17 +1,17 @@
-#pragma once
+ï»¿#pragma once
 
 /**************************************************
-*	ƒQ[ƒ€ƒIƒuƒWƒFƒNƒgƒNƒ‰ƒX.
+*	ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚¯ãƒ©ã‚¹.
 **/
 class CGameObject
 {
 public:
 	CGameObject();
-	//Œp³‚ğs‚¤ê‡‚ÍAƒfƒXƒgƒ‰ƒNƒ^‚Évirtual‚ğ•t‚¯‚Ä‰¼‘zŠÖ”‚É‚·‚é‚±‚Æ.
+	//ç¶™æ‰¿ã‚’è¡Œã†å ´åˆã¯ã€ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã«virtualã‚’ä»˜ã‘ã¦ä»®æƒ³é–¢æ•°ã«ã™ã‚‹ã“ã¨.
 	virtual ~CGameObject();
 
-	//virtual Œ^ ŠÖ”–¼ = 0; ƒˆ‰¼‘zŠÖ”.
-	//qƒNƒ‰ƒX‚Éˆ—‚ğ‚¨”C‚¹‚·‚é‚Ì‚ÅA‚±‚±‚Å‚Í–¼‘O‚¾‚¯éŒ¾‚µ‚Ä’è‹`‚Í‘‚©‚È‚¢.
+	//virtual å‹ é–¢æ•°å = 0; ç´”ç²‹ä»®æƒ³é–¢æ•°.
+	//å­ã‚¯ãƒ©ã‚¹ã«å‡¦ç†ã‚’ãŠä»»ã›ã™ã‚‹ã®ã§ã€ã“ã“ã§ã¯åå‰ã ã‘å®£è¨€ã—ã¦å®šç¾©ã¯æ›¸ã‹ãªã„.
 	virtual void Update() = 0;
 	virtual void Draw(SCENE_DATA& sceneData) = 0;
 
@@ -19,7 +19,7 @@ public:
 		m_IsActive = active;
 	}
 
-	//À•Wİ’èŠÖ”.
+	//åº§æ¨™è¨­å®šé–¢æ•°.
 	void SetPosition( float x, float y, float z ){
 		m_vPosition.x = x;
 		m_vPosition.y = y;
@@ -29,12 +29,12 @@ public:
 	void SetPosition(const D3DXVECTOR3& pos) {
 		m_vPosition = pos;
 	}
-	//À•Wæ“¾ŠÖ”.
+	//åº§æ¨™å–å¾—é–¢æ•°.
 	const D3DXVECTOR3& GetPosition() const {
 		return m_vPosition;
 	}
 
-	//‰ñ“]İ’èŠÖ”.
+	//å›è»¢è¨­å®šé–¢æ•°.
 	void SetRotation( float x, float y, float z ){
 		m_vRotation.x = x;
 		m_vRotation.y = y;
@@ -50,12 +50,12 @@ public:
 		CalculateVectors();
 
 	}
-	//‰ñ“]æ“¾ŠÖ”.
+	//å›è»¢å–å¾—é–¢æ•°.
 	const D3DXVECTOR3& GetRotation() const {
 		return m_vRotation;
 	}
 
-	//Šgkİ’èŠÖ”.
+	//æ‹¡ç¸®è¨­å®šé–¢æ•°.
 	void SetScale( float x, float y, float z ){
 		m_vScale.x = x;
 		m_vScale.y = y;
@@ -64,7 +64,7 @@ public:
 	void SetScale(float xyz) {
 		m_vScale = D3DXVECTOR3(xyz, xyz, xyz);
 	}
-	//Šgkæ“¾ŠÖ”.
+	//æ‹¡ç¸®å–å¾—é–¢æ•°.
 	const D3DXVECTOR3& GetScale() const {
 		return m_vScale;
 	}
@@ -81,9 +81,9 @@ private:
 
 	void CalculateVectors();
 
-protected://protected‚ÍqƒNƒ‰ƒX‚Ì‚İƒAƒNƒZƒX‰Â”\.
+protected://protectedã¯å­ã‚¯ãƒ©ã‚¹ã®ã¿ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½.
 
-	bool m_IsActive = true;	//ƒAƒNƒeƒBƒuƒtƒ‰ƒO.
+	bool m_IsActive = true;	//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒ•ãƒ©ã‚°.
 	D3DXVECTOR3 m_vForward;
 	D3DXVECTOR3 m_vRight;
 	D3DXVECTOR3	m_vPosition;

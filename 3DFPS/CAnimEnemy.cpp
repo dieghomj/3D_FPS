@@ -1,4 +1,4 @@
-#include "CAnimEnemy.h"
+ï»¿#include "CAnimEnemy.h"
 
 CAnimEnemy::CAnimEnemy()
 	: CAnimCharacter()
@@ -22,13 +22,13 @@ void CAnimEnemy::InitEnemy()
 	m_Radius = 0.5f;
 	m_FloorY = 0.0f;
 	m_FloorNormal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	// “ª•”‚ÌÕ“ËƒŒƒC‚ğ‰Šú‰»
+	// é ­éƒ¨ã®è¡çªãƒ¬ã‚¤ã‚’åˆæœŸåŒ–
 	if (!m_pHeadCrossRay)
 	{
 		m_pHeadCrossRay = new CROSSRAY();
 	}
 
-	// ƒNƒƒXƒŒƒC‚ğXV
+	// ã‚¯ãƒ­ã‚¹ãƒ¬ã‚¤ã‚’æ›´æ–°
 	UpdateCrossRay();
 }
 
@@ -47,10 +47,10 @@ void CAnimEnemy::Update()
 
 	D3DXVECTOR3 pos = GetPosition();
 	const float GRAVITY = 0.21f;
-	const float SNAP_DISTANCE = 0.005f;  // °‚ÉƒXƒiƒbƒv‚·‚é‹——£
+	const float SNAP_DISTANCE = 0.005f;  // åºŠã«ã‚¹ãƒŠãƒƒãƒ—ã™ã‚‹è·é›¢
 
 
-	// °‚Æ‚Ì‹——£‚ğŒvZ
+	// åºŠã¨ã®è·é›¢ã‚’è¨ˆç®—
 	float distanceToFloor = pos.y - m_FloorY;
 	if (distanceToFloor > SNAP_DISTANCE)
 	{
@@ -61,7 +61,7 @@ void CAnimEnemy::Update()
 		}
 
 		m_IsGrounded = false;
-		// ‹ó’†‚É‚¢‚éê‡‚Íd—Í‚ğ“K—p
+		// ç©ºä¸­ã«ã„ã‚‹å ´åˆã¯é‡åŠ›ã‚’é©ç”¨
 		if(m_GravityEnabled)
 			pos.y -= GRAVITY;
 	
@@ -72,7 +72,7 @@ void CAnimEnemy::Update()
 	}
 	else
 	{
-		// °‚É‹ß‚¢ê‡‚Í°‚ÉƒXƒiƒbƒviƒ‰ƒ“ƒv‚ğã‚éj
+		// åºŠã«è¿‘ã„å ´åˆã¯åºŠã«ã‚¹ãƒŠãƒƒãƒ—ï¼ˆãƒ©ãƒ³ãƒ—ã‚’ä¸Šã‚‹ï¼‰
 		pos.y = m_FloorY;
 		m_IsGrounded = true;
 	}
@@ -89,14 +89,14 @@ void CAnimEnemy::Update()
 		}
 	}
 
-	//ƒŒƒC‚ÌˆÊ’u‚ğƒvƒŒƒCƒ„[‚ÌÀ•W‚É‚»‚ë‚¦‚é
+	//ãƒ¬ã‚¤ã®ä½ç½®ã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åº§æ¨™ã«ãã‚ãˆã‚‹
 	m_pRayY->Position = m_vPosition;
-	//’n–Ê‚ß‚è‚İ‰ñ”ğ‚Ì‚½‚ßƒvƒŒƒCƒ„[‚ÌˆÊ’u‚æ‚è‚à­‚µã‚É‚µ‚Ä‚¨‚­
+	//åœ°é¢ã‚ã‚Šè¾¼ã¿å›é¿ã®ãŸã‚ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚ˆã‚Šã‚‚å°‘ã—ä¸Šã«ã—ã¦ãŠã
 	m_pRayY->Position.y = m_vPosition.y + 0.45;
 	m_pRayY->RotationY = m_vRotation.y;
 	m_pRayY->Length = 5.5f;
 
-	// ƒNƒƒXƒŒƒC‚ğXV
+	// ã‚¯ãƒ­ã‚¹ãƒ¬ã‚¤ã‚’æ›´æ–°
 	UpdateCrossRay();
 
 	CAnimCharacter::Update();
@@ -109,9 +109,9 @@ void CAnimEnemy::UpdateCrossRay()
 
 	D3DXVECTOR3 pos = GetPosition() ;
 	D3DXVECTOR3 headPos = pos; 
-	pos.y += m_vPosition.y + 0.01;  // ‘«Œ³‚Ì‚‚³‚É’²®
-	headPos.y += m_vPosition.y - 0.1f;  // “ª•”‚Ì‚‚³‚É’²®
-	float rayLength = 2.5f;  // ”¼Œa‚æ‚è­‚µ’·‚­
+	pos.y += m_vPosition.y + 0.01;  // è¶³å…ƒã®é«˜ã•ã«èª¿æ•´
+	headPos.y += m_vPosition.y - 0.1f;  // é ­éƒ¨ã®é«˜ã•ã«èª¿æ•´
+	float rayLength = 2.5f;  // åŠå¾„ã‚ˆã‚Šå°‘ã—é•·ã
 
 	for(int i = 0; i < CROSSRAY::max; ++i)
 	{

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CCollider.h"
 #include "CBoundingSphere.h"
 #include "CBoundingCube.h"
@@ -49,7 +49,7 @@ HRESULT CCollider::CreateSphereForMesh(const CStaticMesh& pMesh)
 		return E_FAIL;
 	}
 
-	// ƒ[ƒJƒ‹‹…î•ñ‚ğ•Û
+	// ãƒ­ãƒ¼ã‚«ãƒ«çƒæƒ…å ±ã‚’ä¿æŒ
 	m_SphereLocalCenter = m_pBSphere->GetPosition();
 	m_SphereLocalRadius = m_pBSphere->GetRadius();
 	m_Shape = COLLIDER_SHAPE_SPHERE;
@@ -68,7 +68,7 @@ HRESULT CCollider::CreateBoxForMesh(const CStaticMesh& pMesh)
 		return E_FAIL;
 	}
 
-	// Capture local AABB from mesh
+	// ãƒ¡ãƒƒã‚·ãƒ¥ã‹ã‚‰ãƒ­ãƒ¼ã‚«ãƒ«AABBã‚’å–å¾—
 	m_BoxLocalMin = m_pBCube->GetMin();
 	m_BoxLocalMax = m_pBCube->GetMax();
 	m_Shape = COLLIDER_SHAPE_CUBE;
@@ -114,14 +114,14 @@ CBoundingCube* CCollider::GetBBox()
 
 void CCollider::RecalculateWorldBounds()
 {
-	// ƒ[ƒ‹ƒhs—ñ = S * R * T
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ— = S * R * T
 	D3DXMATRIX mS, mT, mWorld;
 	D3DXMatrixScaling(&mS, m_vScale.x, m_vScale.y, m_vScale.z);
 	D3DXMatrixRotationYawPitchRoll(&m_mRotation, m_vRotation.y, m_vRotation.x, m_vRotation.z);
 	D3DXMatrixTranslation(&mT, m_vPosition.x, m_vPosition.y, m_vPosition.z);
 	mWorld = mS * m_mRotation * mT;
 
-	// ‹…: ’†S‚ÍÀ•W•ÏŠ·A”¼Œa‚ÍÅ‘åƒXƒP[ƒ‹¬•ª‚ÅƒXƒP[ƒ‹
+	// çƒ: ä¸­å¿ƒã¯åº§æ¨™å¤‰æ›ã€åŠå¾„ã¯æœ€å¤§ã‚¹ã‚±ãƒ¼ãƒ«æˆåˆ†ã§ã‚¹ã‚±ãƒ¼ãƒ«
 	if (m_pBSphere != nullptr && m_Shape == COLLIDER_SHAPE_SPHERE)
 	{
 		D3DXVECTOR3 worldCenter;
@@ -132,14 +132,14 @@ void CCollider::RecalculateWorldBounds()
 		m_pBSphere->SetRadius(m_SphereLocalRadius * maxScale);
 	}
 
-	// —§•û‘Ì(OBB): ƒ[ƒ‹ƒhs—ñ‚ğ•Û‘¶‚µAAABB‚àŒvZ
+	// ç«‹æ–¹ä½“(OBB): ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’ä¿å­˜ã—ã€AABBã‚‚è¨ˆç®—
 	if (m_pBCube != nullptr && m_Shape == COLLIDER_SHAPE_CUBE)
 	{
-		// ƒ[ƒ‹ƒhs—ñ‚ğ•Û‘¶iOBB—pj
+		// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’ä¿å­˜ï¼ˆOBBç”¨ï¼‰
 		m_pBCube->SetWorldMatrix(mWorld);
 		m_pBCube->SetLocalMinMax(m_BoxLocalMin, m_BoxLocalMax);
 
-		// AABBŒvZiƒuƒ[ƒhƒtƒF[ƒY—pj
+		// AABBè¨ˆç®—ï¼ˆãƒ–ãƒ­ãƒ¼ãƒ‰ãƒ•ã‚§ãƒ¼ã‚ºç”¨ï¼‰
 		const D3DXVECTOR3& mn = m_BoxLocalMin;
 		const D3DXVECTOR3& mx = m_BoxLocalMax;
 
@@ -178,31 +178,31 @@ bool CCollider::CheckCollision(CCollider* pOther, D3DXVECTOR3* pPenetration)
 	COLLIDER_SHAPE shapeA = m_Shape;
 	COLLIDER_SHAPE shapeB = pOther->GetShape();
 
-	// ‹… vs ‹…
+	// çƒ vs çƒ
 	if (shapeA == COLLIDER_SHAPE_SPHERE && shapeB == COLLIDER_SHAPE_SPHERE)
 	{
 		return SphereVsSphere(m_pBSphere, pOther->GetBSphere(), pPenetration);
 	}
 
-	// ‹… vs ƒ{ƒbƒNƒX
+	// çƒ vs ãƒœãƒƒã‚¯ã‚¹
 	if (shapeA == COLLIDER_SHAPE_SPHERE && shapeB == COLLIDER_SHAPE_CUBE)
 	{
 		return SphereVsOBB(m_pBSphere, pOther->GetBBox(), pOther->GetRotationMatrix(), pPenetration);
 	}
 
-	// ƒ{ƒbƒNƒX vs ‹…
+	// ãƒœãƒƒã‚¯ã‚¹ vs çƒ
 	if (shapeA == COLLIDER_SHAPE_CUBE && shapeB == COLLIDER_SHAPE_SPHERE)
 	{
 		bool hit = SphereVsOBB(pOther->GetBSphere(), m_pBCube, m_mRotation, pPenetration);
 		if (hit && pPenetration)
 		{
-			// ‰Ÿ‚µo‚µ•ûŒü‚ğ”½“]
+			// æŠ¼ã—å‡ºã—æ–¹å‘ã‚’åè»¢
 			*pPenetration = -*pPenetration;
 		}
 		return hit;
 	}
 
-	// ƒ{ƒbƒNƒX vs ƒ{ƒbƒNƒXiŠÈˆÕAABB”»’èj
+	// ãƒœãƒƒã‚¯ã‚¹ vs ãƒœãƒƒã‚¯ã‚¹ï¼ˆç°¡æ˜“AABBåˆ¤å®šï¼‰
 	if (shapeA == COLLIDER_SHAPE_CUBE && shapeB == COLLIDER_SHAPE_CUBE)
 	{
 		return m_pBCube->IsHit(*pOther->GetBBox());
@@ -238,14 +238,14 @@ bool CCollider::SphereVsOBB(CBoundingSphere* pSphere, CBoundingCube* pBox,
 {
 	if (!pSphere || !pBox) return false;
 
-	// OBB‚Ì’†S‚Æ”¼ƒTƒCƒY‚ğæ“¾
+	// OBBã®ä¸­å¿ƒã¨åŠã‚µã‚¤ã‚ºã‚’å–å¾—
 	D3DXVECTOR3 boxCenter = pBox->GetCenter();
 	D3DXVECTOR3 boxHalfExtents = pBox->GetHalfExtents();
 
-	// ƒXƒP[ƒ‹‚ğl—¶‚µ‚½”¼ƒTƒCƒY
+	// ã‚¹ã‚±ãƒ¼ãƒ«ã‚’è€ƒæ…®ã—ãŸåŠã‚µã‚¤ã‚º
 	const D3DXMATRIX& worldMatrix = pBox->GetWorldMatrix();
 	
-	// ƒ[ƒ‹ƒhs—ñ‚©‚çƒXƒP[ƒ‹¬•ª‚ğ’Šo
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‹ã‚‰ã‚¹ã‚±ãƒ¼ãƒ«æˆåˆ†ã‚’æŠ½å‡º
 	D3DXVECTOR3 scaleX(worldMatrix._11, worldMatrix._12, worldMatrix._13);
 	D3DXVECTOR3 scaleY(worldMatrix._21, worldMatrix._22, worldMatrix._23);
 	D3DXVECTOR3 scaleZ(worldMatrix._31, worldMatrix._32, worldMatrix._33);
@@ -255,7 +255,7 @@ bool CCollider::SphereVsOBB(CBoundingSphere* pSphere, CBoundingCube* pBox,
 
 	D3DXVECTOR3 scaledHalfExtents(boxHalfExtents.x * sx, boxHalfExtents.y * sy, boxHalfExtents.z * sz);
 
-	// OBB‚Ì3‚Â‚Ì²‚ğæ“¾i‰ñ“]s—ñ‚ÌŠesj
+	// OBBã®3ã¤ã®è»¸ã‚’å–å¾—ï¼ˆå›è»¢è¡Œåˆ—ã®å„è¡Œï¼‰
 	D3DXVECTOR3 axisX(boxRotation._11, boxRotation._12, boxRotation._13);
 	D3DXVECTOR3 axisY(boxRotation._21, boxRotation._22, boxRotation._23);
 	D3DXVECTOR3 axisZ(boxRotation._31, boxRotation._32, boxRotation._33);
@@ -263,27 +263,27 @@ bool CCollider::SphereVsOBB(CBoundingSphere* pSphere, CBoundingCube* pBox,
 	D3DXVec3Normalize(&axisY, &axisY);
 	D3DXVec3Normalize(&axisZ, &axisZ);
 
-	// ‹…‚Ì’†S‚©‚çƒ{ƒbƒNƒX’†S‚Ö‚ÌƒxƒNƒgƒ‹
+	// çƒã®ä¸­å¿ƒã‹ã‚‰ãƒœãƒƒã‚¯ã‚¹ä¸­å¿ƒã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
 	D3DXVECTOR3 sphereCenter = pSphere->GetPosition();
 	D3DXVECTOR3 diff = sphereCenter - boxCenter;
 
-	// OBB‚Ìƒ[ƒJƒ‹À•WŒn‚Å‚Ì‹…‚ÌˆÊ’u‚ğŒvZ
+	// OBBã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã§ã®çƒã®ä½ç½®ã‚’è¨ˆç®—
 	float localX = D3DXVec3Dot(&diff, &axisX);
 	float localY = D3DXVec3Dot(&diff, &axisY);
 	float localZ = D3DXVec3Dot(&diff, &axisZ);
 
-	// Å‹ßÚ“_‚ğƒNƒ‰ƒ“ƒv‚ÅŒvZ
+	// æœ€è¿‘æ¥ç‚¹ã‚’ã‚¯ãƒ©ãƒ³ãƒ—ã§è¨ˆç®—
 	float clampedX = max(-scaledHalfExtents.x, min(localX, scaledHalfExtents.x));
 	float clampedY = max(-scaledHalfExtents.y, min(localY, scaledHalfExtents.y));
 	float clampedZ = max(-scaledHalfExtents.z, min(localZ, scaledHalfExtents.z));
 
-	// Å‹ßÚ“_‚ğƒ[ƒ‹ƒhÀ•W‚É•ÏŠ·
+	// æœ€è¿‘æ¥ç‚¹ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã«å¤‰æ›
 	D3DXVECTOR3 closestPoint = boxCenter + 
 		axisX * clampedX + 
 		axisY * clampedY + 
 		axisZ * clampedZ;
 
-	// ‹…‚Ì’†S‚ÆÅ‹ßÚ“_‚Ì‹——£
+	// çƒã®ä¸­å¿ƒã¨æœ€è¿‘æ¥ç‚¹ã®è·é›¢
 	D3DXVECTOR3 closestDiff = sphereCenter - closestPoint;
 	float distance = D3DXVec3Length(&closestDiff);
 	float sphereRadius = pSphere->GetRadius();
@@ -300,7 +300,7 @@ bool CCollider::SphereVsOBB(CBoundingSphere* pSphere, CBoundingCube* pBox,
 			}
 			else
 			{
-				// ‹…‚ªƒ{ƒbƒNƒX“à•”‚É‚ ‚éê‡AÅ‚à‹ß‚¢–Ê‚É‰Ÿ‚µo‚·
+				// çƒãŒãƒœãƒƒã‚¯ã‚¹å†…éƒ¨ã«ã‚ã‚‹å ´åˆã€æœ€ã‚‚è¿‘ã„é¢ã«æŠ¼ã—å‡ºã™
 				float distX = scaledHalfExtents.x - fabsf(localX);
 				float distY = scaledHalfExtents.y - fabsf(localY);
 				float distZ = scaledHalfExtents.z - fabsf(localZ);
@@ -338,7 +338,7 @@ bool CCollider::SphereVsAABB(CBoundingSphere* pSphere, CBoundingCube* pBox, D3DX
 	D3DXVECTOR3 boxMin = pBox->GetMin();
 	D3DXVECTOR3 boxMax = pBox->GetMax();
 
-	// Å‹ßÚ“_‚ğŒvZ
+	// æœ€è¿‘æ¥ç‚¹ã‚’è¨ˆç®—
 	D3DXVECTOR3 closestPoint;
 	closestPoint.x = max(boxMin.x, min(sphereCenter.x, boxMax.x));
 	closestPoint.y = max(boxMin.y, min(sphereCenter.y, boxMax.y));
@@ -359,7 +359,7 @@ bool CCollider::SphereVsAABB(CBoundingSphere* pSphere, CBoundingCube* pBox, D3DX
 			}
 			else
 			{
-				// ‹…‚ªƒ{ƒbƒNƒX“à•”‚É‚ ‚éê‡
+				// çƒãŒãƒœãƒƒã‚¯ã‚¹å†…éƒ¨ã«ã‚ã‚‹å ´åˆ
 				D3DXVECTOR3 boxCenter = (boxMin + boxMax) * 0.5f;
 				D3DXVECTOR3 boxHalf = (boxMax - boxMin) * 0.5f;
 				D3DXVECTOR3 localPos = sphereCenter - boxCenter;

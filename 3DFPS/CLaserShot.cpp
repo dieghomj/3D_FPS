@@ -1,6 +1,6 @@
-#include "CLaserShot.h"
+﻿#include "CLaserShot.h"
 
-// Shader file path
+// シェーダファイルのパス.
 const TCHAR LASER_SHADER_NAME[] = _T("Data\\Shader\\Sprite3D.hlsl");
 
 CLaserShot::CLaserShot()
@@ -103,20 +103,20 @@ void CLaserShot::Render(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 	if (!m_LaserData.isActive)
 		return;
 
-	// Calculate alpha based on remaining lifetime
+	// 残り寿命に応じてアルファ値を計算する.
 	float alpha = m_LaserData.lifeTime / m_LaserData.maxLifeTime;
 	
-	// Create world matrix for the laser
+	// レーザー用のワールド行列を作成する.
 	D3DXMATRIX mWorld = CreateLaserWorldMatrix(
 		m_LaserData.startPos, 
 		m_LaserData.direction, 
 		m_LaserData.length);
 
-	// Set shaders
+	// 使用するシェーダを設定する.
 	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);
 	m_pContext11->PSSetShader(m_pPixelShader, nullptr, 0);
 
-	// Update constant buffer
+	// コンスタントバッファを更新する.
 	D3D11_MAPPED_SUBRESOURCE pData;
 	SHADER_CONSTANT_BUFFER cb;
 
@@ -126,40 +126,40 @@ void CLaserShot::Render(D3DXMATRIX& mView, D3DXMATRIX& mProj)
 		D3DXMatrixTranspose(&m, &m);
 		cb.mWVP = m;
 
-		// Apply color with fading alpha
+		// フェードするアルファ値を反映したカラーを適用する.
 		cb.vColor = D3DXVECTOR4(m_Color.x, m_Color.y, m_Color.z, m_Color.w * alpha);
 
-		// UV coordinates (use full texture)
+		// UV座標（テクスチャ全体を使用する）.
 		cb.vUV = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
 
 		memcpy_s(pData.pData, pData.RowPitch, (void*)(&cb), sizeof(cb));
 		m_pContext11->Unmap(m_pConstantBuffer, 0);
 	}
 
-	// Set constant buffer
+	// コンスタントバッファを設定する.
 	m_pContext11->VSSetConstantBuffers(0, 1, &m_pConstantBuffer);
 	m_pContext11->PSSetConstantBuffers(0, 1, &m_pConstantBuffer);
 
-	// Set vertex buffer
+	// 頂点バッファを設定する.
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	m_pContext11->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 
-	// Set input layout and topology
+	// 頂点インプットレイアウトとプリミティブトポロジーを設定する.
 	m_pContext11->IASetInputLayout(m_pVertexLayout);
 	m_pContext11->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// Set texture
+	// テクスチャを設定する.
 	m_pContext11->PSSetSamplers(0, 1, &m_pSampleLinear);
 	m_pContext11->PSSetShaderResources(0, 1, &m_pTexture);
 
-	// Enable alpha blending
+	// アルファブレンドを有効にする.
 	m_pDx11->SetAlphaBlend(true);
 
-	// Draw the laser quad
+	// レーザーの四角形ポリゴンを描画する.
 	m_pContext11->Draw(4, 0);
 
-	// Disable alpha blending
+	// アルファブレンドを無効にする.
 	m_pDx11->SetAlphaBlend(false);
 }
 
@@ -169,14 +169,14 @@ D3DXMATRIX CLaserShot::CreateLaserWorldMatrix(const D3DXVECTOR3& startPos,
 	D3DXMATRIX mWorld;
 	D3DXMatrixIdentity(&mWorld);
 
-	// The laser quad is created with Z as the length direction
-	// We need to orient it along the shot direction
+	// レーザーの四角形ポリゴンはZ軸を長さ方向として作成されている.
+	// これを発射方向に沿うように向ける必要がある.
 
-	// Scale: width in X, 1 in Y (or width for billboard), length in Z
+	// スケール：Xに幅、Yに1（ビルボードの場合は幅）、Zに長さ.
 	D3DXMATRIX mScale;
 	D3DXMatrixScaling(&mScale, m_Width, m_Width, length);
 
-	// Create rotation to align Z-axis with direction
+	// Z軸を方向に合わせるための回転を作成する.
 	D3DXVECTOR3 defaultDir(0.0f, 0.0f, 1.0f);
 	D3DXVECTOR3 dir = direction;
 	D3DXVec3Normalize(&dir, &dir);
@@ -184,7 +184,7 @@ D3DXMATRIX CLaserShot::CreateLaserWorldMatrix(const D3DXVECTOR3& startPos,
 	D3DXMATRIX mRot;
 	D3DXMatrixIdentity(&mRot);
 
-	// Calculate rotation axis and angle
+	// 回転軸と角度を計算する.
 	D3DXVECTOR3 rotAxis;
 	D3DXVec3Cross(&rotAxis, &defaultDir, &dir);
 	float dotProduct = D3DXVec3Dot(&defaultDir, &dir);
@@ -197,16 +197,16 @@ D3DXMATRIX CLaserShot::CreateLaserWorldMatrix(const D3DXVECTOR3& startPos,
 	}
 	else if (dotProduct < 0)
 	{
-		// Direction is opposite to default, rotate 180 degrees around any perpendicular axis
+		// 方向がデフォルトと正反対なので、任意の垂直軸まわりに180度回転させる.
 		D3DXMatrixRotationY(&mRot, D3DX_PI);
 	}
 
-	// Position at the center of the laser (start + half length along direction)
+	// レーザーの中心に配置する（始点 + 方向に沿った長さの半分）.
 	D3DXVECTOR3 centerPos = startPos + dir * (length * 0.5f);
 	D3DXMATRIX mTrans;
 	D3DXMatrixTranslation(&mTrans, centerPos.x, centerPos.y, centerPos.z);
 
-	// Combine: scale -> rotate -> translate
+	// 合成：スケール -> 回転 -> 平行移動.
 	mWorld = mScale * mRot * mTrans;
 
 	return mWorld;
@@ -221,7 +221,7 @@ HRESULT CLaserShot::CreateShader()
 	uCompileFlag = D3D10_SHADER_DEBUG | D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif
 
-	// Create vertex shader
+	// バーテックスシェーダを作成する.
 	if (FAILED(D3DX11CompileFromFile(
 		LASER_SHADER_NAME,
 		nullptr, nullptr,
@@ -243,7 +243,7 @@ HRESULT CLaserShot::CreateShader()
 		return E_FAIL;
 	}
 
-	// Create input layout
+	// 頂点インプットレイアウトを作成する.
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -261,7 +261,7 @@ HRESULT CLaserShot::CreateShader()
 	}
 	SAFE_RELEASE(pCompiledShader);
 
-	// Create pixel shader
+	// ピクセルシェーダを作成する.
 	if (FAILED(D3DX11CompileFromFile(
 		LASER_SHADER_NAME,
 		nullptr, nullptr,
@@ -283,7 +283,7 @@ HRESULT CLaserShot::CreateShader()
 	}
 	SAFE_RELEASE(pCompiledShader);
 
-	// Create constant buffer
+	// コンスタントバッファを作成する.
 	D3D11_BUFFER_DESC cb;
 	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cb.ByteWidth = sizeof(SHADER_CONSTANT_BUFFER);
@@ -302,19 +302,19 @@ HRESULT CLaserShot::CreateShader()
 
 HRESULT CLaserShot::CreateModel()
 {
-	// Create a quad that extends along Z axis
-	// Width is in X, length in Z
-	float w = 0.5f;  // Half width (will be scaled)
-	float l = 0.5f;  // Half length (will be scaled)
+	// Z軸方向に伸びる四角形ポリゴンを作成する.
+	// 幅はX、長さはZ.
+	float w = 0.5f;  // 幅の半分（後でスケーリングされる）.
+	float l = 0.5f;  // 長さの半分（後でスケーリングされる）.
 
-	// The quad faces outward and extends along Z
+	// 四角形ポリゴンは外向きで、Z軸方向に伸びる.
 	VERTEX vertices[] =
 	{
-		// Position (X, Y, Z)           // UV
-		{ D3DXVECTOR3(-w, 0.0f, -l), D3DXVECTOR2(0.0f, 1.0f) },  // Bottom-left
-		{ D3DXVECTOR3(-w, 0.0f,  l), D3DXVECTOR2(0.0f, 0.0f) },  // Top-left
-		{ D3DXVECTOR3( w, 0.0f, -l), D3DXVECTOR2(1.0f, 1.0f) },  // Bottom-right
-		{ D3DXVECTOR3( w, 0.0f,  l), D3DXVECTOR2(1.0f, 0.0f) }   // Top-right
+		// 位置 (X, Y, Z)               // UV
+		{ D3DXVECTOR3(-w, 0.0f, -l), D3DXVECTOR2(0.0f, 1.0f) },  // 左下
+		{ D3DXVECTOR3(-w, 0.0f,  l), D3DXVECTOR2(0.0f, 0.0f) },  // 左上
+		{ D3DXVECTOR3( w, 0.0f, -l), D3DXVECTOR2(1.0f, 1.0f) },  // 右下
+		{ D3DXVECTOR3( w, 0.0f,  l), D3DXVECTOR2(1.0f, 0.0f) }   // 右上
 	};
 
 	UINT uVerMax = sizeof(vertices) / sizeof(vertices[0]);

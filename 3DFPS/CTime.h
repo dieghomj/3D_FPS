@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class CTime
 {
@@ -6,42 +6,42 @@ public:
     CTime();
     ~CTime();
 
-    bool Init(double fps); // fps is the desired *fixed* update rate (e.g., 60.0)
+    bool Init(double fps); // fps は希望する「固定」更新レート(例: 60.0)
 
-    // New: Calculate the time accumulated for fixed updates
+    // 固定更新用に累積された時間を計算する
     void Tick();
 
-    // Corrected: Returns true if a fixed step *should* occur.
-    // The main loop will call this repeatedly until it returns false.
+    // 固定ステップを実行すべき場合に true を返す.
+    // メインループは false が返るまでこの関数を繰り返し呼び出す.
     bool FixedTick(double& fixedDeltaTime);
 
-    // Standard variable time update for rendering
+    // 描画用の標準的な可変時間の更新
     void VariableTick();
 
     void StartTimer();
     double StopTimer();
     double GetTimerElapsed() const { return m_timerElapsed; };
 	double GetFramePerSec() const { return m_framePerSec; };
-    // Getters for external use
+    // 外部から使用するためのゲッター
     float GetDeltaTime() const { return deltaTime; }
     double GetFixedDeltaTime() const { return m_fixedStepDuration; }
     double GetTotalTime() const { return m_totalTime; }
 
 
 protected:
-    float deltaTime;        // Variable time (for rendering/animation)
-    double m_totalTime;     // Total elapsed time
+    float deltaTime;        // 可変時間(描画/アニメーション用)
+    double m_totalTime;     // 経過時間の合計
 
-    double m_timerElapsed;  // Elapsed time since timer was started
+    double m_timerElapsed;  // タイマー開始からの経過時間
 
-    LARGE_INTEGER m_lastTime;   // Last recorded counter value
-    LARGE_INTEGER m_qpFreq;     // Performance counter frequency
+    LARGE_INTEGER m_lastTime;   // 最後に記録したカウンタ値
+    LARGE_INTEGER m_qpFreq;     // パフォーマンスカウンタの周波数
 
-    // Fixed Time Step Variables
-    double m_fixedStepDuration; // The target time for a single fixed update (e.g., 16.666 ms)
-    double m_timeAccumulator;   // Time accumulated since the last fixed update
+    // 固定時間ステップ用の変数
+    double m_fixedStepDuration; // 1回の固定更新の目標時間(例: 16.666 ms)
+    double m_timeAccumulator;   // 前回の固定更新からの累積時間
 
-	int m_frameCount;      // Frame count for FPS calculation
-	double m_timerFPS;        // Timer for FPS calculation
-	double m_framePerSec;       // Actual frames per second
+	int m_frameCount;      // FPS計算用のフレーム数
+	double m_timerFPS;        // FPS計算用のタイマー
+	double m_framePerSec;       // 実際の毎秒フレーム数
 };

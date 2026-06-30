@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CStaticMesh.h"
 
 /**************************************************
-*	ƒoƒEƒ“ƒfƒBƒ“ƒOƒXƒtƒBƒAƒNƒ‰ƒX
+*	ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚¹ãƒ•ã‚£ã‚¢ã‚¯ãƒ©ã‚¹
 **/
 class CBoundingSphere
 {
@@ -11,23 +11,23 @@ public:
 	CBoundingSphere();
 	~CBoundingSphere();
 
-	//ƒ‚ƒfƒ‹‚É‡‚í‚¹‚½ƒoƒEƒ“ƒfƒBƒ“ƒOƒXƒtƒBƒA‚ğì¬
+	//ãƒ¢ãƒ‡ãƒ«ã«åˆã‚ã›ãŸãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚¹ãƒ•ã‚£ã‚¢ã‚’ä½œæˆ
 	HRESULT CreateSphereForMesh(const CStaticMesh& pMesh);
 
-	//‘¼‚Ì‹…‘Ì‚Æ‚Ì“–‚½‚è”»’è
+	//ä»–ã®çƒä½“ã¨ã®å½“ãŸã‚Šåˆ¤å®š
 	bool IsHit(const CBoundingSphere& pBSphere);
 
-	//’†SÀ•W‚ğæ“¾‚·‚é
+	//ä¸­å¿ƒåº§æ¨™ã‚’å–å¾—ã™ã‚‹
 	const D3DXVECTOR3& GetPosition() const { return m_Position; }
-	//”¼Œa(’·‚³)‚ğæ“¾‚·‚é
+	//åŠå¾„(é•·ã•)ã‚’å–å¾—ã™ã‚‹
 	float GetRadius() const { return m_Radius; }
 
-	//’†SÀ•W‚ğİ’è‚·‚é
+	//ä¸­å¿ƒåº§æ¨™ã‚’è¨­å®šã™ã‚‹
 	void SetPosition(const D3DXVECTOR3& Pos) { m_Position = Pos; }
-	//”¼Œa(’·‚³)‚ğİ’è‚·‚é
+	//åŠå¾„(é•·ã•)ã‚’è¨­å®šã™ã‚‹
 	void SetRadius(float Radius) { m_Radius = Radius; }
 
 private:
-	D3DXVECTOR3		m_Position;	//’†SÀ•W
-	float			m_Radius;	//”¼Œa(’·‚³)
+	D3DXVECTOR3		m_Position;	//ä¸­å¿ƒåº§æ¨™
+	float			m_Radius;	//åŠå¾„(é•·ã•)
 };

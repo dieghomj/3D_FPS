@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CResult.h"
 #include "CMenu.h"	
 
@@ -54,7 +54,7 @@ HRESULT CResultScene::LoadData()
 		return E_FAIL;
 	}
 
-	// Background sprite (same as menu)
+	// 背景スプライト（メニューと同じ）
 	CSprite2D::SPRITE_STATE BackGroundSS = {
 		{WND_W, WND_H},
 		{610, 570},
@@ -69,7 +69,7 @@ HRESULT CResultScene::LoadData()
 
 	m_pBG->AttachSprite(*m_pBGSprite);
 
-	// Cursor sprite
+	// カーソルスプライト
 	CSprite2D::SPRITE_STATE CursorSS = {
 		{32, 32},
 		{512, 512},
@@ -83,7 +83,7 @@ HRESULT CResultScene::LoadData()
 	}
 	m_pCursor->AttachSprite(*m_pCursorSprite);
 
-	// Fade overlay
+	// フェード用オーバーレイ
 	CSprite2D::SPRITE_STATE FadeSS = {
 		{WND_W, WND_H},
 		{0, 0},
@@ -115,7 +115,7 @@ void CResultScene::Start()
 		m_pFadeSprite->SetAlpha(0.0f);
 	}
 
-	// Compute final score
+	// 最終スコアを計算する
 	CGameStats::ComputeScore();
 }
 
@@ -123,7 +123,7 @@ void CResultScene::Update()
 {
 	CScene::Update();
 
-	// Update background scroll animation
+	// 背景のスクロールアニメーションを更新する
 	m_BGScrollOffset += m_BGScrollSpeed;
 	if (m_BGScrollOffset >= 1.0f)
 	{
@@ -137,7 +137,7 @@ void CResultScene::Update()
 
 	m_pBG->Update();
 
-	// Update cursor position
+	// カーソル位置を更新する
 	if (m_pCursor)
 	{
 		D3DXVECTOR3 cursorPos;
@@ -148,7 +148,7 @@ void CResultScene::Update()
 		m_pCursor->Update();
 	}
 
-	// Handle fade transition
+	// フェードによる画面遷移を処理する
 	if (m_IsFading)
 	{
 		m_FadeAlpha += m_FadeSpeed;
@@ -175,7 +175,7 @@ void CResultScene::Update()
 		return;
 	}
 
-	// Navigate options
+	// 選択肢の操作
 	float optionX = static_cast<float>(WND_W / 2 - 200);
 	float optionWidth = 400.0f;
 	float optionHeight = 40.0f;
@@ -232,7 +232,7 @@ void CResultScene::Update()
 			m_SelectedOption = 0;
 	}
 
-	// Confirm selection
+	// 選択を確定する
 	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Decide);
@@ -251,7 +251,7 @@ void CResultScene::Draw()
 {
 	m_pDx11->SetDepth(false);
 
-	// Draw scrolling background
+	// スクロールする背景を描画する
 	m_pBG->Draw();
 
 	if (m_pCursor)
@@ -261,32 +261,32 @@ void CResultScene::Draw()
 
 	m_Font->SetAlpha(1.0f);
 
-	// Highest score at the top
+	// 最高スコアを最上部に表示する
 	m_Font->SetColor(1.0f, 0.85f, 0.0f);
 	TCHAR highScoreBuf[64];
 	_stprintf_s(highScoreBuf, _T("HIGHEST SCORE: %d"), CGameStats::HighestScore);
 	m_Font->Render(highScoreBuf, static_cast<float>(WND_W / 2 - 180), 30.0f, 36.0f);
 
-	// Title
+	// タイトル
 	m_Font->SetColor(1.0f, 0.1f, 0.05f);
 	m_Font->Render(_T("RESULT"), static_cast<float>(WND_W / 2 - 80), 90.0f, 60.0f);
 
-	// Stats
+	// 各種統計
 	m_Font->SetColor(1.0f, 1.0f, 1.0f);
 	TCHAR buf[128];
 	float startY = 170.0f;
 	float lineHeight = 45.0f;
 	float labelX = static_cast<float>(WND_W / 2 - 200);
 
-	// Enemies killed
+	// 倒した敵の数
 	_stprintf_s(buf, _T("Enemies Killed: %d"), CGameStats::EnemiesKilled);
 	m_Font->Render(buf, labelX, startY, 32.0f);
 
-	// Deaths
+	// 死亡回数
 	_stprintf_s(buf, _T("Deaths: %d"), CGameStats::DeathCounter);
 	m_Font->Render(buf, labelX, startY + lineHeight, 32.0f);
 
-	// Remaining time
+	// 残り時間
 	unsigned long remainingMs = CGameStats::GetRemainingTimeMs();
 	float remainingSec = remainingMs / 1000.0f;
 	int remMin = static_cast<int>(remainingSec) / 60;
@@ -294,24 +294,24 @@ void CResultScene::Draw()
 	_stprintf_s(buf, _T("Remaining Time: %02d:%02d"), remMin, remSec);
 	m_Font->Render(buf, labelX, startY + lineHeight * 3, 32.0f);
 
-	// Combo score
+	// コンボスコア
 	m_Font->SetColor(0.5f, 1.0f, 0.5f);
 	_stprintf_s(buf, _T("Combo Bonus: +%d"), CGameStats::ComboScore);
 	m_Font->Render(buf, labelX, startY + lineHeight * 4, 32.0f);
 
-	// Total score (larger, highlighted)
+	// 合計スコア（大きく、強調して表示）
 	m_Font->SetColor(1.0f, 0.3f, 0.1f);
 	_stprintf_s(buf, _T("TOTAL SCORE: %d"), CGameStats::Score);
 	m_Font->Render(buf, labelX - 20, startY + lineHeight * 5 + 20, 42.0f);
 
-	// New high score indicator
+	// ハイスコア更新の表示
 	if (CGameStats::Score >= CGameStats::HighestScore && CGameStats::Score > 0)
 	{
 		m_Font->SetColor(1.0f, 0.85f, 0.0f);
 		m_Font->Render(_T("NEW HIGH SCORE!"), static_cast<float>(WND_W / 2 - 140), startY + lineHeight * 6 + 30, 36.0f);
 	}
 
-	// Navigation options
+	// 操作の選択肢
 	float optionY = static_cast<float>(WND_H - 130);
 
 	if (m_SelectedOption == RESULT_OPTION_LEVEL_SELECT)
@@ -326,11 +326,11 @@ void CResultScene::Draw()
 		m_Font->SetColor(1.0f, 1.0f, 1.0f);
 	m_Font->Render(_T("> MAIN MENU"), static_cast<float>(WND_W / 2 - 100), optionY + 40.0f, 32.0f);
 
-	// Instructions
+	// 操作説明
 	m_Font->SetColor(0.7f, 0.7f, 0.7f);
 	m_Font->Render(_T("UP/DOWN to select, ENTER to confirm"), static_cast<float>(WND_W / 2 - 180), static_cast<float>(WND_H - 30), 24.0f);
 
-	// Draw fade overlay last
+	// フェード用オーバーレイを最後に描画する
 	if (m_pFade)
 	{
 		m_pFade->Draw();

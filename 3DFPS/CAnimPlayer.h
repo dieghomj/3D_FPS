@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CStaticMeshObject.h"
 #include "CAnimCharacter.h"
 #include "CInput.h"
@@ -12,7 +12,7 @@ class CAnimPlayer
 
 public:
 
-	const float MAX_LIGHT_INT = 3.0f;	//‰ù’†“d“”‚ÌÅ‘å–¾‚é‚³
+	const float MAX_LIGHT_INT = 3.0f;	//æ‡ä¸­é›»ç¯ã®æœ€å¤§æ˜ã‚‹ã•
 
 	enum MoveState {
 		Forward,
@@ -32,8 +32,8 @@ public:
 		Damaged = 4,
 	};
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ó‘Ô
-	//ƒvƒŒƒCƒ„[ƒ‚ƒfƒ‹‚É‚æ‚éC³‚ª•K—v
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çŠ¶æ…‹
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ¢ãƒ‡ãƒ«ã«ã‚ˆã‚‹ä¿®æ­£ãŒå¿…è¦
 	enum AnimationState {
 		AnimDamaged = 0 ,
 		AnimIdle = 3,
@@ -89,19 +89,19 @@ private:
 
 protected:
 
-	D3DXVECTOR3		m_vVelocity;				//‘¬“xƒxƒNƒgƒ‹
-	D3DXVECTOR3		m_vDirection;				//ˆÚ“®•ûŒüƒxƒNƒgƒ‹
-	float			m_PlayerHealth;				//ƒvƒŒƒCƒ„[‚Ì‘Ì—Í
-	float			m_LightIntensity;			//‰ù’†“d“”‚Ì–¾‚é‚³
+	D3DXVECTOR3		m_vVelocity;				//é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«
+	D3DXVECTOR3		m_vDirection;				//ç§»å‹•æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+	float			m_PlayerHealth;				//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½“åŠ›
+	float			m_LightIntensity;			//æ‡ä¸­é›»ç¯ã®æ˜ã‚‹ã•
 
-	float			m_TurnSpeed;				//‰ñ“]‘¬“x
-	float			m_MoveSpeed;				//ˆÚ“®‘¬“x
-	MoveState		m_MoveState;				//ˆÚ“®ó‘Ô
-	PlayerState		m_PlayerState;				//ƒvƒŒƒCƒ„[ó‘Ô
-	AnimationState	m_AnimationState;			//ƒAƒjƒ[ƒVƒ‡ƒ“ó‘Ô
-	CInput*			m_pInput;					//“ü—ÍŠÇ—ƒNƒ‰ƒX
-	bool			m_bTankControlMode = false;	//ƒ^ƒ“ƒN‘€ìƒ‚[ƒh‚©‚Ç‚¤‚©
-	bool			m_bIsFlashOn = false;		//‰ù’†“d“”‚ª“_‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©
+	float			m_TurnSpeed;				//å›è»¢é€Ÿåº¦
+	float			m_MoveSpeed;				//ç§»å‹•é€Ÿåº¦
+	MoveState		m_MoveState;				//ç§»å‹•çŠ¶æ…‹
+	PlayerState		m_PlayerState;				//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼çŠ¶æ…‹
+	AnimationState	m_AnimationState;			//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çŠ¶æ…‹
+	CInput*			m_pInput;					//å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹
+	bool			m_bTankControlMode = false;	//ã‚¿ãƒ³ã‚¯æ“ä½œãƒ¢ãƒ¼ãƒ‰ã‹ã©ã†ã‹
+	bool			m_bIsFlashOn = false;		//æ‡ä¸­é›»ç¯ãŒç‚¹ã„ã¦ã„ã‚‹ã‹ã©ã†ã‹
 
 };
 

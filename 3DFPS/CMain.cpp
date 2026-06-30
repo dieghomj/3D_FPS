@@ -1,4 +1,4 @@
-
+﻿
 #include "CMain.h"
 #include "CDirectX9.h"
 #include "CDirectX11.h"
@@ -7,25 +7,26 @@
 #include "CGameOver.h"
 #include "CResult.h"
 #include "CGameStats.h"
+#include "CSettings.h"
 
-//�E�B���h�E����ʒ����ŋN����L���ɂ���.
+//ウィンドウを画面中央で起動するのを有効にする.
 //#define ENABLE_WINDOWS_CENTERING
 
 //=================================================
-//	�萔.
+//	定数.
 //=================================================
 const TCHAR WND_TITLE[] = _T( "FAST ATTACK" );
 const TCHAR APP_NAME[]	= _T( "FAST ATTACK" );
 
 
 /********************************************************************************
-*	���C���N���X.
+*	メインクラス.
 **/
 //=================================================
-//	�R���X�g���N�^.
+//	コンストラクタ.
 //=================================================
 CMain::CMain()
-	//���������X�g.
+	//初期化リスト.
 	: m_hWnd	( nullptr )
 	, m_pDx9	( nullptr )
 	, m_pDx11	( nullptr )
@@ -35,7 +36,7 @@ CMain::CMain()
 	, m_pTime	( nullptr )
 	, m_pResult	( nullptr )
 	, m_pMenu	( nullptr )
-	, m_pGameOver(nullptr) 
+	, m_pGameOver(nullptr)
 	, m_pSceneManager (nullptr)
 {
 	m_pDx9	= new CDirectX9();
@@ -46,7 +47,7 @@ CMain::CMain()
 
 
 //=================================================
-//	�f�X�g���N�^.
+//	デストラクタ.
 //=================================================
 CMain::~CMain()
 {
@@ -59,44 +60,47 @@ CMain::~CMain()
 }
 
 
-//�X�V����.
+//更新処理.
 void CMain::Update()
 {
 
-	//�X�V����.
+	//更新処理.
 	m_pSceneManager->Update();
 
-	//�o�b�N�o�b�t�@���N���A�ɂ���.
+	//バックバッファをクリアにする.
 	m_pDx11->ClearBackBuffer();
 
-	//�`�揈��.
+	//描画処理.
 	m_pSceneManager->Draw();
-	
-	//��ʂɕ\��.
+
+	//画面に表示.
 	m_pDx11->Present();
 
 }
 
 
-//�\�z����.
+//構築処理.
 HRESULT CMain::Create()
 {
-	//DirectX9�\�z.
+	//DirectX9構築.
 	if (FAILED(m_pDx9->Create(m_hWnd)))
 	{
 		return E_FAIL;
 	}
 
-	//DirectX11�\�z.
+	//DirectX11構築.
 	if( FAILED( m_pDx11->Create( m_hWnd ) ) )
 	{
 		return E_FAIL;
 	}
 
-	// Load the locally saved high score.
+	//ローカルに保存されたハイスコアを読み込む.
 	CGameStats::LoadHighScore();
 
-	//�V�[���Ǘ��N���X�̃C���X�^���X����
+	//保存されたユーザー設定（音量・マウス感度）を読み込む.
+	CSettings::Load();
+
+	//シーン管理クラスのインスタンス生成.
 	m_pSceneManager = new CSceneManager();
 
 	m_pMenu = new CMenu(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
@@ -104,19 +108,22 @@ HRESULT CMain::Create()
 	m_pGameOver = new CGameOver(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 	m_pResult = new CResultScene(*m_pDx9, *m_pDx11, m_hWnd, *m_pTime, *m_pSceneManager);
 
-	//�Q�[���V�[���N���X�̃C���X�^���X����.
+	//ゲームシーンクラスのインスタンス生成.
 	m_pSceneManager->AddScene(m_pMenu, "MENU");
 	m_pSceneManager->AddScene(m_pGame, "GAME");
 	m_pSceneManager->AddScene(m_pResult, "RESULT");
 	m_pSceneManager->AddScene(m_pGameOver,"GAMEOVER");
 
-	//�V�[���ύX.
+	//サウンド読み込み後に設定の音量を反映する.
+	CSoundManager::ApplyMasterVolume();
+
+	//シーン変更.
 	m_pSceneManager->ChangeScene("MENU");
 
 	return S_OK;
 }
 
-//�f�[�^���[�h����.
+//データロード処理.
 HRESULT CMain::LoadData()
 {
 
@@ -124,7 +131,7 @@ HRESULT CMain::LoadData()
 }
 
 
-//�������.
+//解放処理.
 void CMain::Release()
 {
 	if( m_pDx11 != nullptr ){
@@ -136,33 +143,33 @@ void CMain::Release()
 }
 
 
-//���b�Z�[�W���[�v.
+//メッセージループ.
 void CMain::Loop()
 {
-	//�f�[�^���[�h.
+	//データロード.
 	if( FAILED( LoadData() )){
 		return;
 	}
 
 	//------------------------------------------------
-	//	�t���[�����[�g��������.
+	//	フレームレート初期化.
 	//------------------------------------------------
-	float Rate = 0.0f;	//���[�g.
+	float Rate = 0.0f;	//レート.
 	double dt = 0.0f;
-	DWORD sync_old = timeGetTime();			//�ߋ�����.
-	DWORD sync_now;							//���ݎ���.
+	DWORD sync_old = timeGetTime();			//過去時間.
+	DWORD sync_now;							//現在時間.
 	m_pTime->Init(FPS);
-	//���ԏ����̂��߁A�ŏ��P�ʂ�1�~���b�ɕύX.
+	//時間処理のため、最小単位を1ミリ秒に変更.
 	timeBeginPeriod( 1 );
-	Rate = 1000.0f / static_cast<float>(FPS); //���z���Ԃ��Z�o.
+	Rate = 1000.0f / static_cast<float>(FPS); //理想時間を算出.
 
-	//���b�Z�[�W���[�v.
+	//メッセージループ.
 	MSG msg = { 0 };
 	ZeroMemory( &msg, sizeof( msg ) );
 
 	while( msg.message != WM_QUIT )
 	{
-		sync_now = timeGetTime();	//���݂̎��Ԃ��擾.
+		sync_now = timeGetTime();	//現在の時間を取得.
 		m_pTime->Tick();
 
 		if( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
@@ -172,25 +179,25 @@ void CMain::Loop()
 		}
 		else if( m_pTime->FixedTick(dt))
 		{
-			sync_old = sync_now;	//���ݎ��Ԃɒu������.
+			sync_old = sync_now;	//現在時間に置き換える.
 
-			//�X�V����.
+			//更新処理.
 			Update();
 		}
 	}
-	//�A�v���P�[�V�����̏I��.
+	//アプリケーションの終了.
 	Release();
 }
 
-//�E�B���h�E�������֐�.
+//ウィンドウ初期化関数.
 HRESULT CMain::InitWindow(
-	HINSTANCE hInstance,	//�C���X�^���X.
-	INT x, INT y,			//�E�B���h�Ex,y���W.
-	INT width, INT height)	//�E�B���h�E��,����.
+	HINSTANCE hInstance,	//インスタンス.
+	INT x, INT y,			//ウィンドウx,y座標.
+	INT width, INT height)	//ウィンドウ幅,高さ.
 {
-	//�E�B���h�E�̒�`.
+	//ウィンドウの定義.
 	WNDCLASSEX wc;
-	ZeroMemory( &wc, sizeof( wc ) );//������(0��ݒ�).
+	ZeroMemory( &wc, sizeof( wc ) );//初期化(0を設定).
 
 	wc.cbSize			= sizeof( wc );
 	wc.style			= CS_HREDRAW | CS_VREDRAW;
@@ -202,79 +209,79 @@ HRESULT CMain::InitWindow(
 	wc.lpszClassName	= APP_NAME;
 	wc.hIconSm			= LoadIcon( nullptr, IDI_APPLICATION );
 
-	//�E�B���h�E�N���X��Windows�ɓo�^.
+	//ウィンドウクラスをWindowsに登録.
 	if( !RegisterClassEx( &wc ) ) {
-		_ASSERT_EXPR( false, _T( "�E�B���h�E�N���X�̓o�^�Ɏ��s" ) );
+		_ASSERT_EXPR( false, _T( "ウィンドウクラスの登録に失敗" ) );
 		return E_FAIL;
 	}
 
 	//--------------------------------------.
-	//	�E�B���h�E�\���ʒu�̒���.
+	//	ウィンドウ表示位置の調整.
 	//--------------------------------------.
-	//���̊֐����ł̂ݎg�p����\���̂������Œ�`.
+	//この関数内でのみ使用する構造体をここで定義.
 	struct RECT_WND
 	{
 		INT x, y, w, h;
 		RECT_WND() : x(), y(), w(), h() {}
-	} rectWindow;//�����ɕϐ��錾������.
+	} rectWindow;//同時に変数宣言も行う.
 
 #ifdef ENABLE_WINDOWS_CENTERING
-	//�f�B�X�v���C�̕��A�������擾.
+	//ディスプレイの幅、高さを取得.
 	HWND hDeskWnd = nullptr;
 	RECT recDisplay;
 	hDeskWnd = GetDesktopWindow();
 	GetWindowRect( hDeskWnd, &recDisplay );
 
-	//�Z���^�����O.
-	rectWindow.x = ( recDisplay.right - width ) / 2;	//�\���ʒux���W.
-	rectWindow.y = ( recDisplay.bottom - height ) / 2;	//�\���ʒuy���W.
+	//センタリング.
+	rectWindow.x = ( recDisplay.right - width ) / 2;	//表示位置x座標.
+	rectWindow.y = ( recDisplay.bottom - height ) / 2;	//表示位置y座標.
 #endif//ENABLE_WINDOWS_CENTERING
 
 	//--------------------------------------.
-	//	�E�B���h�E�̈�̒���.
+	//	ウィンドウ領域の調整.
 	//--------------------------------------.
-	RECT	rect;		//��`�\����.
-	DWORD	dwStyle;	//�E�B���h�E�X�^�C��.
-	rect.top = 0;			//��.
-	rect.left = 0;			//��.
-	rect.right = width;		//�E.
-	rect.bottom = height;	//��.
-	dwStyle = WS_OVERLAPPEDWINDOW;	//�E�B���h�E���.
+	RECT	rect;		//矩形構造体.
+	DWORD	dwStyle;	//ウィンドウスタイル.
+	rect.top = 0;			//上.
+	rect.left = 0;			//左.
+	rect.right = width;		//右.
+	rect.bottom = height;	//下.
+	dwStyle = WS_OVERLAPPEDWINDOW;	//ウィンドウ種類.
 
 	if( AdjustWindowRect(
-		&rect,			//(in)��ʃT�C�Y����������`�\����.(out)�v�Z����.
-		dwStyle,		//�E�B���h�E�X�^�C��.
-		FALSE ) == 0 )	//���j���[�������ǂ����̎w��.
+		&rect,			//(in)画面サイズが入った矩形構造体.(out)計算結果.
+		dwStyle,		//ウィンドウスタイル.
+		FALSE ) == 0 )	//メニューがあるかどうかの指定.
 	{
 		MessageBox(
 			nullptr,
-			_T( "�E�B���h�E�̈�̒����Ɏ��s" ),
-			_T( "�G���[���b�Z�[�W" ),
+			_T( "ウィンドウ領域の調整に失敗" ),
+			_T( "エラーメッセージ" ),
 			MB_OK );
 		return 0;
 	}
 
-	//�E�B���h�E�̕���������.
+	//ウィンドウの幅･高さを決定.
 	rectWindow.w = rect.right - rect.left;
 	rectWindow.h = rect.bottom - rect.top;
 
-	//�E�B���h�E�̍쐬.
+	//ウィンドウの作成.
 	m_hWnd = CreateWindow(
-		APP_NAME,					//�A�v����.
-		WND_TITLE,					//�E�B���h�E�^�C�g��.
-		dwStyle,					//�E�B���h�E���(����).
-		rectWindow.x, rectWindow.y,	//�\���ʒux,y���W.
-		rectWindow.w, rectWindow.h,	//�E�B���h�E��,����.
-		nullptr,					//�e�E�B���h�E�n���h��.
-		nullptr,					//���j���[�ݒ�.
-		hInstance,					//�C���X�^���X�ԍ�.
-		nullptr );					//�E�B���h�E�쐬���ɔ�������C�x���g�ɓn���f�[�^.
+		APP_NAME,					//アプリ名.
+		WND_TITLE,					//ウィンドウタイトル.
+		dwStyle,					//ウィンドウ種類(引数).
+		rectWindow.x, rectWindow.y,	//表示位置x,y座標.
+		rectWindow.w, rectWindow.h,	//ウィンドウ幅,高さ.
+		nullptr,					//親ウィンドウハンドル.
+		nullptr,					//メニュー設定.
+		hInstance,					//インスタンス番号.
+		nullptr );					//ウィンドウ作成時に発生するイベントに渡すデータ.
 	if( !m_hWnd ) {
-		_ASSERT_EXPR( false, _T( "�E�B���h�E�쐬���s" ) );
+		_ASSERT_EXPR( false, _T( "ウィンドウ作成失敗" ) );
 		return E_FAIL;
 	}
 
-	//�E�B���h�E�̕\��.
+	//ウィンドウの表示.
 	ShowWindow( m_hWnd, SW_SHOW );
 	UpdateWindow( m_hWnd );
 
@@ -282,7 +289,7 @@ HRESULT CMain::InitWindow(
 }
 
 
-//�E�B���h�E�֐��i���b�Z�[�W���̏����j.
+//ウィンドウ関数（メッセージ毎の処理）.
 LRESULT CALLBACK CMain::MsgProc(
 	HWND hWnd, UINT uMsg,
 	WPARAM wParam, LPARAM lParam )
@@ -290,7 +297,7 @@ LRESULT CALLBACK CMain::MsgProc(
 	const RAWINPUTDEVICE id = { 0x01, 0x02, 0, hWnd };
 	switch( uMsg ) {
 	case WM_CREATE:
-		// Lock cursor when the window is created
+		//ウィンドウ生成時にカーソルをロックする.
 		LockCursorToWindow(hWnd);
 		SetCursorPos((WND_W / 2), (WND_H / 2));
 		ShowCursor(FALSE);
@@ -298,35 +305,18 @@ LRESULT CALLBACK CMain::MsgProc(
 	case WM_SETFOCUS:
 		LockCursorToWindow(hWnd);
 		break;
-	case WM_DESTROY://�E�B���h�E���j�����ꂽ�Ƃ�.
-		// Unlock cursor when the window is destroyed
+	case WM_DESTROY://ウィンドウが破棄されたとき.
+		//ウィンドウ破棄時にカーソルのロックを解除する.
 		UnlockCursor();
 		ShowCursor(TRUE);
-		//�A�v���P�[�V�����̏I����Windows�ɒʒm����.
+		//アプリケーションの終了をWindowsに通知する.
 		PostQuitMessage(0);
-		break;
-	case WM_KEYDOWN://�L�[�{�[�h�������ꂽ�Ƃ�.
-		//�L�[�ʂ̏���.
-		switch (static_cast<char>(wParam)) {
-		case VK_ESCAPE:	//ESC��.
-			// Unlock cursor when Escape key is pressed
-			UnlockCursor();
-			ShowCursor(TRUE);
-			if (MessageBox(nullptr,
-				_T("�Q�[�����I�����܂����H"),
-				_T("�x��"), MB_YESNO) == IDYES)
-			{
-				//�E�B���h�E��j������.
-				DestroyWindow(hWnd);
-			}
-			break;
-		}
 		break;
 	default:
 		UnlockCursor();
 		break;
 	}
-	//���C���ɕԂ����.
+	//メインに返却する.
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }
 

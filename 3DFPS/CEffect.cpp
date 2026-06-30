@@ -1,23 +1,23 @@
-#include "CEffect.h"
+ï»¿#include "CEffect.h"
 
-//•`‰æƒXƒvƒ‰ƒCƒgÅ‘å”
+//æç”»ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæœ€å¤§æ•°
 constexpr int RENDER_SPRITE_MAX = 8000;
-//ƒGƒtƒFƒNƒgŠÇ——pƒCƒ“ƒXƒ^ƒ“ƒXÅ‘å”
+//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç®¡ç†ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹æœ€å¤§æ•°
 constexpr int EFFECT_INSTANCE_MAX = 1000;
 
-//DirectX Vector3 ‚ğ Effekseer Vector3 ‚É•ÏŠ·‚·‚é
+//DirectX Vector3 ã‚’ Effekseer Vector3 ã«å¤‰æ›ã™ã‚‹
 ::EsVec3 CEffect::ToEfkVector3(const D3DXVECTOR3* pSrcVec3Dx)
 {
 	return ::EsVec3(pSrcVec3Dx->x, pSrcVec3Dx->y, pSrcVec3Dx->z);
 }
 
-//Effekseer Vector3 ‚ğ DirectX Vector3 ‚É•ÏŠ·‚·‚é
+//Effekseer Vector3 ã‚’ DirectX Vector3 ã«å¤‰æ›ã™ã‚‹
 D3DXVECTOR3 CEffect::ToDxVector3(const::EsVec3* pSrcVec3Efk)
 {
 	return D3DXVECTOR3(pSrcVec3Efk->X, pSrcVec3Efk->Y, pSrcVec3Efk->Z);
 }
 
-//DirectX Matrix ‚ğ Effekseer Matrix ‚É•ÏŠ·‚·‚é
+//DirectX Matrix ã‚’ Effekseer Matrix ã«å¤‰æ›ã™ã‚‹
 ::EsMatrix CEffect::ToEfkMatrix(const D3DXMATRIX* pSrcMatDx)
 {
 	::EsMatrix OutMatEfk;
@@ -92,64 +92,64 @@ CEffect::CEffect()
 {
 }
 
-//ƒf[ƒ^‰ğ•ú
+//ãƒ‡ãƒ¼ã‚¿è§£æ”¾
 HRESULT CEffect::ReleaseData()
 {
 	return S_OK;
 }
 
-//ƒrƒ…[s—ñ‚ğİ’è
+//ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã‚’è¨­å®š
 void CEffect::SetViewMatrix(const D3DXMATRIX& mView)
 {
-	::EsMatrix EsCamMat;	//ƒJƒƒ‰s—ñ
+	::EsMatrix EsCamMat;	//ã‚«ãƒ¡ãƒ©è¡Œåˆ—
 	EsCamMat = ToEfkMatrix(&mView);
 
-	//ƒJƒƒ‰s—ñ‚ğİ’è
+	//ã‚«ãƒ¡ãƒ©è¡Œåˆ—ã‚’è¨­å®š
 	m_pRenderer->SetCameraMatrix(EsCamMat);
 }
 
-//ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğİ’è
+//ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’è¨­å®š
 void CEffect::SetProjectionMatrix(const D3DXMATRIX& mProj)
 {
-	::EsMatrix EsProjMat;	//ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
+	::EsMatrix EsProjMat;	//ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
 	EsProjMat = ToEfkMatrix(&mProj);
 
-	//ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğİ’è
+	//ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’è¨­å®š
 	m_pRenderer->SetProjectionMatrix(EsProjMat);
 }
 
 CEffect::~CEffect()
 {
-	//ƒGƒtƒFƒNƒgƒf[ƒ^‚Ì”jŠü
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ‡ãƒ¼ã‚¿ã®ç ´æ£„
 	ReleaseData();
 
-	//ƒGƒtƒFƒNƒg‚Ìƒ}ƒl[ƒWƒƒ[‚ğ”jŠü
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚’ç ´æ£„
 	m_pManager.Reset();
 
-	//ƒGƒtƒFƒNƒg‚ÌƒŒƒ“ƒ_ƒ‰[‚ğ”jŠü
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã‚’ç ´æ£„
 	m_pRenderer.Reset();
 }
 
-//\’z
+//æ§‹ç¯‰
 HRESULT CEffect::Create(
 	ID3D11Device* pDevice,
 	ID3D11DeviceContext* pContext)
 {
-	//ƒGƒtƒFƒNƒg‚Ìƒ}ƒl[ƒWƒƒ[‚Ìì¬
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ä½œæˆ
 	m_pManager = ::EsManager::Create(RENDER_SPRITE_MAX);
 
-	//ƒGƒtƒFƒNƒg‚ÌƒŒƒ“ƒ_ƒ‰[‚Ìì¬
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã®ä½œæˆ
 	m_pRenderer = ::EsRenderer::Create(pDevice, pContext, EFFECT_INSTANCE_MAX);
 
-	//•`‰æƒ‚ƒWƒ…[ƒ‹‚Ìİ’è
+	//æç”»ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã®è¨­å®š
 	m_pManager->SetSpriteRenderer(m_pRenderer->CreateSpriteRenderer());
 	m_pManager->SetRibbonRenderer(m_pRenderer->CreateRibbonRenderer());
 	m_pManager->SetRingRenderer(m_pRenderer->CreateRingRenderer());
 	m_pManager->SetTrackRenderer(m_pRenderer->CreateTrackRenderer());
 	m_pManager->SetModelRenderer(m_pRenderer->CreateModelRenderer());
 
-	//ƒeƒNƒXƒ`ƒƒAƒ‚ƒfƒ‹Aƒ}ƒeƒŠƒAƒ‹ƒ[ƒ_[‚Ìİ’è‚ğ‚·‚éB
-	//ƒ†[ƒU[‚ª“Æ©‚ÉŠg’£‚Å‚«‚éBŒ»İ‚Íƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚ñ‚Å‚¢‚éB
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã€ãƒ¢ãƒ‡ãƒ«ã€ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ­ãƒ¼ãƒ€ãƒ¼ã®è¨­å®šã‚’ã™ã‚‹ã€‚
+	//ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒç‹¬è‡ªã«æ‹¡å¼µã§ãã‚‹ã€‚ç¾åœ¨ã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚“ã§ã„ã‚‹ã€‚
 	m_pManager->SetTextureLoader(m_pRenderer->CreateTextureLoader());
 	m_pManager->SetModelLoader(m_pRenderer->CreateModelLoader());
 	m_pManager->SetMaterialLoader(m_pRenderer->CreateMaterialLoader());
@@ -158,17 +158,17 @@ HRESULT CEffect::Create(
 	return S_OK;
 }
 
-//ƒf[ƒ^“Ç‚İ‚İ
+//ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 HRESULT CEffect::LoadData()
 {
 	struct EffectList
 	{
-		enList listNo;				//enList—ñ‹“Œ^‚ğİ’è
-		const char16_t path[256];	//ƒtƒ@ƒCƒ‹‚Ì–¼‘O(ƒpƒX•t‚«)
+		enList listNo;				//enListåˆ—æŒ™å‹ã‚’è¨­å®š
+		const char16_t path[256];	//ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰(ãƒ‘ã‚¹ä»˜ã)
 	};
 	EffectList EList[] =
 	{
-		//u""‚ÍAUTF-16ƒGƒ“ƒR[ƒfƒBƒ“ƒO‚Ì•¶š—ñƒŠƒeƒ‰ƒ‹‚ÅAconst char16_t* ‚É‘ã“ü‰Â”\
+		//u""ã¯ã€UTF-16ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã®æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã§ã€const char16_t* ã«ä»£å…¥å¯èƒ½
 		{ enList::MagmaEffect,	u"Data\\Effects\\Magma Effect\\magma.efk"	},
 		{ enList::CircleEffect,	u"Data\\Effekseer\\Laser01.efk"	},
 		{ enList::SpriteEffect,	u"Data\\Effekseer\\Laser01.efk"	},
@@ -180,13 +180,13 @@ HRESULT CEffect::LoadData()
 		{ enList::ExplosionEffect,	u"Data\\Effects\\Explosion\\Explosion.efk"	},
 		{ enList::SparkEffect,		u"Data\\Effects\\Combat\\spark.efk"	},
 	};
-	//”z—ñ‚ÌÅ‘å—v‘f”‚ğZoi”z—ñ‘S‘Ì‚ÌƒTƒCƒY^”z—ñ‚P‚Â•ª‚ÌƒTƒCƒYj
+	//é…åˆ—ã®æœ€å¤§è¦ç´ æ•°ã‚’ç®—å‡ºï¼ˆé…åˆ—å…¨ä½“ã®ã‚µã‚¤ã‚ºï¼é…åˆ—ï¼‘ã¤åˆ†ã®ã‚µã‚¤ã‚ºï¼‰
 	int list_max = sizeof(EList) / sizeof(EList[0]);
 	for (int i = 0; i < list_max; i++)
 	{
 		int listNo = EList[i].listNo;
 
-		//ƒGƒtƒFƒNƒg‚Ì“Ç‚İ‚İ
+		//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®èª­ã¿è¾¼ã¿
 		m_pEffect[listNo] =
 			::EsEffect::Create( m_pManager, EList[i].path);
 
@@ -199,38 +199,38 @@ HRESULT CEffect::LoadData()
 	return S_OK;
 }
 
-//•`‰æ
+//æç”»
 void CEffect::Draw(
 	SCENE_DATA& sceneData)
 {
 
-	D3DXMATRIX mView = sceneData.mView;	//ƒrƒ…[s—ñ
-	D3DXMATRIX mProj = sceneData.mProj;	//ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-	CAMERA& Camera = sceneData.Camera;	//ƒJƒƒ‰î•ñ
+	D3DXMATRIX mView = sceneData.mView;	//ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
+	D3DXMATRIX mProj = sceneData.mProj;	//ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+	CAMERA& Camera = sceneData.Camera;	//ã‚«ãƒ¡ãƒ©æƒ…å ±
 
-	//ƒrƒ…[s—ñ‚ğİ’è
+	//ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã‚’è¨­å®š
 	SetViewMatrix(mView);
 
-	//ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ğİ’è
+	//ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã‚’è¨­å®š
 	SetProjectionMatrix(mProj);
 
-	//ƒŒƒCƒ„[ƒpƒ‰ƒ[ƒ^İ’è
+	//ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 	::EsManager::LayerParameter layerParameter;
 	layerParameter.ViewerPosition = ToEfkVector3(&Camera.vPosition);
 	m_pManager->SetLayerParameter(0, layerParameter);
 
-	//ƒGƒtƒFƒNƒg‚ÌXVˆ—
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æ›´æ–°å‡¦ç†
 	m_pManager->Update();
 
 	//-------------------------
-	// EffekseerƒŒƒ“ƒ_ƒŠƒ“ƒO
+	// Effekseerãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
 	//-------------------------
-	//ƒGƒtƒFƒNƒg‚Ì•`‰æŠJnˆ—‚ğs‚¤
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æç”»é–‹å§‹å‡¦ç†ã‚’è¡Œã†
 	m_pRenderer->BeginRendering();
 
-	//ƒGƒtƒFƒNƒg‚Ì•`‰æ‚ğs‚¤
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æç”»ã‚’è¡Œã†
 	m_pManager->Draw();
 
-	//ƒGƒtƒFƒNƒg‚Ì•`‰æI—¹ˆ—‚ğs‚¤
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æç”»çµ‚äº†å‡¦ç†ã‚’è¡Œã†
 	m_pRenderer->EndRendering();
 }

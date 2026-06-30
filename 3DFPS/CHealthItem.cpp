@@ -1,4 +1,4 @@
-#include "CHealthItem.h"
+﻿#include "CHealthItem.h"
 
 CHealthItem::CHealthItem()
 	: CItem()
@@ -30,6 +30,5 @@ void CHealthItem::DeactivateEffect()
 
 void CHealthItem::OnPickup(CPlayer& player)
 {
-	// Heal the player
-	//player.ApplyStat();
+	// プレイヤーを回復.
 }

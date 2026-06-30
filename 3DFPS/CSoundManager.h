@@ -1,84 +1,86 @@
-#pragma once
-#include "CSound.h"		//ƒTƒEƒ“ƒhƒNƒ‰ƒX.
+ï»¿#pragma once
+#include "CSound.h"		//ã‚µã‚¦ãƒ³ãƒ‰ã‚¯ãƒ©ã‚¹.
 #include <vector>
 #include <unordered_map>
 
 /**************************************************
-*	ƒTƒEƒ“ƒhƒ}ƒl[ƒWƒƒ[ƒNƒ‰ƒX.
-*	Manager(ƒ}ƒl[ƒWƒƒ[)FŠÇ—Ò.
-*		Singleton(ƒVƒ“ƒOƒ‹ƒgƒ“FƒfƒUƒCƒ“ƒpƒ^[ƒ“‚Ì‚P‚Â)‚Åì¬.
+*	ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚¯ãƒ©ã‚¹.
+*	Manager(ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼)ï¼šç®¡ç†è€….
+*		Singleton(ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ï¼šãƒ‡ã‚¶ã‚¤ãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ï¼‘ã¤)ã§ä½œæˆ.
 **/
 class CSoundManager
 {
 public:
-	//ƒTƒEƒ“ƒhƒŠƒXƒg—ñ‹“Œ^.
+	//ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒˆåˆ—æŒ™å‹.
 	enum enList
 	{
-		BGM_Title,	//ƒ^ƒCƒgƒ‹BGM.
-		BGM_Game,	//ƒQ[ƒ€BGM.
-		BGM_Level1,//ƒŒƒxƒ‹1BGM.
-		BGM_Level2,//ƒŒƒxƒ‹2BGM.
-		BGM_Level3,//ƒŒƒxƒ‹2BGM.
-		BGM_Boss,//ƒŒƒxƒ‹2BGM.
+		BGM_Title,	//ã‚¿ã‚¤ãƒˆãƒ«BGM.
+		BGM_Game,	//ã‚²ãƒ¼ãƒ BGM.
+		BGM_Level1,//ãƒ¬ãƒ™ãƒ«1BGM.
+		BGM_Level2,//ãƒ¬ãƒ™ãƒ«2BGM.
+		BGM_Level3,//ãƒ¬ãƒ™ãƒ«2BGM.
+		BGM_Boss,//ãƒ¬ãƒ™ãƒ«2BGM.
 
-		BGM_GameOver,//ƒQ[ƒ€ƒI[ƒo[‰¹.
-		BGM_Restart,//ƒŠƒXƒ^[ƒg‰¹.
+		BGM_GameOver,//ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼éŸ³.
+		BGM_Restart,//ãƒªã‚¹ã‚¿ãƒ¼ãƒˆéŸ³.
 		
-		SE_Clear,		//ƒŠƒUƒ‹ƒg‰¹
+		SE_Clear,		//ãƒªã‚¶ãƒ«ãƒˆéŸ³
 		
-		SE_PlayerHit,	//ƒvƒŒƒCƒ„[ƒ_ƒ[ƒW‰¹
+		SE_PlayerHit,	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ€ãƒ¡ãƒ¼ã‚¸éŸ³
 
-		SE_Select,	//‘I‘ğ‰¹.
-		SE_Decide,	//Œˆ’è‰¹.
+		SE_Select,	//é¸æŠéŸ³.
+		SE_Decide,	//æ±ºå®šéŸ³.
 		
-		SE_Step1,	//‘«‰¹.
+		SE_Step1,	//è¶³éŸ³.
 		SE_Step2,
 		SE_Step3,
 
-		SE_Alarm,	//Œx‰¹.
+		SE_Alarm,	//è­¦å‘ŠéŸ³.
 
-		SE_ItemGet,	//ƒAƒCƒeƒ€æ“¾‰¹
-		SE_PistolShot1,	//ƒsƒXƒgƒ‹”­Ë‰¹
-		SE_PistolShot2,//ƒsƒXƒgƒ‹”­Ë‰¹2
-		SE_ShotgunShot,//ƒVƒ‡ƒbƒgƒKƒ“”­Ë‰¹\
+		SE_ItemGet,	//ã‚¢ã‚¤ãƒ†ãƒ å–å¾—éŸ³
+		SE_PistolShot1,	//ãƒ”ã‚¹ãƒˆãƒ«ç™ºå°„éŸ³
+		SE_PistolShot2,//ãƒ”ã‚¹ãƒˆãƒ«ç™ºå°„éŸ³2
+		SE_ShotgunShot,//ã‚·ãƒ§ãƒƒãƒˆã‚¬ãƒ³ç™ºå°„éŸ³\
 
 		SE_BossSE1,
 
-		//‰¹‚ª‘‚¦‚½‚çu‚±‚±v‚É’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢.
-		max,		//Å‘å”.
+		//éŸ³ãŒå¢—ãˆãŸã‚‰ã€Œã“ã“ã€ã«è¿½åŠ ã—ã¦ãã ã•ã„.
+		max,		//æœ€å¤§æ•°.
 	};
 
 public:
-	//ƒCƒ“ƒXƒ^ƒ“ƒXæ“¾(—Bˆê‚ÌƒAƒNƒZƒXŒo˜H).
-	//¦ŠÖ”‚Ì‘O‚Éstatic‚ğ•t‚¯‚é‚±‚Æ‚ÅƒCƒ“ƒXƒ^ƒ“ƒX¶¬‚µ‚È‚­‚Ä‚àg—p‚Å‚«‚é.
+	//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å–å¾—(å”¯ä¸€ã®ã‚¢ã‚¯ã‚»ã‚¹çµŒè·¯).
+	//â€»é–¢æ•°ã®å‰ã«staticã‚’ä»˜ã‘ã‚‹ã“ã¨ã§ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆã—ãªãã¦ã‚‚ä½¿ç”¨ã§ãã‚‹.
 	static CSoundManager* GetInstance()
 	{
-		//—Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é.
-		//¦static‚Åì¬‚³‚ê‚½‚Ì‚Å2‰ñ–ÚˆÈ~‚ÍA‰º‚Ì1s‚Í–³‹‚³‚ê‚é.
-		static CSoundManager s_Instance;	//s_:static‚ÌˆÓ–¡.
+		//å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹.
+		//â€»staticã§ä½œæˆã•ã‚ŒãŸã®ã§2å›ç›®ä»¥é™ã¯ã€ä¸‹ã®1è¡Œã¯ç„¡è¦–ã•ã‚Œã‚‹.
+		static CSoundManager s_Instance;	//s_:staticã®æ„å‘³.
 		return &s_Instance;
 	}
 
 
 	~CSoundManager();
 
-	//ƒTƒEƒ“ƒhƒf[ƒ^“ÇŠÖ”.
+	//ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒ¼ã‚¿èª­è¾¼é–¢æ•°.
 	bool Load( HWND hWnd );
-	//ƒTƒEƒ“ƒhƒf[ƒ^‰ğ•úŠÖ”.
+	//ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒ¼ã‚¿è§£æ”¾é–¢æ•°.
 	void Release();
 
-	//SE‚ğÄ¶‚·‚é.
+	//SEã‚’å†ç”Ÿã™ã‚‹.
 	static void PlaySE( enList list ) {
 		CSoundManager::GetInstance()->m_pSound[list]->PlaySE();
 	}
-	//ƒ‹[ƒvÄ¶‚·‚é.
+	//ãƒ«ãƒ¼ãƒ—å†ç”Ÿã™ã‚‹.
 	static void PlayLoop( enList list ) {
 		CSoundManager::GetInstance()->m_pSound[list]->PlayLoop();
 	}
 	static void SetVolume(enList list, int volume) {
 		CSoundManager::GetInstance()->m_pSound[list]->SetVolume(volume);
 	}
-	//’â~‚·‚é.
+	//è¨­å®š(CSettings)ã®ãƒã‚¹ã‚¿ãƒ¼éŸ³é‡ã‚’å…¨ã‚µã‚¦ãƒ³ãƒ‰ãƒ»å…¨ãƒœã‚¤ã‚¹ãƒ—ãƒ¼ãƒ«ã¸åæ˜ ã™ã‚‹.
+	static void ApplyMasterVolume();
+	//åœæ­¢ã™ã‚‹.
 	static void Stop( enList list ) {
 		CSoundManager::GetInstance()->m_pSound[list]->Stop();
 	}
@@ -88,19 +90,19 @@ public:
 		CSoundManager::GetInstance()->PlayFromPool(list);
 	}
 
-private://ŠO•”‚©‚çƒAƒNƒZƒX•s‰Â”\.
-	//ŠO•”‚©‚çƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ö‚ÌƒAƒNƒZƒX‚ğ‹Ö~‚·‚é.
+private://å¤–éƒ¨ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ä¸å¯èƒ½.
+	//å¤–éƒ¨ã‹ã‚‰ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’ç¦æ­¢ã™ã‚‹.
 	CSoundManager();
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚æ‚éƒRƒs[‚ğ‹Ö~‚·‚é.
-	//u=deletev‚ÅŠÖ”‚Ì’è‹`‚ğíœ‚Å‚«‚é.
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã«ã‚ˆã‚‹ã‚³ãƒ”ãƒ¼ã‚’ç¦æ­¢ã™ã‚‹.
+	//ã€Œ=deleteã€ã§é–¢æ•°ã®å®šç¾©ã‚’å‰Šé™¤ã§ãã‚‹.
 	CSoundManager( const CSoundManager& rhs ) = delete;
-	//‘ã“ü‰‰Zq‚É‚æ‚éƒRƒs[‚ğ‹Ö~‚·‚é.
-	//operator(ƒIƒyƒŒ[ƒ^):‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh‚ÅA‰‰Z‚Ì’†g‚ğŠg’£‚Å‚«‚é.
+	//ä»£å…¥æ¼”ç®—å­ã«ã‚ˆã‚‹ã‚³ãƒ”ãƒ¼ã‚’ç¦æ­¢ã™ã‚‹.
+	//operator(ã‚ªãƒšãƒ¬ãƒ¼ã‚¿):æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã§ã€æ¼”ç®—ã®ä¸­èº«ã‚’æ‹¡å¼µã§ãã‚‹.
 	CSoundManager& operator = ( const CSoundManager& rhs ) = delete;
 
 private:
 	CSound*		m_pSound[enList::max];
-	//‚ñ‚¾ƒtƒ@ƒCƒ‹î•ñ‚ğ•Ûiƒv[ƒ‹ÄƒI[ƒvƒ“—pj
+	//è¾¼ã‚“ã ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±ã‚’ä¿æŒï¼ˆãƒ—ãƒ¼ãƒ«å†ã‚ªãƒ¼ãƒ—ãƒ³ç”¨ï¼‰
 	struct SoundInfo {
 		TCHAR path[256]{};
 		TCHAR alias[32]{};
@@ -109,13 +111,13 @@ private:
 	struct VoicePool
 	{
 		std::vector<CSound*> voices;
-		std::vector<DWORD> playStartTimes;  // Track when each voice started playing
-		DWORD estimatedDuration;            // Estimated duration in ms
+		std::vector<DWORD> playStartTimes;  //å„ãƒœã‚¤ã‚¹ãŒå†ç”Ÿã‚’é–‹å§‹ã—ãŸæ™‚åˆ»ã‚’è¨˜éŒ².
+		DWORD estimatedDuration;            //æ¨å®šå†ç”Ÿæ™‚é–“(ãƒŸãƒªç§’).
 		size_t index;
 	};
 
 	std::unordered_map<int, VoicePool> m_voicePools;
 
-	// ’Ç‰Á: ƒv[ƒ‹‚©‚çÄ¶
+	// è¿½åŠ : ãƒ—ãƒ¼ãƒ«ã‹ã‚‰å†ç”Ÿ
 	void PlayFromPool(enList list);
 };

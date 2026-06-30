@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CAnimEnemy.h"
 
 class CRobo : public CAnimEnemy
@@ -30,7 +30,7 @@ private:
 	float m_AttackCD;
 	bool m_HasAttacked;
 
-	// Death effect parameters
+	// 死亡演出のパラメータ
 	float m_DeathTimer;
 	float m_DeathDuration;
 	float m_DeathSinkDepth;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CAnimCharacter.h"
 
 CAnimCharacter::CAnimCharacter()
@@ -32,7 +32,7 @@ void CAnimCharacter::Update()
 
 }
 
-//ƒfƒoƒbƒO‚Ì‚İg—p
+//ãƒ‡ãƒãƒƒã‚°ã®ã¿ä½¿ç”¨
 void CAnimCharacter::RenderStatic(SCENE_DATA& sceneData)
 {
 	if (IsActive() == false)
@@ -60,13 +60,13 @@ void CAnimCharacter::Draw(SCENE_DATA& sceneData)
 
 	m_pSkinMesh->SetAnimSpeed(m_AnimSpeed);
 
-	//•`‰æ’¼‘O‚ÅÀ•W‚â‰ñ“]î•ñ‚È‚Ç‚ğXV.
+	//æç”»ç›´å‰ã§åº§æ¨™ã‚„å›è»¢æƒ…å ±ãªã©ã‚’æ›´æ–°.
 	m_pSkinMesh->SetPosition(m_vPosition);
 	m_pSkinMesh->SetRotation(m_vRotation);
 	m_pSkinMesh->SetScale(m_vScale);
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 	m_pSkinMesh->Render(View, Proj, Light, Camera.vPosition,Fog,
-		m_pAnimCtrl);	//ƒNƒ[ƒ“‚ğİ’è
+		m_pAnimCtrl);	//ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’è¨­å®š
 }
 
 void CAnimCharacter::AttachSkinMesh( CSkinMesh& pMesh)
@@ -74,10 +74,10 @@ void CAnimCharacter::AttachSkinMesh( CSkinMesh& pMesh)
 
 	m_pSkinMesh = &pMesh;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ğæ“¾
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã‚’å–å¾—
 	LPD3DXANIMATIONCONTROLLER pAC = m_pSkinMesh->GetAnimationController();
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ÌƒNƒ[ƒ“‚ğì¬
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã®ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
 	if (FAILED(
 		pAC->CloneAnimationController(
 			pAC->GetMaxNumAnimationOutputs(),
@@ -86,7 +86,7 @@ void CAnimCharacter::AttachSkinMesh( CSkinMesh& pMesh)
 			pAC->GetMaxNumEvents(),
 			&m_pAnimCtrl)))
 	{
-		_ASSERT_EXPR(false, L"ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ÌƒNƒ[ƒ“ì¬¸”s");
+		_ASSERT_EXPR(false, L"ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã®ã‚¯ãƒ­ãƒ¼ãƒ³ä½œæˆå¤±æ•—");
 	}
 
 	m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
@@ -103,7 +103,7 @@ bool CAnimCharacter::SetAnimNo(int no, int flag)
 		m_AnimTime = 0.f;
 		m_AnimNo = no;
 		m_pSkinMesh->ChangeAnimSet(m_AnimNo, m_pAnimCtrl);
-		//‚±‚±‚ÅƒAƒjƒ[ƒVƒ‡ƒ“ƒuƒŒƒ“ƒhŠÖ”‚ğŒÄ‚Ô
+		//ã“ã“ã§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ–ãƒ¬ãƒ³ãƒ‰é–¢æ•°ã‚’å‘¼ã¶
 		
 		return isFinished;
 	}

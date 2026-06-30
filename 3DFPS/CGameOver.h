@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CScene.h"
 #include "CFont.h"
 #include "CUIObject.h"
@@ -22,7 +22,7 @@ public:
 
 	void Draw() override;
 
-	// Allow free mouse movement in game over screen
+	// ゲームオーバー画面ではマウスの自由な移動を許可.
 	bool ShouldLockMouse() const override { return false; }
 
 private:
@@ -35,24 +35,24 @@ private:
 
 	CFont* m_Font;
 
-	// Background
+	// 背景.
 	CUIObject* m_pBG;
 	CSprite2D* m_pBGSprite;
 	float m_BGScrollOffset;
 	float m_BGScrollSpeed;
 
-	// Cursor
+	// カーソル.
 	CUIObject* m_pCursor;
 	CSprite2D* m_pCursorSprite;
 
-	// Fade
+	// フェード.
 	CUIObject* m_pFade;
 	CSprite2D* m_pFadeSprite;
 	bool m_IsFading;
 	float m_FadeAlpha;
 	float m_FadeSpeed;
 
-	// Navigation
+	// ナビゲーション.
 	int m_SelectedOption;
 	bool m_GoToRetry;
 };

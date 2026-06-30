@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚Ìº°ÄŞ•ªÍ‚ğ–³Œø‚É‚·‚é.4005:Ä’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ï½ºï½°ï¾„ï¾åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹.4005:å†å®šç¾©.
 #pragma warning(disable:4005)
 #include <crtdbg.h>
 #include <cstdio>
@@ -16,13 +16,13 @@
 #include <D3DX11.h>
 #include <D3D11.h>
 //DirectX10
-#include <D3DX10.h>	//uD3DX`v‚Ì’è‹`g—p‚É•K—v.
+#include <D3DX10.h>	//ã€ŒD3DXï½ã€ã®å®šç¾©ä½¿ç”¨æ™‚ã«å¿…è¦.
 #include <D3D10.h>
 
 #include "MyMacro.h"
 #include "Util.h"
 
-//ƒ‰ƒCƒuƒ‰ƒŠ“Ç‚İ‚İ.
+//ãƒ©ã‚¤ãƒ–ãƒ©ãƒªèª­ã¿è¾¼ã¿.
 #pragma comment( lib, "winmm.lib" )
 //DirectX9
 #pragma comment( lib, "d3dx9.lib" )
@@ -31,64 +31,64 @@
 #pragma comment( lib, "d3dx11.lib" )
 #pragma comment( lib, "d3d11.lib" )
 //DirectX10
-#pragma comment( lib, "d3dx10.lib" )	//uD3DX`v‚Ì’è‹`g—p‚É•K—v.
+#pragma comment( lib, "d3dx10.lib" )	//ã€ŒD3DXï½ã€ã®å®šç¾©ä½¿ç”¨æ™‚ã«å¿…è¦.
 
 //=================================================
-//	’è”.
+//	å®šæ•°.
 //=================================================
-//#define WND_W 1280	//©’è”éŒ¾‚Å#define‚Íg‚í‚È‚¢.
-const int WND_W = 1280;	//ƒEƒBƒ“ƒhƒE‚Ì•.
-const int WND_H = 720;	//ƒEƒBƒ“ƒhƒE‚Ì‚‚³.
-const int FPS = 60;		//ƒtƒŒ[ƒ€ƒŒ[ƒg.
-const float AFFINE_INTENSITY = 1.0f;	//ƒAƒtƒBƒ“•ÏŠ·‚Ì‹­“x.
-const float VERTEX_SNAPPING = 1024.f;		//’¸“_ƒXƒiƒbƒsƒ“ƒO‚Ì‹­“x.
-const int	MAX_LIGHT = 4;	//Å‘åƒ‰ƒCƒg”.
+//#define WND_W 1280	//â†å®šæ•°å®£è¨€ã§#defineã¯ä½¿ã‚ãªã„.
+const int WND_W = 1280;	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¹….
+const int WND_H = 720;	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é«˜ã•.
+const int FPS = 60;		//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆ.
+const float AFFINE_INTENSITY = 1.0f;	//ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›ã®å¼·åº¦.
+const float VERTEX_SNAPPING = 1024.f;		//é ‚ç‚¹ã‚¹ãƒŠãƒƒãƒ”ãƒ³ã‚°ã®å¼·åº¦.
+const int	MAX_LIGHT = 4;	//æœ€å¤§ãƒ©ã‚¤ãƒˆæ•°.
 const double PI = 3.14159265358979323846;
 
 //=================================	================
-//	\‘¢‘Ì
+//	æ§‹é€ ä½“
 //=================================================
-//ƒJƒƒ‰î•ñ\‘¢‘Ì.
+//ã‚«ãƒ¡ãƒ©æƒ…å ±æ§‹é€ ä½“.
 struct CAMERA
 {
-	D3DXVECTOR3	vPosition;	//‹“_.
-	D3DXVECTOR3 vLook;		//’‹“_.
+	D3DXVECTOR3	vPosition;	//è¦–ç‚¹.
+	D3DXVECTOR3 vLook;		//æ³¨è¦–ç‚¹.
 	float yaw;
 	float pitch;
 };
 
-//ƒ‰ƒCƒgî•ñ.
+//ãƒ©ã‚¤ãƒˆæƒ…å ±.
 struct LIGHT
 {
-	D3DXVECTOR3	Position;	//ˆÊ’u.
-	D3DXVECTOR3	vDirection;	//•ûŒü.
-	D3DXMATRIX	mRotation;	//‰ñ“]s—ñ.
-	float		fIntensity;	//‹­“x(–¾‚é‚³).
+	D3DXVECTOR3	Position;	//ä½ç½®.
+	D3DXVECTOR3	vDirection;	//æ–¹å‘.
+	D3DXMATRIX	mRotation;	//å›è»¢è¡Œåˆ—.
+	float		fIntensity;	//å¼·åº¦(æ˜ã‚‹ã•).
 };
 
-//ƒtƒHƒOî•ñ.
+//ãƒ•ã‚©ã‚°æƒ…å ±.
 struct FOG {
-	bool		Enable;		//ƒtƒHƒO—LŒø–³Œø.
-	D3DXVECTOR4 Color;		//ƒtƒHƒO‚ÌF.
-	float		Start;		//ƒtƒHƒOŠJn‹——£.
-	float		End;		//ƒtƒHƒOI—¹‹——£.
-	float		Density;	//ƒtƒHƒO–§“x(w”ŠÖ”ƒtƒHƒO—p).
-	int			Mode;		//ƒtƒHƒO‚Ìí—Ş(üŒ`,w”ŠÖ”,w”ŠÖ”2æ).
+	bool		Enable;		//ãƒ•ã‚©ã‚°æœ‰åŠ¹ç„¡åŠ¹.
+	D3DXVECTOR4 Color;		//ãƒ•ã‚©ã‚°ã®è‰².
+	float		Start;		//ãƒ•ã‚©ã‚°é–‹å§‹è·é›¢.
+	float		End;		//ãƒ•ã‚©ã‚°çµ‚äº†è·é›¢.
+	float		Density;	//ãƒ•ã‚©ã‚°å¯†åº¦(æŒ‡æ•°é–¢æ•°ãƒ•ã‚©ã‚°ç”¨).
+	int			Mode;		//ãƒ•ã‚©ã‚°ã®ç¨®é¡(ç·šå½¢,æŒ‡æ•°é–¢æ•°,æŒ‡æ•°é–¢æ•°2ä¹—).
 };
 
-//ƒXƒ|ƒbƒgƒ‰ƒCƒgî•ñ.
+//ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆæƒ…å ±.
 struct SPOT_LIGHT
 {
-	D3DXVECTOR4 LightOrigin;	//ƒ‰ƒCƒg‚ÌˆÊ’u.
-	D3DXVECTOR4 LightDir;	//ƒ‰ƒCƒg‚Ì•ûŒü.
-	D3DXVECTOR4	LightColor;		//ƒ‰ƒCƒg‚ÌF.
-	float		fIntensity;	//ƒ‰ƒCƒg‚Ì‹­“x.
-	float		fRange;		//ƒ‰ƒCƒg‚Ì“Í‚­‹——£.
-	float		fInnerAngle;//“à‘¤‚ÌŠp“x(Š®‘S‚ÉŒõ‚é”ÍˆÍ).
-	float		fOuterAngle;//ŠO‘¤‚ÌŠp“x(™X‚ÉˆÃ‚­‚È‚é”ÍˆÍ).
+	D3DXVECTOR4 LightOrigin;	//ãƒ©ã‚¤ãƒˆã®ä½ç½®.
+	D3DXVECTOR4 LightDir;	//ãƒ©ã‚¤ãƒˆã®æ–¹å‘.
+	D3DXVECTOR4	LightColor;		//ãƒ©ã‚¤ãƒˆã®è‰².
+	float		fIntensity;	//ãƒ©ã‚¤ãƒˆã®å¼·åº¦.
+	float		fRange;		//ãƒ©ã‚¤ãƒˆã®å±Šãè·é›¢.
+	float		fInnerAngle;//å†…å´ã®è§’åº¦(å®Œå…¨ã«å…‰ã‚‹ç¯„å›²).
+	float		fOuterAngle;//å¤–å´ã®è§’åº¦(å¾ã€…ã«æš—ããªã‚‹ç¯„å›²).
 };
 
-//ƒV[ƒ“î•ñ\‘¢‘Ì.
+//ã‚·ãƒ¼ãƒ³æƒ…å ±æ§‹é€ ä½“.
 struct SCENE_DATA
 {
 	const char* name;

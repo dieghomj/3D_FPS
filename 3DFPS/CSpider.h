@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CAnimEnemy.h"
 
 class CSpider : public CAnimEnemy

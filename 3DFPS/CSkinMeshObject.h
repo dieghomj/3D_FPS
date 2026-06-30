@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CGameObject.h"
 #include "CSkinMesh.h"
@@ -6,7 +6,7 @@
 #include "CCollider.h"
 
 /************************************************************
-*	ƒXƒLƒ“ƒƒbƒVƒ…ƒIƒuƒWƒFƒNƒgƒNƒ‰ƒX.
+*	ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚¯ãƒ©ã‚¹.
 **/
 class CSkinMeshObject
 	: public CGameObject
@@ -15,16 +15,16 @@ public:
 	CSkinMeshObject();
 	virtual ~CSkinMeshObject() override;
 
-	//CGameObject‚Åƒˆ‰¼‘zŠÖ”‚ÌéŒ¾‚ª‚³‚ê‚Ä‚é‚Ì‚Å‚±‚¿‚ç‚Å’è‹`‚ğ‘‚­.
+	//CGameObjectã§ç´”ç²‹ä»®æƒ³é–¢æ•°ã®å®£è¨€ãŒã•ã‚Œã¦ã‚‹ã®ã§ã“ã¡ã‚‰ã§å®šç¾©ã‚’æ›¸ã.
 	virtual void Update() override;
 	virtual void Draw( SCENE_DATA& sceneData ) override;
 
-	//ƒƒbƒVƒ…‚ğÚ‘±‚·‚é.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æ¥ç¶šã™ã‚‹.
 	void AttachMesh(CSkinMesh& pMesh);
-	//ƒƒbƒVƒ…‚ğØ‚è—£‚·.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’åˆ‡ã‚Šé›¢ã™.
 	void DetachMesh();
 
-	//ƒRƒ‰ƒCƒ_[ì¬
+	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ä½œæˆ
 	CCollider* GetCollider() const {
 		return m_pCollider;
 	}
@@ -33,16 +33,16 @@ public:
 		return m_pCollider->GetBBox();
 	}
 
-	//ƒoƒEƒ“ƒfƒBƒ“ƒOƒXƒtƒBƒAæ“¾
+	//ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚¹ãƒ•ã‚£ã‚¢å–å¾—
 	CBoundingSphere* GetBSphere() const {
 		return m_pCollider->GetBSphere();
 	}
-	//ƒ‚ƒfƒ‹‚É‡‚í‚¹‚½ƒoƒEƒ“ƒfƒBƒ“ƒOƒXƒtƒBƒAì¬‚Ìƒ‰ƒbƒp[ŠÖ”
+	//ãƒ¢ãƒ‡ãƒ«ã«åˆã‚ã›ãŸãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚¹ãƒ•ã‚£ã‚¢ä½œæˆã®ãƒ©ãƒƒãƒ‘ãƒ¼é–¢æ•°
 	HRESULT CreateBSphereForMesh(const CStaticMesh& pMesh) {
 		return m_pCollider->CreateSphereForMesh(pMesh);
 	}
-	//ƒoƒEƒ“ƒfƒBƒ“ƒOƒXƒtƒBƒA‚ğƒIƒuƒWƒFƒNƒgˆÊ’u‚É‡‚í‚¹‚é
-	//¦ƒ‚ƒfƒ‹‚ÌŒ´“_‚ª’†S‚Ìê‡‚ğ‘z’è
+	//ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚¹ãƒ•ã‚£ã‚¢ã‚’ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä½ç½®ã«åˆã‚ã›ã‚‹
+	//â€»ãƒ¢ãƒ‡ãƒ«ã®åŸç‚¹ãŒä¸­å¿ƒã®å ´åˆã‚’æƒ³å®š
 	void UpdateColliderPos() {
 		m_pCollider->SetPosition(m_vPosition);
 	}
@@ -50,5 +50,5 @@ public:
 protected:
 	CSkinMesh*					m_pMesh;
 	CCollider*					m_pCollider;
-	LPD3DXANIMATIONCONTROLLER	m_pAnimCtrl;	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰
+	LPD3DXANIMATIONCONTROLLER	m_pAnimCtrl;	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©
 };

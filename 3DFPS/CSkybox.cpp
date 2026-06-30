@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CSkybox.h"
 #include <d3dcompiler.h>
 
@@ -51,7 +51,7 @@ HRESULT CSkybox::Init(CDirectX11& dx11, LPCTSTR lpCubemapFile)
 	if (FAILED(LoadCubemap(lpCubemapFile)))
 	{
 		OutputDebugString(_T("CSkybox: Cubemap not loaded - skybox will be disabled\n"));
-		return S_OK; // intentional: allow game to run without skybox
+		return S_OK; // 意図的：スカイボックスがなくてもゲームを動作させる
 	}
 
 	m_initialized = true;
@@ -84,7 +84,7 @@ HRESULT CSkybox::CreateShader()
 	flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-	// Compile vertex shader
+	// 頂点シェーダーをコンパイルする
 	if (FAILED(D3DX11CompileFromFile(
 		SKYBOX_HLSL, nullptr, nullptr,
 		"VS_Main", "vs_5_0",
@@ -108,7 +108,7 @@ HRESULT CSkybox::CreateShader()
 		return E_FAIL;
 	}
 
-	// Create input layout
+	// 入力レイアウトを作成する
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
@@ -124,7 +124,7 @@ HRESULT CSkybox::CreateShader()
 	}
 	vsBlob->Release();
 
-	// Compile pixel shader
+	// ピクセルシェーダーをコンパイルする
 	if (FAILED(D3DX11CompileFromFile(
 		SKYBOX_HLSL, nullptr, nullptr,
 		"PS_Main", "ps_5_0",
@@ -149,7 +149,7 @@ HRESULT CSkybox::CreateShader()
 	}
 	psBlob->Release();
 
-	// Create constant buffer
+	// 定数バッファを作成する
 	D3D11_BUFFER_DESC cbDesc = {};
 	cbDesc.ByteWidth = sizeof(CBUFFER_SKYBOX);
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -159,7 +159,7 @@ HRESULT CSkybox::CreateShader()
 	if (FAILED(m_pDevice11->CreateBuffer(&cbDesc, nullptr, &m_pConstantBuffer)))
 		return E_FAIL;
 
-	// Create sampler state
+	// サンプラーステートを作成する
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -174,20 +174,20 @@ HRESULT CSkybox::CreateShader()
 	if (FAILED(m_pDevice11->CreateSamplerState(&samplerDesc, &m_pSamplerState)))
 		return E_FAIL;
 
-	// Create depth stencil state (depth test enabled, depth write disabled)
+	// 深度ステンシルステートを作成する（深度テスト有効、深度書き込み無効）
 	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
 	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // Don't write to depth buffer
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; // Pass if less or equal (skybox at max depth)
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // 深度バッファには書き込まない
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; // 以下なら通過（スカイボックスは最大深度に配置）
 	dsDesc.StencilEnable = FALSE;
 
 	if (FAILED(m_pDevice11->CreateDepthStencilState(&dsDesc, &m_pDepthStencilState)))
 		return E_FAIL;
 
-	// Create rasterizer state (cull front faces, since we're inside the cube)
+	// ラスタライザーステートを作成する（立方体の内側にいるため表面をカリングする）
 	D3D11_RASTERIZER_DESC rsDesc = {};
 	rsDesc.FillMode = D3D11_FILL_SOLID;
-	rsDesc.CullMode = D3D11_CULL_FRONT; // Cull front faces (we're inside the cube)
+	rsDesc.CullMode = D3D11_CULL_FRONT; // 表面をカリングする（立方体の内側にいるため）
 	rsDesc.FrontCounterClockwise = FALSE;
 	rsDesc.DepthClipEnable = TRUE;
 
@@ -199,14 +199,14 @@ HRESULT CSkybox::CreateShader()
 
 HRESULT CSkybox::CreateBuffers()
 {
-	// Skybox cube vertices (unit cube centered at origin)
+	// スカイボックスの立方体頂点（原点中心の単位立方体）
 	VERTEX vertices[] = {
-		// Front face
+		// 前面
 		{ D3DXVECTOR3(-1.0f, -1.0f, -1.0f) },
 		{ D3DXVECTOR3(-1.0f,  1.0f, -1.0f) },
 		{ D3DXVECTOR3( 1.0f,  1.0f, -1.0f) },
 		{ D3DXVECTOR3( 1.0f, -1.0f, -1.0f) },
-		// Back face
+		// 背面
 		{ D3DXVECTOR3(-1.0f, -1.0f,  1.0f) },
 		{ D3DXVECTOR3( 1.0f, -1.0f,  1.0f) },
 		{ D3DXVECTOR3( 1.0f,  1.0f,  1.0f) },
@@ -224,19 +224,19 @@ HRESULT CSkybox::CreateBuffers()
 	if (FAILED(m_pDevice11->CreateBuffer(&vbDesc, &vbData, &m_pVertexBuffer)))
 		return E_FAIL;
 
-	// Skybox cube indices
+	// スカイボックスの立方体インデックス
 	WORD indices[] = {
-		// Front face
+		// 前面
 		0, 1, 2,  0, 2, 3,
-		// Back face
+		// 背面
 		4, 5, 6,  4, 6, 7,
-		// Left face
+		// 左面
 		4, 7, 1,  4, 1, 0,
-		// Right face
+		// 右面
 		3, 2, 6,  3, 6, 5,
-		// Top face
+		// 上面
 		1, 7, 6,  1, 6, 2,
-		// Bottom face
+		// 下面
 		4, 0, 3,  4, 3, 5,
 	};
 
@@ -256,7 +256,7 @@ HRESULT CSkybox::CreateBuffers()
 
 HRESULT CSkybox::LoadCubemap(LPCTSTR lpCubemapFile)
 {
-	// First check if file exists
+	// まずファイルが存在するか確認する
 	DWORD fileAttribs = GetFileAttributes(lpCubemapFile);
 	if (fileAttribs == INVALID_FILE_ATTRIBUTES)
 	{
@@ -270,18 +270,18 @@ HRESULT CSkybox::LoadCubemap(LPCTSTR lpCubemapFile)
 	OutputDebugString(lpCubemapFile);
 	OutputDebugString(_T("\n"));
 
-	// First try: Load with automatic detection (D3DX11 should auto-detect cubemap from DDS header)
+	// 1回目の試行：自動判別で読み込む（D3DX11がDDSヘッダーからキューブマップを自動判別するはず）
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(
 		m_pDevice11,
 		lpCubemapFile,
-		nullptr,  // Let D3DX11 auto-detect format
+		nullptr,  // D3DX11にフォーマットを自動判別させる
 		nullptr,
 		&m_pCubemapSRV,
 		nullptr);
 
 	if (SUCCEEDED(hr))
 	{
-		// Verify that we got a cubemap texture
+		// キューブマップテクスチャが取得できたか検証する
 		ID3D11Resource* pResource = nullptr;
 		m_pCubemapSRV->GetResource(&pResource);
 		if (pResource)
@@ -303,7 +303,7 @@ HRESULT CSkybox::LoadCubemap(LPCTSTR lpCubemapFile)
 						desc.Width, desc.Height, desc.ArraySize, desc.MiscFlags);
 					OutputDebugString(debugMsg);
 					
-					// Check if it's a cubemap (ArraySize == 6 and has TEXTURECUBE flag)
+					// キューブマップかどうか確認する（ArraySize == 6 かつ TEXTURECUBE フラグを持つ）
 					if (desc.ArraySize == 6 && (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE))
 					{
 						OutputDebugString(_T("CSkybox: Cubemap loaded successfully!\n"));
@@ -326,7 +326,7 @@ HRESULT CSkybox::LoadCubemap(LPCTSTR lpCubemapFile)
 		return S_OK;
 	}
 
-	// Second try: Force cubemap loading
+	// 2回目の試行：キューブマップとして強制的に読み込む
 	D3DX11_IMAGE_LOAD_INFO loadInfo = {};
 	loadInfo.Width = D3DX11_DEFAULT;
 	loadInfo.Height = D3DX11_DEFAULT;
@@ -372,7 +372,7 @@ void CSkybox::Render(const D3DXMATRIX& mView, const D3DXMATRIX& mProj, const D3D
 		return;
 	}
 
-	// Save current states
+	// 現在のステートを保存する
 	ID3D11DepthStencilState* prevDSState = nullptr;
 	UINT prevStencilRef = 0;
 	m_pContext11->OMGetDepthStencilState(&prevDSState, &prevStencilRef);
@@ -380,21 +380,21 @@ void CSkybox::Render(const D3DXMATRIX& mView, const D3DXMATRIX& mProj, const D3D
 	ID3D11RasterizerState* prevRSState = nullptr;
 	m_pContext11->RSGetState(&prevRSState);
 
-	// Create view matrix without translation (skybox follows camera position)
+	// 平行移動成分を除いたビュー行列を作成する（スカイボックスはカメラ位置に追従する）
 	D3DXMATRIX mViewNoTranslation = mView;
 	mViewNoTranslation._41 = 0.0f;
 	mViewNoTranslation._42 = 0.0f;
 	mViewNoTranslation._43 = 0.0f;
 
-	// Scale the skybox to be large enough
+	// スカイボックスを十分大きくスケーリングする
 	D3DXMATRIX mWorld;
 	D3DXMatrixScaling(&mWorld, 500.0f, 500.0f, 500.0f);
 
-	// Calculate WVP matrix
+	// WVP行列を計算する
 	D3DXMATRIX mWVP = mWorld * mViewNoTranslation * mProj;
 	D3DXMatrixTranspose(&mWVP, &mWVP);
 
-	// Update constant buffer
+	// 定数バッファを更新する
 	D3D11_MAPPED_SUBRESOURCE mapped = {};
 	if (SUCCEEDED(m_pContext11->Map(m_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped)))
 	{
@@ -403,18 +403,18 @@ void CSkybox::Render(const D3DXMATRIX& mView, const D3DXMATRIX& mProj, const D3D
 		m_pContext11->Unmap(m_pConstantBuffer, 0);
 	}
 
-	// Set pipeline state
+	// パイプラインステートを設定する
 	m_pContext11->OMSetDepthStencilState(m_pDepthStencilState, 0);
 	m_pContext11->RSSetState(m_pRasterizerState);
 
-	// Set shaders
+	// シェーダーを設定する
 	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);
 	m_pContext11->PSSetShader(m_pPixelShader, nullptr, 0);
 	m_pContext11->VSSetConstantBuffers(0, 1, &m_pConstantBuffer);
 	m_pContext11->PSSetShaderResources(0, 1, &m_pCubemapSRV);
 	m_pContext11->PSSetSamplers(0, 1, &m_pSamplerState);
 
-	// Set vertex/index buffers
+	// 頂点／インデックスバッファを設定する
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	m_pContext11->IASetInputLayout(m_pInputLayout);
@@ -422,10 +422,10 @@ void CSkybox::Render(const D3DXMATRIX& mView, const D3DXMATRIX& mProj, const D3D
 	m_pContext11->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	m_pContext11->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Draw skybox
+	// スカイボックスを描画する
 	m_pContext11->DrawIndexed(36, 0, 0);
 
-	// Restore previous states
+	// 直前のステートを復元する
 	m_pContext11->OMSetDepthStencilState(prevDSState, prevStencilRef);
 	m_pContext11->RSSetState(prevRSState);
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CStaticMeshObject.h"
 #include "CPlayer.h"
 #include "CAnimEnemy.h"
@@ -18,7 +18,7 @@ public:
         m_pPlayer = &player; 
     };
 
-	// “G‚ÌÕ“Ëˆ——pƒƒ\ƒbƒh‚ğ’Ç‰Á
+	// æ•µã®è¡çªå‡¦ç†ç”¨ãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¿½åŠ 
 	void SetEnemyList(std::vector<CAnimEnemy*> enemyList) {
 		m_pEnemyPool = enemyList;
 	}

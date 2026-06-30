@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CGameObject.h"
 
 #include "CSprite2D.h"
 
 /************************************************************
-*	UIƒIƒuƒWƒFƒNƒgƒNƒ‰ƒX.
+*	UIã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚¯ãƒ©ã‚¹.
 **/
 class CUIObject
 	: public CGameObject
@@ -14,20 +14,20 @@ public:
 	CUIObject();
 	virtual ~CUIObject() override;
 
-	//CGameObject‚Åƒˆ‰¼‘zŠÖ”‚ÌéŒ¾‚ª‚³‚ê‚Ä‚é‚Ì‚Å‚±‚¿‚ç‚Å’è‹`‚ğ‘‚­.
+	//CGameObjectã§ç´”ç²‹ä»®æƒ³é–¢æ•°ã®å®£è¨€ãŒã•ã‚Œã¦ã‚‹ã®ã§ã“ã¡ã‚‰ã§å®šç¾©ã‚’æ›¸ã.
 	virtual void Update() override;
-	//CUIObject‚ÅéŒ¾‚µ‚½ŠÖ”‚ÅAˆÈ~‚Í‚±‚ê‚ğoverride‚³‚¹‚é
+	//CUIObjectã§å®£è¨€ã—ãŸé–¢æ•°ã§ã€ä»¥é™ã¯ã“ã‚Œã‚’overrideã•ã›ã‚‹
 	virtual void Draw();
 
-	//ƒXƒvƒ‰ƒCƒg‚ğÚ‘±‚·‚é.
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’æ¥ç¶šã™ã‚‹.
 	void AttachSprite( CSprite2D& pSprite ){
 		m_pSprite = &pSprite;
 	}
-	//ƒXƒvƒ‰ƒCƒg‚ğØ‚è—£‚·.
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆ‡ã‚Šé›¢ã™.
 	void DetachSprite(){
 		m_pSprite = nullptr;
 	}
-	//ƒpƒ^[ƒ“”Ô†‚ğİ’è
+	//ãƒ‘ã‚¿ãƒ¼ãƒ³ç•ªå·ã‚’è¨­å®š
 	void SetPatternNo(SHORT x, SHORT y){
 		m_PatternNo.x = x;
 		m_PatternNo.y = y;
@@ -50,11 +50,11 @@ public:
 	}
 
 protected:
-	//CGameObject‚©‚çŒp³‚µ‚½ŠÖ”
-	//final : ‚±‚êˆÈ~‚Íoverride‚³‚¹‚È‚¢
+	//CGameObjectã‹ã‚‰ç¶™æ‰¿ã—ãŸé–¢æ•°
+	//final : ã“ã‚Œä»¥é™ã¯overrideã•ã›ãªã„
 	void Draw(SCENE_DATA& sceneData) override final;
 
 protected:
 	CSprite2D*	m_pSprite;
-	POINTS		m_PatternNo;	//ƒpƒ^[ƒ“”Ô†(ƒ}ƒX–Ú)
+	POINTS		m_PatternNo;	//ãƒ‘ã‚¿ãƒ¼ãƒ³ç•ªå·(ãƒã‚¹ç›®)
 };

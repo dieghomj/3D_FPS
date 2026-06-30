@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CAnimPlayer.h"
 
 CAnimPlayer::CAnimPlayer()
@@ -57,14 +57,13 @@ void CAnimPlayer::Update()
 			m_LightIntensity = 0.f;
 	}
 
-	//m_bTankControlMode = false;
-	//ƒŒƒC‚ÌˆÊ’u‚ğƒvƒŒƒCƒ„[‚ÌÀ•W‚É‚»‚ë‚¦‚é
+	//ãƒ¬ã‚¤ã®ä½ç½®ã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åº§æ¨™ã«ãã‚ãˆã‚‹
 	m_pRayY->Position = m_vPosition;
-	//’n–Ê‚ß‚è‚İ‰ñ”ğ‚Ì‚½‚ßƒvƒŒƒCƒ„[‚ÌˆÊ’u‚æ‚è‚à­‚µã‚É‚µ‚Ä‚¨‚­
+	//åœ°é¢ã‚ã‚Šè¾¼ã¿å›é¿ã®ãŸã‚ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚ˆã‚Šã‚‚å°‘ã—ä¸Šã«ã—ã¦ãŠã
 	m_pRayY->Position.y += 0.2f;
 	m_pRayY->RotationY = m_vRotation.y;
 
-	//\ši‘OŒã¶‰E‚ÉL‚Î‚µ‚½jƒŒƒC‚Ìİ’è	
+	//åå­—ï¼ˆå‰å¾Œå·¦å³ã«ä¼¸ã°ã—ãŸï¼‰ãƒ¬ã‚¤ã®è¨­å®š	
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		m_pCrossRay->Ray[dir].Position = m_vPosition;
@@ -107,23 +106,23 @@ void CAnimPlayer::AnimControl()
 	switch (m_PlayerState) {
 	
 		case Idle:
-			//‘Ò‹@
+			//å¾…æ©Ÿ
 			m_AnimationState = AnimIdle;
 			break;
 		case Attacking:
-			//UŒ‚
+			//æ”»æ’ƒ
 			m_AnimationState = AnimAttack;
 			break;
 		case Running:
-			//‘–‚é
+			//èµ°ã‚‹
 			m_AnimationState = AnimRun;
 			break;
 		case Jumping:
-			//ƒWƒƒƒ“ƒv
+			//ã‚¸ãƒ£ãƒ³ãƒ—
 			m_AnimationState = AnimJump;
 			break;
 		case Damaged:
-			//ƒ_ƒ[ƒW
+			//ãƒ€ãƒ¡ãƒ¼ã‚¸
 			m_AnimationState = AnimDamaged;
 			break;
 	}
@@ -132,8 +131,8 @@ void CAnimPlayer::AnimControl()
 
 void CAnimPlayer::RadioControl()
 {
-	//Z²ƒxƒNƒgƒ‹(Z+•ûŒü‚Ö‚Ì’PˆÊƒxƒNƒgƒ‹)
-	//¦‘å‚«‚³i’·‚³j‚ª‚P‚ÌƒxƒNƒgƒ‹‚ğ’PˆÊƒxƒNƒgƒ‹‚Æ‚¢‚¤
+	//Zè»¸ãƒ™ã‚¯ãƒˆãƒ«(Z+æ–¹å‘ã¸ã®å˜ä½ãƒ™ã‚¯ãƒˆãƒ«)
+	//â€»å¤§ãã•ï¼ˆé•·ã•ï¼‰ãŒï¼‘ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’å˜ä½ãƒ™ã‚¯ãƒˆãƒ«ã¨ã„ã†
 	D3DXVECTOR3 vecAxisZ(0.f, 0.f, 1.f);
 	D3DXMATRIX mRotY;
 
@@ -145,46 +144,44 @@ void CAnimPlayer::RadioControl()
 		&vecAxisZ,
 		&mRotY);
 
-	/*m_vDirection *= -1.f;*/
-
 	D3DXVECTOR3 vecAxisX(1.f, 0.f, 0.f);
 
-	//Y•ûŒü‚Ì‰ñ“]s—ñ
+	//Yæ–¹å‘ã®å›è»¢è¡Œåˆ—
 	D3DXMATRIX mRotationY;
-	//Y²‰ñ“]s—ñ‚ğì¬
+	//Yè»¸å›è»¢è¡Œåˆ—ã‚’ä½œæˆ
 	D3DXMatrixRotationY(
-		&mRotationY,		//(out)s—ñ
-		m_vRotation.y);		//ƒvƒŒƒCƒ„[‚ÌY•ûŒü‚Ì‰ñ“]’l
+		&mRotationY,		//(out)è¡Œåˆ—
+		m_vRotation.y);		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Yæ–¹å‘ã®å›è»¢å€¤
 
-	//Y²‰ñ“]s—ñ‚ğg‚Á‚ÄZ²ƒxƒNƒgƒ‹‚ğÀ•W•ÏŠ·‚·‚é
+	//Yè»¸å›è»¢è¡Œåˆ—ã‚’ä½¿ã£ã¦Zè»¸ãƒ™ã‚¯ãƒˆãƒ«ã‚’åº§æ¨™å¤‰æ›ã™ã‚‹
 	D3DXVec3TransformCoord(
-		&vecAxisZ,		//(out)Z²ƒxƒNƒgƒ‹
-		&vecAxisZ,		//(in)Z²ƒxƒNƒgƒ‹
-		&mRotationY);	//Y²‰ñ“]s—ñ
+		&vecAxisZ,		//(out)Zè»¸ãƒ™ã‚¯ãƒˆãƒ«
+		&vecAxisZ,		//(in)Zè»¸ãƒ™ã‚¯ãƒˆãƒ«
+		&mRotationY);	//Yè»¸å›è»¢è¡Œåˆ—
 
 	D3DXVec3TransformCoord(
-		&vecAxisX,		//(out)Z²ƒxƒNƒgƒ‹
-		&vecAxisX,		//(in)Z²ƒxƒNƒgƒ‹
-		&mRotationY);	//Y²‰ñ“]s—ñ
+		&vecAxisX,		//(out)Zè»¸ãƒ™ã‚¯ãƒˆãƒ«
+		&vecAxisX,		//(in)Zè»¸ãƒ™ã‚¯ãƒˆãƒ«
+		&mRotationY);	//Yè»¸å›è»¢è¡Œåˆ—
 
-	//ˆÚ“®ó‘Ô‚É‚æ‚Á‚Äˆ—‚ğ•ª‚¯‚é
+	//ç§»å‹•çŠ¶æ…‹ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†ã‘ã‚‹
 	switch (m_MoveState) {
-		case MoveState::Forward:	//‘Oi
+		case MoveState::Forward:	//å‰é€²
 			m_vPosition += vecAxisZ * m_MoveSpeed;
 			break;
-		case MoveState::Backward:	//Œã‘Ş
+		case MoveState::Backward:	//å¾Œé€€
 			m_vPosition -= vecAxisZ * m_MoveSpeed;
 			break;
-		case MoveState::Left:	//¶ˆÚ“®
+		case MoveState::Left:	//å·¦ç§»å‹•
 			m_vPosition -= vecAxisX * m_MoveSpeed;
 			break;
-		case MoveState::Right:	//‰EˆÚ“®
+		case MoveState::Right:	//å³ç§»å‹•
 			m_vPosition += vecAxisX * m_MoveSpeed;
 			break;
-		case MoveState::Up:	//ã¸
+		case MoveState::Up:	//ä¸Šæ˜‡
 			m_vPosition.y += m_MoveSpeed;
 			break;
-		case MoveState::Down:	//‰º~
+		case MoveState::Down:	//ä¸‹é™
 			m_vPosition.y -= m_MoveSpeed;
  			break;
 		default:
@@ -205,7 +202,7 @@ void CAnimPlayer::RadioControl()
 		}
 	}
 
-	//ã‹L‚ÌˆÚ“®ˆ—‚ªI‚í‚ê‚Î’â~ó‘Ô‚É‚µ‚Ä‚¨‚­
+	//ä¸Šè¨˜ã®ç§»å‹•å‡¦ç†ãŒçµ‚ã‚ã‚Œã°åœæ­¢çŠ¶æ…‹ã«ã—ã¦ãŠã
 	m_MoveState = MoveState::Stop;
 }
 
@@ -220,7 +217,7 @@ void CAnimPlayer::HandleInput()
 	if (m_pInput->GetKeyDown(VK_UP) || m_pInput->GetKeyDown('W')) {
 		m_MoveState = MoveState::Forward;
 	}
-	//Œã‘Ş
+	//å¾Œé€€
 	if (m_pInput->GetKeyDown(VK_DOWN) || m_pInput->GetKeyDown('S')) {
 		m_MoveState = MoveState::Backward;
 	}

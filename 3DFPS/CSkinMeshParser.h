@@ -1,10 +1,10 @@
-/***************************************************************************************************
+ï»¿/***************************************************************************************************
 *	SkinMeshCode Version 2.50
 *	LastUpdate	: 2025/06/23.
 **/
 #pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ð–³Œø‚É‚·‚éB4005FÄ’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æžã‚’ç„¡åŠ¹ã«ã™ã‚‹ã€‚4005ï¼šå†å®šç¾©.
 #pragma warning( disable : 4005 )
 
 #include <d3dx9.h>
@@ -16,32 +16,18 @@
 #pragma comment(lib,"d3d9.lib")
 #pragma comment(lib,"d3dx9.lib")
 
-////ƒ}ƒNƒ.
-//#define SAFE_RELEASE(p)			{ if(p) { (p)->Release(); (p)=nullptr; } }
-//#define SAFE_DELETE(p)			{ if(p) { delete (p);     (p)=nullptr; } }
-//#define SAFE_DELETE_ARRAY(p)	{ if(p) { delete[] (p);   (p)=nullptr; } }
-
-////ƒ‰ƒCƒgî•ñ\‘¢‘Ì.
-//struct LIGHT
-//{
-//	D3DXVECTOR3	Position;	//ˆÊ’u.
-//	D3DXVECTOR3	vDirection;	//•ûŒü.
-//	D3DXMATRIX	mRotation;	//‰ñ“]s—ñ.
-//	float		Intensity;	//‹­“x(–¾‚é‚³).
-//};
-
-//ƒIƒŠƒWƒiƒ‹@ƒ}ƒeƒŠƒAƒ‹\‘¢‘Ì.
+//ã‚ªãƒªã‚¸ãƒŠãƒ«ã€€ãƒžãƒ†ãƒªã‚¢ãƒ«æ§‹é€ ä½“.
 struct MY_SKINMATERIAL
 {
 	TCHAR Name[110];
-	D3DXVECTOR4	Ambient;			//ƒAƒ“ƒrƒGƒ“ƒg.
-	D3DXVECTOR4	Diffuse;			//ƒfƒBƒtƒ…[ƒY.
-	D3DXVECTOR4	Specular;			//ƒXƒyƒLƒ…ƒ‰.
-	D3DXVECTOR4	Emissive;			//ƒGƒ~ƒbƒVƒu.
-	float		SpecularPower;		//ƒXƒyƒLƒ…ƒ‰ƒpƒ[.
-	TCHAR		TextureName[512];	//ƒeƒNƒXƒ`ƒƒ[ƒtƒ@ƒCƒ‹–¼.
+	D3DXVECTOR4	Ambient;			//ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆ.
+	D3DXVECTOR4	Diffuse;			//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚º.
+	D3DXVECTOR4	Specular;			//ã‚¹ãƒšã‚­ãƒ¥ãƒ©.
+	D3DXVECTOR4	Emissive;			//ã‚¨ãƒŸãƒƒã‚·ãƒ–.
+	float		SpecularPower;		//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ‘ãƒ¯ãƒ¼.
+	TCHAR		TextureName[512];	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«å.
 	ID3D11ShaderResourceView* pTexture;
-	DWORD		NumFace;	//‚»‚Ìƒ}ƒeƒŠƒAƒ‹‚Å‚ ‚éƒ|ƒŠƒSƒ“”.
+	DWORD		NumFace;	//ãã®ãƒžãƒ†ãƒªã‚¢ãƒ«ã§ã‚ã‚‹ãƒãƒªã‚´ãƒ³æ•°.
 
 	MY_SKINMATERIAL()
 		: Name			()
@@ -61,13 +47,13 @@ struct MY_SKINMATERIAL
 	}
 };
 
-//ƒ{[ƒ“\‘¢‘Ì.
+//ãƒœãƒ¼ãƒ³æ§‹é€ ä½“.
 struct BONE
 {
-	D3DXMATRIX	mBindPose;		//‰Šúƒ|[ƒYi‚¸‚Á‚Æ•Ï‚í‚ç‚È‚¢j.
-	D3DXMATRIX	mNewPose;		//Œ»Ý‚Ìƒ|[ƒYi‚»‚Ì“s“x•Ï‚í‚éj.
-	DWORD		NumChild;		//Žq‚Ì”.
-	int			ChildIndex[50];	//Ž©•ª‚ÌŽq‚Ì"ƒCƒ“ƒfƒbƒNƒX"50ŒÂ‚Ü‚Å.
+	D3DXMATRIX	mBindPose;		//åˆæœŸãƒãƒ¼ã‚ºï¼ˆãšã£ã¨å¤‰ã‚ã‚‰ãªã„ï¼‰.
+	D3DXMATRIX	mNewPose;		//ç¾åœ¨ã®ãƒãƒ¼ã‚ºï¼ˆãã®éƒ½åº¦å¤‰ã‚ã‚‹ï¼‰.
+	DWORD		NumChild;		//å­ã®æ•°.
+	int			ChildIndex[50];	//è‡ªåˆ†ã®å­ã®"ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹"50å€‹ã¾ã§.
 	char		Name[256];
 
 	BONE()
@@ -82,7 +68,7 @@ struct BONE
 	}
 };
 
-//ƒp[ƒcƒƒbƒVƒ…\‘¢‘Ì.
+//ãƒ‘ãƒ¼ãƒ„ãƒ¡ãƒƒã‚·ãƒ¥æ§‹é€ ä½“.
 struct SKIN_PARTS_MESH
 {
 	DWORD				NumVert;
@@ -90,17 +76,17 @@ struct SKIN_PARTS_MESH
 	DWORD				NumUV;
 	DWORD				NumMaterial;
 	MY_SKINMATERIAL*	pMaterial;
-	char				TextureFileName[8][256];	//ƒeƒNƒXƒ`ƒƒ[ƒtƒ@ƒCƒ‹–¼(8–‡‚Ü‚Å).
+	char				TextureFileName[8][256];	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«å(8æžšã¾ã§).
 	bool				EnableTexture;
 
 	ID3D11Buffer*	pVertexBuffer;
 	ID3D11Buffer**	ppIndexBuffer;
 
-	//ƒ{[ƒ“.
+	//ãƒœãƒ¼ãƒ³.
 	int		NumBone;
 	BONE*	pBoneArray;
 
-	bool	EnableBones;	//ƒ{[ƒ“‚Ì—L–³ƒtƒ‰ƒO.
+	bool	EnableBones;	//ãƒœãƒ¼ãƒ³ã®æœ‰ç„¡ãƒ•ãƒ©ã‚°.
 
 	SKIN_PARTS_MESH()
 		: NumVert			()
@@ -118,8 +104,8 @@ struct SKIN_PARTS_MESH
 	{}
 };
 
-//”h¶ƒtƒŒ[ƒ€\‘¢‘Ì.
-//	‚»‚ê‚¼‚ê‚ÌƒƒbƒVƒ…—p‚ÌÅIƒ[ƒ‹ƒhs—ñ‚ð’Ç‰Á‚·‚é.
+//æ´¾ç”Ÿãƒ•ãƒ¬ãƒ¼ãƒ æ§‹é€ ä½“.
+//	ãã‚Œãžã‚Œã®ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã®æœ€çµ‚ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’è¿½åŠ ã™ã‚‹.
 struct MYFRAME
 	: public D3DXFRAME
 {
@@ -133,17 +119,17 @@ struct MYFRAME
 	{
 	}
 };
-//”h¶ƒƒbƒVƒ…ƒRƒ“ƒeƒi[\‘¢‘Ì.
-//	ƒRƒ“ƒeƒi[‚ªƒeƒNƒXƒ`ƒƒ‚ð•¡”Ž‚Ä‚é‚æ‚¤‚Éƒ|ƒCƒ“ƒ^[‚Ìƒ|ƒCƒ“ƒ^[‚ð’Ç‰Á‚·‚é
+//æ´¾ç”Ÿãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠãƒ¼æ§‹é€ ä½“.
+//	ã‚³ãƒ³ãƒ†ãƒŠãƒ¼ãŒãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¤‡æ•°æŒã¦ã‚‹ã‚ˆã†ã«ãƒã‚¤ãƒ³ã‚¿ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿ãƒ¼ã‚’è¿½åŠ ã™ã‚‹
 struct MYMESHCONTAINER
 	: public D3DXMESHCONTAINER
 {
 	LPDIRECT3DTEXTURE9*	ppTextures;
-	DWORD				Weight;				//d‚Ý‚ÌŒÂ”id‚Ý‚Æ‚Í’¸“_‚Ö‚Ì‰e‹¿Bj.
-	DWORD				BoneNum;			//ƒ{[ƒ“‚Ì”.
-	LPD3DXBUFFER		pBoneBuffer;		//ƒ{[ƒ“Eƒe[ƒuƒ‹.
-	D3DXMATRIX**		ppBoneMatrix;		//‘S‚Ä‚Ìƒ{[ƒ“‚Ìƒ[ƒ‹ƒhs—ñ‚Ìæ“ªƒ|ƒCƒ“ƒ^.
-	D3DXMATRIX*			pBoneOffsetMatrices;//ƒtƒŒ[ƒ€‚Æ‚µ‚Ä‚Ìƒ{[ƒ“‚Ìƒ[ƒ‹ƒhs—ñ‚Ìƒ|ƒCƒ“ƒ^.
+	DWORD				Weight;				//é‡ã¿ã®å€‹æ•°ï¼ˆé‡ã¿ã¨ã¯é ‚ç‚¹ã¸ã®å½±éŸ¿ã€‚ï¼‰.
+	DWORD				BoneNum;			//ãƒœãƒ¼ãƒ³ã®æ•°.
+	LPD3DXBUFFER		pBoneBuffer;		//ãƒœãƒ¼ãƒ³ãƒ»ãƒ†ãƒ¼ãƒ–ãƒ«.
+	D3DXMATRIX**		ppBoneMatrix;		//å…¨ã¦ã®ãƒœãƒ¼ãƒ³ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®å…ˆé ­ãƒã‚¤ãƒ³ã‚¿.
+	D3DXMATRIX*			pBoneOffsetMatrices;//ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ã—ã¦ã®ãƒœãƒ¼ãƒ³ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®ãƒã‚¤ãƒ³ã‚¿.
 
 	MYMESHCONTAINER()
 		: D3DXMESHCONTAINER		()
@@ -155,8 +141,8 @@ struct MYMESHCONTAINER
 		, pBoneOffsetMatrices	( nullptr )
 	{}
 };
-//Xƒtƒ@ƒCƒ‹“à‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ŠK‘w‚ð“Ç‚Ý‰º‚µ‚Ä‚­‚ê‚éƒNƒ‰ƒX‚ð”h¶‚³‚¹‚é.
-//	ID3DXAllocateHierarchy‚Í”h¶‚·‚é‚±‚Æ‘z’è‚µ‚ÄÝŒv‚³‚ê‚Ä‚¢‚é.
+//Xãƒ•ã‚¡ã‚¤ãƒ«å†…ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³éšŽå±¤ã‚’èª­ã¿ä¸‹ã—ã¦ãã‚Œã‚‹ã‚¯ãƒ©ã‚¹ã‚’æ´¾ç”Ÿã•ã›ã‚‹.
+//	ID3DXAllocateHierarchyã¯æ´¾ç”Ÿã™ã‚‹ã“ã¨æƒ³å®šã—ã¦è¨­è¨ˆã•ã‚Œã¦ã„ã‚‹.
 class MY_HIERARCHY
 	: public ID3DXAllocateHierarchy
 {
@@ -172,15 +158,15 @@ public:
 
 //==================================================================================================
 //
-//	ƒp[ƒT[ƒNƒ‰ƒX.
+//	ãƒ‘ãƒ¼ã‚µãƒ¼ã‚¯ãƒ©ã‚¹.
 //
 //==================================================================================================
 class D3DXPARSER
 {
 public:
-	//Å‘åƒ{[ƒ“”.
+	//æœ€å¤§ãƒœãƒ¼ãƒ³æ•°.
 	static constexpr int MAX_BONES	= 255;
-	//Å‘åƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg”.
+	//æœ€å¤§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆæ•°.
 	static constexpr int MAX_ANIM_SET = 100;
 
 public:
@@ -193,7 +179,7 @@ public:
 	VOID UpdateFrameMatrices( LPD3DXFRAME, LPD3DXMATRIX );
 
 	//--------------------------------------.
-	//	Žæ“¾ŠÖ”.
+	//	å–å¾—é–¢æ•°.
 	//--------------------------------------.
 	int GetNumVertices( MYMESHCONTAINER* pContainer );
 	int GetNumFaces( MYMESHCONTAINER* pContainer );
@@ -219,24 +205,24 @@ public:
 	D3DXMATRIX GetNewPose( MYMESHCONTAINER* pContainer, int BoneIndex );
 	LPCSTR GetBoneName( MYMESHCONTAINER* pContainer, int BoneIndex );
 
-	//ƒƒbƒVƒ…ƒRƒ“ƒeƒi‚ðŽæ“¾‚·‚é.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠã‚’å–å¾—ã™ã‚‹.
 	LPD3DXMESHCONTAINER GetMeshContainer( LPD3DXFRAME pFrame );
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ.
 	void ChangeAnimSet( int Index, LPD3DXANIMATIONCONTROLLER pAC );
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦(ŠJŽnƒtƒŒ[ƒ€Žw’è‰Â”\”Å).
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ(é–‹å§‹ãƒ•ãƒ¬ãƒ¼ãƒ æŒ‡å®šå¯èƒ½ç‰ˆ).
 	void ChangeAnimSet_StartPos( int Index, double StartFramePos, LPD3DXANIMATIONCONTROLLER pAC );
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“’âŽ~ŽžŠÔ‚ðŽæ“¾.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åœæ­¢æ™‚é–“ã‚’å–å¾—.
 	double GetAnimPeriod( int Index );
-	//ƒAƒjƒ[ƒVƒ‡ƒ“”‚ðŽæ“¾.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ•°ã‚’å–å¾—.
 	int GetAnimMax( LPD3DXANIMATIONCONTROLLER pAC );
 
-	//Žw’è‚µ‚½ƒ{[ƒ“î•ñ(À•WEs—ñ)‚ðŽæ“¾‚·‚éŠÖ”.
+	//æŒ‡å®šã—ãŸãƒœãƒ¼ãƒ³æƒ…å ±(åº§æ¨™ãƒ»è¡Œåˆ—)ã‚’å–å¾—ã™ã‚‹é–¢æ•°.
 	bool GetMatrixFromBone( LPCSTR BoneName, D3DXMATRIX* pOutMat );
 	bool GetPosFromBone( LPCSTR BoneName, D3DXVECTOR3* pOutPos );
 
-	//ˆêŠ‡‰ð•úˆ—.
+	//ä¸€æ‹¬è§£æ”¾å‡¦ç†.
 	HRESULT Release();
 
 public:
@@ -244,7 +230,7 @@ public:
 	MY_HIERARCHY*	m_pHierarchy;
 	LPD3DXFRAME		m_pFrameRoot;
 
-	LPD3DXANIMATIONCONTROLLER	m_pAnimController;			//ƒfƒtƒHƒ‹ƒg‚Åˆê‚Â.
+	LPD3DXANIMATIONCONTROLLER	m_pAnimController;			//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ä¸€ã¤.
 	LPD3DXANIMATIONSET			m_pAnimSet[MAX_ANIM_SET];
 };
 

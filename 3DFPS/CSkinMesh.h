@@ -1,19 +1,19 @@
-/***************************************************************************************************
+ï»¿/***************************************************************************************************
 *	SkinMeshCode Version 2.50
 *	LastUpdate	: 2025/06/23.
 **/
 #pragma once
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ğ–³Œø‚É‚·‚éB4005FÄ’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹ã€‚4005ï¼šå†å®šç¾©.
 #pragma warning( disable : 4005 )
 
 #include "CSkinMeshParser.h"
 
-//‘O•ûéŒ¾.
+//å‰æ–¹å®£è¨€.
 class CDirectX9;
 class CDirectX11;
 
 /**************************************************
-*	ƒXƒLƒ“ƒƒbƒVƒ…ƒNƒ‰ƒX
+*	ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ã‚¯ãƒ©ã‚¹
 *
 *
 **/
@@ -21,40 +21,40 @@ class CSkinMesh
 {
 public:
 	//======================================
-	//	\‘¢‘Ì.
+	//	æ§‹é€ ä½“.
 	//======================================
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒAƒvƒŠ‘¤‚Ì’è‹`.
-	//¦ƒVƒF[ƒ_“à‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Æˆê’v‚µ‚Ä‚¢‚é•K—v‚ ‚è.
-	//ƒƒbƒVƒ…’PˆÊ.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ—ãƒªå´ã®å®šç¾©.
+	//â€»ã‚·ã‚§ãƒ¼ãƒ€å†…ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã¨ä¸€è‡´ã—ã¦ã„ã‚‹å¿…è¦ã‚ã‚Š.
+	//ãƒ¡ãƒƒã‚·ãƒ¥å˜ä½.
 	struct CBUFFER_PER_MESH
 	{
-		D3DXMATRIX	mW;			//ƒ[ƒ‹ƒhs—ñ.
-		D3DXMATRIX	mWVP;		//ƒ[ƒ‹ƒh‚©‚çË‰e‚Ü‚Å‚Ì•ÏŠ·s—ñ.
+		D3DXMATRIX	mW;			//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—.
+		D3DXMATRIX	mWVP;		//ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰å°„å½±ã¾ã§ã®å¤‰æ›è¡Œåˆ—.
 	};
 
-	//ƒ}ƒeƒŠƒAƒ‹’PˆÊ.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«å˜ä½.
 	struct CBUFFER_PER_MATERIAL
 	{
-		D3DXVECTOR4 Ambient;	//ŠÂ‹«ŒõiƒAƒ“ƒrƒGƒ“ƒgj.
-		D3DXVECTOR4 Diffuse;	//ŠgU”½ËŒõiƒfƒBƒtƒ…[ƒYj.
-		D3DXVECTOR4 Specular;	//‹¾–Ê”½ËŒõiƒXƒyƒLƒ…ƒ‰j.
+		D3DXVECTOR4 Ambient;	//ç’°å¢ƒå…‰ï¼ˆã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆï¼‰.
+		D3DXVECTOR4 Diffuse;	//æ‹¡æ•£åå°„å…‰ï¼ˆãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºï¼‰.
+		D3DXVECTOR4 Specular;	//é¡é¢åå°„å…‰ï¼ˆã‚¹ãƒšã‚­ãƒ¥ãƒ©ï¼‰.
 	};
 
-	//ƒVƒF[ƒ_[‚É“n‚·’l.
+	//ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«æ¸¡ã™å€¤.
 	struct CBUFFER_PER_FRAME
 	{
-		D3DXVECTOR4	CameraPos;			// ƒJƒƒ‰ˆÊ’u.
-		D3DXVECTOR4	LightColor;			// ƒ‰ƒCƒg‚ÌF.
-		D3DXVECTOR4	LightDir;			// ƒ‰ƒCƒg•ûŒü.
-		D3DXVECTOR4	AmbientColor;		// ŠÂ‹«Œõ‚ÌF.
-		D3DXVECTOR4 FogColor;			//ƒtƒHƒO‚ÌF.
-		D3DXVECTOR4 FogParams;			//ƒtƒHƒO‚Ìƒpƒ‰ƒ[ƒ^(x=ŠJn‹——£,y=I—¹‹——£,z=–§“x,w=ƒ‚[ƒh).
-		float		AffineIntensity;	// ƒAƒtƒBƒ“ƒ}ƒbƒsƒ“ƒO‚Ì‹­“x.
-		float		VertexSnapping;		// ’¸“_ƒXƒiƒbƒsƒ“ƒO‚Ì‹­“x.
-		float		pad1, pad2;			// ƒpƒfƒBƒ“ƒO.
+		D3DXVECTOR4	CameraPos;			// ã‚«ãƒ¡ãƒ©ä½ç½®.
+		D3DXVECTOR4	LightColor;			// ãƒ©ã‚¤ãƒˆã®è‰².
+		D3DXVECTOR4	LightDir;			// ãƒ©ã‚¤ãƒˆæ–¹å‘.
+		D3DXVECTOR4	AmbientColor;		// ç’°å¢ƒå…‰ã®è‰².
+		D3DXVECTOR4 FogColor;			//ãƒ•ã‚©ã‚°ã®è‰².
+		D3DXVECTOR4 FogParams;			//ãƒ•ã‚©ã‚°ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(x=é–‹å§‹è·é›¢,y=çµ‚äº†è·é›¢,z=å¯†åº¦,w=ãƒ¢ãƒ¼ãƒ‰).
+		float		AffineIntensity;	// ã‚¢ãƒ•ã‚£ãƒ³ãƒãƒƒãƒ”ãƒ³ã‚°ã®å¼·åº¦.
+		float		VertexSnapping;		// é ‚ç‚¹ã‚¹ãƒŠãƒƒãƒ”ãƒ³ã‚°ã®å¼·åº¦.
+		float		pad1, pad2;			// ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°.
 	};
 
-	//ƒ{[ƒ“’PˆÊ.
+	//ãƒœãƒ¼ãƒ³å˜ä½.
 	struct CBUFFER_PER_BONES
 	{
 		D3DXMATRIX mBone[D3DXPARSER::MAX_BONES];
@@ -67,14 +67,14 @@ public:
 		}
 	};
 
-	//’¸“_\‘¢‘Ì.
+	//é ‚ç‚¹æ§‹é€ ä½“.
 	struct VERTEX
 	{
-		D3DXVECTOR3	Position;	//’¸“_ˆÊ’u.
-		D3DXVECTOR3	vNormal;	//’¸“_–@ü.
-		D3DXVECTOR2	Texture;	//UVÀ•W.
-		UINT BoneIndex[4];		//ƒ{[ƒ“ ”Ô†.
-		float BoneWeight[4];	//ƒ{[ƒ“ d‚İ.
+		D3DXVECTOR3	Position;	//é ‚ç‚¹ä½ç½®.
+		D3DXVECTOR3	vNormal;	//é ‚ç‚¹æ³•ç·š.
+		D3DXVECTOR2	Texture;	//UVåº§æ¨™.
+		UINT BoneIndex[4];		//ãƒœãƒ¼ãƒ³ ç•ªå·.
+		float BoneWeight[4];	//ãƒœãƒ¼ãƒ³ é‡ã¿.
 		VERTEX()
 			: Position()
 			, vNormal()
@@ -86,21 +86,21 @@ public:
 	};
 
 public:
-	CSkinMesh();	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
-	~CSkinMesh();	//ƒfƒXƒgƒ‰ƒNƒ^.
+	CSkinMesh();	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
+	~CSkinMesh();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 
 	HRESULT Init(CDirectX9& pDx9, CDirectX11& pDx11, LPCTSTR FileName);
 
-	//‰ğ•úŠÖ”.
+	//è§£æ”¾é–¢æ•°.
 	HRESULT Release();
 
-	//•`‰æŠÖ”.
+	//æç”»é–¢æ•°.
 	void Render(const D3DXMATRIX& mView,
 		const D3DXMATRIX& mProj,
 		const LIGHT& Light,
 		const D3DXVECTOR3& CamPos,
 		const FOG& Fog,
-		const LPD3DXANIMATIONCONTROLLER pAC);	//nullptr‚ÅƒfƒtƒHƒ‹ƒgg—p‚·‚é.
+		const LPD3DXANIMATIONCONTROLLER pAC);	//nullptrã§ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆä½¿ç”¨ã™ã‚‹.
 
 	double GetAnimSpeed() { return m_AnimSpeed; }
 	void SetAnimSpeed(double Speed) { m_AnimSpeed = Speed; }
@@ -108,94 +108,94 @@ public:
 	double GetAnimTime() { return m_AnimTime; }
 	void SetAnimTime(double Time) { m_AnimTime = Time; }
 
-	//ƒp[ƒT[ƒNƒ‰ƒX‚©‚çƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ğæ“¾‚·‚é.
+	//ãƒ‘ãƒ¼ã‚µãƒ¼ã‚¯ãƒ©ã‚¹ã‹ã‚‰ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã‚’å–å¾—ã™ã‚‹.
 	LPD3DXANIMATIONCONTROLLER GetAnimationController() { return m_pD3dxMesh->m_pAnimController; }
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ.
 	void ChangeAnimSet(int index, LPD3DXANIMATIONCONTROLLER pAC);
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦(ŠJnƒtƒŒ[ƒ€w’è‰Â”\”Å).
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ(é–‹å§‹ãƒ•ãƒ¬ãƒ¼ãƒ æŒ‡å®šå¯èƒ½ç‰ˆ).
 	void ChangeAnimSet_StartPos(int Index, double StartFramePos, LPD3DXANIMATIONCONTROLLER pAC);
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“’â~ŠÔ‚ğæ“¾.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åœæ­¢æ™‚é–“ã‚’å–å¾—.
 	double GetAnimPeriod(int Index);
-	//ƒAƒjƒ[ƒVƒ‡ƒ“”‚ğæ“¾.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ•°ã‚’å–å¾—.
 	int GetAnimMax(LPD3DXANIMATIONCONTROLLER pAC = nullptr);
 
-	//w’è‚µ‚½ƒ{[ƒ“î•ñ(À•WEs—ñ)‚ğæ“¾‚·‚éŠÖ”.
+	//æŒ‡å®šã—ãŸãƒœãƒ¼ãƒ³æƒ…å ±(åº§æ¨™ãƒ»è¡Œåˆ—)ã‚’å–å¾—ã™ã‚‹é–¢æ•°.
 	bool GetMatrixFromBone(LPCSTR BoneName, D3DXMATRIX* pOutMat);
 	bool GetPosFromBone(LPCSTR BoneName, D3DXVECTOR3* pOutPos);
 	bool GetDeviaPosFromBone(LPCSTR BoneName, D3DXVECTOR3* pOutPos, D3DXVECTOR3 SpecifiedPos = { 0.0f, 0.0f, 0.0f });
 
-	//À•Wî•ñ‚ğİ’è.
+	//åº§æ¨™æƒ…å ±ã‚’è¨­å®š.
 	void SetPosition(const D3DXVECTOR3& vPos) { m_Position = vPos; }
 	void SetPositionX(float x) { m_Position.x = x; }
 	void SetPositionY(float y) { m_Position.y = y; }
 	void SetPositionZ(float z) { m_Position.z = z; }
 
-	//‰ñ“]î•ñ‚ğİ’è.
+	//å›è»¢æƒ…å ±ã‚’è¨­å®š.
 	void SetRotation(const D3DXVECTOR3& vRot) { m_Rotation = vRot; }
 	void SetRotationY(float y) { m_Rotation.y = y; }
 	void SetRotationX(float x) { m_Rotation.x = x; }
 	void SetRotationZ(float z) { m_Rotation.z = z; }
 
-	//Šgkî•ñ‚ğİ’èEæ“¾.
+	//æ‹¡ç¸®æƒ…å ±ã‚’è¨­å®šãƒ»å–å¾—.
 	void SetScale(const D3DXVECTOR3& Scale) { m_Scale = Scale; }
 	void SetScaleX(const float x) { m_Scale.x = x; }
 	void SetScaleY(const float y) { m_Scale.x = y; }
 	void SetScaleZ(const float z) { m_Scale.x = z; }
 
 private:
-	//Xƒtƒ@ƒCƒ‹‚©‚çƒXƒLƒ“ƒƒbƒVƒ…‚ğì¬‚·‚é.
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã™ã‚‹.
 	HRESULT LoadXMesh(LPCTSTR FileName);
 
-	//ƒVƒF[ƒ_‚ğì¬‚·‚é.
+	//ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½œæˆã™ã‚‹.
 	HRESULT CreateShader();
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğì¬‚·‚é.
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆã™ã‚‹.
 	HRESULT CreateIndexBuffer(DWORD Size, int* pIndex, ID3D11Buffer** ppIndexBuffer);
 
-	//ƒƒbƒVƒ…‚ğì¬‚·‚é.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã™ã‚‹.
 	HRESULT CreateAppMeshFromD3DXMesh(LPD3DXFRAME pFrame);
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@ì¬‚·‚é.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ä½œæˆã™ã‚‹.
 	HRESULT CreateCBuffer(ID3D11Buffer** pConstantBuffer, UINT Size);
-	//ƒTƒ“ƒvƒ‰‚ğì¬‚·‚é.
+	//ã‚µãƒ³ãƒ—ãƒ©ã‚’ä½œæˆã™ã‚‹.
 	HRESULT CreateSampler(ID3D11SamplerState** pSampler);
 
-	//‘S‚Ä‚ÌƒƒbƒVƒ…‚ğì¬‚·‚é.
+	//å…¨ã¦ã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã™ã‚‹.
 	void BuildAllMesh(D3DXFRAME* pFrame);
 
-	//Xƒtƒ@ƒCƒ‹‚©‚çƒXƒLƒ“ŠÖ˜A‚Ìî•ñ‚ğ“Ç‚İo‚·ŠÖ”.
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã‚¹ã‚­ãƒ³é–¢é€£ã®æƒ…å ±ã‚’èª­ã¿å‡ºã™é–¢æ•°.
 	HRESULT ReadSkinInfo(MYMESHCONTAINER* pContainer, VERTEX* pVB, SKIN_PARTS_MESH* pParts);
 
-	//ƒ{[ƒ“‚ğŸ‚Ìƒ|[ƒYˆÊ’u‚ÉƒZƒbƒg‚·‚éŠÖ”.
+	//ãƒœãƒ¼ãƒ³ã‚’æ¬¡ã®ãƒãƒ¼ã‚ºä½ç½®ã«ã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°.
 	void SetNewPoseMatrices(SKIN_PARTS_MESH* pParts, int Frame, MYMESHCONTAINER* pContainer);
-	//Ÿ‚Ì(Œ»İ‚Ì)ƒ|[ƒYs—ñ‚ğ•Ô‚·ŠÖ”.
+	//æ¬¡ã®(ç¾åœ¨ã®)ãƒãƒ¼ã‚ºè¡Œåˆ—ã‚’è¿”ã™é–¢æ•°.
 	D3DXMATRIX GetCurrentPoseMatrix(SKIN_PARTS_MESH* pParts, int Index);
 
-	//ƒtƒŒ[ƒ€•`‰æ.
+	//ãƒ•ãƒ¬ãƒ¼ãƒ æç”».
 	void DrawFrame(LPD3DXFRAME pFrame);
-	//ƒp[ƒc•`‰æ.
+	//ãƒ‘ãƒ¼ãƒ„æç”».
 	void DrawPartsMesh(SKIN_PARTS_MESH* pMesh, D3DXMATRIX World, MYMESHCONTAINER* pContainer);
-	//ƒ[ƒ‹ƒhs—ñZo.
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ç®—å‡º.
 	void CalcWorldMatrix();
-	//ŠeíƒVƒF[ƒ_‚É‘—‚éƒf[ƒ^.
+	//å„ç¨®ã‚·ã‚§ãƒ¼ãƒ€ã«é€ã‚‹ãƒ‡ãƒ¼ã‚¿.
 	void SendCBufferPerBone(SKIN_PARTS_MESH* pMesh);
 	void SendCBufferPerFrame();
 	void SendCBufferPerMesh();
 	void SendCBufferPerMaterial(MY_SKINMATERIAL* pMaterial);
 	void SendTexture(MY_SKINMATERIAL* pMaterial);
 
-	//‘S‚Ä‚ÌƒƒbƒVƒ…‚ğíœ.
+	//å…¨ã¦ã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚’å‰Šé™¤.
 	void DestroyAllMesh(D3DXFRAME* pFrame);
 	HRESULT DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p);
 
-	//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š‚ğUnicode•¶š‚É•ÏŠ·‚·‚é.
+	//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ã‚’Unicodeæ–‡å­—ã«å¤‰æ›ã™ã‚‹.
 	void ConvertCharaMultiByteToUnicode(WCHAR* Dest, size_t DestArraySize, const CHAR* str);
 
 private:
 	//Dx9.
 	CDirectX9* m_pDx9;
-	LPDIRECT3DDEVICE9		m_pDevice9;	//Dx9ƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg.
+	LPDIRECT3DDEVICE9		m_pDevice9;	//Dx9ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ.
 
 	//Dx11.
 	CDirectX11* m_pDx11;
@@ -207,15 +207,15 @@ private:
 	ID3D11PixelShader* m_pPixelShader;
 	ID3D11SamplerState* m_pSampleLinear;
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@.
-	ID3D11Buffer* m_pCBufferPerMesh;		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…–ˆ).
-	ID3D11Buffer* m_pCBufferPerMaterial;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒ}ƒeƒŠƒAƒ‹–ˆ).
-	ID3D11Buffer* m_pCBufferPerFrame;		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒtƒŒ[ƒ€–ˆ).
-	ID3D11Buffer* m_pCBufferPerBone;		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒ{[ƒ“–ˆ).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡.
+	ID3D11Buffer* m_pCBufferPerMesh;		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥æ¯).
+	ID3D11Buffer* m_pCBufferPerMaterial;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒãƒ†ãƒªã‚¢ãƒ«æ¯).
+	ID3D11Buffer* m_pCBufferPerFrame;		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ•ãƒ¬ãƒ¼ãƒ æ¯).
+	ID3D11Buffer* m_pCBufferPerBone;		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒœãƒ¼ãƒ³æ¯).
 
-	D3DXVECTOR3		m_Position;		//ˆÊ’u(x,y,z).
-	D3DXVECTOR3		m_Rotation;		//‰ñ“]’l(x,y,z).
-	D3DXVECTOR3		m_Scale;		//Šg‘åk¬’l(x,y,z).
+	D3DXVECTOR3		m_Position;		//ä½ç½®(x,y,z).
+	D3DXVECTOR3		m_Rotation;		//å›è»¢å€¤(x,y,z).
+	D3DXVECTOR3		m_Scale;		//æ‹¡å¤§ç¸®å°å€¤(x,y,z).
 
 	D3DXMATRIX		m_mWorld;
 	D3DXMATRIX		m_mRotation;
@@ -227,19 +227,16 @@ private:
 	D3DXVECTOR3		m_CamPos;
 	FOG				m_Fog;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‘¬“x.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é€Ÿåº¦.
 	double m_AnimSpeed;
 	double m_AnimTime;
 
-	//‰ğ•úˆ——p‚É.
-//	SKIN_PARTS_MESH* m_pReleaseMaterial;
-
-	//ƒƒbƒVƒ….
+	//ãƒ¡ãƒƒã‚·ãƒ¥.
 	D3DXPARSER* m_pD3dxMesh;
 
-	//Xƒtƒ@ƒCƒ‹‚ÌƒpƒX.
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹.
 	TCHAR	m_FilePath[256];
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ•ãƒ¬ãƒ¼ãƒ .
 	int		m_Frame;
 };

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CCharacter.h"
 #include "CInput.h"
 
@@ -39,7 +39,7 @@ public:
 	bool CanShoot() const { return m_CanShoot; }
 	bool IsJumping() const { return m_IsJumping; }
 	bool IsDashing() const { return m_IsDashing; }
-	bool IsGrounded() const { return m_IsOnGround; };	//�f�o�b�O�p
+	bool IsGrounded() const { return m_IsOnGround; };	//デバッグ用
 	bool IsSliding() const { return m_IsSliding; }
 	bool IsDamaged() const { return m_IsDamaged; }
 
@@ -133,9 +133,9 @@ private:
 	float m_FloorY = 0.f;
 	float m_CeilingY = FLT_MAX;
 
-	// Slope handling
+	// 坂道の処理.
 	D3DXVECTOR3 m_FloorNormal = D3DXVECTOR3(0.f, 1.f, 0.f);
-	float m_GroundedTimer = 0.f;  // "Coyote time" for slopes
+	float m_GroundedTimer = 0.f;  // 坂道向けの「コヨーテタイム」.
 
 	CROSSRAY* m_pHeadCrossRay;
 };

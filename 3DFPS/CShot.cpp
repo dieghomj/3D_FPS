@@ -1,4 +1,4 @@
-#include "CShot.h"
+ï»¿#include "CShot.h"
 
 CShot::CShot()
 	: m_Display			(false)
@@ -17,12 +17,12 @@ void CShot::Update()
 {
 	RotateAnim(16.6f, 1.0f); 
 	if (m_Display == true) {
-		//ˆÚ“®•ûŒü‚ÉˆÚ“®‘¬“x‚ğ‚©‚¯‡‚í‚¹‚½‚à‚Ì‚ğÀ•W‚É”½‰f
+		//ç§»å‹•æ–¹å‘ã«ç§»å‹•é€Ÿåº¦ã‚’ã‹ã‘åˆã‚ã›ãŸã‚‚ã®ã‚’åº§æ¨™ã«åæ˜ 
 		m_vPosition += m_MoveDirection * m_MoveSpeed;
 
 		m_DisplayTime--;
 		if ( m_DisplayTime < 0 ) {
-			//Œ©‚¦‚È‚¢Š‚É’u‚¢‚Ä‚¨‚­
+			//è¦‹ãˆãªã„æ‰€ã«ç½®ã„ã¦ãŠã
 			m_vPosition = D3DXVECTOR3(0.f, -10.f, 0.f);
 			m_Display = false;
 		}
@@ -52,15 +52,15 @@ bool CShot::IsHit(CCollider* col, float rad)
 
 void CShot::Reload(const D3DXVECTOR3& Pos, const D3DXVECTOR3& Direction, float RotY)
 {
-	//’e‚ª”ò‚ñ‚Å‚½‚çI—¹
+	//å¼¾ãŒé£›ã‚“ã§ãŸã‚‰çµ‚äº†
 	if (m_Display == true) return;
 	
 	m_vPosition		= Pos;
 	m_Display		= true;
-	m_vRotation.y	= RotY;								//Y²‰ñ“]’l
-	m_DisplayTime	= FPS * 10;							//–ñ3•b‚­‚ç‚¢•\¦‚·‚é
+	m_vRotation.y	= RotY;								//Yè»¸å›è»¢å€¤
+	m_DisplayTime	= FPS * 10;							//ç´„3ç§’ãã‚‰ã„è¡¨ç¤ºã™ã‚‹
 
-	//Z²ƒxƒNƒgƒ‹
+	//Zè»¸ãƒ™ã‚¯ãƒˆãƒ«
 	m_MoveDirection = Direction;
 
 }

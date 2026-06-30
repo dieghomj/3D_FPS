@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CStaticMeshObject.h"
 
 /**************************************************
-*   ƒLƒƒƒ‰ƒNƒ^[ƒNƒ‰ƒX
+*   ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¹
 **/
 class CCharacter
 	: public CStaticMeshObject
@@ -21,30 +21,30 @@ public:
 	void UpdateRayY(float posY);
 	void UpdateCrossRay(CROSSRAY& crossRay, float posY);
 
-	//’e‚ğ”ò‚Î‚µ‚½‚¢‚©Šm”F
+	//å¼¾ã‚’é£›ã°ã—ãŸã„ã‹ç¢ºèª
 	bool IsShot() const { return m_Shot; }
 	void SetRadius(float radius) { m_Radius = radius; }
 	void SetVelocity(const D3DXVECTOR3& vel) { m_Velocity = vel; }
 	
-	//ƒLƒƒƒ‰ƒNƒ^[‚Ì”¼Œa‚ğæ“¾
+	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åŠå¾„ã‚’å–å¾—
 	void EnableGravity(bool enable) { m_GravityEnabled = enable; }
 	float GetRadius() const { return m_Radius; }
 	float GetHeight() const { return m_Height; }
 	D3DXVECTOR3 GetVelocity() const { return m_Velocity; }
-	//Y²•ûŒü‚ÖL‚Î‚µ‚½ƒŒƒC‚ğæ“¾
+	//Yè»¸æ–¹å‘ã¸ä¼¸ã°ã—ãŸãƒ¬ã‚¤ã‚’å–å¾—
 	RAY GetRayY() const { return *m_pRayY; }
-	//‘OŒã¶‰E‚ÉL‚Î‚µ‚½ƒŒƒC‚ğæ“¾
+	//å‰å¾Œå·¦å³ã«ä¼¸ã°ã—ãŸãƒ¬ã‚¤ã‚’å–å¾—
 	CROSSRAY GetCrossRay() { return *m_pCrossRay; }
 
 protected:
 
-	D3DXVECTOR3 m_Velocity;		//‘¬“xƒxƒNƒgƒ‹
+	D3DXVECTOR3 m_Velocity;		//é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«
 
-	bool	m_Shot;		//’e‚ğ”ò‚Î‚·ƒtƒ‰ƒO
-	float m_Radius;	//ƒLƒƒƒ‰ƒNƒ^[‚Ì”¼Œa
-	float m_Height;	//ƒLƒƒƒ‰ƒNƒ^[‚Ì‚‚³
-	bool m_GravityEnabled; //d—Í—LŒøƒtƒ‰ƒO
+	bool	m_Shot;		//å¼¾ã‚’é£›ã°ã™ãƒ•ãƒ©ã‚°
+	float m_Radius;	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åŠå¾„
+	float m_Height;	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®é«˜ã•
+	bool m_GravityEnabled; //é‡åŠ›æœ‰åŠ¹ãƒ•ãƒ©ã‚°
 
-	RAY*		m_pRayY;		//Y•ûŒü‚ÖL‚Î‚µ‚½ƒŒƒC
-	CROSSRAY*	m_pCrossRay;	//‘OŒã¶‰E‚ÉL‚Î‚µ‚½ƒŒƒC
+	RAY*		m_pRayY;		//Yæ–¹å‘ã¸ä¼¸ã°ã—ãŸãƒ¬ã‚¤
+	CROSSRAY*	m_pCrossRay;	//å‰å¾Œå·¦å³ã«ä¼¸ã°ã—ãŸãƒ¬ã‚¤
 };

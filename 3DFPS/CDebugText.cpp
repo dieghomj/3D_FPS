@@ -1,19 +1,19 @@
-#include "CDebugText.h"
+ï»¿#include "CDebugText.h"
 #include "CDirectX11.h"
 
-//ƒVƒF[ƒ_ƒtƒ@ƒCƒ‹–¼iƒfƒBƒŒƒNƒgƒŠ‚àŠÜ‚Şj.
+//ã‚·ã‚§ãƒ¼ãƒ€ãƒ•ã‚¡ã‚¤ãƒ«åï¼ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚‚å«ã‚€ï¼‰.
 const TCHAR SHADER_NAME[] = _T( "Data\\Shader\\DebugText.hlsl" );
 
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 CDebugText::CDebugText()
 	: m_pDx11			( nullptr )
 	, m_pDevice11		( nullptr )
 	, m_pContext11		( nullptr )
-	, m_pVertexShader	( nullptr )		//’¸“_ƒVƒF[ƒ_.
-	, m_pVertexLayout	( nullptr )		//’¸“_ƒŒƒCƒAƒEƒg.
-	, m_pPixelShader	( nullptr )		//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
-	, m_pConstantBuffer	( nullptr )		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@.
-	, m_pVertexBuffer	()				//’¸“_ƒoƒbƒtƒ@.
+	, m_pVertexShader	( nullptr )		//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	, m_pVertexLayout	( nullptr )		//é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ.
+	, m_pPixelShader	( nullptr )		//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
+	, m_pConstantBuffer	( nullptr )		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡.
+	, m_pVertexBuffer	()				//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡.
 	, m_pSampleLinear	( nullptr )
 	, m_pTexture		( nullptr )
 	, m_Alpha			( 1.0f )
@@ -22,43 +22,43 @@ CDebugText::CDebugText()
 {
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^.
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 CDebugText::~CDebugText()
 {
-	//‰ğ•úˆ—‚ğŒÄ‚Ño‚·.
+	//è§£æ”¾å‡¦ç†ã‚’å‘¼ã³å‡ºã™.
 	Release();
 
-	//•Ê‚Ì‚Æ‚±‚ë‚ÅŠÇ—‚µ‚Ä‚¢‚é‚Ì‚Å‚±‚±‚Å‚Ínullptr‚ğ“ü‚ê‚Ä‰Šú‰».
+	//åˆ¥ã®ã¨ã“ã‚ã§ç®¡ç†ã—ã¦ã„ã‚‹ã®ã§ã“ã“ã§ã¯nullptrã‚’å…¥ã‚Œã¦åˆæœŸåŒ–.
 	m_pContext11 = nullptr;
 	m_pDevice11 = nullptr;
 	m_pDx11 = nullptr;
 }
 
-//‰Šú‰».
-//	ID3D11Device* pDevice11 ŠO•”‚Åì¬‚µ‚Ä‚Á‚Ä‚­‚éB
-//	ID3D11DeviceContext* pContext11 ŠO•”‚Åì¬‚µ‚Ä‚Á‚Ä‚­‚éB
+//åˆæœŸåŒ–.
+//	ID3D11Device* pDevice11 å¤–éƒ¨ã§ä½œæˆã—ã¦æŒã£ã¦ãã‚‹ã€‚
+//	ID3D11DeviceContext* pContext11 å¤–éƒ¨ã§ä½œæˆã—ã¦æŒã£ã¦ãã‚‹ã€‚
 HRESULT CDebugText::Init( CDirectX11& pDx11 )
 {
 	m_pDx11 = &pDx11;
-	m_pDevice11 = m_pDx11->GetDevice();		//À‘Ô‚Í•Ê‚Ì‚Æ‚±‚ë‚É‚ ‚é.‘¼‚Æ‚à‹¤—L‚µ‚Ä‚¢‚é.
-	m_pContext11 = m_pDx11->GetContext();	//À‘Ô‚Í•Ê‚Ì‚Æ‚±‚ë‚É‚ ‚é.‘¼‚Æ‚à‹¤—L‚µ‚Ä‚¢‚é.
+	m_pDevice11 = m_pDx11->GetDevice();		//å®Ÿæ…‹ã¯åˆ¥ã®ã¨ã“ã‚ã«ã‚ã‚‹.ä»–ã¨ã‚‚å…±æœ‰ã—ã¦ã„ã‚‹.
+	m_pContext11 = m_pDx11->GetContext();	//å®Ÿæ…‹ã¯åˆ¥ã®ã¨ã“ã‚ã«ã‚ã‚‹.ä»–ã¨ã‚‚å…±æœ‰ã—ã¦ã„ã‚‹.
 
-	//ƒVƒF[ƒ_ì¬.
+	//ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆ.
 	if( FAILED( CreateShader() ))
 	{
 		return E_FAIL;
 	}
-	//”Âƒ|ƒŠƒSƒ“ì¬.
+	//æ¿ãƒãƒªã‚´ãƒ³ä½œæˆ.
 	if( FAILED( CreateModel() ))
 	{
 		return E_FAIL;
 	}
-	//ƒeƒNƒXƒ`ƒƒì¬.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ.
 	if( FAILED( CreateTexture( _T("Data\\DebugText\\ascii.png") )))
 	{
 		return E_FAIL;
 	}
-	//ƒTƒ“ƒvƒ‰ì¬.
+	//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 	if( FAILED( CreateSampler() ) )
 	{
 		return E_FAIL;
@@ -67,7 +67,7 @@ HRESULT CDebugText::Init( CDirectX11& pDx11 )
 	return S_OK;
 }
 
-//‰ğ•ú.
+//è§£æ”¾.
 void CDebugText::Release()
 {
 	SAFE_RELEASE( m_pSampleLinear );
@@ -85,8 +85,8 @@ void CDebugText::Release()
 }
 
 //===========================================================
-//	HLSLƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İƒVƒF[ƒ_‚ğì¬‚·‚é.
-//	HLSL: High Level Shading Language ‚Ì—ª.
+//	HLSLãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½œæˆã™ã‚‹.
+//	HLSL: High Level Shading Language ã®ç•¥.
 //===========================================================
 HRESULT CDebugText::CreateShader()
 {
@@ -98,126 +98,126 @@ HRESULT CDebugText::CreateShader()
 		D3D10_SHADER_DEBUG | D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif//#ifdef _DEBUG
 
-	//HLSL‚©‚çƒo[ƒeƒbƒNƒXƒVƒF[ƒ_‚Ìƒuƒƒu‚ğì¬.
+	//HLSLã‹ã‚‰ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ–ãƒ­ãƒ–ã‚’ä½œæˆ.
 	if (FAILED(
 		D3DX11CompileFromFile(
-			SHADER_NAME,	//ƒVƒF[ƒ_ƒtƒ@ƒCƒ‹–¼iHLSLƒtƒ@ƒCƒ‹j.
-			nullptr,		//ƒ}ƒNƒ’è‹`‚Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
-			nullptr,		//ƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹‚ğˆµ‚¤ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
-			"VS_Main",		//ƒVƒF[ƒ_ƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgŠÖ”‚Ì–¼‘O.
-			"vs_5_0",		//ƒVƒF[ƒ_‚Ìƒ‚ƒfƒ‹‚ğw’è‚·‚é•¶š—ñiƒvƒƒtƒ@ƒCƒ‹j.
-			uCompileFlag,	//ƒVƒF[ƒ_ƒRƒ“ƒpƒCƒ‹ƒtƒ‰ƒO.
-			0,				//ƒGƒtƒFƒNƒgƒRƒ“ƒpƒCƒ‹ƒtƒ‰ƒOi–¢g—pj.
-			nullptr,		//ƒXƒŒƒbƒh ƒ|ƒ“ƒv ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
-			&pCompiledShader,//ƒuƒƒu‚ğŠi”[‚·‚éƒƒ‚ƒŠ‚Ö‚Ìƒ|ƒCƒ“ƒ^.
-			&pErrors,		//ƒGƒ‰[‚ÆŒxˆê——‚ğŠi”[‚·‚éƒƒ‚ƒŠ‚Ö‚Ìƒ|ƒCƒ“ƒ^.
-			nullptr)))		//–ß‚è’l‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
+			SHADER_NAME,	//ã‚·ã‚§ãƒ¼ãƒ€ãƒ•ã‚¡ã‚¤ãƒ«åï¼ˆHLSLãƒ•ã‚¡ã‚¤ãƒ«ï¼‰.
+			nullptr,		//ãƒã‚¯ãƒ­å®šç¾©ã®é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
+			nullptr,		//ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ‰±ã†ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
+			"VS_Main",		//ã‚·ã‚§ãƒ¼ãƒ€ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆé–¢æ•°ã®åå‰.
+			"vs_5_0",		//ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ¢ãƒ‡ãƒ«ã‚’æŒ‡å®šã™ã‚‹æ–‡å­—åˆ—ï¼ˆãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«ï¼‰.
+			uCompileFlag,	//ã‚·ã‚§ãƒ¼ãƒ€ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ•ãƒ©ã‚°.
+			0,				//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ•ãƒ©ã‚°ï¼ˆæœªä½¿ç”¨ï¼‰.
+			nullptr,		//ã‚¹ãƒ¬ãƒƒãƒ‰ ãƒãƒ³ãƒ— ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
+			&pCompiledShader,//ãƒ–ãƒ­ãƒ–ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªã¸ã®ãƒã‚¤ãƒ³ã‚¿.
+			&pErrors,		//ã‚¨ãƒ©ãƒ¼ã¨è­¦å‘Šä¸€è¦§ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªã¸ã®ãƒã‚¤ãƒ³ã‚¿.
+			nullptr)))		//æˆ»ã‚Šå€¤ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
 	{
-		_ASSERT_EXPR( false, _T( "hlsl“Ç‚İ‚İ¸”s" ) );
+		_ASSERT_EXPR( false, _T( "hlslèª­ã¿è¾¼ã¿å¤±æ•—" ) );
 		return E_FAIL;
 	}
 	SAFE_RELEASE( pErrors );
 
-	//ã‹L‚Åì¬‚µ‚½ƒuƒƒu‚©‚çuƒo[ƒeƒbƒNƒXƒVƒF[ƒ_v‚ğì¬.
+	//ä¸Šè¨˜ã§ä½œæˆã—ãŸãƒ–ãƒ­ãƒ–ã‹ã‚‰ã€Œãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ã€ã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateVertexShader(
 			pCompiledShader->GetBufferPointer(),
 			pCompiledShader->GetBufferSize(),
 			nullptr,
-			&m_pVertexShader )))	//(out)ƒo[ƒeƒbƒNƒXƒVƒF[ƒ_.
+			&m_pVertexShader )))	//(out)ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€.
 	{
-		_ASSERT_EXPR( false, _T( "ƒo[ƒeƒbƒNƒXƒVƒF[ƒ_ì¬¸”s" ));
+		_ASSERT_EXPR( false, _T( "ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—" ));
 		return E_FAIL;
 	}
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğ’è‹`.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’å®šç¾©.
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{
-			"POSITION",						//ˆÊ’u.
+			"POSITION",						//ä½ç½®.
 			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,	//DXGI‚ÌƒtƒH[ƒ}ƒbƒg(32bit floatŒ^*3).
+			DXGI_FORMAT_R32G32B32_FLOAT,	//DXGIã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ(32bit floatå‹*3).
 			0,
-			0,								//ƒf[ƒ^‚ÌŠJnˆÊ’u.
+			0,								//ãƒ‡ãƒ¼ã‚¿ã®é–‹å§‹ä½ç½®.
 			D3D11_INPUT_PER_VERTEX_DATA, 0
 		},
 		{
-			"TEXCOORD",						//ƒeƒNƒXƒ`ƒƒˆÊ’u.
+			"TEXCOORD",						//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½ç½®.
 			0,
-			DXGI_FORMAT_R32G32_FLOAT,		//DXGI‚ÌƒtƒH[ƒ}ƒbƒg(32bit floatŒ^*2).
+			DXGI_FORMAT_R32G32_FLOAT,		//DXGIã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ(32bit floatå‹*2).
 			0,
-			12,								//ƒf[ƒ^‚ÌŠJnˆÊ’u.
+			12,								//ãƒ‡ãƒ¼ã‚¿ã®é–‹å§‹ä½ç½®.
 			D3D11_INPUT_PER_VERTEX_DATA, 0
 		}
 	};
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚Ì”z—ñ—v‘f”‚ğZo.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã®é…åˆ—è¦ç´ æ•°ã‚’ç®—å‡º.
 	UINT numElements = sizeof( layout) / sizeof(layout[0] );
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğì¬.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateInputLayout(
 			layout,
 			numElements,
 			pCompiledShader->GetBufferPointer(),
 			pCompiledShader->GetBufferSize(),
-			&m_pVertexLayout )))	//(out)’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg.
+			&m_pVertexLayout )))	//(out)é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ.
 	{
-		_ASSERT_EXPR( false, _T( "’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒgì¬¸”s" ) );
+		_ASSERT_EXPR( false, _T( "é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆä½œæˆå¤±æ•—" ) );
 		return E_FAIL;
 	}
 	SAFE_RELEASE( pCompiledShader );
 
-	//HLSL‚©‚çƒsƒNƒZƒ‹ƒVƒF[ƒ_‚Ìƒuƒƒu‚ğì¬.
+	//HLSLã‹ã‚‰ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ–ãƒ­ãƒ–ã‚’ä½œæˆ.
 	if (FAILED(
 		D3DX11CompileFromFile(
-			SHADER_NAME,		//ƒVƒF[ƒ_ƒtƒ@ƒCƒ‹–¼iHLSLƒtƒ@ƒCƒ‹j.
-			nullptr,			//ƒ}ƒNƒ’è‹`‚Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
-			nullptr,			//ƒCƒ“ƒNƒ‹[ƒhƒtƒ@ƒCƒ‹‚ğˆµ‚¤ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
-			"PS_Main",			//ƒVƒF[ƒ_ƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒgŠÖ”‚Ì–¼‘O.
-			"ps_5_0",			//ƒVƒF[ƒ_‚Ìƒ‚ƒfƒ‹‚ğw’è‚·‚é•¶š—ñiƒvƒƒtƒ@ƒCƒ‹j.
-			uCompileFlag,		//ƒVƒF[ƒ_ƒRƒ“ƒpƒCƒ‹ƒtƒ‰ƒO.
-			0,					//ƒGƒtƒFƒNƒgƒRƒ“ƒpƒCƒ‹ƒtƒ‰ƒOi–¢g—pj.
-			nullptr,			//ƒXƒŒƒbƒh ƒ|ƒ“ƒv ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
-			&pCompiledShader,	//ƒuƒƒu‚ğŠi”[‚·‚éƒƒ‚ƒŠ‚Ö‚Ìƒ|ƒCƒ“ƒ^.
-			&pErrors,			//ƒGƒ‰[‚ÆŒxˆê——‚ğŠi”[‚·‚éƒƒ‚ƒŠ‚Ö‚Ìƒ|ƒCƒ“ƒ^.
-			nullptr )))			//–ß‚è’l‚Ö‚Ìƒ|ƒCƒ“ƒ^i–¢g—pj.
+			SHADER_NAME,		//ã‚·ã‚§ãƒ¼ãƒ€ãƒ•ã‚¡ã‚¤ãƒ«åï¼ˆHLSLãƒ•ã‚¡ã‚¤ãƒ«ï¼‰.
+			nullptr,			//ãƒã‚¯ãƒ­å®šç¾©ã®é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
+			nullptr,			//ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ‰±ã†ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
+			"PS_Main",			//ã‚·ã‚§ãƒ¼ãƒ€ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆé–¢æ•°ã®åå‰.
+			"ps_5_0",			//ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ¢ãƒ‡ãƒ«ã‚’æŒ‡å®šã™ã‚‹æ–‡å­—åˆ—ï¼ˆãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«ï¼‰.
+			uCompileFlag,		//ã‚·ã‚§ãƒ¼ãƒ€ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ•ãƒ©ã‚°.
+			0,					//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ•ãƒ©ã‚°ï¼ˆæœªä½¿ç”¨ï¼‰.
+			nullptr,			//ã‚¹ãƒ¬ãƒƒãƒ‰ ãƒãƒ³ãƒ— ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
+			&pCompiledShader,	//ãƒ–ãƒ­ãƒ–ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªã¸ã®ãƒã‚¤ãƒ³ã‚¿.
+			&pErrors,			//ã‚¨ãƒ©ãƒ¼ã¨è­¦å‘Šä¸€è¦§ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªã¸ã®ãƒã‚¤ãƒ³ã‚¿.
+			nullptr )))			//æˆ»ã‚Šå€¤ã¸ã®ãƒã‚¤ãƒ³ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰.
 	{
-		_ASSERT_EXPR( false, _T( "hlsl“Ç‚İ‚İ¸”s" ) );
+		_ASSERT_EXPR( false, _T( "hlslèª­ã¿è¾¼ã¿å¤±æ•—" ) );
 		return E_FAIL;
 	}
 	SAFE_RELEASE( pErrors );
 
-	//ã‹L‚Åì¬‚µ‚½ƒuƒƒu‚©‚çuƒsƒNƒZƒ‹ƒVƒF[ƒ_v‚ğì¬.
+	//ä¸Šè¨˜ã§ä½œæˆã—ãŸãƒ–ãƒ­ãƒ–ã‹ã‚‰ã€Œãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã€ã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreatePixelShader(
 			pCompiledShader->GetBufferPointer(),
 			pCompiledShader->GetBufferSize(),
 			nullptr,
-			&m_pPixelShader )))	//(out)ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
+			&m_pPixelShader )))	//(out)ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
 	{
-		_ASSERT_EXPR( false, _T( "ƒsƒNƒZƒ‹ƒVƒF[ƒ_ì¬¸”s" ) );
+		_ASSERT_EXPR( false, _T( "ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—" ) );
 		return E_FAIL;
 	}
 	SAFE_RELEASE( pCompiledShader );
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgi’è”jƒoƒbƒtƒ@ì¬.
-	//ƒVƒF[ƒ_‚É“Á’è‚Ì”’l‚ğ‘—‚éƒoƒbƒtƒ@.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆï¼ˆå®šæ•°ï¼‰ãƒãƒƒãƒ•ã‚¡ä½œæˆ.
+	//ã‚·ã‚§ãƒ¼ãƒ€ã«ç‰¹å®šã®æ•°å€¤ã‚’é€ã‚‹ãƒãƒƒãƒ•ã‚¡.
 	D3D11_BUFFER_DESC cb;
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğw’è.
-	cb.ByteWidth = sizeof(SHADER_CONSTANT_BUFFER);	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒTƒCƒY.
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		//‘‚«‚İ‚ÅƒAƒNƒZƒX.
-	cb.MiscFlags = 0;	//‚»‚Ì‘¼‚Ìƒtƒ‰ƒOi–¢g—pj.
-	cb.StructureByteStride = 0;	//\‘¢‘Ì‚ÌƒTƒCƒYi–¢g—pj.
-	cb.Usage = D3D11_USAGE_DYNAMIC;	//g—p•û–@F’¼Ú‘‚«‚İ.
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡å®š.
+	cb.ByteWidth = sizeof(SHADER_CONSTANT_BUFFER);	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º.
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		//æ›¸ãè¾¼ã¿ã§ã‚¢ã‚¯ã‚»ã‚¹.
+	cb.MiscFlags = 0;	//ãã®ä»–ã®ãƒ•ãƒ©ã‚°ï¼ˆæœªä½¿ç”¨ï¼‰.
+	cb.StructureByteStride = 0;	//æ§‹é€ ä½“ã®ã‚µã‚¤ã‚ºï¼ˆæœªä½¿ç”¨ï¼‰.
+	cb.Usage = D3D11_USAGE_DYNAMIC;	//ä½¿ç”¨æ–¹æ³•ï¼šç›´æ¥æ›¸ãè¾¼ã¿.
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Ìì¬.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateBuffer(
 			&cb,
 			nullptr,
 			&m_pConstantBuffer )))
 	{
-		_ASSERT_EXPR( false, _T( "ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@ì¬¸”s" ) );
+		_ASSERT_EXPR( false, _T( "ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ä½œæˆå¤±æ•—" ) );
 		return E_FAIL;
 	}
 
@@ -226,95 +226,95 @@ HRESULT CDebugText::CreateShader()
 }
 
 
-//ƒ‚ƒfƒ‹ì¬.
+//ãƒ¢ãƒ‡ãƒ«ä½œæˆ.
 HRESULT CDebugText::CreateModel()
 {
-	//’è”
-	constexpr float CHAR_W = 10.f;		//‚P•¶š‚ ‚½‚è‚Ì•
-	constexpr float CHAR_H = 12.f;		//‚P•¶š‚ ‚½‚è‚Ì‚‚³
-	constexpr float TEXTURE_W = 128.f;	//ƒeƒNƒXƒ`ƒƒ‚Ì•
-	constexpr float TEXTURE_H = 128.f;	//ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³
+	//å®šæ•°
+	constexpr float CHAR_W = 10.f;		//ï¼‘æ–‡å­—ã‚ãŸã‚Šã®å¹…
+	constexpr float CHAR_H = 12.f;		//ï¼‘æ–‡å­—ã‚ãŸã‚Šã®é«˜ã•
+	constexpr float TEXTURE_W = 128.f;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…
+	constexpr float TEXTURE_H = 128.f;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•
 
-	//ƒtƒHƒ“ƒg–ˆ‚É‹éŒ`ì¬
+	//ãƒ•ã‚©ãƒ³ãƒˆæ¯ã«çŸ©å½¢ä½œæˆ
 	float left	= 0.f;
 	float top	= 0.f;
 	float right	= 0.f;
 	float bottom= 0.f;
 
-	//ì¬Ï‚İƒJƒEƒ“ƒ^
+	//ä½œæˆæ¸ˆã¿ã‚«ã‚¦ãƒ³ã‚¿
 	int count = 0;
 
-	//‚Qdƒ‹[ƒv‚Å‚P•¶š‚¸‚Âw’è‚·‚é
+	//ï¼’é‡ãƒ«ãƒ¼ãƒ—ã§ï¼‘æ–‡å­—ãšã¤æŒ‡å®šã™ã‚‹
 	for (int x = 0; x < SPRITE_MAX_W; x++)
 	{
 		for (int y = 0; y < SPRITE_MAX_H; y++)
 		{
-			//ƒJ[ƒjƒ“ƒOi•¶š“¯m‚ÌŠÔŠuj‚Ìİ’è
-			m_Kerning[count] = 10.f;	//•¶š‚²‚Æ‚Å’²®‰Â”\
+			//ã‚«ãƒ¼ãƒ‹ãƒ³ã‚°ï¼ˆæ–‡å­—åŒå£«ã®é–“éš”ï¼‰ã®è¨­å®š
+			m_Kerning[count] = 10.f;	//æ–‡å­—ã”ã¨ã§èª¿æ•´å¯èƒ½
 
-			//‚P‚Â‚ ‚½‚è‚Ì‘å‚«‚³
+			//ï¼‘ã¤ã‚ãŸã‚Šã®å¤§ãã•
 			left	= x * CHAR_W;
 			top		= y * CHAR_H;
 			right	= left + m_Kerning[count];
 			bottom	= top + CHAR_H;
 
-			//ƒeƒNƒXƒ`ƒƒ‚Ì‘å‚«‚³‚©‚ç”ä—¦ŒvZ
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¤§ãã•ã‹ã‚‰æ¯”ç‡è¨ˆç®—
 			left	/= TEXTURE_W;
 			top		/= TEXTURE_H;
 			right	/= TEXTURE_W;
 			bottom	/= TEXTURE_H;
 
-			//”Âƒ|ƒŠ(lŠpŒ`)‚Ì’¸“_‚ğì¬.
+			//æ¿ãƒãƒª(å››è§’å½¢)ã®é ‚ç‚¹ã‚’ä½œæˆ.
 			VERTEX vertices[] =
 			{
-				//’¸“_À•W(x,y,z)				 UVÀ•W(u,v)
-				D3DXVECTOR3(   0.0f, CHAR_H, 0.0f), D3DXVECTOR2(  left, bottom ),	//’¸“_‚P(¶‰º).
-				D3DXVECTOR3(   0.0f,   0.0f, 0.0f), D3DXVECTOR2(  left, top    ),	//’¸“_‚Q(¶ã).
-				D3DXVECTOR3( CHAR_W, CHAR_H, 0.0f), D3DXVECTOR2( right, bottom ),	//’¸“_‚R(‰E‰º).
-				D3DXVECTOR3( CHAR_W,   0.0f, 0.0f), D3DXVECTOR2( right, top    )	//’¸“_‚S(‰Eã).
+				//é ‚ç‚¹åº§æ¨™(x,y,z)				 UVåº§æ¨™(u,v)
+				D3DXVECTOR3(   0.0f, CHAR_H, 0.0f), D3DXVECTOR2(  left, bottom ),	//é ‚ç‚¹ï¼‘(å·¦ä¸‹).
+				D3DXVECTOR3(   0.0f,   0.0f, 0.0f), D3DXVECTOR2(  left, top    ),	//é ‚ç‚¹ï¼’(å·¦ä¸Š).
+				D3DXVECTOR3( CHAR_W, CHAR_H, 0.0f), D3DXVECTOR2( right, bottom ),	//é ‚ç‚¹ï¼“(å³ä¸‹).
+				D3DXVECTOR3( CHAR_W,   0.0f, 0.0f), D3DXVECTOR2( right, top    )	//é ‚ç‚¹ï¼”(å³ä¸Š).
 			};
-			//Å‘å—v‘f”‚ğZo‚·‚é.
+			//æœ€å¤§è¦ç´ æ•°ã‚’ç®—å‡ºã™ã‚‹.
 			UINT uVerMax = sizeof(vertices) / sizeof(vertices[0]);
 
-			//ƒoƒbƒtƒ@\‘¢‘Ì.
+			//ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“.
 			D3D11_BUFFER_DESC bd;
-			bd.Usage = D3D11_USAGE_DEFAULT;		//g—p•û–@iƒfƒtƒHƒ‹ƒgj.
-			bd.ByteWidth = sizeof(VERTEX) * uVerMax;	//’¸“_‚ÌƒTƒCƒY.
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;	//’¸“_ƒoƒbƒtƒ@‚Æ‚µ‚Äˆµ‚¤.
-			bd.CPUAccessFlags = 0;	//CPU‚©‚ç‚ÍƒAƒNƒZƒX‚µ‚È‚¢.
-			bd.MiscFlags = 0;	//‚»‚Ì‘¼‚Ìƒtƒ‰ƒOi–¢g—pj.
-			bd.StructureByteStride = 0;	//\‘¢‘Ì‚ÌƒTƒCƒYi–¢g—pj.
+			bd.Usage = D3D11_USAGE_DEFAULT;		//ä½¿ç”¨æ–¹æ³•ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼‰.
+			bd.ByteWidth = sizeof(VERTEX) * uVerMax;	//é ‚ç‚¹ã®ã‚µã‚¤ã‚º.
+			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¨ã—ã¦æ‰±ã†.
+			bd.CPUAccessFlags = 0;	//CPUã‹ã‚‰ã¯ã‚¢ã‚¯ã‚»ã‚¹ã—ãªã„.
+			bd.MiscFlags = 0;	//ãã®ä»–ã®ãƒ•ãƒ©ã‚°ï¼ˆæœªä½¿ç”¨ï¼‰.
+			bd.StructureByteStride = 0;	//æ§‹é€ ä½“ã®ã‚µã‚¤ã‚ºï¼ˆæœªä½¿ç”¨ï¼‰.
 
-			//ƒTƒuƒŠƒ\[ƒXƒf[ƒ^\‘¢‘Ì.
+			//ã‚µãƒ–ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“.
 			D3D11_SUBRESOURCE_DATA InitData;
-			InitData.pSysMem = vertices;	//”Âƒ|ƒŠ‚Ì’¸“_‚ğƒZƒbƒg.
+			InitData.pSysMem = vertices;	//æ¿ãƒãƒªã®é ‚ç‚¹ã‚’ã‚»ãƒƒãƒˆ.
 
-			//’¸“_ƒoƒbƒtƒ@‚Ìì¬.
+			//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ.
 			if (FAILED(m_pDevice11->CreateBuffer(
 				&bd, &InitData, &m_pVertexBuffer[count])))
 			{
-				_ASSERT_EXPR(false, _T("’¸“_ƒoƒbƒtƒ@ì¬¸”s"));
+				_ASSERT_EXPR(false, _T("é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆå¤±æ•—"));
 				return E_FAIL;
 			}
 
-			count++;	//‚P•¶šì¬‚µ‚½‚Ì‚ÅŸ‚Ö
+			count++;	//ï¼‘æ–‡å­—ä½œæˆã—ãŸã®ã§æ¬¡ã¸
 		}
 	}
 	return S_OK;
 }
 
-//ƒeƒNƒXƒ`ƒƒì¬.
+//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ.
 HRESULT CDebugText::CreateTexture( LPCTSTR lpFileName )
 {
-	//ƒeƒNƒXƒ`ƒƒì¬.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ.
 	if( FAILED( D3DX11CreateShaderResourceViewFromFile(
-		m_pDevice11,		//ƒŠƒ\[ƒX‚ğg—p‚·‚éƒfƒoƒCƒX‚Ìƒ|ƒCƒ“ƒ^.
-		lpFileName,			//ƒtƒ@ƒCƒ‹–¼.
+		m_pDevice11,		//ãƒªã‚½ãƒ¼ã‚¹ã‚’ä½¿ç”¨ã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿.
+		lpFileName,			//ãƒ•ã‚¡ã‚¤ãƒ«å.
 		nullptr, nullptr,
-		&m_pTexture,		//(out)ƒeƒNƒXƒ`ƒƒ.
+		&m_pTexture,		//(out)ãƒ†ã‚¯ã‚¹ãƒãƒ£.
 		nullptr ) ) )
 	{
-		_ASSERT_EXPR( false, _T( "ƒeƒNƒXƒ`ƒƒì¬¸”s" ) );
+		_ASSERT_EXPR( false, _T( "ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆå¤±æ•—" ) );
 		return E_FAIL;
 	}
 
@@ -322,69 +322,69 @@ HRESULT CDebugText::CreateTexture( LPCTSTR lpFileName )
 }
 
 
-//ƒTƒ“ƒvƒ‰ì¬.
+//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 HRESULT CDebugText::CreateSampler()
 {
-	//ƒeƒNƒXƒ`ƒƒ—p‚ÌƒTƒ“ƒvƒ‰\‘¢‘Ì.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”¨ã®ã‚µãƒ³ãƒ—ãƒ©æ§‹é€ ä½“.
 	D3D11_SAMPLER_DESC samDesc;
 	ZeroMemory( &samDesc, sizeof( samDesc ) );
-	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;//ƒŠƒjƒAƒtƒBƒ‹ƒ^iüŒ`•âŠÔj.
-						//POINT:‚‘¬‚¾‚ª‘e‚¢.
-	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;	//ƒ‰ƒbƒsƒ“ƒOƒ‚[ƒhiWRAP:ŒJ‚è•Ô‚µj.
+	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;//ãƒªãƒ‹ã‚¢ãƒ•ã‚£ãƒ«ã‚¿ï¼ˆç·šå½¢è£œé–“ï¼‰.
+						//POINT:é«˜é€Ÿã ãŒç²—ã„.
+	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;	//ãƒ©ãƒƒãƒ”ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ï¼ˆWRAP:ç¹°ã‚Šè¿”ã—ï¼‰.
 	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	//MIRROR: ”½“]ŒJ‚è•Ô‚µ.
-	//CLAMP : ’[‚Ì–Í—l‚ğˆø‚«L‚Î‚·.
-	//BORDER: •Ê“r‹«ŠEF‚ğŒˆ‚ß‚é.
+	//MIRROR: åè»¢ç¹°ã‚Šè¿”ã—.
+	//CLAMP : ç«¯ã®æ¨¡æ§˜ã‚’å¼•ãä¼¸ã°ã™.
+	//BORDER: åˆ¥é€”å¢ƒç•Œè‰²ã‚’æ±ºã‚ã‚‹.
 
-	//ƒTƒ“ƒvƒ‰ì¬.
+	//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 	if( FAILED( m_pDevice11->CreateSamplerState(
-		&samDesc, &m_pSampleLinear ) ) )//(out)ƒTƒ“ƒvƒ‰.
+		&samDesc, &m_pSampleLinear ) ) )//(out)ã‚µãƒ³ãƒ—ãƒ©.
 	{
-		_ASSERT_EXPR( false, _T( "ƒTƒ“ƒvƒ‰ì¬¸”s" ) );
+		_ASSERT_EXPR( false, _T( "ã‚µãƒ³ãƒ—ãƒ©ä½œæˆå¤±æ•—" ) );
 		return E_FAIL;
 	}
 
 	return S_OK;
 }
 
-//ƒtƒHƒ“ƒgƒŒƒ“ƒ_ƒŠƒ“ƒO
+//ãƒ•ã‚©ãƒ³ãƒˆãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
 void CDebugText::RenderFont(int FontIndex, float x, float y, float FontSize)
 {
-	//ƒ[ƒ‹ƒhs—ñ.
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—.
 	D3DXMATRIX	mWorld;
 	D3DXMATRIX	mTrans, mScale;
 
 	float scale = FontSize/SPRITE_MAX_W;
 
-	//Šg‘åk¬s—ñ.
+	//æ‹¡å¤§ç¸®å°è¡Œåˆ—.
 	D3DXMatrixScaling( &mScale, scale, scale, 1.0);
 
-	//•½ss—ñi•½sˆÚ“®j.
+	//å¹³è¡Œè¡Œåˆ—ï¼ˆå¹³è¡Œç§»å‹•ï¼‰.
 	D3DXMatrixTranslation( &mTrans, x, y, 0.f );
 
-	//ƒ[ƒ‹ƒhÀ•W•ÏŠ·.
-	//d—v: Šgks—ñ * •½ss—ñ.
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™å¤‰æ›.
+	//é‡è¦: æ‹¡ç¸®è¡Œåˆ— * å¹³è¡Œè¡Œåˆ—.
 	mWorld = mScale * mTrans;
 
-	//ƒVƒF[ƒ_‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÉŠeíƒf[ƒ^‚ğ“n‚·.
+	//ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã«å„ç¨®ãƒ‡ãƒ¼ã‚¿ã‚’æ¸¡ã™.
 	D3D11_MAPPED_SUBRESOURCE pData;
-	SHADER_CONSTANT_BUFFER cb;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@.
-	//ƒoƒbƒtƒ@“à‚Ìƒf[ƒ^‚Ì‘‚«Š·‚¦ŠJn‚Émap.
+	SHADER_CONSTANT_BUFFER cb;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡.
+	//ãƒãƒƒãƒ•ã‚¡å†…ã®ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãæ›ãˆé–‹å§‹æ™‚ã«map.
 	if (SUCCEEDED(
 		m_pContext11->Map( m_pConstantBuffer,
 			0, D3D11_MAP_WRITE_DISCARD, 0, &pData )))
 	{
-		//ƒ[ƒ‹ƒhs—ñ‚ğ“n‚·.
+		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’æ¸¡ã™.
 		D3DXMATRIX m = mWorld;
-		D3DXMatrixTranspose( &m, &m );	//s—ñ‚ğ“]’u‚·‚é.
+		D3DXMatrixTranspose( &m, &m );	//è¡Œåˆ—ã‚’è»¢ç½®ã™ã‚‹.
 		cb.mWorld = m;
 
-		//ƒJƒ‰[.
+		//ã‚«ãƒ©ãƒ¼.
 		cb.vColor = D3DXVECTOR4(
 			m_Color.x, m_Color.y, m_Color.z, m_Alpha );
 
-		//ƒrƒ…[ƒ|[ƒg‚Ì•A‚‚³‚ğ“n‚·
+		//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®å¹…ã€é«˜ã•ã‚’æ¸¡ã™
 		cb.fViewPortWidth	= static_cast<float>( WND_W );
 		cb.fViewPortHeight	= static_cast<float>( WND_H );
 
@@ -394,41 +394,41 @@ void CDebugText::RenderFont(int FontIndex, float x, float y, float FontSize)
 		m_pContext11->Unmap(m_pConstantBuffer, 0);
 	}
 
-	//’¸“_ƒoƒbƒtƒ@‚ğƒZƒbƒg.
-	UINT stride = sizeof( VERTEX );	//ƒf[ƒ^‚ÌŠÔŠu.
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆ.
+	UINT stride = sizeof( VERTEX );	//ãƒ‡ãƒ¼ã‚¿ã®é–“éš”.
 	UINT offset = 0;
 	m_pContext11->IASetVertexBuffers( 0, 1,
 		&m_pVertexBuffer[FontIndex], &stride, &offset);
 
-	//ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒh—LŒø‚É‚·‚é.
+	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‰æœ‰åŠ¹ã«ã™ã‚‹.
 	m_pDx11->SetAlphaBlend( true );
 
-	//ƒvƒŠƒ~ƒeƒBƒu‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO.
-	m_pContext11->Draw( 4, 0 );	//”Âƒ|ƒŠi’¸“_4‚Â•ªj.
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
+	m_pContext11->Draw( 4, 0 );	//æ¿ãƒãƒªï¼ˆé ‚ç‚¹4ã¤åˆ†ï¼‰.
 
-	//ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒh–³Œø‚É‚·‚é.
+	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‰ç„¡åŠ¹ã«ã™ã‚‹.
 	m_pDx11->SetAlphaBlend( false );
 
 }
 
-//ƒŒƒ“ƒ_ƒŠƒ“ƒO—p.
+//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ç”¨.
 void CDebugText::Render(LPCTSTR text, int x, int y, float FontSize)
 {
-	//g—p‚·‚éƒVƒF[ƒ_‚Ì“o˜^.
+	//ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ã®ç™»éŒ².
 	m_pContext11->VSSetShader( m_pVertexShader, nullptr, 0 );
 	m_pContext11->PSSetShader( m_pPixelShader, nullptr, 0 );
 
-	//‚±‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğ‚Ç‚ÌƒVƒF[ƒ_‚Åg‚¤‚©H.
+	//ã“ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’ã©ã®ã‚·ã‚§ãƒ¼ãƒ€ã§ä½¿ã†ã‹ï¼Ÿ.
 	m_pContext11->VSSetConstantBuffers( 0, 1, &m_pConstantBuffer );
 	m_pContext11->PSSetConstantBuffers( 0, 1, &m_pConstantBuffer );
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğƒZƒbƒg.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ã‚»ãƒƒãƒˆ.
 	m_pContext11->IASetInputLayout( m_pVertexLayout );
-	//ƒvƒŠƒ~ƒeƒBƒuEƒgƒ|ƒƒW[‚ğƒZƒbƒg.
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ãƒ»ãƒˆãƒãƒ­ã‚¸ãƒ¼ã‚’ã‚»ãƒƒãƒˆ.
 	m_pContext11->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP );
 
-	//ƒeƒNƒXƒ`ƒƒ‚ğƒVƒF[ƒ_‚É“n‚·.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 	m_pContext11->PSSetSamplers( 0, 1, &m_pSampleLinear );
 	m_pContext11->PSSetShaderResources( 0, 1, &m_pTexture );
 
@@ -437,13 +437,13 @@ void CDebugText::Render(LPCTSTR text, int x, int y, float FontSize)
 
 	float scale = FontSize / SPRITE_MAX_H;
 
-	//•¶š”•ªƒ‹[ƒv
+	//æ–‡å­—æ•°åˆ†ãƒ«ãƒ¼ãƒ—
 	for (int i = 0; i < lstrlen(text); i++)
 	{
 		TCHAR font = text[i];
-		int index = font - 32;	//ƒtƒHƒ“ƒgƒCƒ“ƒfƒbƒNƒXì¬
+		int index = font - 32;	//ãƒ•ã‚©ãƒ³ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä½œæˆ
 
-		//ƒtƒHƒ“ƒgƒŒƒ“ƒ_ƒŠƒ“ƒO
+		//ãƒ•ã‚©ãƒ³ãƒˆãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
 		RenderFont( index, fx, fy, FontSize);
 
 		fx += scale * m_Kerning[index];

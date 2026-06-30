@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CStage.h"
 #include "CPlayer.h"
 #include "CBlockedPath.h"

@@ -1,19 +1,19 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 #include <string>
 #include "CLevel.h"		// CLevel::GOAL, CLevel::COLLISION_TRIGGER, D3DXVECTOR3
 
 //==================================================================
 // CDataReader
-//   Loads level data from CSV files under Data\CSV\.
-//   Each loader skips the header row and ignores blank lines.
-//   List loaders bucket rows by their LEVEL_ID column into out[level].
+//   Data\CSV\ 配下のCSVファイルからレベルデータを読み込む。
+//   各ローダーはヘッダー行をスキップし、空行を無視する。
+//   リスト系ローダーはLEVEL_ID列ごとに行をout[level]へ振り分ける。
 //==================================================================
 class CDataReader
 {
 public:
 
-	// Per-level scalar data (one row per level).
+	// レベルごとのスカラーデータ（レベル1つにつき1行）
 	struct LEVEL_INFO
 	{
 		int          id       = 0;
@@ -22,14 +22,14 @@ public:
 		float        timer    = 0.f;
 	};
 
-	// Blocked-path transform (one row per blocked path).
+	// 通行止めパスのトランスフォーム（通行止め1つにつき1行）
 	struct BLOCKED_PATH
 	{
 		D3DXVECTOR3 position = D3DXVECTOR3(0.f, 0.f, 0.f);
 		D3DXVECTOR3 scale    = D3DXVECTOR3(1.f, 1.f, 1.f);
 	};
 
-	// Enemy archetype. CGame maps each value to a concrete enemy class.
+	// 敵のアーキタイプ。CGameが各値を具体的な敵クラスに対応付ける
 	enum ENEMY_TYPE
 	{
 		ENEMY_SPIDER,
@@ -37,29 +37,29 @@ public:
 		ENEMY_BOSS,
 	};
 
-	// One spawn group (cleared together). Holds the ordered enemy types.
+	// 1つのスポーングループ（まとめて撃破される）。順序付けされた敵種別を保持する
 	struct ENEMY_GROUP_DEF
 	{
 		std::vector<ENEMY_TYPE> enemies;
 	};
 
-	// levelData.csv  -> start position, goal, timer (appended in file order).
+	// levelData.csv  -> 開始位置・ゴール・タイマー（ファイル順に追加）
 	static bool LoadLevelData(const char* filePath, std::vector<LEVEL_INFO>& out);
 
-	// enemySpawns.csv  -> spawn positions bucketed by LEVEL_ID.
+	// enemySpawns.csv  -> LEVEL_IDごとに振り分けたスポーン位置
 	static bool LoadEnemySpawns(const char* filePath, std::vector<D3DXVECTOR3>* out, int levelCount);
 
-	// blockedPaths.csv -> blocked-path transforms bucketed by LEVEL_ID.
+	// blockedPaths.csv -> LEVEL_IDごとに振り分けた通行止めパスのトランスフォーム
 	static bool LoadBlockedPaths(const char* filePath, std::vector<BLOCKED_PATH>* out, int levelCount);
 
-	// triggers.csv     -> collision triggers bucketed by LEVEL_ID.
+	// triggers.csv     -> LEVEL_IDごとに振り分けた衝突トリガー
 	static bool LoadTriggers(const char* filePath, std::vector<CLevel::COLLISION_TRIGGER>* out, int levelCount);
 
-	// enemyGroups.csv  -> spawn groups bucketed by LEVEL_ID (indexed by GROUP column).
+	// enemyGroups.csv  -> LEVEL_IDごとに振り分けたスポーングループ（GROUP列でインデックス）
 	static bool LoadEnemyGroups(const char* filePath, std::vector<ENEMY_GROUP_DEF>* out, int levelCount);
 
 private:
 
-	// Split a line into fields, preserving empty fields (unlike strtok).
+	// 行をフィールドに分割する。strtokと違い空フィールドも保持する
 	static std::vector<std::string> SplitLine(const std::string& line, char delim);
 };

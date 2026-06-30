@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #pragma warning(disable:4005)
 
@@ -6,12 +6,12 @@
 
 #include <unordered_map>
 
-// Forward declaration
+// 前方宣言.
 class CDirectX11;
 
 /**************************************************
-*	SDF Font Renderer Class
-*	Renders high-quality scalable fonts using Signed Distance Field technique
+*	SDFフォント描画クラス.
+*	符号付き距離フィールド（SDF）技術を用いて高品質でスケーラブルなフォントを描画する.
 **/
 class CFont
 {
@@ -25,12 +25,12 @@ public:
 		float advance;
 	};
 
-	std::unordered_map<int, GlyphInfo> m_GlyphMap; // ASCII code -> glyph info
+	std::unordered_map<int, GlyphInfo> m_GlyphMap; // ASCIIコード -> グリフ情報.
 	
-	// �萔��`.
-	static constexpr int SPRITE_MAX = 95;		// �\���\������ (ASCII 32-126).
+	// 定数定義.
+	static constexpr int SPRITE_MAX = 95;		// 表示可能文字数 (ASCII 32-126).
 
-	// �V�F�[�_�[�p�萔�o�b�t�@.
+	// シェーダー用定数バッファ.
 	struct SHADER_CONSTANT_BUFFER
 	{
 		ALIGN16 D3DXMATRIX	mWorld;
@@ -41,29 +41,29 @@ public:
 		ALIGN16 float fPadding[3];
 	};
 
-	// ���_�t�H�[�}�b�g.
+	// 頂点フォーマット.
 	struct VERTEX
 	{
-		D3DXVECTOR3 Pos;	// Vertex position
-		D3DXVECTOR2	Tex;	// Texture coordinates
+		D3DXVECTOR3 Pos;	// 頂点座標.
+		D3DXVECTOR2	Tex;	// テクスチャ座標.
 	};
 
 public:
-	CFont();		// Constructor
-	~CFont();	// Destructor
+	CFont();		// コンストラクタ.
+	~CFont();	// デストラクタ.
 
-	// Initialize the SDF text renderer
+	// SDFテキスト描画を初期化.
 	HRESULT Init(CDirectX11& pDx11);
 
-	// Render text string
+	// テキスト文字列を描画.
 	void Render(LPCTSTR text, int x, int y, float FontSize, bool vertical = false);
 
 	void SetFontMode(FontMode mode){ m_FontMode = mode; }
 
-	// Set alpha value (0.0 = fully transparent, 1.0 = fully opaque)
+	// アルファ値を設定 (0.0 = 完全透明, 1.0 = 完全不透明).
 	void SetAlpha(float alpha) { m_Alpha = alpha; }
 
-	// Set text color (RGB)
+	// テキストカラーを設定 (RGB).
 	void SetColor(float r, float g, float b)
 	{
 		m_Color.x = r;
@@ -74,25 +74,25 @@ public:
 	void SetPxRange(float pxRange) { m_PxRange = pxRange; }
 
 private:
-	// Create shaders
+	// シェーダ作成.
 	HRESULT CreateShader();
 
-	// Create geometry (quads for each glyph)
+	// ジオメトリ作成（グリフごとのクアッド）.
 	HRESULT CreateModel();
 
-	// Load SDF texture atlas
+	// SDFテクスチャアトラス読み込み.
 	HRESULT CreateTexture(LPCTSTR lpFileName);
 
-	// Create sampler state (CLAMP mode for SDF)
+	// サンプラーステート作成（SDF用CLAMPモード）.
 	HRESULT CreateSampler();
 
-	// Render single glyph
+	// 単一グリフを描画.
 	void RenderFont(int FontIndex, float x, float y, float FontSize);
 
-	// Release resources
+	// リソースを解放.
 	void Release();
 
-	// Load glyph metrics from JSON file
+	// JSONファイルからグリフメトリクスを読み込む.
 	HRESULT LoadAtlasCSV(LPCTSTR filePath);
 
 private:
@@ -100,19 +100,19 @@ private:
 	ID3D11Device* m_pDevice11;
 	ID3D11DeviceContext* m_pContext11;
 
-	ID3D11VertexShader* m_pVertexShader;		// Vertex shader
-	ID3D11InputLayout* m_pVertexLayout;			// Input layout
-	ID3D11PixelShader* m_pPixelShader;			// Pixel shader (SDF-aware)
-	ID3D11Buffer* m_pConstantBuffer;			// Constant buffer
+	ID3D11VertexShader* m_pVertexShader;		// 頂点シェーダ.
+	ID3D11InputLayout* m_pVertexLayout;			// 入力レイアウト.
+	ID3D11PixelShader* m_pPixelShader;			// ピクセルシェーダ（SDF対応）.
+	ID3D11Buffer* m_pConstantBuffer;			// コンスタントバッファ.
 
-	ID3D11Buffer* m_pVertexBuffer[SPRITE_MAX];	// Vertex buffers (one per glyph)
+	ID3D11Buffer* m_pVertexBuffer[SPRITE_MAX];	// 頂点バッファ（グリフごとに1つ）.
 
-	ID3D11ShaderResourceView* m_pTexture;		// SDF texture atlas
-	ID3D11SamplerState* m_pSampleLinear;		// Sampler state
+	ID3D11ShaderResourceView* m_pTexture;		// SDFテクスチャアトラス.
+	ID3D11SamplerState* m_pSampleLinear;		// サンプラーステート.
 
-	float			m_Alpha;					// Alpha value (0-1)
-	D3DXVECTOR3		m_Color;					// Color (RGB)
-	float			m_Kerning[SPRITE_MAX];		// Kerning values per glyph
+	float			m_Alpha;					// アルファ値 (0-1).
+	D3DXVECTOR3		m_Color;					// カラー (RGB).
+	float			m_Kerning[SPRITE_MAX];		// グリフごとのカーニング値.
 
 	float			m_PxRange;
 	FontMode		m_FontMode;

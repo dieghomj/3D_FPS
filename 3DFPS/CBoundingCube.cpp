@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CBoundingCube.h"
 
 CBoundingCube::CBoundingCube()
@@ -58,7 +58,7 @@ HRESULT CBoundingCube::CreateCubeForMesh(const CStaticMesh& pMesh)
 
 bool CBoundingCube::IsHit(const CBoundingCube& other) const
 {
-	// AABBÕ“Ë”»’èi‰ñ“]‚È‚µ‚Ìê‡j
+	// AABBè¡çªåˆ¤å®šï¼ˆå›è»¢ãªã—ã®å ´åˆï¼‰
 	if (m_Max.x < other.m_Min.x || m_Min.x > other.m_Max.x) return false;
 	if (m_Max.y < other.m_Min.y || m_Min.y > other.m_Max.y) return false;
 	if (m_Max.z < other.m_Min.z || m_Min.z > other.m_Max.z) return false;

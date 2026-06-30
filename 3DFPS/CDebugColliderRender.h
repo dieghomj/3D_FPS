@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <d3d11.h>
 #include "CDirectX9.h"
 #include "CDirectX11.h"

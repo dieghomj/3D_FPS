@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ğ–³Œø‚É‚·‚é.4005:Ä’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹.4005:å†å®šç¾©.
 #pragma warning(disable:4005)
 
-//ƒwƒbƒ_“Ç.
+//ãƒ˜ãƒƒãƒ€èª­è¾¼.
 #include <D3DX11.h>
 #include <D3D11.h>
-#include <D3DX10.h>	//uD3DX`v‚Ì’è‹`g—p‚É•K—v.
+#include <D3DX10.h>	//ã€ŒD3DXï½ã€ã®å®šç¾©ä½¿ç”¨æ™‚ã«å¿…è¦.
 #include <D3D10.h>
 
 
-//ƒ‰ƒCƒuƒ‰ƒŠ“Ç‚İ‚İ.
+//ãƒ©ã‚¤ãƒ–ãƒ©ãƒªèª­ã¿è¾¼ã¿.
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "d3dx11.lib")
 #pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "d3dx10.lib")	//uD3DX`v‚Ì’è‹`g—p‚É•K—v.
+#pragma comment(lib, "d3dx10.lib")	//ã€ŒD3DXï½ã€ã®å®šç¾©ä½¿ç”¨æ™‚ã«å¿…è¦.
 
 
 /**************************************************
-*	DirectX11 ƒZƒbƒgƒAƒbƒv.
+*	DirectX11 ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—.
 **/
 class CDirectX11
 {
@@ -26,61 +26,61 @@ public:
 	CDirectX11();
 	~CDirectX11();
 
-	//DirectX11\’z.
+	//DirectX11æ§‹ç¯‰.
 	HRESULT Create(HWND hWnd);
-	//DirectX11‰ğ•ú.
+	//DirectX11è§£æ”¾.
 	void Release();
 
-	//[“xi‚yjƒeƒXƒgON/OFFØ‚è‘Ö‚¦.
+	//æ·±åº¦ï¼ˆï¼ºï¼‰ãƒ†ã‚¹ãƒˆON/OFFåˆ‡ã‚Šæ›¿ãˆ.
 	void SetDepth( bool flag );
-	//ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒhON/OFFØ‚è‘Ö‚¦.
+	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‰ON/OFFåˆ‡ã‚Šæ›¿ãˆ.
 	void SetAlphaBlend( bool flag );
 
 	void SetDepthBias(bool enable, float bias = 0.0001f, float slopeBias = 1.0f);
 
-	//ƒoƒbƒNƒoƒbƒtƒ@ƒNƒŠƒAŠÖ”.
+	//ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢é–¢æ•°.
 	void ClearBackBuffer();
-	//•\¦.
+	//è¡¨ç¤º.
 	void Present();
 
-	//ƒfƒoƒCƒX‚ğæ“¾.
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚’å–å¾—.
 	ID3D11Device* GetDevice() const { return m_pDevice11;  }
-	//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğæ“¾.
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—.
 	ID3D11DeviceContext* GetContext() const { return m_pContext11; }
 
 private:
-	//ƒfƒoƒCƒX‚ÆƒXƒƒbƒvƒ`ƒFƒCƒ“ì¬.
+	//ãƒ‡ãƒã‚¤ã‚¹ã¨ã‚¹ãƒ¯ãƒƒãƒ—ãƒã‚§ã‚¤ãƒ³ä½œæˆ.
 	HRESULT CreateDeviceAndSwapChain(
 		HWND hWnd, UINT uFPS, UINT uWidth, UINT uHeight );
 
-	//ƒoƒbƒNƒoƒbƒtƒ@ì¬:ƒJƒ‰[—pƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgƒrƒ…[ì¬.
+	//ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ä½œæˆ:ã‚«ãƒ©ãƒ¼ç”¨ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ“ãƒ¥ãƒ¼ä½œæˆ.
 	HRESULT CreateColorBackBufferRTV();
 
-	//ƒoƒbƒNƒoƒbƒtƒ@ì¬:ƒfƒvƒXƒXƒeƒ“ƒVƒ‹—pƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgƒrƒ…[ì¬.
+	//ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ä½œæˆ:ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ç”¨ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ“ãƒ¥ãƒ¼ä½œæˆ.
 	HRESULT CreateDepthStencilBackBufferRTV();
 
-	//ƒ‰ƒXƒ^ƒ‰ƒCƒUì¬.
+	//ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ä½œæˆ.
 	HRESULT CreateRasterizer();
 
-	//ƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒXƒe[ƒgì¬.
+	//ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ã‚¹ãƒ†ãƒ¼ãƒˆä½œæˆ.
 	HRESULT CreateDepthStencilState();
 
-	//ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒhƒXƒe[ƒgì¬.
+	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¹ãƒ†ãƒ¼ãƒˆä½œæˆ.
 	HRESULT CreateAlphaBlendState();
 
 private:
-	ID3D11Device*				m_pDevice11;			//ƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg.
-	ID3D11DeviceContext*		m_pContext11;			//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg.
-	IDXGISwapChain*				m_pSwapChain;			//ƒXƒƒbƒvƒ`ƒF[ƒ“.
-	ID3D11RenderTargetView*		m_pBackBuffer_TexRTV;	//ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgƒrƒ…[.
-	ID3D11Texture2D*			m_pBackBuffer_DSTex;	//ƒfƒvƒXƒXƒeƒ“ƒVƒ‹—pƒeƒNƒXƒ`ƒƒ.
-	ID3D11DepthStencilView*		m_pBackBuffer_DSTexDSV;	//ƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒrƒ…[.
+	ID3D11Device*				m_pDevice11;			//ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ.
+	ID3D11DeviceContext*		m_pContext11;			//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ.
+	IDXGISwapChain*				m_pSwapChain;			//ã‚¹ãƒ¯ãƒƒãƒ—ãƒã‚§ãƒ¼ãƒ³.
+	ID3D11RenderTargetView*		m_pBackBuffer_TexRTV;	//ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ“ãƒ¥ãƒ¼.
+	ID3D11Texture2D*			m_pBackBuffer_DSTex;	//ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£.
+	ID3D11DepthStencilView*		m_pBackBuffer_DSTexDSV;	//ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ“ãƒ¥ãƒ¼.
 
-	//[“xi‚yjƒeƒXƒgİ’è.
-	ID3D11DepthStencilState*	m_pDepthStencilStateOn;		//—LŒøİ’è.
-	ID3D11DepthStencilState*	m_pDepthStencilStateOff;	//–³Œøİ’è.
+	//æ·±åº¦ï¼ˆï¼ºï¼‰ãƒ†ã‚¹ãƒˆè¨­å®š.
+	ID3D11DepthStencilState*	m_pDepthStencilStateOn;		//æœ‰åŠ¹è¨­å®š.
+	ID3D11DepthStencilState*	m_pDepthStencilStateOff;	//ç„¡åŠ¹è¨­å®š.
 
-	//ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒh.
-	ID3D11BlendState*		m_pAlphaBlendOn;	//—LŒøİ’è.
-	ID3D11BlendState*		m_pAlphaBlendOff;	//–³Œøİ’è.
+	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‰.
+	ID3D11BlendState*		m_pAlphaBlendOn;	//æœ‰åŠ¹è¨­å®š.
+	ID3D11BlendState*		m_pAlphaBlendOff;	//ç„¡åŠ¹è¨­å®š.
 };

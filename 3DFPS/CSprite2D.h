@@ -1,116 +1,116 @@
-#pragma once
+ï»¿#pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ğ–³Œø‚É‚·‚é.4005:Ä’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹.4005:å†å®šç¾©.
 #pragma warning(disable:4005)
 
-//_declspec()	:DLL‚©‚ç(ŠÖ”AƒNƒ‰ƒXAƒNƒ‰ƒX‚Ìƒƒ“ƒoŠÖ”‚ğ)ƒGƒNƒXƒ|[ƒg‚·‚é
-//align()		:(‹­§“I‚É)16byte‚Åg—p‚·‚é
+//_declspec()	:DLLã‹ã‚‰(é–¢æ•°ã€ã‚¯ãƒ©ã‚¹ã€ã‚¯ãƒ©ã‚¹ã®ãƒ¡ãƒ³ãƒé–¢æ•°ã‚’)ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã™ã‚‹
+//align()		:(å¼·åˆ¶çš„ã«)16byteã§ä½¿ç”¨ã™ã‚‹
 #define ALIGN16 _declspec( align(16) )
 
-//‘O•ûéŒ¾.
+//å‰æ–¹å®£è¨€.
 class CDirectX11;
 
 /**************************************************
-*	ƒXƒvƒ‰ƒCƒg2DƒNƒ‰ƒX.
+*	ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ2Dã‚¯ãƒ©ã‚¹.
 **/
 class CSprite2D
 {
 public:
 	//======================================
-	//	\‘¢‘Ì.
+	//	æ§‹é€ ä½“.
 	//======================================
-	//•‚‚³\‘¢‘Ì
+	//å¹…é«˜ã•æ§‹é€ ä½“
 	struct WHSIZE
 	{
 		float w;
 		float h;
 	};
-	//ƒXƒvƒ‰ƒCƒg\‘¢‘Ì
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæ§‹é€ ä½“
 	struct SPRITE_STATE
 	{
-		WHSIZE Disp;	//•\¦•‚‚³
-		WHSIZE Base;	//Œ³‰æ‘œ•‚‚³
-		WHSIZE Stride;	//1ƒRƒ}‚ ‚½‚è‚Ì•‚‚³
+		WHSIZE Disp;	//è¡¨ç¤ºå¹…é«˜ã•
+		WHSIZE Base;	//å…ƒç”»åƒå¹…é«˜ã•
+		WHSIZE Stride;	//1ã‚³ãƒã‚ãŸã‚Šã®å¹…é«˜ã•
 	};
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒAƒvƒŠ‘¤‚Ì’è‹`.
-	//¦ƒVƒF[ƒ_“à‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Æˆê’v‚µ‚Ä‚¢‚é•K—v‚ ‚è.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ—ãƒªå´ã®å®šç¾©.
+	//â€»ã‚·ã‚§ãƒ¼ãƒ€å†…ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã¨ä¸€è‡´ã—ã¦ã„ã‚‹å¿…è¦ã‚ã‚Š.
 	struct SHADER_CONSTANT_BUFFER
 	{
-		ALIGN16 D3DXMATRIX	mWorld;		//ƒ[ƒ‹ƒhs—ñ.
-		ALIGN16 D3DXVECTOR4	vColor;		//ƒJƒ‰[iRGBA‚ÌŒ^‚É‡‚í‚¹‚éj.
-		ALIGN16 D3DXVECTOR4	vUV;		//UVÀ•Wix,y‚Ì‚İg—pj.
-		ALIGN16 float fViewPortWidth;	//ƒrƒ…[ƒ|[ƒg‚Ì•
-		ALIGN16 float fViewPortHeight;	//ƒrƒ…[ƒ|[ƒg‚Ì‚‚³
+		ALIGN16 D3DXMATRIX	mWorld;		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—.
+		ALIGN16 D3DXVECTOR4	vColor;		//ã‚«ãƒ©ãƒ¼ï¼ˆRGBAã®å‹ã«åˆã‚ã›ã‚‹ï¼‰.
+		ALIGN16 D3DXVECTOR4	vUV;		//UVåº§æ¨™ï¼ˆx,yã®ã¿ä½¿ç”¨ï¼‰.
+		ALIGN16 float fViewPortWidth;	//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®å¹…
+		ALIGN16 float fViewPortHeight;	//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®é«˜ã•
 	};
-	//’¸“_‚Ì\‘¢‘Ì.
+	//é ‚ç‚¹ã®æ§‹é€ ä½“.
 	struct VERTEX
 	{
-		D3DXVECTOR3 Pos;	//’¸“_À•W.
-		D3DXVECTOR2	Tex;	//ƒeƒNƒXƒ`ƒƒÀ•W.
+		D3DXVECTOR3 Pos;	//é ‚ç‚¹åº§æ¨™.
+		D3DXVECTOR2	Tex;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™.
 	};
 
 public:
-	CSprite2D();	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
-	~CSprite2D();	//ƒfƒXƒgƒ‰ƒNƒ^.
+	CSprite2D();	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
+	~CSprite2D();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 
-	//‰Šú‰».
+	//åˆæœŸåŒ–.
 	HRESULT Init(CDirectX11& pDx11, LPCTSTR lpFileName, SPRITE_STATE& pSs );
 
-	//‰ğ•ú.
+	//è§£æ”¾.
 	void Release();
 
-	//ƒVƒF[ƒ_ì¬.
+	//ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆ.
 	HRESULT CreateShader();
-	//ƒ‚ƒfƒ‹ì¬.
+	//ãƒ¢ãƒ‡ãƒ«ä½œæˆ.
 	HRESULT CreateModel();
-	//ƒeƒNƒXƒ`ƒƒì¬.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ.
 	HRESULT CreateTexture( LPCTSTR lpFileName );
-	//ƒTƒ“ƒvƒ‰ì¬.
+	//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 	HRESULT CreateSampler();
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO—p.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ç”¨.
 	void Render();
 
-	//À•Wî•ñ‚ğİ’è.
+	//åº§æ¨™æƒ…å ±ã‚’è¨­å®š.
 	void SetPosition(const D3DXVECTOR3& vPos) {	m_vPosition = vPos;	}
-	//À•Wx‚ğİ’è.
+	//åº§æ¨™xã‚’è¨­å®š.
 	void SetPositionX( float x ){ m_vPosition.x = x; }
-	//À•Wy‚ğİ’è.
+	//åº§æ¨™yã‚’è¨­å®š.
 	void SetPositionY( float y ){ m_vPosition.y = y; }
-	//À•Wz‚ğİ’è.
+	//åº§æ¨™zã‚’è¨­å®š.
 	void SetPositionZ( float z ){ m_vPosition.z = z; }
 
-	//‰ñ“]î•ñ‚ğİ’è.
+	//å›è»¢æƒ…å ±ã‚’è¨­å®š.
 	void SetRotation(const D3DXVECTOR3& vRot){	m_vRotation = vRot;	}
-	//‰ñ“]²Y‚ğİ’è(Yaw).
+	//å›è»¢è»¸Yã‚’è¨­å®š(Yaw).
 	void SetRotationY(float y){	m_vRotation.y = y;	}
-	//‰ñ“]²X‚ğİ’è(Pitch).
+	//å›è»¢è»¸Xã‚’è¨­å®š(Pitch).
 	void SetRotationX(float x){	m_vRotation.x = x;	}
-	//‰ñ“]²Z‚ğİ’è(Roll).
+	//å›è»¢è»¸Zã‚’è¨­å®š(Roll).
 	void SetRotationZ(float z){	m_vRotation.z = z;	}
 
-	//Šg‘åk¬î•ñ‚ğİ’è.
+	//æ‹¡å¤§ç¸®å°æƒ…å ±ã‚’è¨­å®š.
 	void SetScale(const D3DXVECTOR3& vScale) { m_vScale = vScale; }
 
 	void SetFillPercent(float percent, bool horizontal);
 
-	//Set UV offset for scrolling effects
+	//ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«åŠ¹æœç”¨ã«UVã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è¨­å®š.
 	void SetUVOffset(float u, float v) { m_UV.x = u; m_UV.y = v; }
 
-	//Get current UV offset
+	//ç¾åœ¨ã®UVã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å–å¾—.
 	D3DXVECTOR2 GetUVOffset() const { return m_UV; }
 
-	//ƒ¿’l‚ğİ’è.
+	//Î±å€¤ã‚’è¨­å®š.
 	void SetAlpha(float alpha) { m_Alpha = alpha; }
 
-	//ƒpƒ^[ƒ“”Ô†(ƒ}ƒX–Ú)‚ğİ’è
+	//ãƒ‘ã‚¿ãƒ¼ãƒ³ç•ªå·(ãƒã‚¹ç›®)ã‚’è¨­å®š
 	void SetPatternNo(SHORT x, SHORT y)
 	{
 		m_PatternNo.x = x;
 		m_PatternNo.y = y;
 	}
-	//Å‘åƒpƒ^[ƒ“”(ƒ}ƒX–Ú)‚ğæ“¾
+	//æœ€å¤§ãƒ‘ã‚¿ãƒ¼ãƒ³æ•°(ãƒã‚¹ç›®)ã‚’å–å¾—
 	POINTS GetPatternMax() const { return m_PatternMax; }
 
 
@@ -119,27 +119,27 @@ private:
 	ID3D11Device*			m_pDevice11;
 	ID3D11DeviceContext*	m_pContext11;
 
-	ID3D11VertexShader*		m_pVertexShader;	//’¸“_ƒVƒF[ƒ_.
-	ID3D11InputLayout*		m_pVertexLayout;	//’¸“_ƒŒƒCƒAƒEƒg.
-	ID3D11PixelShader*		m_pPixelShader;		//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
-	ID3D11Buffer*			m_pConstantBuffer;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@.
+	ID3D11VertexShader*		m_pVertexShader;	//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	ID3D11InputLayout*		m_pVertexLayout;	//é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ.
+	ID3D11PixelShader*		m_pPixelShader;		//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
+	ID3D11Buffer*			m_pConstantBuffer;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡.
 
-	ID3D11Buffer*			m_pVertexBuffer;	//’¸“_ƒoƒbƒtƒ@.
+	ID3D11Buffer*			m_pVertexBuffer;	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡.
 
-	ID3D11ShaderResourceView*	m_pTexture;			//ƒeƒNƒXƒ`ƒƒ.
-	ID3D11SamplerState*			m_pSampleLinear;	//ƒTƒ“ƒvƒ‰:ƒeƒNƒXƒ`ƒƒ‚ÉŠeíƒtƒBƒ‹ƒ^‚ğ‚©‚¯‚é.
+	ID3D11ShaderResourceView*	m_pTexture;			//ãƒ†ã‚¯ã‚¹ãƒãƒ£.
+	ID3D11SamplerState*			m_pSampleLinear;	//ã‚µãƒ³ãƒ—ãƒ©:ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«å„ç¨®ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‹ã‘ã‚‹.
 
-	D3DXVECTOR3		m_vPosition;	//À•W.
-	D3DXVECTOR3		m_vRotation;	//‰ñ“].
-	D3DXVECTOR3		m_vScale;		//Šgk.
+	D3DXVECTOR3		m_vPosition;	//åº§æ¨™.
+	D3DXVECTOR3		m_vRotation;	//å›è»¢.
+	D3DXVECTOR3		m_vScale;		//æ‹¡ç¸®.
 
-	D3DXVECTOR2		m_UV;		//ƒeƒNƒXƒ`ƒƒUVÀ•W.
+	D3DXVECTOR2		m_UV;		//ãƒ†ã‚¯ã‚¹ãƒãƒ£UVåº§æ¨™.
 
-	float			m_Orientation;	//Œü‚«
-	float			m_FillPercent;	//“h‚è‚Â‚Ô‚µ—¦
-	float			m_Alpha;	//ƒ¿’l(0:“§–¾A1:Š®‘S•s“§–¾).
+	float			m_Orientation;	//å‘ã
+	float			m_FillPercent;	//å¡—ã‚Šã¤ã¶ã—ç‡
+	float			m_Alpha;	//Î±å€¤(0:é€æ˜ã€1:å®Œå…¨ä¸é€æ˜).
 
-	SPRITE_STATE	m_SpriteState;	//ƒXƒvƒ‰ƒCƒgî•ñ
-	POINTS			m_PatternNo;	//ƒpƒ^[ƒ“”Ô†(ƒ}ƒX–Ú)
-	POINTS			m_PatternMax;	//Å‘åƒpƒ^[ƒ“(ƒ}ƒX‚ÌÅ‘å’l)
+	SPRITE_STATE	m_SpriteState;	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæƒ…å ±
+	POINTS			m_PatternNo;	//ãƒ‘ã‚¿ãƒ¼ãƒ³ç•ªå·(ãƒã‚¹ç›®)
+	POINTS			m_PatternMax;	//æœ€å¤§ãƒ‘ã‚¿ãƒ¼ãƒ³(ãƒã‚¹ã®æœ€å¤§å€¤)
 };

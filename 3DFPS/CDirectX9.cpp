@@ -1,4 +1,4 @@
-#include "CDirectX9.h"
+ï»¿#include "CDirectX9.h"
 
 CDirectX9::CDirectX9()
 	: m_pDevice9	( nullptr )
@@ -11,57 +11,57 @@ CDirectX9::~CDirectX9()
 
 }
 
-//Dx9‰Šú‰».
+//Dx9åˆæœŸåŒ–.
 HRESULT CDirectX9::Create( HWND hWnd )
 {
-	//uDirect3DvƒIƒuƒWƒFƒNƒg‚Ìì¬.
+	//ã€ŒDirect3Dã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆ.
 	LPDIRECT3D9 pD3d9 = Direct3DCreate9( D3D_SDK_VERSION );
 	if( pD3d9 == nullptr ) {
-		_ASSERT_EXPR( false, _T( "Dx9ƒIƒuƒWƒFƒNƒgì¬Ž¸”s" ) );
+		_ASSERT_EXPR( false, _T( "Dx9ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä½œæˆå¤±æ•—" ) );
 		return E_FAIL;
 	}
 
-	//Diret3DƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg‚Ìì¬.
+	//Diret3Dãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆ.
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory( &d3dpp, sizeof( d3dpp ) );
-	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;	//ƒoƒbƒNƒoƒbƒtƒ@‚ÌƒtƒH[ƒ}ƒbƒg(ƒfƒtƒHƒ‹ƒg).
-	d3dpp.BackBufferCount = 1;					//ƒoƒbƒNƒoƒbƒtƒ@‚Ì”.
-	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;	//ƒXƒƒbƒvƒGƒtƒFƒNƒg(ƒfƒtƒHƒ‹ƒg).
-	d3dpp.Windowed = true;						//ƒEƒBƒ“ƒhƒEƒ‚[ƒh.
-	d3dpp.EnableAutoDepthStencil = true;		//ƒXƒeƒ“ƒVƒ‹—LŒø.
-	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;	//ƒXƒeƒ“ƒVƒ‹‚ÌƒtƒH[ƒ}ƒbƒg(16bit).
+	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;	//ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ).
+	d3dpp.BackBufferCount = 1;					//ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®æ•°.
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;	//ã‚¹ãƒ¯ãƒƒãƒ—ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ).
+	d3dpp.Windowed = true;						//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¢ãƒ¼ãƒ‰.
+	d3dpp.EnableAutoDepthStencil = true;		//ã‚¹ãƒ†ãƒ³ã‚·ãƒ«æœ‰åŠ¹.
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;	//ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ(16bit).
 
-	//ƒfƒoƒCƒXì¬(HALƒ‚[ƒhF•`‰æ‚Æ’¸“_ˆ—‚ðGPU‚Ås‚¤).
+	//ãƒ‡ãƒã‚¤ã‚¹ä½œæˆ(HALãƒ¢ãƒ¼ãƒ‰ï¼šæç”»ã¨é ‚ç‚¹å‡¦ç†ã‚’GPUã§è¡Œã†).
 	if( FAILED( pD3d9->CreateDevice(
 		D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
 		D3DCREATE_HARDWARE_VERTEXPROCESSING,
 		&d3dpp, &m_pDevice9 ) ) )
 	{
-		//ƒfƒoƒCƒXì¬(HALƒ‚[ƒhF•`‰æ‚ÍGPUA’¸“_ˆ—‚ðCPU‚Ås‚¤).
+		//ãƒ‡ãƒã‚¤ã‚¹ä½œæˆ(HALãƒ¢ãƒ¼ãƒ‰ï¼šæç”»ã¯GPUã€é ‚ç‚¹å‡¦ç†ã‚’CPUã§è¡Œã†).
 		if( FAILED( pD3d9->CreateDevice(
 			D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
 			D3DCREATE_SOFTWARE_VERTEXPROCESSING,
 			&d3dpp, &m_pDevice9 ) ) )
 		{
 			MessageBox( nullptr,
-				_T( "HALƒ‚[ƒh‚ÅDIRECT3DƒfƒoƒCƒXì¬‚Å‚«‚Ü‚¹‚ñ\nREFƒ‚[ƒh‚ÅÄŽŽs‚µ‚Ü‚·" ),
-				_T( "Œx "), MB_OK );
+				_T( "HALãƒ¢ãƒ¼ãƒ‰ã§DIRECT3Dãƒ‡ãƒã‚¤ã‚¹ä½œæˆã§ãã¾ã›ã‚“\nREFãƒ¢ãƒ¼ãƒ‰ã§å†è©¦è¡Œã—ã¾ã™" ),
+				_T( "è­¦å‘Š "), MB_OK );
 
-			//ƒfƒoƒCƒXì¬(REFƒ‚[ƒhF•`‰æ‚ÍCPUA’¸“_ˆ—‚ðGPU‚Ås‚¤).
+			//ãƒ‡ãƒã‚¤ã‚¹ä½œæˆ(REFãƒ¢ãƒ¼ãƒ‰ï¼šæç”»ã¯CPUã€é ‚ç‚¹å‡¦ç†ã‚’GPUã§è¡Œã†).
 			if( FAILED( pD3d9->CreateDevice(
 				D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hWnd,
 				D3DCREATE_HARDWARE_VERTEXPROCESSING,
 				&d3dpp, &m_pDevice9 ) ) )
 			{
-				//ƒfƒoƒCƒXì¬(REFƒ‚[ƒhF•`‰æ‚Æ’¸“_ˆ—‚ðCPU‚Ås‚¤).
+				//ãƒ‡ãƒã‚¤ã‚¹ä½œæˆ(REFãƒ¢ãƒ¼ãƒ‰ï¼šæç”»ã¨é ‚ç‚¹å‡¦ç†ã‚’CPUã§è¡Œã†).
 				if( FAILED( pD3d9->CreateDevice(
 					D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hWnd,
 					D3DCREATE_SOFTWARE_VERTEXPROCESSING,
 					&d3dpp, &m_pDevice9 ) ) )
 				{
 					MessageBox( nullptr,
-						_T( "DIRECT3DƒfƒoƒCƒXì¬Ž¸”s" ),
-						_T( "Œx" ), MB_OK );
+						_T( "DIRECT3Dãƒ‡ãƒã‚¤ã‚¹ä½œæˆå¤±æ•—" ),
+						_T( "è­¦å‘Š" ), MB_OK );
 
 					SAFE_RELEASE( pD3d9 );
 					return E_FAIL;

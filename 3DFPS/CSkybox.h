@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CDirectX11.h"
 #include <D3DX11.h>
@@ -6,8 +6,8 @@
 #include <D3DX10.h>
 
 /**************************************************
-*	Skybox class for rendering a cubemap skybox.
-*	Renders a cube around the camera using a cubemap texture.
+*	キューブマップによるスカイボックスを描画するクラス。
+*	キューブマップテクスチャを用いてカメラの周囲に立方体を描画する。
 **/
 class CSkybox
 {
@@ -15,35 +15,35 @@ public:
 	CSkybox();
 	~CSkybox();
 
-	// Initialize skybox with a cubemap DDS texture
+	// キューブマップのDDSテクスチャでスカイボックスを初期化する
 	HRESULT Init(CDirectX11& dx11, LPCTSTR lpCubemapFile);
 
-	// Release resources
+	// リソースを解放する
 	void Release();
 
-	// Render the skybox (call before other objects, with depth write disabled)
+	// スカイボックスを描画する（深度書き込みを無効にし、他のオブジェクトより前に呼び出す）
 	void Render(const D3DXMATRIX& mView, const D3DXMATRIX& mProj, const D3DXVECTOR3& camPos);
 
 private:
-	// Constant buffer structure for skybox
+	// スカイボックス用の定数バッファ構造体
 	struct CBUFFER_SKYBOX
 	{
 		D3DXMATRIX mWVP;
 	};
 
-	// Vertex structure for skybox
+	// スカイボックス用の頂点構造体
 	struct VERTEX
 	{
 		D3DXVECTOR3 Pos;
 	};
 
-	// Create shader resources
+	// シェーダーリソースを作成する
 	HRESULT CreateShader();
 
-	// Create vertex/index buffers for cube
+	// 立方体用の頂点／インデックスバッファを作成する
 	HRESULT CreateBuffers();
 
-	// Load cubemap texture
+	// キューブマップテクスチャを読み込む
 	HRESULT LoadCubemap(LPCTSTR lpCubemapFile);
 
 private:
@@ -61,7 +61,7 @@ private:
 	ID3D11ShaderResourceView*	m_pCubemapSRV;
 	ID3D11SamplerState*			m_pSamplerState;
 
-	// Depth stencil states for rendering skybox
+	// スカイボックス描画用の深度ステンシルステート
 	ID3D11DepthStencilState*	m_pDepthStencilState;
 	ID3D11RasterizerState*		m_pRasterizerState;
 

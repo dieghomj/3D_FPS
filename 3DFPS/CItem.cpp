@@ -1,4 +1,4 @@
-#include "CItem.h"
+﻿#include "CItem.h"
 
 CItem::CItem()
 	: CStaticMeshObject()

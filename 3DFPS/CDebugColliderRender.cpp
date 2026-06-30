@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CDebugColliderRender.h"
 #include "CBoundingCube.h"
 #include "CBoundingSphere.h"
@@ -55,7 +55,7 @@ void CDebugColliderRender::DrawCollider(CDirectX11& pDx11, D3DXMATRIX& mView, D3
 
 		pBox = collider.GetBBox();
 
-		// OBB•`‰æi‰ñ“]‚ðl—¶j
+		// OBBæç”»ï¼ˆå›žè»¢ã‚’è€ƒæ…®ï¼‰
 		{
 			D3DXVECTOR3 corners[8];
 			pBox->GetWorldCorners(corners);

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CCameraController.h"
 
 CCameraController::CCameraController()
@@ -35,15 +35,12 @@ void CCameraController::Update(float deltaTime)
 	m_vRotation.y = m_pCamera->GetYaw();
 }
 
-//ŽOlÌƒJƒƒ‰
+//ä¸‰äººç§°ã‚«ãƒ¡ãƒ©
 void CCameraController::ThirdPersonCamera(
 	const D3DXVECTOR3& TargetPos, float distance, POINT delta, float sense)
 {
 	float yaw = D3DXToRadian((float)delta.x * sense);
 	float pitch = D3DXToRadian((float)delta.y * sense);
-
-	//if (m_vRotation.x + pitch > m_maxLookUp) pitch = m_maxLookUp;
-	//if (m_vRotation.x + pitch < m_maxLookDown) pitch = m_maxLookDown;
 
 	if (yaw > D3DX_PI) yaw -= D3DX_PI * 2.f;
 	if (yaw < -D3DX_PI) yaw += D3DX_PI * 2.f;
@@ -65,9 +62,6 @@ void CCameraController::FirstPersonCamera(POINT delta, float sense)
 	float yaw = D3DXToRadian((float)delta.x * sense);
 	float pitch = D3DXToRadian((float)delta.y * sense);
 
-	//if (m_vRotation.x + pitch > m_maxLookUp) pitch = m_maxLookUp;
-	//if (m_vRotation.x + pitch < m_maxLookDown) pitch = m_maxLookDown;
-
 	m_pCamera->Pitch(pitch);
 	m_pCamera->Yaw(yaw);
 	m_pCamera->SetRotation(pitch, yaw, 0);
@@ -79,9 +73,6 @@ void CCameraController::FirstPersonCamera(CGameObject* target,POINT delta, float
 {
 	float yaw = D3DXToRadian((float)delta.x * sense);
 	float pitch = D3DXToRadian((float)delta.y * sense);
-
-	//if (m_vRotation.x + pitch > m_maxLookUp) pitch = m_maxLookUp;
-	//if (m_vRotation.x + pitch < m_maxLookDown) pitch = m_maxLookDown;
 
 	m_pCamera->Yaw(yaw);
 	m_pCamera->Pitch(pitch);
@@ -100,7 +91,7 @@ void CCameraController::StaticCamera(const D3DXVECTOR3& TargetPos, POINT delta, 
 		m_pCamera->SetPosition(TargetPos + back);
 	}
 
-	// í‚Éƒ^[ƒQƒbƒg‚ð’Ž‹
+	// å¸¸ã«ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’æ³¨è¦–
 	m_pCamera->LookAt(TargetPos);
 
 }
@@ -120,7 +111,7 @@ void CCameraController::HandleInput()
 	if (GetAsyncKeyState(VK_UP) & 0x8000 || GetAsyncKeyState('W') & 0x8000) {
 		m_pCamera->Walk(0.3f);
 	}
-	//Œã‘Þ
+	//å¾Œé€€
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000 || GetAsyncKeyState('S') & 0x8000) {
 		m_pCamera->Walk(-0.3f);
 	}

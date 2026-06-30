@@ -1,4 +1,4 @@
-/***************************************************************************************************
+ï»¿/***************************************************************************************************
 *	SkinMeshCode Version 2.50
 *	LastUpdate	: 2025/06/23.
 **/
@@ -10,7 +10,7 @@
 #include <memory>
 
 
-//ƒtƒŒ[ƒ€‚ğì¬‚·‚é.
+//ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ä½œæˆã™ã‚‹.
 HRESULT MY_HIERARCHY::CreateFrame( LPCSTR Name, LPD3DXFRAME *ppNewFrame )
 {
 	HRESULT hr = S_OK;
@@ -39,7 +39,7 @@ HRESULT MY_HIERARCHY::CreateFrame( LPCSTR Name, LPD3DXFRAME *ppNewFrame )
 	return S_OK;
 }
 
-//ƒƒbƒVƒ…ƒRƒ“ƒeƒi[‚ğì¬‚·‚é.
+//ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠãƒ¼ã‚’ä½œæˆã™ã‚‹.
 HRESULT MY_HIERARCHY::CreateMeshContainer(
 	LPCSTR Name, CONST D3DXMESHDATA* pMeshData,
 	CONST D3DXMATERIAL* pMaterials, CONST D3DXEFFECTINSTANCE* pEffectInstances,
@@ -57,17 +57,16 @@ HRESULT MY_HIERARCHY::CreateMeshContainer(
 	pMeshContainer->MeshData.Type = D3DXMESHTYPE_MESH;
 
 	int NumPoly = pMeshContainer->MeshData.pMesh->GetNumFaces();
-	//ƒƒbƒVƒ…‚ğ•¡»‚·‚é.
-	//	‚È‚º‚©ƒXƒLƒ“ƒƒbƒVƒ…‚¾‚ÆA‚±‚ÌŠÖ”‚ğ”²‚¯‚½’¼Œã‚ÉD3DX“à•”‚ÅƒƒbƒVƒ…ƒ|ƒCƒ“ƒ^[‚ª‚¨‚©‚µ‚­‚È‚Á‚Ä‚µ‚Ü‚¤‚Ì‚Å.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’è¤‡è£½ã™ã‚‹.
+	//	ãªãœã‹ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ã ã¨ã€ã“ã®é–¢æ•°ã‚’æŠœã‘ãŸç›´å¾Œã«D3DXå†…éƒ¨ã§ãƒ¡ãƒƒã‚·ãƒ¥ãƒã‚¤ãƒ³ã‚¿ãƒ¼ãŒãŠã‹ã—ããªã£ã¦ã—ã¾ã†ã®ã§.
 	LPDIRECT3DDEVICE9 pDevice = nullptr;
 	pMeshContainer->MeshData.pMesh->GetDevice( &pDevice );
 
 	LPD3DXMESH pMesh = nullptr;
 	pMeshContainer->MeshData.pMesh->CloneMesh( 0, nullptr, pDevice, &pMesh );
-	//SAFE_RELEASE( pMeshContainer->MeshData.pMesh );
 	pMeshContainer->MeshData.pMesh = pMesh;
 
-	//ƒƒbƒVƒ…‚Ìƒ}ƒeƒŠƒAƒ‹İ’è.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒãƒ†ãƒªã‚¢ãƒ«è¨­å®š.
 	pMeshContainer->NumMaterials = max( 1, NumMaterials );
 	pMeshContainer->pMaterials = new D3DXMATERIAL[pMeshContainer->NumMaterials]();
 	pMeshContainer->pAdjacency = new DWORD[pMeshContainer->MeshData.pMesh->GetNumFaces() * 3]();
@@ -91,7 +90,7 @@ HRESULT MY_HIERARCHY::CreateMeshContainer(
 			}
 		}
 	}
-	//ƒ}ƒeƒŠƒAƒ‹‚ª‚È‚©‚Á‚½ê‡.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ãŒãªã‹ã£ãŸå ´åˆ.
 	else
 	{
 		pMeshContainer->pMaterials[0].pTextureFilename = nullptr;
@@ -101,7 +100,7 @@ HRESULT MY_HIERARCHY::CreateMeshContainer(
 		pMeshContainer->pMaterials[0].MatD3D.Diffuse.b = 0.5f;
 		pMeshContainer->pMaterials[0].MatD3D.Specular = pMeshContainer->pMaterials[0].MatD3D.Diffuse;
 	}
-	//“–ŠYƒƒbƒVƒ…‚ªƒXƒLƒ“î•ñ‚ğ‚Á‚Ä‚¢‚éê‡(ƒXƒLƒ“ƒƒbƒVƒ…ŒÅ—L‚Ìˆ—).
+	//å½“è©²ãƒ¡ãƒƒã‚·ãƒ¥ãŒã‚¹ã‚­ãƒ³æƒ…å ±ã‚’æŒã£ã¦ã„ã‚‹å ´åˆ(ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥å›ºæœ‰ã®å‡¦ç†).
 	if ( pSkinInfo != nullptr )
 	{
 		DWORD BoneNum = 0;
@@ -117,13 +116,13 @@ HRESULT MY_HIERARCHY::CreateMeshContainer(
 				pMeshContainer->pSkinInfo->GetBoneOffsetMatrix( i ), sizeof( D3DMATRIX ) );
 		}
 	}
-	//ƒ[ƒJƒ‹‚É¶¬‚µ‚½ƒƒbƒVƒ…ƒRƒ“ƒeƒi[‚ğŒÄ‚Ño‚µ‘¤‚ÉƒRƒs[‚·‚é.
+	//ãƒ­ãƒ¼ã‚«ãƒ«ã«ç”Ÿæˆã—ãŸãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠãƒ¼ã‚’å‘¼ã³å‡ºã—å´ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹.
 	*ppMeshContainer = pMeshContainer;
 
 	return S_OK;
 }
 
-//ƒtƒŒ[ƒ€‚ğ”jŠü‚·‚é.
+//ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ç ´æ£„ã™ã‚‹.
 HRESULT MY_HIERARCHY::DestroyFrame( LPD3DXFRAME pFrameToFree )
 {
 	if ( pFrameToFree->Name ) {
@@ -144,7 +143,7 @@ HRESULT MY_HIERARCHY::DestroyFrame( LPD3DXFRAME pFrameToFree )
 	return S_OK;
 }
 
-//ƒƒbƒVƒ…ƒRƒ“ƒeƒi[‚ğ”jŠü‚·‚é.
+//ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠãƒ¼ã‚’ç ´æ£„ã™ã‚‹.
 HRESULT MY_HIERARCHY::DestroyMeshContainer( LPD3DXMESHCONTAINER pMeshContainerBase )
 {
 	DWORD dwMaterial;
@@ -188,10 +187,10 @@ HRESULT MY_HIERARCHY::DestroyMeshContainer( LPD3DXMESHCONTAINER pMeshContainerBa
 
 /*******************************************************************************************************************************************
 *
-*	ˆÈ~Aƒp[ƒT[ƒNƒ‰ƒX.
+*	ä»¥é™ã€ãƒ‘ãƒ¼ã‚µãƒ¼ã‚¯ãƒ©ã‚¹.
 *
 **/
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 D3DXPARSER::D3DXPARSER()
 	: cHierarchy		()
 	, m_pHierarchy		( nullptr )
@@ -204,12 +203,12 @@ D3DXPARSER::D3DXPARSER()
 #endif
 }
 
-//ƒfƒXƒgƒ‰ƒNƒ^.
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 D3DXPARSER::~D3DXPARSER()
 {
 }
 
-//ƒ{[ƒ“s—ñ‚Ì—ÌˆæŠm•Û.
+//ãƒœãƒ¼ãƒ³è¡Œåˆ—ã®é ˜åŸŸç¢ºä¿.
 HRESULT D3DXPARSER::AllocateBoneMatrix( LPD3DXMESHCONTAINER pMeshContainerBase )
 {
 	MYFRAME *pFrame = nullptr;
@@ -225,7 +224,7 @@ HRESULT D3DXPARSER::AllocateBoneMatrix( LPD3DXMESHCONTAINER pMeshContainerBase )
 
 	for( DWORD i = 0; i < dwBoneNum; i++ )
 	{
-		//‚Ü‚¸‚Ínullptr‚Å‰Šú‰».
+		//ã¾ãšã¯nullptrã§åˆæœŸåŒ–.
 		pMeshContainer->ppBoneMatrix[i] = nullptr;
 
 		pFrame = reinterpret_cast<MYFRAME*>(
@@ -240,7 +239,7 @@ HRESULT D3DXPARSER::AllocateBoneMatrix( LPD3DXMESHCONTAINER pMeshContainerBase )
 	return S_OK;
 }
 
-//‘S‚Ä‚Ìƒ{[ƒ“s—ñ‚Ì—Ìˆæ‚ğŠm•Û(Ä‹AŠÖ”).
+//å…¨ã¦ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—ã®é ˜åŸŸã‚’ç¢ºä¿(å†å¸°é–¢æ•°).
 HRESULT D3DXPARSER::AllocateAllBoneMatrices( LPD3DXFRAME pFrame )
 {
 	if ( pFrame->pMeshContainer != nullptr )
@@ -267,33 +266,24 @@ HRESULT D3DXPARSER::AllocateAllBoneMatrices( LPD3DXFRAME pFrame )
 	return S_OK;
 }
 
-//Xƒtƒ@ƒCƒ‹‚©‚çƒƒbƒVƒ…‚ğ“Ç‚İ‚Ş.
+//Xãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ¡ãƒƒã‚·ãƒ¥ã‚’èª­ã¿è¾¼ã‚€.
 HRESULT D3DXPARSER::LoadMeshFromX( LPDIRECT3DDEVICE9 pDevice9, LPCTSTR fileName )
 {
-	//Xƒtƒ@ƒCƒ‹‚©‚çƒAƒjƒ[ƒVƒ‡ƒ“ƒƒbƒVƒ…‚ğ“Ç‚İ‚İì¬‚·‚é
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ã‚’èª­ã¿è¾¼ã¿ä½œæˆã™ã‚‹
 	m_pHierarchy = new MY_HIERARCHY();
 	if ( FAILED(
 		D3DXLoadMeshHierarchyFromX(
 			fileName, D3DXMESH_MANAGED, pDevice9, m_pHierarchy,
 			nullptr, &m_pFrameRoot, &m_pAnimController )))
 	{
-		_ASSERT_EXPR( false, L"ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½" );
+		_ASSERT_EXPR( false, L"ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ" );
 		return E_FAIL;
 	}
-	//ƒ{[ƒ“ƒƒ‚ƒŠŠ„‚è‚ ‚Ä.
+	//ãƒœãƒ¼ãƒ³ãƒ¡ãƒ¢ãƒªå‰²ã‚Šã‚ã¦.
 	AllocateAllBoneMatrices( m_pFrameRoot );
 
-	/*
-		m_pContainer = (MYMESHCONTAINER*)GetMeshContainer( m_pFrameRoot );
-
-		if( m_pContainer == nullptr ){
-			_ASSERT_EXPR( false, L"ƒƒbƒVƒ…ƒRƒ“ƒeƒi‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½" );
-			return E_FAIL;
-		}
-	*/
-
 	UINT AnimMax = m_pAnimController->GetNumAnimationSets();
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ğ“¾‚é.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã‚’å¾—ã‚‹.
 	for( UINT i = 0; i < AnimMax; i++ )
 	{
 		m_pAnimController->GetAnimationSet( i, &m_pAnimSet[i] );
@@ -302,7 +292,7 @@ HRESULT D3DXPARSER::LoadMeshFromX( LPDIRECT3DDEVICE9 pDevice9, LPCTSTR fileName 
 	return S_OK;
 }
 
-//ƒtƒŒ[ƒ€“à‚ÌƒƒbƒVƒ…–ˆ‚Éƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ğXV‚·‚é.
+//ãƒ•ãƒ¬ãƒ¼ãƒ å†…ã®ãƒ¡ãƒƒã‚·ãƒ¥æ¯ã«ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—ã‚’æ›´æ–°ã™ã‚‹.
 VOID D3DXPARSER::UpdateFrameMatrices( LPD3DXFRAME pFrameBase, LPD3DXMATRIX pParentMatrix )
 {
 	MYFRAME *pFrame = reinterpret_cast<MYFRAME*>( pFrameBase );
@@ -325,39 +315,39 @@ VOID D3DXPARSER::UpdateFrameMatrices( LPD3DXFRAME pFrameBase, LPD3DXMATRIX pPare
 	}
 }
 
-//’¸“_”‚Ìæ“¾.
+//é ‚ç‚¹æ•°ã®å–å¾—.
 int D3DXPARSER::GetNumVertices( MYMESHCONTAINER* pContainer )
 {
 	return pContainer->MeshData.pMesh->GetNumVertices();
 }
 
-//–Ê”‚Ìæ“¾.
+//é¢æ•°ã®å–å¾—.
 int D3DXPARSER::GetNumFaces( MYMESHCONTAINER* pContainer )
 {
 	return pContainer->MeshData.pMesh->GetNumFaces();
 }
 
-//ƒ}ƒeƒŠƒAƒ‹”‚Ìæ“¾.
+//ãƒãƒ†ãƒªã‚¢ãƒ«æ•°ã®å–å¾—.
 int D3DXPARSER::GetNumMaterials( MYMESHCONTAINER* pContainer )
 {
 	return pContainer->NumMaterials;
 }
 
-//UV‚Ìæ“¾.
+//UVã®å–å¾—.
 int D3DXPARSER::GetNumUVs( MYMESHCONTAINER* pContainer )
 {
-	//’¸“_”‚Æ“¯‚¶”‚¾‚¯İ’è‚³‚ê‚Ä‚é‚Í‚¸.
+	//é ‚ç‚¹æ•°ã¨åŒã˜æ•°ã ã‘è¨­å®šã•ã‚Œã¦ã‚‹ã¯ãš.
 	return pContainer->MeshData.pMesh->GetNumVertices();
 }
 
-//w’è‚³‚ê‚½ƒ{[ƒ“‚ª‰e‹¿‚ğ‹y‚Ú‚·’¸“_”‚ğ•Ô‚·.
+//æŒ‡å®šã•ã‚ŒãŸãƒœãƒ¼ãƒ³ãŒå½±éŸ¿ã‚’åŠã¼ã™é ‚ç‚¹æ•°ã‚’è¿”ã™.
 int D3DXPARSER::GetNumBoneVertices( MYMESHCONTAINER* pContainer, int BoneIndex )
 {
 	return pContainer->pSkinInfo->GetNumBoneInfluences( BoneIndex );
 }
 
-//w’è‚³‚ê‚½ƒ{[ƒ“‚ª‰e‹¿‚ğ‹y‚Ú‚·’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚· ‘æ2ˆø”‚ÍA‰e‹¿‚ğó‚¯‚é’¸“_‚ÌƒCƒ“ƒfƒbƒNƒXƒOƒ‹[ƒv“à‚ÌƒCƒ“ƒfƒbƒNƒXiƒCƒ“ƒfƒbƒNƒX‚ªá‚¢‡j
-//—á‚¦‚Îƒ{[ƒ“‚É‰e‹¿‚ğ‚¤‚¯‚é’¸“_‚ª‚S‚Â‚¾‚Æ‚µ‚ÄA‚»‚Ìƒ{[ƒ“‚É‰e‹¿‚ğ‚¤‚¯‚é‚S‚Â‚Ì’¸“_‚Ì‚¤‚¿2”Ô–Ú‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ’m‚è‚½‚¢ê‡‚ÍAIndexInGroup‚É1‚ğw’è‚·‚éi0ƒXƒ^[ƒg‚È‚Ì‚Åj
+//æŒ‡å®šã•ã‚ŒãŸãƒœãƒ¼ãƒ³ãŒå½±éŸ¿ã‚’åŠã¼ã™é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã™ ç¬¬2å¼•æ•°ã¯ã€å½±éŸ¿ã‚’å—ã‘ã‚‹é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚°ãƒ«ãƒ¼ãƒ—å†…ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼ˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒè‹¥ã„é †ï¼‰
+//ä¾‹ãˆã°ãƒœãƒ¼ãƒ³ã«å½±éŸ¿ã‚’ã†ã‘ã‚‹é ‚ç‚¹ãŒï¼”ã¤ã ã¨ã—ã¦ã€ãã®ãƒœãƒ¼ãƒ³ã«å½±éŸ¿ã‚’ã†ã‘ã‚‹ï¼”ã¤ã®é ‚ç‚¹ã®ã†ã¡2ç•ªç›®ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’çŸ¥ã‚ŠãŸã„å ´åˆã¯ã€IndexInGroupã«1ã‚’æŒ‡å®šã™ã‚‹ï¼ˆ0ã‚¹ã‚¿ãƒ¼ãƒˆãªã®ã§ï¼‰
 DWORD D3DXPARSER::GetBoneVerticesIndices(MYMESHCONTAINER* pContainer, int BoneIndex, int IndexInGroup)
 {
 	auto Num = pContainer->pSkinInfo->GetNumBoneInfluences( BoneIndex );
@@ -369,7 +359,7 @@ DWORD D3DXPARSER::GetBoneVerticesIndices(MYMESHCONTAINER* pContainer, int BoneIn
 	if ( FAILED(
 		pContainer->pSkinInfo->GetBoneInfluence( BoneIndex, pVerts.get(), pWights.get() )))
 	{
-		MessageBox( nullptr, _T( "ƒ{[ƒ“‰e‹¿‚ğó‚¯‚é’¸“_Œ©‚Â‚©‚ç‚È‚¢" ), _T( "error" ), MB_OK );
+		MessageBox( nullptr, _T( "ãƒœãƒ¼ãƒ³å½±éŸ¿ã‚’å—ã‘ã‚‹é ‚ç‚¹è¦‹ã¤ã‹ã‚‰ãªã„" ), _T( "error" ), MB_OK );
 	}
 	else {
 		dwRslt = pVerts[IndexInGroup];
@@ -378,8 +368,8 @@ DWORD D3DXPARSER::GetBoneVerticesIndices(MYMESHCONTAINER* pContainer, int BoneIn
 	return dwRslt;
 }
 
-//w’è‚³‚ê‚½ƒ{[ƒ“‚ª‰e‹¿‚ğ‹y‚Ú‚·’¸“_‚Ìƒ{[ƒ“ƒEƒFƒCƒg‚ğ•Ô‚· ‘æ2ˆø”‚ÍA‰e‹¿‚ğó‚¯‚é’¸“_‚ÌƒCƒ“ƒfƒbƒNƒXƒOƒ‹[ƒv“à‚ÌƒCƒ“ƒfƒbƒNƒXiƒCƒ“ƒfƒbƒNƒX‚ªá‚¢‡j
-//—á‚¦‚Îƒ{[ƒ“‚É‰e‹¿‚ğ‚¤‚¯‚é’¸“_‚ª‚S‚Â‚¾‚Æ‚µ‚ÄA‚»‚Ìƒ{[ƒ“‚É‰e‹¿‚ğ‚¤‚¯‚é‚S‚Â‚Ì’¸“_‚Ì‚¤‚¿2”Ô–Ú‚Ì’¸“_‚Ìƒ{[ƒ“ƒEƒFƒCƒg‚ğ’m‚è‚½‚¢ê‡‚ÍAIndexInGroup‚É1‚ğw’è‚·‚éi0ƒXƒ^[ƒg‚È‚Ì‚Åj
+//æŒ‡å®šã•ã‚ŒãŸãƒœãƒ¼ãƒ³ãŒå½±éŸ¿ã‚’åŠã¼ã™é ‚ç‚¹ã®ãƒœãƒ¼ãƒ³ã‚¦ã‚§ã‚¤ãƒˆã‚’è¿”ã™ ç¬¬2å¼•æ•°ã¯ã€å½±éŸ¿ã‚’å—ã‘ã‚‹é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚°ãƒ«ãƒ¼ãƒ—å†…ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼ˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒè‹¥ã„é †ï¼‰
+//ä¾‹ãˆã°ãƒœãƒ¼ãƒ³ã«å½±éŸ¿ã‚’ã†ã‘ã‚‹é ‚ç‚¹ãŒï¼”ã¤ã ã¨ã—ã¦ã€ãã®ãƒœãƒ¼ãƒ³ã«å½±éŸ¿ã‚’ã†ã‘ã‚‹ï¼”ã¤ã®é ‚ç‚¹ã®ã†ã¡2ç•ªç›®ã®é ‚ç‚¹ã®ãƒœãƒ¼ãƒ³ã‚¦ã‚§ã‚¤ãƒˆã‚’çŸ¥ã‚ŠãŸã„å ´åˆã¯ã€IndexInGroupã«1ã‚’æŒ‡å®šã™ã‚‹ï¼ˆ0ã‚¹ã‚¿ãƒ¼ãƒˆãªã®ã§ï¼‰
 double D3DXPARSER::GetBoneVerticesWeights( MYMESHCONTAINER* pContainer, int BoneIndex, int IndexInGroup )
 {
 	auto Num = pContainer->pSkinInfo->GetNumBoneInfluences( BoneIndex );
@@ -390,7 +380,7 @@ double D3DXPARSER::GetBoneVerticesWeights( MYMESHCONTAINER* pContainer, int Bone
 	if (FAILED(
 		pContainer->pSkinInfo->GetBoneInfluence( BoneIndex, pVerts.get(), pWights.get() )))
 	{
-		MessageBox( nullptr, _T( "ƒ{[ƒ“‰e‹¿‚ğó‚¯‚é’¸“_Œ©‚Â‚©‚ç‚È‚¢" ), _T( "error" ), MB_OK );
+		MessageBox( nullptr, _T( "ãƒœãƒ¼ãƒ³å½±éŸ¿ã‚’å—ã‘ã‚‹é ‚ç‚¹è¦‹ã¤ã‹ã‚‰ãªã„" ), _T( "error" ), MB_OK );
 	}
 	else
 	{
@@ -400,7 +390,7 @@ double D3DXPARSER::GetBoneVerticesWeights( MYMESHCONTAINER* pContainer, int Bone
 	return dRslt;
 }
 
-//’¸“_À•W‚Ìæ“¾.
+//é ‚ç‚¹åº§æ¨™ã®å–å¾—.
 D3DXVECTOR3 D3DXPARSER::GetVertexCoord( MYMESHCONTAINER* pContainer, DWORD Index )
 {
 	LPDIRECT3DVERTEXBUFFER9 pVB = nullptr;
@@ -421,7 +411,7 @@ D3DXVECTOR3 D3DXPARSER::GetVertexCoord( MYMESHCONTAINER* pContainer, DWORD Index
 	return Coord;
 }
 
-//–@ü‚Ìæ“¾.
+//æ³•ç·šã®å–å¾—.
 D3DXVECTOR3 D3DXPARSER::GetNormal( MYMESHCONTAINER* pContainer, DWORD Index )
 {
 	LPDIRECT3DVERTEXBUFFER9 pVB = nullptr;
@@ -434,7 +424,7 @@ D3DXVECTOR3 D3DXPARSER::GetNormal( MYMESHCONTAINER* pContainer, DWORD Index )
 		pVB->Lock( 0, 0, reinterpret_cast<VOID**>( &pVertices ), 0)))
 	{
 		pVertices += Index * Stride;
-		pVertices += sizeof( D3DXVECTOR3 );	//À•W•ªi‚ß‚é.
+		pVertices += sizeof( D3DXVECTOR3 );	//åº§æ¨™åˆ†é€²ã‚ã‚‹.
 		Normal = *( reinterpret_cast<D3DXVECTOR3*>( pVertices ) );
 		pVB->Unlock();
 	}
@@ -443,7 +433,7 @@ D3DXVECTOR3 D3DXPARSER::GetNormal( MYMESHCONTAINER* pContainer, DWORD Index )
 	return Normal;
 }
 
-//ƒeƒNƒXƒ`ƒƒ[À•W.
+//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼åº§æ¨™.
 D3DXVECTOR2 D3DXPARSER::GetUV( MYMESHCONTAINER* pContainer, DWORD Index )
 {
 	LPDIRECT3DVERTEXBUFFER9 pVB = nullptr;
@@ -456,8 +446,8 @@ D3DXVECTOR2 D3DXPARSER::GetUV( MYMESHCONTAINER* pContainer, DWORD Index )
 		pVB->Lock( 0, 0, reinterpret_cast<VOID**>( &pVertices ), 0 )))
 	{
 		pVertices += Index * Stride;
-		pVertices += sizeof( D3DXVECTOR3 );	//À•W•ªi‚ß‚é.
-		pVertices += sizeof( D3DXVECTOR3 );	//–@ü•ªi‚ß‚é.
+		pVertices += sizeof( D3DXVECTOR3 );	//åº§æ¨™åˆ†é€²ã‚ã‚‹.
+		pVertices += sizeof( D3DXVECTOR3 );	//æ³•ç·šåˆ†é€²ã‚ã‚‹.
 		UV = *( reinterpret_cast<D3DXVECTOR2*>( pVertices ) );
 		pVB->Unlock();
 	}
@@ -466,7 +456,7 @@ D3DXVECTOR2 D3DXPARSER::GetUV( MYMESHCONTAINER* pContainer, DWORD Index )
 	return UV;
 }
 
-//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@“à‚Ìw’è‚µ‚½ˆÊ’uiƒCƒ“ƒfƒbƒNƒXƒCƒ“ƒfƒbƒNƒXj‚É‚ ‚é’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·.
+//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡å†…ã®æŒ‡å®šã—ãŸä½ç½®ï¼ˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼‰ã«ã‚ã‚‹é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã™.
 int D3DXPARSER::GetIndex( MYMESHCONTAINER* pContainer, DWORD Index )
 {
 	WORD VertIndex = 0;
@@ -480,47 +470,47 @@ int D3DXPARSER::GetIndex( MYMESHCONTAINER* pContainer, DWORD Index )
 	return VertIndex;
 }
 
-//ƒAƒ“ƒrƒGƒ“ƒgiŠÂ‹«Œõj‚Ìæ“¾.
+//ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆï¼ˆç’°å¢ƒå…‰ï¼‰ã®å–å¾—.
 D3DXVECTOR4 D3DXPARSER::GetAmbient( MYMESHCONTAINER* pContainer, int Index )
 {
 	D3DXCOLOR color = pContainer->pMaterials[Index].MatD3D.Ambient;
 	return D3DXVECTOR4( color.r, color.g, color.b, color.a );
 }
 
-//ƒfƒBƒtƒ…[ƒYiŠgU”½ËŒõj‚Ìæ“¾.
+//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºï¼ˆæ‹¡æ•£åå°„å…‰ï¼‰ã®å–å¾—.
 D3DXVECTOR4 D3DXPARSER::GetDiffuse( MYMESHCONTAINER* pContainer, int Index )
 {
 	D3DXCOLOR color = pContainer->pMaterials[Index].MatD3D.Diffuse;
 	return D3DXVECTOR4( color.r, color.g, color.b, color.a );
 }
 
-//ƒXƒyƒLƒ…ƒ‰i‹¾–Ê”½ËŒõj‚Ìæ“¾.
+//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ï¼ˆé¡é¢åå°„å…‰ï¼‰ã®å–å¾—.
 D3DXVECTOR4 D3DXPARSER::GetSpecular( MYMESHCONTAINER* pContainer, int Index )
 {
 	D3DXCOLOR color = pContainer->pMaterials[Index].MatD3D.Specular;
 	return D3DXVECTOR4( color.r, color.g, color.b, color.a );
 }
 
-//ƒGƒ~ƒbƒVƒui©ŒÈ”­Œõj‚Ìæ“¾.
+//ã‚¨ãƒŸãƒƒã‚·ãƒ–ï¼ˆè‡ªå·±ç™ºå…‰ï¼‰ã®å–å¾—.
 D3DXVECTOR4 D3DXPARSER::GetEmissive( MYMESHCONTAINER* pContainer, int Index )
 {
 	D3DXCOLOR color = pContainer->pMaterials[Index].MatD3D.Emissive;
 	return D3DXVECTOR4( color.r, color.g, color.b, color.a );
 }
 
-//ƒeƒNƒXƒ`ƒƒ‚ÌƒpƒX‚Ìæ“¾.
+//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ‘ã‚¹ã®å–å¾—.
 LPSTR D3DXPARSER::GetTexturePath( MYMESHCONTAINER* pContainer, int Index )
 {
 	return pContainer->pMaterials[Index].pTextureFilename;
 }
 
-//ƒXƒyƒLƒ…ƒ‰ƒpƒ[‚Ìæ“¾.
+//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ‘ãƒ¯ãƒ¼ã®å–å¾—.
 float D3DXPARSER::GetSpecularPower( MYMESHCONTAINER* pContainer, int Index )
 {
 	return pContainer->pMaterials[Index].MatD3D.Power;
 }
 
-//‚»‚Ìƒ|ƒŠƒSƒ“‚ªA‚Ç‚Ìƒ}ƒeƒŠƒAƒ‹‚Å‚ ‚é‚©‚ğ•Ô‚·.
+//ãã®ãƒãƒªã‚´ãƒ³ãŒã€ã©ã®ãƒãƒ†ãƒªã‚¢ãƒ«ã§ã‚ã‚‹ã‹ã‚’è¿”ã™.
 int D3DXPARSER::GeFaceMaterialIndex( MYMESHCONTAINER* pContainer, int FaceIndex )
 {
 	int MaterialIndex = 0;
@@ -532,16 +522,16 @@ int D3DXPARSER::GeFaceMaterialIndex( MYMESHCONTAINER* pContainer, int FaceIndex 
 	}
 	else
 	{
-		MessageBox( nullptr, _T( "‘®«ƒoƒbƒtƒ@‚ÌƒƒbƒN¸”s" ), _T( "error" ), MB_OK );
+		MessageBox( nullptr, _T( "å±æ€§ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯å¤±æ•—" ), _T( "error" ), MB_OK );
 	}
 	return MaterialIndex;
 }
 
 
-//FaceIndex”Ô–Ú‚Ìƒ|ƒŠƒSƒ“‚ğŒ`¬‚·‚é3’¸“_‚Ì’†‚ÅAIndexInFace”Ô–Ú[0,2]‚Ì’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Ô‚·.
+//FaceIndexç•ªç›®ã®ãƒãƒªã‚´ãƒ³ã‚’å½¢æˆã™ã‚‹3é ‚ç‚¹ã®ä¸­ã§ã€IndexInFaceç•ªç›®[0,2]ã®é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿”ã™.
 int D3DXPARSER::GetFaceVertexIndex( MYMESHCONTAINER* pContainer, int FaceIndex, int IndexInFace )
 {
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@[‚ğ’²‚×‚ê‚Î•ª‚©‚é.
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒ¼ã‚’èª¿ã¹ã‚Œã°åˆ†ã‹ã‚‹.
 	WORD VertIndex = 0;
 	WORD* pIndex = nullptr;
 	pContainer->MeshData.pMesh->LockIndexBuffer( D3DLOCK_READONLY, reinterpret_cast<VOID**>( &pIndex ) );
@@ -559,8 +549,8 @@ D3DXMATRIX D3DXPARSER::GetBindPose( MYMESHCONTAINER* pContainer, int BoneIndex )
 	return *pContainer->pSkinInfo->GetBoneOffsetMatrix( BoneIndex );
 }
 
-//‚±‚ÌŠÖ”‚ğ‚æ‚Ô‚²‚Æ‚ÉUpdate‚·‚é‚Æ–³‘Ê‚È‚Ì‚ÅARenderŠÖ”Às‚ÉUpdate‚·‚é‚à‚Ì‚Æ‚µ‚Ä‚»‚Ì‚Ü‚Ü“n‚·.
-//eƒNƒ‰ƒX‚ª‚±‚ÌƒNƒ‰ƒX‚ÌUpdateMatrices‚ğÀs‚µ‚È‚¢ê‡‚ÍAUpdateMatrices‚µ‚È‚¢‚Æs—ñ‚ªÅV‚É‚È‚ç‚È‚¢‚Ì‚Å—¯ˆÓ.
+//ã“ã®é–¢æ•°ã‚’ã‚ˆã¶ã”ã¨ã«Updateã™ã‚‹ã¨ç„¡é§„ãªã®ã§ã€Renderé–¢æ•°å®Ÿè¡Œæ™‚ã«Updateã™ã‚‹ã‚‚ã®ã¨ã—ã¦ãã®ã¾ã¾æ¸¡ã™.
+//è¦ªã‚¯ãƒ©ã‚¹ãŒã“ã®ã‚¯ãƒ©ã‚¹ã®UpdateMatricesã‚’å®Ÿè¡Œã—ãªã„å ´åˆã¯ã€UpdateMatricesã—ãªã„ã¨è¡Œåˆ—ãŒæœ€æ–°ã«ãªã‚‰ãªã„ã®ã§ç•™æ„.
 D3DXMATRIX D3DXPARSER::GetNewPose( MYMESHCONTAINER* pContainer, int BoneIndex )
 {
 	MYMESHCONTAINER* pMyContaiber = reinterpret_cast<MYMESHCONTAINER*>( pContainer );
@@ -579,76 +569,76 @@ int D3DXPARSER::GetNumBones( MYMESHCONTAINER* pContainer )
 	return pContainer->pSkinInfo->GetNumBones();
 }
 
-//ƒƒbƒVƒ…ƒRƒ“ƒeƒi‚ğŒÄ‚Ño‚·(Ä‹Aˆ—)
+//ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠã‚’å‘¼ã³å‡ºã™(å†å¸°å‡¦ç†)
 LPD3DXMESHCONTAINER D3DXPARSER::GetMeshContainer( LPD3DXFRAME pFrame )
 {
 	LPD3DXMESHCONTAINER pCon = nullptr;
 
-	//ƒƒbƒVƒ…ƒRƒ“ƒeƒi‚ ‚ê‚Î•Ô‚·.
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠã‚ã‚Œã°è¿”ã™.
 	if ( pFrame->pMeshContainer ) {
 		return pFrame->pMeshContainer;
 	}
 
-	//–³‚©‚Á‚½‚çAq‚ÌƒtƒŒ[ƒ€‚ğƒ`ƒFƒbƒN.
-	//‚»‚à‚»‚àqƒtƒŒ[ƒ€‚ ‚éH
+	//ç„¡ã‹ã£ãŸã‚‰ã€å­ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ãƒã‚§ãƒƒã‚¯.
+	//ãã‚‚ãã‚‚å­ãƒ•ãƒ¬ãƒ¼ãƒ ã‚ã‚‹ï¼Ÿ
 	if ( pFrame->pFrameFirstChild ) {
-		//‚ ‚ê‚Îƒ`ƒFƒbƒN‚·‚é.
+		//ã‚ã‚Œã°ãƒã‚§ãƒƒã‚¯ã™ã‚‹.
 		pCon = GetMeshContainer( pFrame->pFrameFirstChild );
 	}
 
-	//q‚ÌƒtƒŒ[ƒ€Å‰º‘w‚Ü‚Åƒ`ƒFƒbƒN‚µ‚½‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½.
+	//å­ã®ãƒ•ãƒ¬ãƒ¼ãƒ æœ€ä¸‹å±¤ã¾ã§ãƒã‚§ãƒƒã‚¯ã—ãŸãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ.
 	if ( pCon == nullptr ) {
-		//ŒZ’í‚ÌƒtƒŒ[ƒ€‚à’T‚·.
-		//‚»‚à‚»‚àŒZ’íƒtƒŒ[ƒ€‚ ‚éH
+		//å…„å¼Ÿã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‚‚æ¢ã™.
+		//ãã‚‚ãã‚‚å…„å¼Ÿãƒ•ãƒ¬ãƒ¼ãƒ ã‚ã‚‹ï¼Ÿ
 		if ( pFrame->pFrameSibling ) {
-			//‚ ‚é‚ê‚Îƒ`ƒFƒbƒN‚·‚é.
+			//ã‚ã‚‹ã‚Œã°ãƒã‚§ãƒƒã‚¯ã™ã‚‹.
 			pCon = GetMeshContainer( pFrame->pFrameSibling );
 		}
 	}
 
-	//Œ©‚Â‚©‚ç‚È‚¢ê‡‚Ínullptr‚ª“ü‚é.
+	//è¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯nullptrãŒå…¥ã‚‹.
 	return pCon;
 }
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦.
-//	‘æ‚Qˆø”‚ÍAŒÂ•Ê‚É§Œä‚·‚é—p‚ÌAnimationController‚ğƒZƒbƒg‚·‚é.
-//	@•s—v‚Èê‡‚ÍAnullptr‚ğİ’è‚·‚é‚±‚Æ.
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ.
+//	ç¬¬ï¼’å¼•æ•°ã¯ã€å€‹åˆ¥ã«åˆ¶å¾¡ã™ã‚‹ç”¨ã®AnimationControllerã‚’ã‚»ãƒƒãƒˆã™ã‚‹.
+//	ã€€ä¸è¦ãªå ´åˆã¯ã€nullptrã‚’è¨­å®šã™ã‚‹ã“ã¨.
 void D3DXPARSER::ChangeAnimSet( int Index, LPD3DXANIMATIONCONTROLLER pAC )
 {
-	D3DXTRACK_DESC TrackDesc;		//ƒAƒjƒ[ƒVƒ‡ƒ“ƒgƒ‰ƒbƒN\‘¢‘Ì.
+	D3DXTRACK_DESC TrackDesc;		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒˆãƒ©ãƒƒã‚¯æ§‹é€ ä½“.
 
-	//¦ˆÈ‰º3‚Â‚ÍA‚Ù‚ÚŒÅ’è‚ÅOK.
-	TrackDesc.Weight	= 1.0f;	//d‚İ.
-	TrackDesc.Speed		= 1.0f;	//‘¬‚³.
-	TrackDesc.Enable	= TRUE;	//—LŒø.
+	//â€»ä»¥ä¸‹3ã¤ã¯ã€ã»ã¼å›ºå®šã§OK.
+	TrackDesc.Weight	= 1.0f;	//é‡ã¿.
+	TrackDesc.Speed		= 1.0f;	//é€Ÿã•.
+	TrackDesc.Enable	= TRUE;	//æœ‰åŠ¹.
 
 	TrackDesc.Priority = D3DXPRIORITY_LOW;
 
-	TrackDesc.Position = 0.0;		//ƒtƒŒ[ƒ€ˆÊ’u(ŠJnˆÊ’u‚ğw’è‚Å‚«‚é)
+	TrackDesc.Position = 0.0;		//ãƒ•ãƒ¬ãƒ¼ãƒ ä½ç½®(é–‹å§‹ä½ç½®ã‚’æŒ‡å®šã§ãã‚‹)
 
 	LPD3DXANIMATIONCONTROLLER pTmpAC;
 	pTmpAC = pAC ? pAC : m_pAnimController;
 
-	//w’è(Indexj‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒgƒ‰ƒbƒN‚É•ÏX.
+	//æŒ‡å®š(Indexï¼‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒˆãƒ©ãƒƒã‚¯ã«å¤‰æ›´.
 	pTmpAC->SetTrackDesc( 0, &TrackDesc );
 	pTmpAC->SetTrackAnimationSet( 0, m_pAnimSet[Index] );
 	pTmpAC->SetTrackEnable( Index, TRUE );
 }
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦(ŠJnƒtƒŒ[ƒ€w’è‰Â”\”Å)
-//@‘æ‚Qˆø”‚ÉŠJn‚µ‚½‚¢ƒtƒŒ[ƒ€‚ğw’è‚·‚é.
-//	@Š®‘S’â~‚µ‚½‚¢ê‡‚ÍA‘OŒã‚ÅƒAƒjƒ[ƒVƒ‡ƒ“‘¬“x‚à0.0f‚Éw’è‚µ‚Ä‚â‚é•K—v‚ª‚ ‚é.
-//	‘æ‚Rˆø”‚ÍAŒÂ•Ê‚É§Œä‚·‚é—p‚ÌAnimationController‚ğƒZƒbƒg‚·‚é.
-//	@•s—v‚Èê‡‚ÍAnullptr‚ğİ’è‚·‚é‚±‚Æ.
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ(é–‹å§‹ãƒ•ãƒ¬ãƒ¼ãƒ æŒ‡å®šå¯èƒ½ç‰ˆ)
+//ã€€ç¬¬ï¼’å¼•æ•°ã«é–‹å§‹ã—ãŸã„ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æŒ‡å®šã™ã‚‹.
+//	ã€€å®Œå…¨åœæ­¢ã—ãŸã„å ´åˆã¯ã€å‰å¾Œã§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é€Ÿåº¦ã‚‚0.0fã«æŒ‡å®šã—ã¦ã‚„ã‚‹å¿…è¦ãŒã‚ã‚‹.
+//	ç¬¬ï¼“å¼•æ•°ã¯ã€å€‹åˆ¥ã«åˆ¶å¾¡ã™ã‚‹ç”¨ã®AnimationControllerã‚’ã‚»ãƒƒãƒˆã™ã‚‹.
+//	ã€€ä¸è¦ãªå ´åˆã¯ã€nullptrã‚’è¨­å®šã™ã‚‹ã“ã¨.
 void D3DXPARSER::ChangeAnimSet_StartPos(
 	int Index, double StartFramePos, LPD3DXANIMATIONCONTROLLER pAC )
 {
-	D3DXTRACK_DESC TrackDesc;		//ƒAƒjƒ[ƒVƒ‡ƒ“ƒgƒ‰ƒbƒN\‘¢‘Ì.
+	D3DXTRACK_DESC TrackDesc;		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒˆãƒ©ãƒƒã‚¯æ§‹é€ ä½“.
 
-	//¦ˆÈ‰º3‚Â‚ÍA‚Ù‚ÚŒÅ’è‚ÅOK.
-	TrackDesc.Weight = 1.0f;	//d‚İ.
-	TrackDesc.Speed	 = 1.0f;	//‘¬‚³.
-	TrackDesc.Enable = TRUE;	//—LŒø.
+	//â€»ä»¥ä¸‹3ã¤ã¯ã€ã»ã¼å›ºå®šã§OK.
+	TrackDesc.Weight = 1.0f;	//é‡ã¿.
+	TrackDesc.Speed	 = 1.0f;	//é€Ÿã•.
+	TrackDesc.Enable = TRUE;	//æœ‰åŠ¹.
 
 	TrackDesc.Priority = D3DXPRIORITY_LOW;
 	TrackDesc.Position = StartFramePos;
@@ -656,13 +646,13 @@ void D3DXPARSER::ChangeAnimSet_StartPos(
 	LPD3DXANIMATIONCONTROLLER pTmpAC;
 	pTmpAC = ( pAC != nullptr ) ? pAC : m_pAnimController;
 
-	//w’è(Indexj‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒgƒ‰ƒbƒN‚É•ÏX.
+	//æŒ‡å®š(Indexï¼‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒˆãƒ©ãƒƒã‚¯ã«å¤‰æ›´.
 	pTmpAC->SetTrackDesc( 0, &TrackDesc );
 	pTmpAC->SetTrackAnimationSet( 0, m_pAnimSet[Index] );
 	pTmpAC->SetTrackEnable( Index, TRUE );
 }
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“’â~ŠÔ‚ğæ“¾.
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åœæ­¢æ™‚é–“ã‚’å–å¾—.
 double D3DXPARSER::GetAnimPeriod( int Index)
 {
 	if( Index < 0 || MAX_ANIM_SET <= Index ) {
@@ -671,7 +661,7 @@ double D3DXPARSER::GetAnimPeriod( int Index)
 	return m_pAnimSet[Index]->GetPeriod();
 }
 
-//Å‘åƒAƒjƒ[ƒVƒ‡ƒ“”‚ğæ“¾.
+//æœ€å¤§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ•°ã‚’å–å¾—.
 int D3DXPARSER::GetAnimMax( LPD3DXANIMATIONCONTROLLER pAC )
 {
 	if( pAC != nullptr ) {
@@ -680,7 +670,7 @@ int D3DXPARSER::GetAnimMax( LPD3DXANIMATIONCONTROLLER pAC )
 	return m_pAnimController->GetNumAnimationSets();
 }
 
-//w’è‚µ‚½ƒ{[ƒ“î•ñ(s—ñ)‚ğæ“¾‚·‚éŠÖ”.
+//æŒ‡å®šã—ãŸãƒœãƒ¼ãƒ³æƒ…å ±(è¡Œåˆ—)ã‚’å–å¾—ã™ã‚‹é–¢æ•°.
 bool D3DXPARSER::GetMatrixFromBone( LPCSTR BoneName, D3DXMATRIX* pOutMat )
 {
 	LPD3DXFRAME pFrame;
@@ -691,13 +681,13 @@ bool D3DXPARSER::GetMatrixFromBone( LPCSTR BoneName, D3DXMATRIX* pOutMat )
 	}
 
 	MYFRAME* pMyFrame = reinterpret_cast<MYFRAME*>( pFrame );
-	//ˆÊ’uî•ñ‚ğæ“¾.
+	//ä½ç½®æƒ…å ±ã‚’å–å¾—.
 	*pOutMat = pMyFrame->CombinedTransformationMatrix;
 
 	return true;
 }
 
-//w’è‚µ‚½ƒ{[ƒ“î•ñ(À•W)‚ğæ“¾‚·‚éŠÖ”.
+//æŒ‡å®šã—ãŸãƒœãƒ¼ãƒ³æƒ…å ±(åº§æ¨™)ã‚’å–å¾—ã™ã‚‹é–¢æ•°.
 bool D3DXPARSER::GetPosFromBone( LPCSTR BoneName, D3DXVECTOR3* pOutPos )
 {
 	D3DXMATRIX mBone;
@@ -711,31 +701,31 @@ bool D3DXPARSER::GetPosFromBone( LPCSTR BoneName, D3DXVECTOR3* pOutPos )
 	return true;
 }
 
-//ˆêŠ‡‰ğ•úˆ—.
+//ä¸€æ‹¬è§£æ”¾å‡¦ç†.
 HRESULT D3DXPARSER::Release()
 {
-	//ì¬‚µ‚½‚à‚Ì‚ğÅŒã‚Éì‚Á‚½‚à‚Ì‚©‚ç‡‰ğ•ú‚µ‚Ä‚¢‚­.
-	//Šî–{“I‚É‚Í new ‚µ‚½‚à‚Ì‚ğ delete ‚µ‚Ä‚¢‚­.
+	//ä½œæˆã—ãŸã‚‚ã®ã‚’æœ€å¾Œã«ä½œã£ãŸã‚‚ã®ã‹ã‚‰é †è§£æ”¾ã—ã¦ã„ã.
+	//åŸºæœ¬çš„ã«ã¯ new ã—ãŸã‚‚ã®ã‚’ delete ã—ã¦ã„ã.
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚Ì‰ğ•ú.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®è§£æ”¾.
 	DWORD AnimMax = m_pAnimController->GetNumAnimationSets();
 	for( DWORD i = 0; i < AnimMax; i++ )
 	{
 		SAFE_RELEASE( m_pAnimSet[i] );
 	}
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰íœ.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©å‰Šé™¤.
 	SAFE_RELEASE( m_pAnimController );
 
-	//ƒtƒŒ[ƒ€‚ÆƒƒbƒVƒ…ƒRƒ“ƒeƒi‚Ìíœ.
+	//ãƒ•ãƒ¬ãƒ¼ãƒ ã¨ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠã®å‰Šé™¤.
 	m_pHierarchy->DestroyFrame( m_pFrameRoot );
 
-	//‰ğ•úˆ—‚¢‚éH
+	//è§£æ”¾å‡¦ç†ã„ã‚‹ï¼Ÿ
 	if ( m_pFrameRoot != nullptr ) {
 		m_pFrameRoot = nullptr;
 	}
 
-	//Hierarchyíœ.
+	//Hierarchyå‰Šé™¤.
 	if ( m_pHierarchy != nullptr ) {
 		delete m_pHierarchy;
 		m_pHierarchy = nullptr;

@@ -30,21 +30,21 @@ CMenu::~CMenu()
 
 void CMenu::Create()
 {
-	// Create font for menu text
+	// メニューテキスト用のフォントを作成する.
 	m_pMenuFont = new CFont();
 	m_pMenuBG = new CUIObject();
 	m_pMenuOption = new CUIObject();
 	m_pMenuBGSprite = new CSprite2D;
 	m_pCursorSprite = new CSprite2D();
 	m_pCursor = new CUIObject();
-	// Fade overlay
+	// フェード用のオーバーレイ.
 	m_pFade = new CUIObject();
 	m_pFadeSprite = new CSprite2D();
 }
 
 HRESULT CMenu::LoadData()
 {
-	// Initialize font
+	// フォントを初期化する.
 	if (FAILED(m_pMenuFont->Init(*m_pDx11)))
 	{
 		return E_FAIL;
@@ -109,13 +109,14 @@ void CMenu::Start()
 	{
 		m_MenuState = STATE_LEVEL_SELECT;
 		m_SelectedLevel = LEVEL_1;
-		CMenu::s_OpenToLevelSelect = false; // Reset flag
+		CMenu::s_OpenToLevelSelect = false; // フラグをリセットする.
 	}
 	else
 	{
 		m_MenuState = STATE_MAIN_MENU;
 	}
 
+	m_settingsMenu.Reset();
 	m_SelectedOption = MENU_OPTION_START;
 	m_SelectedDifficulty = CGameStats::GetDifficulty();
 	m_IsFading = false;
@@ -135,10 +136,10 @@ void CMenu::Update()
 	m_BGScrollOffset += m_BGScrollSpeed;
 	if (m_BGScrollOffset >= 1.0f)
 	{
-		m_BGScrollOffset -= 1.0f;  // Wrap around for seamless loop
+		m_BGScrollOffset -= 1.0f;  // シームレスにループするよう折り返す.
 	}
 
-	// Apply scroll offset to background sprite
+	// 背景スプライトにスクロールオフセットを適用する.
 	if (m_pMenuBGSprite)
 	{
 		m_pMenuBGSprite->SetUVOffset(m_BGScrollOffset, m_BGScrollOffset);
@@ -171,9 +172,12 @@ void CMenu::Update()
 	case STATE_LEVEL_SELECT:
 		UpdateLevelSelect();
 		break;
+	case STATE_SETTINGS:
+		UpdateSettings();
+		break;
 	}
 
-	// Update cursor position based on selected option
+	// 選択中の項目に合わせてカーソル位置を更新する.
 	D3DXVECTOR3 cursorPos;
 	cursorPos.x = m_mousePos.x;
 	cursorPos.y = m_mousePos.y;
@@ -185,41 +189,59 @@ void CMenu::Update()
 
 void CMenu::UpdateMainMenu()
 {
-	// Mouse hover selection
+	// マウスホバーによる選択.
 	float optionX = static_cast<float>(WND_W / 2 - 160);
 	float optionWidth = 320.0f;
 	float optionHeight = 50.0f;
 
-	float startY = static_cast<float>(WND_H / 2 - 40);
-	float exitY  = static_cast<float>(WND_H / 2 + 60);
+	// 各項目のY座標（DrawMainMenu と一致させること）.
+	float optionY[MENU_OPTION_COUNT];
+	optionY[MENU_OPTION_START]    = static_cast<float>(WND_H / 2 - 40);
+	optionY[MENU_OPTION_SETTINGS] = static_cast<float>(WND_H / 2 + 40);
+	optionY[MENU_OPTION_EXIT]     = static_cast<float>(WND_H / 2 + 120);
 
 	auto isInside = [&](float x, float y, float w, float h)
 	{
 		return (m_mousePos.x >= x && m_mousePos.x <= x + w && m_mousePos.y >= y && m_mousePos.y <= y + h);
 	};
 
-	if (isInside(optionX, startY, optionWidth, optionHeight))
+	// 選択中の項目を決定する（ENTER 押下時とマウスクリック時に共通で使用）.
+	auto confirm = [&](int option)
 	{
-		m_SelectedOption = MENU_OPTION_START;
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		CSoundManager::PlaySE(CSoundManager::SE_Decide);
+		if (option == MENU_OPTION_START)
 		{
-			CSoundManager::PlaySE(CSoundManager::SE_Decide);
+			// レベル選択画面へ移動する.
 			m_MenuState = STATE_LEVEL_SELECT;
 			m_SelectedLevel = LEVEL_1;
 		}
-	}
-	else if (isInside(optionX, exitY, optionWidth, optionHeight))
-	{
-		m_SelectedOption = MENU_OPTION_EXIT;
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+		else if (option == MENU_OPTION_SETTINGS)
 		{
-			CSoundManager::PlaySE(CSoundManager::SE_Decide);
+			// 設定画面へ移動する.
+			m_MenuState = STATE_SETTINGS;
+			m_settingsMenu.Reset();
+		}
+		else if (option == MENU_OPTION_EXIT)
+		{
 			PostQuitMessage(0);
-			return;
+		}
+	};
+
+	// マウスホバーで項目を選択し、クリックで決定する.
+	for (int i = 0; i < MENU_OPTION_COUNT; ++i)
+	{
+		if (isInside(optionX, optionY[i] - 20.f, optionWidth, optionHeight))
+		{
+			m_SelectedOption = i;
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x0001)
+			{
+				confirm(i);
+				return;
+			}
 		}
 	}
 
-	// Navigate options
+	// キーボードで項目を移動する.
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
@@ -235,20 +257,21 @@ void CMenu::UpdateMainMenu()
 			m_SelectedOption = 0;
 	}
 
-	// Select
+	// 決定.
 	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
-		CSoundManager::PlaySE(CSoundManager::SE_Decide);
-		if (m_SelectedOption == MENU_OPTION_START)
-		{
-			// Go to level select screen
-			m_MenuState = STATE_LEVEL_SELECT;
-			m_SelectedLevel = LEVEL_1;
-		}
-		else if (m_SelectedOption == MENU_OPTION_EXIT)
-		{
-			PostQuitMessage(0);
-		}
+		confirm(m_SelectedOption);
+	}
+}
+
+// 設定画面の更新.
+void CMenu::UpdateSettings()
+{
+	// 共通設定メニューが「戻る」を返したらメインメニューへ戻る.
+	if (m_settingsMenu.Update())
+	{
+		m_MenuState = STATE_MAIN_MENU;
+		m_SelectedOption = MENU_OPTION_SETTINGS;
 	}
 }
 
@@ -265,7 +288,7 @@ void CMenu::UpdateLevelSelect()
 		return (m_mousePos.x >= x && m_mousePos.x <= x + w && m_mousePos.y >= y && m_mousePos.y <= y + h);
 	};
 
-	// Hover/select level options with mouse
+	// マウスホバーでレベル項目を選択する.
 	for (int i = 0; i < LEVEL_COUNT; i++)
 	{
 		float y = startY + (i * 50.0f) - 15.0f;
@@ -291,7 +314,7 @@ void CMenu::UpdateLevelSelect()
 		}
 	}
 
-	// BACK option hover/click
+	// 「戻る」項目のホバー／クリック.
 	if (isInside(optionX, backY - 15.0f, optionWidth, optionHeight))
 	{
 		m_SelectedLevel = LEVEL_BACK;
@@ -314,7 +337,7 @@ void CMenu::UpdateLevelSelect()
 		return;
 	}
 
-	// Navigate levels (UP/DOWN) - include BACK option
+	// レベル間を移動する（UP/DOWN）。「戻る」項目も含める.
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
@@ -337,26 +360,7 @@ void CMenu::UpdateLevelSelect()
 			m_SelectedLevel = 0;
 	}
 
-	// Change difficulty (LEFT/RIGHT) - only when a level is selected
-	//if (m_SelectedLevel < LEVEL_COUNT)
-	//{
-	//	if (GetAsyncKeyState(VK_LEFT) & 0x0001)
-	//	{
-	//		CSoundManager::PlaySE(CSoundManager::SE_Select);
-	//		m_SelectedDifficulty--;
-	//		if (m_SelectedDifficulty < CGameStats::DIFF_EASY)
-	//			m_SelectedDifficulty = CGameStats::DIFF_HARD;
-	//	}
-	//	if (GetAsyncKeyState(VK_RIGHT) & 0x0001)
-	//	{
-	//		CSoundManager::PlaySE(CSoundManager::SE_Select);
-	//		m_SelectedDifficulty++;
-	//		if (m_SelectedDifficulty > CGameStats::DIFF_HARD)
-	//			m_SelectedDifficulty = CGameStats::DIFF_EASY;
-	//	}
-	//}
-
-	// Go back to main menu (ESC shortcut)
+	// メインメニューへ戻る（ESCショートカット）.
 	if (GetAsyncKeyState(VK_ESCAPE) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
@@ -396,7 +400,7 @@ void CMenu::DrawLevelSelect()
 	_stprintf_s(titleText, _T("SELECT LEVEL"));
 	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 140), 90.0f, 60.0f);
 
-	// Level names
+	// レベル名.
 	const TCHAR* levelNames[] = {	_T("TUTORIAL"), 
 									_T("LEVEL 1"),
 									_T("LEVEL 2")};
@@ -417,7 +421,7 @@ void CMenu::DrawLevelSelect()
 		m_pMenuFont->Render(levelText, static_cast<float>(WND_W / 2 - 120), startY + (i * 50.0f), 35.0f);
 	}
 
-	// BACK option
+	// 「戻る」項目.
 	float backY = startY + (LEVEL_COUNT * 50.0f) + 80.0f;
 	if (m_SelectedLevel == LEVEL_BACK)
 		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
@@ -425,7 +429,7 @@ void CMenu::DrawLevelSelect()
 		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
 	m_pMenuFont->Render(_T("> BACK"), static_cast<float>(WND_W / 2 - 60), backY, 35.0f);
 
-	// Instructions
+	// 操作説明.
 	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
 	TCHAR instructText[128];
 	_stprintf_s(instructText, _T("UP/DOWN: Select | ENTER: Confirm | ESC: Back"));
@@ -446,9 +450,12 @@ void CMenu::Draw()
 	case STATE_LEVEL_SELECT:
 		DrawLevelSelect();
 		break;
+	case STATE_SETTINGS:
+		DrawSettings();
+		break;
 	}
 
-	// Draw fade overlay last so it covers everything
+	// フェードのオーバーレイは最後に描画し、全体を覆うようにする.
 	if (m_pFade)
 	{
 		m_pFade->Draw();
@@ -464,28 +471,42 @@ void CMenu::DrawMainMenu()
 	_stprintf_s(titleText, _T("FAST ATTACK"));
 	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 130), 90.0f, 60.0f);
 
-	// Start option
-	if (m_SelectedOption == MENU_OPTION_START)
-		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
-	else
-		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
+	// 各項目（ラベルとY座標は UpdateMainMenu と一致させること）.
+	const TCHAR* optionText[MENU_OPTION_COUNT];
+	optionText[MENU_OPTION_START]    = _T("> START GAME");
+	optionText[MENU_OPTION_SETTINGS] = _T("> SETTINGS");
+	optionText[MENU_OPTION_EXIT]     = _T("> EXIT");
 
-	TCHAR startText[64];
-	_stprintf_s(startText, _T("> START GAME"));
-	m_pMenuFont->Render(startText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 - 20), 40.0f);
+	float optionY[MENU_OPTION_COUNT];
+	optionY[MENU_OPTION_START]    = static_cast<float>(WND_H / 2 - 40);
+	optionY[MENU_OPTION_SETTINGS] = static_cast<float>(WND_H / 2 + 40);
+	optionY[MENU_OPTION_EXIT]     = static_cast<float>(WND_H / 2 + 120);
 
-	// Exit option
-	if (m_SelectedOption == MENU_OPTION_EXIT)
-		m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
-	else
-		m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
-
-	TCHAR exitText[64];
-	_stprintf_s(exitText, _T("> EXIT"));
-	m_pMenuFont->Render(exitText, static_cast<float>(WND_W / 2 - 100), static_cast<float>(WND_H / 2 + 80), 40.0f);
+	for (int i = 0; i < MENU_OPTION_COUNT; ++i)
+	{
+		if (m_SelectedOption == i)
+			m_pMenuFont->SetColor(1.0f, 0.2f, 0.06f);
+		else
+			m_pMenuFont->SetColor(1.0f, 1.0f, 1.0f);
+		m_pMenuFont->Render(optionText[i], static_cast<float>(WND_W / 2 - 100), optionY[i], 40.0f);
+	}
 
 	m_pMenuFont->SetColor(0.7f, 0.7f, 0.7f);
 	TCHAR instructText[128];
 	_stprintf_s(instructText, _T("Use UP/DOWN to select, ENTER to confirm"));
 	m_pMenuFont->Render(instructText, static_cast<float>(WND_W / 2 - 200), static_cast<float>(WND_H - 50), 35.0f);
+}
+
+// 設定画面の描画.
+void CMenu::DrawSettings()
+{
+	m_pMenuFont->SetColor(1.0f, 0.1f, 0.05f);
+	m_pMenuFont->SetAlpha(1.0f);
+
+	TCHAR titleText[64];
+	_stprintf_s(titleText, _T("SETTINGS"));
+	m_pMenuFont->Render(titleText, static_cast<float>(WND_W / 2 - 110), 90.0f, 60.0f);
+
+	// 共通設定メニューUIを描画する.
+	m_settingsMenu.Draw(m_pMenuFont, static_cast<float>(WND_H / 2 - 60));
 }

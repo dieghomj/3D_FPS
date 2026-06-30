@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <Windows.h>
 
 class CInput
@@ -8,19 +8,19 @@ public:
 
 	CInput();
 	~CInput();
-	//ƒL[“ü—Í‚ÌXV.
+	//ã‚­ãƒ¼å…¥åŠ›ã®æ›´æ–°.
 	void Update();
-	//ƒL[‚ª‰Ÿ‚³‚ê‚½uŠÔ‚ğæ“¾.
+	//ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸç¬é–“ã‚’å–å¾—.
 	bool GetKeyDown(int key);
-	//ƒL[‚ª—£‚³‚ê‚½uŠÔ‚ğæ“¾.
+	//ã‚­ãƒ¼ãŒé›¢ã•ã‚ŒãŸç¬é–“ã‚’å–å¾—.
 	bool GetKeyUp(int key);
-	//ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚©æ“¾.
+	//ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹å–å¾—.
 	bool GetKey(int key);
 
 private:
 
-	bool m_KeyState[256];			//ƒL[‚Ì‰Ÿ‰ºó‘Ô‚ğ•Û.
-	bool m_KeyPrevState[256];		//ƒL[‚Ì‘O‰ñ‚Ì‰Ÿ‰ºó‘Ô‚ğ•Û.
+	bool m_KeyState[256];			//ã‚­ãƒ¼ã®æŠ¼ä¸‹çŠ¶æ…‹ã‚’ä¿æŒ.
+	bool m_KeyPrevState[256];		//ã‚­ãƒ¼ã®å‰å›ã®æŠ¼ä¸‹çŠ¶æ…‹ã‚’ä¿æŒ.
 
 };
 

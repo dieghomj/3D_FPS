@@ -1,10 +1,11 @@
-#pragma once
+﻿#pragma once
 #include "CScene.h"
 #include "CFont.h"
 #include "CUIObject.h"
+#include "CSettingsMenu.h"
 
 /********************************************************************************
-*	Menu Scene Class.
+*	メニューシーンクラス.
 **/
 class CMenu : public CScene
 {
@@ -15,6 +16,7 @@ private:
 	enum MENU_OPTION
 	{
 		MENU_OPTION_START,
+		MENU_OPTION_SETTINGS,
 		MENU_OPTION_EXIT,
 		MENU_OPTION_COUNT
 	};
@@ -33,6 +35,7 @@ private:
 	{
 		STATE_MAIN_MENU,
 		STATE_LEVEL_SELECT,
+		STATE_SETTINGS,
 	};
 
 public:
@@ -46,16 +49,18 @@ public:
 	void Update() override;
 	void Draw() override;
 
-	// Allow free mouse movement in menus
+	// メニューではマウスを自由に動かせるようにする.
 	bool ShouldLockMouse() const override { return false; }
 
 private:
 	void UpdateMainMenu();
 	void UpdateLevelSelect();
+	void UpdateSettings();
 	void DrawMainMenu();
 	void DrawLevelSelect();
+	void DrawSettings();
 
-	// Font for menu text
+	// メニューテキスト用フォント.
 	CFont* m_pMenuFont;
 	CUIObject* m_pMenuBG;
 	CUIObject* m_pMenuOption;
@@ -65,7 +70,7 @@ private:
 	CSprite2D* m_pCursorSprite;
 	CUIObject* m_pCursor;
 
-	// Menu state
+	// メニューの状態.
 	MENU_STATE m_MenuState;
 	int m_SelectedOption;
 	int m_SelectedLevel;
@@ -75,7 +80,10 @@ private:
 	float m_FadeAlpha;
 	float m_FadeSpeed;
 
-	// Background scrolling
+	// 背景スクロール.
 	float m_BGScrollOffset;
 	float m_BGScrollSpeed;
+
+	// 共通設定メニューUI.
+	CSettingsMenu m_settingsMenu;
 };

@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CGameObject.h"
 
 #include "CSprite3D.h"
 
 /************************************************************
-*	ƒXƒvƒ‰ƒCƒgƒIƒuƒWƒFƒNƒgƒNƒ‰ƒX.
+*	ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚¯ãƒ©ã‚¹.
 **/
 class CSpriteObject
 	: public CGameObject
@@ -14,18 +14,18 @@ public:
 	CSpriteObject();
 	virtual ~CSpriteObject() override;
 
-	//CGameObject‚Åƒˆ‰¼‘zŠÖ”‚ÌéŒ¾‚ª‚³‚ê‚Ä‚é‚Ì‚Å‚±‚¿‚ç‚Å’è‹`‚ğ‘‚­.
+	//CGameObjectã§ç´”ç²‹ä»®æƒ³é–¢æ•°ã®å®£è¨€ãŒã•ã‚Œã¦ã‚‹ã®ã§ã“ã¡ã‚‰ã§å®šç¾©ã‚’æ›¸ã.
 	virtual void Update() override;
-	//CSpriteObject‚ÅéŒ¾‚µ‚½ŠÖ”‚ÅAˆÈ~‚Í‚±‚ê‚ğoverride‚³‚¹‚é
+	//CSpriteObjectã§å®£è¨€ã—ãŸé–¢æ•°ã§ã€ä»¥é™ã¯ã“ã‚Œã‚’overrideã•ã›ã‚‹
 	virtual void Draw(SCENE_DATA& sceneData) override;
 
 	virtual bool IsHit(CGameObject* obj, float rad);
 
-	//ƒXƒvƒ‰ƒCƒg‚ğÚ‘±‚·‚é.
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’æ¥ç¶šã™ã‚‹.
 	void AttachSprite( CSprite3D& pSprite ){
 		m_pSprite = &pSprite;
 	}
-	//ƒXƒvƒ‰ƒCƒg‚ğØ‚è—£‚·.
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆ‡ã‚Šé›¢ã™.
 	void DetachSprite(){
 		m_pSprite = nullptr;
 	}

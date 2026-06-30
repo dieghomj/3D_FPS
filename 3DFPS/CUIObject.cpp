@@ -1,4 +1,4 @@
-#include "CUIObject.h"
+ï»¿#include "CUIObject.h"
 
 CUIObject::CUIObject()
 	: m_pSprite		( nullptr )
@@ -24,15 +24,15 @@ void CUIObject::Draw()
 		return;
 	}
 
-	//•`‰æ’¼‘O‚ÅÀ•W‚â‰ñ“]î•ñ‚È‚Ç‚ğXV.
+	//æç”»ç›´å‰ã§åº§æ¨™ã‚„å›è»¢æƒ…å ±ãªã©ã‚’æ›´æ–°.
 	m_pSprite->SetPosition( m_vPosition );
 	m_pSprite->SetRotation( m_vRotation );
 	m_pSprite->SetScale( m_vScale );
 
-	//ƒpƒ^[ƒ“”Ô†‚ğİ’è
+	//ãƒ‘ã‚¿ãƒ¼ãƒ³ç•ªå·ã‚’è¨­å®š
 	m_pSprite->SetPatternNo( m_PatternNo.x, m_PatternNo.y );
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 	m_pSprite->Render();
 }
 

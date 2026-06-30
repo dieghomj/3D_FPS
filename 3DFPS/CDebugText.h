@@ -1,61 +1,61 @@
-#pragma once
+ï»¿#pragma once
 
-//Œx‚É‚Â‚¢‚Ä‚ÌƒR[ƒh•ªÍ‚ğ–³Œø‚É‚·‚é.4005:Ä’è‹`.
+//è­¦å‘Šã«ã¤ã„ã¦ã®ã‚³ãƒ¼ãƒ‰åˆ†æã‚’ç„¡åŠ¹ã«ã™ã‚‹.4005:å†å®šç¾©.
 #pragma warning(disable:4005)
 
-//_declspec()	:DLL‚©‚ç(ŠÖ”AƒNƒ‰ƒXAƒNƒ‰ƒX‚Ìƒƒ“ƒoŠÖ”‚ğ)ƒGƒNƒXƒ|[ƒg‚·‚é
-//align()		:(‹­§“I‚É)16byte‚Åg—p‚·‚é
+//_declspec()	:DLLã‹ã‚‰(é–¢æ•°ã€ã‚¯ãƒ©ã‚¹ã€ã‚¯ãƒ©ã‚¹ã®ãƒ¡ãƒ³ãƒé–¢æ•°ã‚’)ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã™ã‚‹
+//align()		:(å¼·åˆ¶çš„ã«)16byteã§ä½¿ç”¨ã™ã‚‹
 #define ALIGN16 _declspec( align(16) )
 
-//‘O•ûéŒ¾.
+//å‰æ–¹å®£è¨€.
 class CDirectX11;
 
 /**************************************************
-*	ƒfƒoƒbƒOƒeƒLƒXƒgƒNƒ‰ƒX.
+*	ãƒ‡ãƒãƒƒã‚°ãƒ†ã‚­ã‚¹ãƒˆã‚¯ãƒ©ã‚¹.
 **/
 class CDebugText
 {
 public:
-	//’è”éŒ¾
+	//å®šæ•°å®£è¨€
 	static constexpr int SPRITE_MAX_W = 10;
 	static constexpr int SPRITE_MAX_H = 10;
 	static constexpr int SPRITE_MAX = SPRITE_MAX_W * SPRITE_MAX_H;
 
 	//======================================
-	//	\‘¢‘Ì.
+	//	æ§‹é€ ä½“.
 	//======================================
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ÌƒAƒvƒŠ‘¤‚Ì’è‹`.
-	//¦ƒVƒF[ƒ_“à‚ÌƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Æˆê’v‚µ‚Ä‚¢‚é•K—v‚ ‚è.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ—ãƒªå´ã®å®šç¾©.
+	//â€»ã‚·ã‚§ãƒ¼ãƒ€å†…ã®ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã¨ä¸€è‡´ã—ã¦ã„ã‚‹å¿…è¦ã‚ã‚Š.
 	struct SHADER_CONSTANT_BUFFER
 	{
-		ALIGN16 D3DXMATRIX	mWorld;		//ƒ[ƒ‹ƒhs—ñ.
-		ALIGN16 D3DXVECTOR4	vColor;		//ƒJƒ‰[iRGBA‚ÌŒ^‚É‡‚í‚¹‚éj.
-		ALIGN16 float fViewPortWidth;	//ƒrƒ…[ƒ|[ƒg‚Ì•
-		ALIGN16 float fViewPortHeight;	//ƒrƒ…[ƒ|[ƒg‚Ì‚‚³
+		ALIGN16 D3DXMATRIX	mWorld;		//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—.
+		ALIGN16 D3DXVECTOR4	vColor;		//ã‚«ãƒ©ãƒ¼ï¼ˆRGBAã®å‹ã«åˆã‚ã›ã‚‹ï¼‰.
+		ALIGN16 float fViewPortWidth;	//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®å¹…
+		ALIGN16 float fViewPortHeight;	//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®é«˜ã•
 	};
-	//’¸“_‚Ì\‘¢‘Ì.
+	//é ‚ç‚¹ã®æ§‹é€ ä½“.
 	struct VERTEX
 	{
-		D3DXVECTOR3 Pos;	//’¸“_À•W.
-		D3DXVECTOR2	Tex;	//ƒeƒNƒXƒ`ƒƒÀ•W.
+		D3DXVECTOR3 Pos;	//é ‚ç‚¹åº§æ¨™.
+		D3DXVECTOR2	Tex;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™.
 	};
 
 public:
-	CDebugText();	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
-	~CDebugText();	//ƒfƒXƒgƒ‰ƒNƒ^.
+	CDebugText();	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
+	~CDebugText();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 
-	//‰Šú‰».
+	//åˆæœŸåŒ–.
 	HRESULT Init( CDirectX11& pDx11 );
 
 
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO—p.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ç”¨.
 	void Render(LPCTSTR text, int x, int y, float FontSize);
 
-	//ƒ¿’l‚ğİ’è.
+	//Î±å€¤ã‚’è¨­å®š.
 	void SetAlpha(float alpha) { m_Alpha = alpha; }
 
-	//F‚ğİ’è
+	//è‰²ã‚’è¨­å®š
 	void SetColor(float r, float g, float b)
 	{
 		m_Color.x = r;
@@ -64,19 +64,19 @@ public:
 	}
 
 private:
-	//ƒVƒF[ƒ_ì¬.
+	//ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆ.
 	HRESULT CreateShader();
-	//ƒ‚ƒfƒ‹ì¬.
+	//ãƒ¢ãƒ‡ãƒ«ä½œæˆ.
 	HRESULT CreateModel();
-	//ƒeƒNƒXƒ`ƒƒì¬.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ.
 	HRESULT CreateTexture( LPCTSTR lpFileName );
-	//ƒTƒ“ƒvƒ‰ì¬.
+	//ã‚µãƒ³ãƒ—ãƒ©ä½œæˆ.
 	HRESULT CreateSampler();
 
-	//ƒtƒHƒ“ƒgƒŒƒ“ƒ_ƒŠƒ“ƒO
+	//ãƒ•ã‚©ãƒ³ãƒˆãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
 	void RenderFont(int FontIndex, float x, float y, float FontSize);
 
-	//‰ğ•ú.
+	//è§£æ”¾.
 	void Release();
 
 
@@ -85,18 +85,18 @@ private:
 	ID3D11Device*			m_pDevice11;
 	ID3D11DeviceContext*	m_pContext11;
 
-	ID3D11VertexShader*		m_pVertexShader;	//’¸“_ƒVƒF[ƒ_.
-	ID3D11InputLayout*		m_pVertexLayout;	//’¸“_ƒŒƒCƒAƒEƒg.
-	ID3D11PixelShader*		m_pPixelShader;		//ƒsƒNƒZƒ‹ƒVƒF[ƒ_.
-	ID3D11Buffer*			m_pConstantBuffer;	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@.
+	ID3D11VertexShader*		m_pVertexShader;	//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€.
+	ID3D11InputLayout*		m_pVertexLayout;	//é ‚ç‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ.
+	ID3D11PixelShader*		m_pPixelShader;		//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€.
+	ID3D11Buffer*			m_pConstantBuffer;	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡.
 
-	ID3D11Buffer*			m_pVertexBuffer[SPRITE_MAX];	//’¸“_ƒoƒbƒtƒ@.
+	ID3D11Buffer*			m_pVertexBuffer[SPRITE_MAX];	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡.
 
-	ID3D11ShaderResourceView*	m_pTexture;			//ƒeƒNƒXƒ`ƒƒ.
-	ID3D11SamplerState*			m_pSampleLinear;	//ƒTƒ“ƒvƒ‰:ƒeƒNƒXƒ`ƒƒ‚ÉŠeíƒtƒBƒ‹ƒ^‚ğ‚©‚¯‚é.
+	ID3D11ShaderResourceView*	m_pTexture;			//ãƒ†ã‚¯ã‚¹ãƒãƒ£.
+	ID3D11SamplerState*			m_pSampleLinear;	//ã‚µãƒ³ãƒ—ãƒ©:ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«å„ç¨®ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‹ã‘ã‚‹.
 
-	float			m_Alpha;	//ƒ¿’l(0:“§–¾A1:Š®‘S•s“§–¾).
+	float			m_Alpha;	//Î±å€¤(0:é€æ˜ã€1:å®Œå…¨ä¸é€æ˜).
 
-	D3DXVECTOR3		m_Color;	//F(RGB)
-	float			m_Kerning[SPRITE_MAX];	//ƒJ[ƒjƒ“ƒO
+	D3DXVECTOR3		m_Color;	//è‰²(RGB)
+	float			m_Kerning[SPRITE_MAX];	//ã‚«ãƒ¼ãƒ‹ãƒ³ã‚°
 };

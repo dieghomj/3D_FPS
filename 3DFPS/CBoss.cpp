@@ -1,6 +1,6 @@
-#include "CBoss.h"
+﻿#include "CBoss.h"
 
-static constexpr float SPAWN_OFFSET = -8.f; // 16ms per frame ~ 60FPS
+static constexpr float SPAWN_OFFSET = -8.f; // 1フレームあたり約16ms ～ 60FPS
 
 static constexpr float FLIGHT_HEIGHT = 22.0f;
 static constexpr float RECOVER_SPEED = 0.3f;
@@ -151,7 +151,7 @@ void CBoss::Update()
 		return;
 	}
 
-	// High-HP shoot phase timer accumulation
+	// 高HP時の射撃フェーズ用タイマーの加算
 	if (m_CurrentAttack == SHOOT && m_MinionShot)
 	{
 		m_ShootPatternTimer += dt;
@@ -172,8 +172,8 @@ void CBoss::Update()
 			m_State = Idle;
 			if (m_LowHPPatternActive)
 			{
-				// ensure next attack in low-HP loop runs after shooting
-				m_LowHPSequenceStep = 1; // next is morph
+				// 低HPループでは射撃の後に次の攻撃が実行されるようにする
+				m_LowHPSequenceStep = 1; // 次はモーフ
 			}
 		}
 	}
@@ -188,7 +188,6 @@ void CBoss::Update()
 			m_Morphed = false;
 			m_MorphAttackCD = MORPH_ATTACK_CD;
 			m_State = Idle;
-			//m_vScale = D3DXVECTOR3(4.9f, 4.9f, 4.9f);
 		}
 	}
 
@@ -208,7 +207,7 @@ void CBoss::Update()
 		return;
 	}
 
-	// Dash strike cooldown/recovery handling
+	// ダッシュ突進のクールダウン／復帰処理
 	if (m_CurrentAttack == DASH_STRIKE && m_State != Attacking)
 	{
 		m_DashChargeTimer = 0.f;
@@ -218,12 +217,6 @@ void CBoss::Update()
 
 	
 	
-
-	//UpDownAnim(dt, 0.25f, 1.0f);
-	//ScaleMorphAnim(dt, 7.25f, 2.0f);
-
-	//VibrateAnim(0.016f, 0.3f, 1.9f);
-
 
 	switch (m_State)
 	{
@@ -316,7 +309,7 @@ void CBoss::ChasePlayer()
 	dist = D3DXVec3Length(&toPlayer);
 
 
-	// Low HP pattern: Morph -> Shoot -> Slam loop
+	// 低HP時のパターン：モーフ → 射撃 → スラムのループ
 	if (m_Health <= 250.f)
 	{
 		m_LowHPPatternActive = true;
@@ -345,7 +338,7 @@ void CBoss::ChasePlayer()
 		return;
 	}
 
-	// High HP pattern: Slam 2-3 times, then shoot for ~10s, repeat
+	// 高HP時のパターン：スラムを2〜3回、その後約10秒間射撃、を繰り返す
 	m_LowHPPatternActive = false;
 	if (m_SlamPatternCount < m_SlamPatternTarget)
 	{
@@ -361,7 +354,7 @@ void CBoss::ChasePlayer()
 		return;
 	}
 
-	// Reset pattern after shooting phase
+	// 射撃フェーズ後にパターンをリセット
 	m_SlamPatternCount = 0;
 	m_SlamPatternTarget = 2 + (m_RandomGen() % 2);
 	m_ShootPatternTimer = 0.0f;
@@ -370,20 +363,20 @@ void CBoss::ChasePlayer()
 }
 
 
-// Morph attack logic
+// モーフ攻撃のロジック
 void CBoss::MorphAttack()
 {
 	float dt = FPS / 1000.f;
 
 	if (m_CurrentAttackState == START)
 	{
-		// Step 1: return to start position before morph charge
+		// ステップ1：モーフのチャージ前に開始位置へ戻る
 		if (!MoveToPosition(m_StartPosition, IDLE_SPEED))
 		{
 			return;
 		}
 
-		// Step 2: rotate and enlarge before rushing the player
+		// ステップ2：プレイヤーへ突進する前に回転し巨大化する
 		m_vRotation.y += D3DXToRadian(45.0f);
 		m_CurrentAttackState = SWEEP;
 		m_MorphMoveTimer = 0.0f;
@@ -394,7 +387,7 @@ void CBoss::MorphAttack()
 		m_CurrentAttack = MORPH;
 	}
 
-	// Engage sweep phase logic (spawns minions, sweeps, then slams)
+	// スイープフェーズの処理を開始（雑魚を出現させ、薙ぎ払い、最後にスラム）
 	if (m_CurrentAttackState == SWEEP)
 	{
 		MorphSweep();
@@ -403,7 +396,7 @@ void CBoss::MorphAttack()
 
 	m_MorphMoveTimer += dt;
 
-	// Move toward player while enlarged
+	// 巨大化したままプレイヤーへ向かって移動
 	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
 	dirToPlayer.y = 0.0f;
 	float distToPlayer = D3DXVec3Length(&dirToPlayer);
@@ -413,7 +406,7 @@ void CBoss::MorphAttack()
 		m_vPosition += dirToPlayer * MORPH_ATTACK_SPEED;
 	}
 
-	// Keep a subtle morph scaling animation while charging
+	// チャージ中もわずかなモーフのスケールアニメーションを維持
 	ScaleMorphAnim(dt, 0.25f, 2.0f);
 
 	if (m_MorphMoveTimer >= 0.5f)
@@ -422,7 +415,7 @@ void CBoss::MorphAttack()
 		m_CurrentAttackState = RECOVER;
 	}
 
-	// Recover phase (fallback): return to start then transition to slam loop
+	// 復帰フェーズ（フォールバック）：開始位置へ戻ってからスラムループへ移行
 	if (m_CurrentAttackState == RECOVER)
 	{
 		if (!MoveToPosition(m_StartPosition, IDLE_SPEED ))
@@ -435,22 +428,22 @@ void CBoss::MorphAttack()
 		m_Morphed = false;
 		m_CurrentAttack = GROUNDSLAM;
 		m_Attacked = false;
-		m_LowHPSequenceStep = 0; // reset to shoot after slam
+		m_LowHPSequenceStep = 0; // スラム後は射撃に戻す
 		return;
 	}
 
 }
 
-// Morph slam logic
-// Move up and down quickly in a slam motion
-// Stay down and the sweep attack
+// モーフスラムのロジック
+// スラム動作で素早く上下に移動する
+// 下に留まってスイープ攻撃を行う
 void CBoss::MorphSlam()
 {
 	m_CurrentAttackState = SLAM;
 	m_SlamAnimTime += 0.016f;
 	if (m_SlamAnimTime >= 2.5f && IsGrounded() == false)
 	{
-		m_vPosition.y -= 1.5f * SLAM_SPEED; // Move down
+		m_vPosition.y -= 1.5f * SLAM_SPEED; // 下降
 		return;
 	}
 	if (IsGrounded() == true)
@@ -458,7 +451,7 @@ void CBoss::MorphSlam()
 		MorphSweep();
 	}
 
-	m_vPosition.y += 0.9f; // Move up
+	m_vPosition.y += 0.9f; // 上昇
 
 
 }
@@ -475,7 +468,7 @@ void CBoss::MorphSweep()
 		spawnedMinions = false;
 	}
 
-	// stay enlarged during sweep
+	// スイープ中は巨大化したままにする
 	m_vScale = D3DXVECTOR3(MORPH_ATTACK_WIDTH, MORPH_ATTACK_HEIGHT, 4.9f);
 	m_CurrentAttackState = SWEEP;
 
@@ -485,7 +478,7 @@ void CBoss::MorphSweep()
 		spawnedMinions = true;
 	}
 
-	// sweep/charge toward player until within slam distance
+	// スラム距離に入るまでプレイヤーへ向かって薙ぎ払い／突進する
 	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
 	dirToPlayer.y = 0.f;
 	float distToPlayer = D3DXVec3Length(&dirToPlayer);
@@ -499,7 +492,7 @@ void CBoss::MorphSweep()
 	}
 	else
 	{
-		// close enough: transition to slam over the player's position
+		// 十分近づいた：プレイヤーの位置の真上へ移動してスラムへ移行
 		m_vPosition.x = m_PlayerPos.x;
 		m_vPosition.z = m_PlayerPos.z;
 		m_CurrentAttack = GROUNDSLAM;
@@ -531,7 +524,7 @@ void CBoss::MorphRecover()
 
 void CBoss::DashStrike()
 {
-	// Phase 1: move to offset distance and telegraph
+	// フェーズ1：一定の距離まで移動して予備動作を見せる
 	if (m_CurrentAttackState == START)
 	{
 		D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
@@ -564,7 +557,7 @@ void CBoss::DashStrike()
 		return;
 	}
 
-	// Phase 2: dash forward
+	// フェーズ2：前方へダッシュ
 	if (m_CurrentAttackState == DASHING)
 	{
 		D3DXVECTOR3 delta = m_DashDirection * DASH_SPEED;
@@ -588,16 +581,16 @@ void CBoss::DashStrike()
 	}
 }
 
-// Slam attack logic
-// Move up for a brief moment and slam down quickly
-// Check if player is within SLAM_RANGE
-// If yes, apply damage or effects
+// スラム攻撃のロジック
+// 一瞬上昇してから素早く叩きつける
+// プレイヤーがSLAM_RANGE内にいるか確認する
+// いる場合はダメージや効果を適用する
 void CBoss::GroundSlam()
 {
 	if(m_SlamCD < SLAM_CD)
 		return;
 
-	// Chase player horizontally while performing the slam
+	// スラムを行いながら水平方向にプレイヤーを追跡する
 	D3DXVECTOR3 dirToPlayer = m_PlayerPos - m_vPosition;
 	dirToPlayer.y = 0.0f;
 	if (D3DXVec3Length(&dirToPlayer) > 1e-4f)
@@ -610,7 +603,7 @@ void CBoss::GroundSlam()
 	if (m_SlamAnimTime >= 0.5f && IsGrounded() == false)
 	{
 		VibrateAnim(0.016f, 0.05f, 9.50f);
-		m_vPosition.y -= 1.5f * SLAM_SPEED; // Move down
+		m_vPosition.y -= 1.5f * SLAM_SPEED; // 下降
 		return;
 	}
 	if (IsGrounded() == true)
@@ -626,13 +619,13 @@ void CBoss::GroundSlam()
 		m_State = Idle;
 		if (m_LowHPPatternActive)
 		{
-			m_LowHPSequenceStep = 0; // reset to shoot after slam
+			m_LowHPSequenceStep = 0; // スラム後は射撃に戻す
 		}
 		return;
 	}
 	VibrateAnim(0.016f, 0.05f, 9.50f);
 
-	m_vPosition.y += 0.9f; // Move up
+	m_vPosition.y += 0.9f; // 上昇
 
 }
 
@@ -642,7 +635,7 @@ void CBoss::ShootMinions()
 	if (m_MinionShot)
 		return;
 
-	// Return to center/start before shooting and reset scale
+	// 射撃前に中央／開始位置へ戻り、スケールをリセットする
 	if (!MoveToPosition(m_StartPosition, IDLE_SPEED))
 	{
 		m_vScale = m_OriginalScale;
@@ -658,7 +651,7 @@ void CBoss::ShootMinions()
 
 	if (m_LowHPPatternActive)
 	{
-		m_LowHPSequenceStep = 1; // next should be dash strike
+		m_LowHPSequenceStep = 1; // 次はダッシュ突進にする
 	}
 
 }
@@ -701,7 +694,7 @@ void CBoss::ApplyDamage(int damage)
 
 	m_Health -= damage;
 
-	// Small knockback opposite current facing
+	// 現在の向きと逆方向への小さなノックバック
 	D3DXVECTOR3 knockDir = m_vForward;
 	knockDir.y = 0.0f;
 	if (D3DXVec3LengthSq(&knockDir) > 1e-4f)
@@ -721,14 +714,14 @@ bool CBoss::MoveToPosition(const D3DXVECTOR3& targetPos, float speed)
 	D3DXVECTOR3 direction = targetPos - m_vPosition;
 	float distance = D3DXVec3Length(&direction);
 
-	// �ڕW�ʒu�ɓ��B�����ꍇ
+	// 目標位置に到達した場合
 	if (distance <= speed)
 	{
 		m_vPosition = targetPos;
 		return true;
 	}
 
-	// �����𐳋K�����Ĉړ�
+	// 方向を正規化して移動
 	D3DXVec3Normalize(&direction, &direction);
 	m_vPosition += direction * speed;
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CLevel.h"
 #include "CPlayer.h"
 constexpr int LEVEL_COUNT = 3;

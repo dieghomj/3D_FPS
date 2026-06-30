@@ -1,4 +1,4 @@
-#pragma once 
+ï»¿#pragma once 
 #include "CGameObject.h"
 
 class CCamera
@@ -8,15 +8,15 @@ public:
 	CCamera();
 	~CCamera();
 
-	// CGameObject ‚ğ‰î‚µ‚ÄŒp³‚³‚ê‚Ü‚µ‚½
+	// CGameObject ã‚’ä»‹ã—ã¦ç¶™æ‰¿ã•ã‚Œã¾ã—ãŸ
 	void Update() override;
 
 	void Draw(SCENE_DATA& sceneData) override;
 
 	void SetFieldOfView(float fovY) { m_FovY = fovY; }
-	// ƒŒƒ“ƒYİ’èiFOV/ƒAƒXƒyƒNƒg/ƒjƒA/ƒtƒ@[j
+	// ãƒ¬ãƒ³ã‚ºè¨­å®šï¼ˆFOV/ã‚¢ã‚¹ãƒšã‚¯ãƒˆ/ãƒ‹ã‚¢/ãƒ•ã‚¡ãƒ¼ï¼‰
 	void SetPerspective(float fovY, float aspect, float zn, float zf);
-	// ƒŠƒTƒCƒY‚È‚Ç‚ÉƒAƒXƒyƒNƒg‚¾‚¯XV
+	// ãƒªã‚µã‚¤ã‚ºæ™‚ãªã©ã«ã‚¢ã‚¹ãƒšã‚¯ãƒˆã ã‘æ›´æ–°
 	void SetAspect(float aspect) { m_Aspect = aspect; }
 
 	void SetLens(float fovY, float aspect, float zn, float zf);

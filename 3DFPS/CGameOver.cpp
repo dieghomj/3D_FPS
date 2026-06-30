@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CGameOver.h"
 #include "CGameStats.h"
 
@@ -54,7 +54,7 @@ HRESULT CGameOver::LoadData()
 		return E_FAIL;
 	}
 
-	// Background sprite (same as menu)
+	// 背景スプライト（メニューと同じ）.
 	CSprite2D::SPRITE_STATE BackGroundSS = {
 		{WND_W, WND_H},
 		{610, 570},
@@ -69,7 +69,7 @@ HRESULT CGameOver::LoadData()
 
 	m_pBG->AttachSprite(*m_pBGSprite);
 
-	// Cursor sprite
+	// カーソルスプライト.
 	CSprite2D::SPRITE_STATE CursorSS = {
 		{32, 32},
 		{512, 512},
@@ -83,7 +83,7 @@ HRESULT CGameOver::LoadData()
 	}
 	m_pCursor->AttachSprite(*m_pCursorSprite);
 
-	// Fade overlay
+	// フェード用オーバーレイ.
 	CSprite2D::SPRITE_STATE FadeSS = {
 		{WND_W, WND_H},
 		{0, 0},
@@ -120,7 +120,7 @@ void CGameOver::Update()
 {
 	CScene::Update();
 
-	// Update background scroll animation
+	// 背景スクロールアニメーションを更新.
 	m_BGScrollOffset += m_BGScrollSpeed;
 	if (m_BGScrollOffset >= 1.0f)
 	{
@@ -134,7 +134,7 @@ void CGameOver::Update()
 
 	m_pBG->Update();
 
-	// Update cursor position
+	// カーソル位置を更新.
 	if (m_pCursor)
 	{
 		D3DXVECTOR3 cursorPos;
@@ -145,7 +145,7 @@ void CGameOver::Update()
 		m_pCursor->Update();
 	}
 
-	// Handle fade transition
+	// フェード遷移を処理.
 	if (m_IsFading)
 	{
 		m_FadeAlpha += m_FadeSpeed;
@@ -155,13 +155,13 @@ void CGameOver::Update()
 
 			if (m_GoToRetry)
 			{
-				// Reset stats and restart game
+				// 統計をリセットしてゲームを再開.
 				CGameStats::Reset();
 				m_pManager->ChangeScene("GAME");
 			}
 			else
 			{
-				// Go to main menu
+				// メインメニューへ移動.
 				CGameStats::Reset();
 				m_pManager->ChangeScene("MENU");
 			}
@@ -174,7 +174,7 @@ void CGameOver::Update()
 		return;
 	}
 
-	// Mouse hover/click for options
+	// 選択肢に対するマウスのホバー/クリック.
 	float optionX = static_cast<float>(WND_W / 2 - 200);
 	float optionWidth = 400.0f;
 	float optionHeight = 45.0f;
@@ -216,7 +216,7 @@ void CGameOver::Update()
 		}
 	}
 
-	// Navigate options
+	// 選択肢を移動.
 	if (GetAsyncKeyState(VK_UP) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Select);
@@ -232,7 +232,7 @@ void CGameOver::Update()
 			m_SelectedOption = 0;
 	}
 
-	// Confirm selection
+	// 選択を確定.
 	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
 	{
 		CSoundManager::PlaySE(CSoundManager::SE_Decide);
@@ -251,7 +251,7 @@ void CGameOver::Draw()
 {
 	m_pDx11->SetDepth(false);
 
-	// Draw scrolling background
+	// スクロールする背景を描画.
 	m_pBG->Draw();
 
 	if (m_pCursor)
@@ -261,11 +261,11 @@ void CGameOver::Draw()
 
 	m_Font->SetAlpha(1.0f);
 
-	// Game Over title
+	// ゲームオーバーのタイトル.
 	m_Font->SetColor(1.0f, 0.15f, 0.1f);
 	m_Font->Render(_T("GAME OVER"), static_cast<float>(WND_W / 2 - 180), static_cast<float>(WND_H / 2 - 120), 80.0f);
 
-	// Navigation options
+	// ナビゲーション選択肢.
 	float optionY = static_cast<float>(WND_H / 2 + 20);
 
 	if (m_SelectedOption == GAMEOVER_OPTION_RETRY)
@@ -280,11 +280,11 @@ void CGameOver::Draw()
 		m_Font->SetColor(1.0f, 1.0f, 1.0f);
 	m_Font->Render(_T("> MAIN MENU"), static_cast<float>(WND_W / 2 - 100), optionY + 50.0f, 36.0f);
 
-	// Instructions
+	// 操作説明.
 	m_Font->SetColor(0.7f, 0.7f, 0.7f);
 	m_Font->Render(_T("UP/DOWN to select, ENTER to confirm"), static_cast<float>(WND_W / 2 - 180), static_cast<float>(WND_H - 50), 24.0f);
 
-	// Draw fade overlay last
+	// フェード用オーバーレイを最後に描画.
 	if (m_pFade)
 	{
 		m_pFade->Draw();

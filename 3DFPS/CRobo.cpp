@@ -1,4 +1,4 @@
-#include "CRobo.h"
+﻿#include "CRobo.h"
 
 static constexpr float CHASE_SPEED = 0.1f;
 static constexpr float RUN_AWAY_SPEED = 0.2f;
@@ -38,7 +38,7 @@ void CRobo::Update()
 
 	float dtLocal = FPS / 1000.f;
 
-	// Dying effect: sink into ground similar to boss
+	// 死亡演出：ボスと同様に地面へ沈み込ませる
 	if (m_State == Dying)
 	{
 		m_DeathTimer += dtLocal;
@@ -151,7 +151,7 @@ void CRobo::Attack()
 	m_Shot = true;
 	m_AttackCD = 0.f;
 	m_HasAttacked = true;
-	//Set attack animation
+	//攻撃アニメーションを設定する
 
 }
 

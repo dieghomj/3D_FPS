@@ -1,7 +1,7 @@
-#include "CStaticMeshObject.h"
+ï»¿#include "CStaticMeshObject.h"
 #include "Util.h"
 
-static constexpr float MAX_ANIM_TIME = 6.28318530718f; // 2ƒÎ
+static constexpr float MAX_ANIM_TIME = 6.28318530718f; // 2Ï€
 
 CStaticMeshObject::CStaticMeshObject()
 	: m_pMesh			( nullptr )
@@ -48,7 +48,7 @@ void CStaticMeshObject::Draw(
 		m_pMesh->SetScale(m_vScale);
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 	m_pMesh->Render( View, Proj, Light, Camera.vPosition, Fog, pSpotLightArr, SpotLightNo);
 }
 
@@ -58,7 +58,7 @@ HRESULT CStaticMeshObject::CreateCollider(CCollider::COLLIDER_SHAPE shape)
 	if (!m_pCollider && !(m_pCollider = new CCollider())) return E_FAIL;
 	if (FAILED(m_pCollider->Init())) return E_FAIL;
 
-	// Set initial world position for collider
+	// ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®åˆæœŸãƒ¯ãƒ¼ãƒ«ãƒ‰ä½ç½®ã‚’è¨­å®š
 	m_pCollider->SetPosition(m_vPosition);
 	m_pCollider->SetRotation(m_vRotation);
 	m_pCollider->SetScale(m_vScale);
@@ -73,7 +73,7 @@ HRESULT CStaticMeshObject::CreateCollider(CCollider::COLLIDER_SHAPE shape)
 		hr = m_pCollider->CreateBoxForMesh(*m_pMesh);
 		break;
 	case CCollider::COLLIDER_SHAPE_MESH:
-		// Mesh collider creation not implemented
+		// ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ä½œæˆã¯æœªå®Ÿè£…
 		hr = m_pCollider->CreateColMesh();
 		break;
 	default:
@@ -82,138 +82,138 @@ HRESULT CStaticMeshObject::CreateCollider(CCollider::COLLIDER_SHAPE shape)
 	return hr;
 }
 
-//ƒŒƒC‚ÆƒƒbƒVƒ…‚Ì“–‚½‚è”»’è
+//ãƒ¬ã‚¤ã¨ãƒ¡ãƒƒã‚·ãƒ¥ã®å½“ãŸã‚Šåˆ¤å®š
 bool CStaticMeshObject::IsHitForRay(
 	const RAY& pRay,
 	float* pDistance,
 	D3DXVECTOR3* pIntersect,
-	D3DXVECTOR3* pNormal)		//(out)–@ü(ƒxƒNƒgƒ‹)
+	D3DXVECTOR3* pNormal)		//(out)æ³•ç·š(ãƒ™ã‚¯ãƒˆãƒ«)
 {
-	D3DXVECTOR3 vAxis;		//²ƒxƒNƒgƒ‹
-	D3DXMATRIX	mRotationY;	//Y²‰ñ“]s—ñ
+	D3DXVECTOR3 vAxis;		//è»¸ãƒ™ã‚¯ãƒˆãƒ«
+	D3DXMATRIX	mRotationY;	//Yè»¸å›è»¢è¡Œåˆ—
 
-	//Y²‰ñ“]s—ñ‚ğì¬
+	//Yè»¸å›è»¢è¡Œåˆ—ã‚’ä½œæˆ
 	D3DXMatrixRotationY(&mRotationY, pRay.RotationY);
-	//²ƒxƒNƒgƒ‹‚ğŒ»İ‚Ì‰ñ“]ó‘Ô‚É•ÏŠ·‚·‚é
+	//è»¸ãƒ™ã‚¯ãƒˆãƒ«ã‚’ç¾åœ¨ã®å›è»¢çŠ¶æ…‹ã«å¤‰æ›ã™ã‚‹
 	D3DXVec3TransformCoord(&vAxis, &pRay.Axis, &mRotationY);
 
-	//ƒŒƒC‚Ìn“_‚ÆI“_
+	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã¨çµ‚ç‚¹
 	D3DXVECTOR3 StartPoint, EndPoint;
-	StartPoint	= pRay.Position;	//ƒŒƒC‚Ìn“_‚ğİ’è
-	EndPoint	= pRay.Position + (vAxis * pRay.Length);	//ƒŒƒC‚ÌI“_‚ğİ’è
+	StartPoint	= pRay.Position;	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã‚’è¨­å®š
+	EndPoint	= pRay.Position + (vAxis * pRay.Length);	//ãƒ¬ã‚¤ã®çµ‚ç‚¹ã‚’è¨­å®š
 
-	//ƒŒƒC‚ğ“–‚Ä‚½‚¢ƒƒbƒVƒ…‚ªˆÚ“®‚µ‚Ä‚¢‚éê‡‚Å‚àA
-	//‘ÎÛ‚ÌWorlds—ñ‚Ì‹ts—ñ‚ğ—p‚¢‚ê‚Î³‚µ‚­ƒŒƒC‚ª“–‚½‚é
+	//ãƒ¬ã‚¤ã‚’å½“ã¦ãŸã„ãƒ¡ãƒƒã‚·ãƒ¥ãŒç§»å‹•ã—ã¦ã„ã‚‹å ´åˆã§ã‚‚ã€
+	//å¯¾è±¡ã®Worldè¡Œåˆ—ã®é€†è¡Œåˆ—ã‚’ç”¨ã„ã‚Œã°æ­£ã—ããƒ¬ã‚¤ãŒå½“ãŸã‚‹
 	D3DXMATRIX mWorld, mInverseWorld;
 	D3DXMATRIX mTran;
-	//ˆÚ“®ˆ—
+	//ç§»å‹•å‡¦ç†
 	D3DXMatrixTranslation(
 		&mTran, m_vPosition.x, m_vPosition.y, m_vPosition.z);
 
-	//‰ñ“]ˆ—
-	//¦‚±‚Ìs—ñŒvZ‚ÍuCStaticMesh::Render()ŠÖ”v‚Æ“¯‚¶‚É‚·‚é•K—v‚ ‚è
+	//å›è»¢å‡¦ç†
+	//â€»ã“ã®è¡Œåˆ—è¨ˆç®—ã¯ã€ŒCStaticMesh::Render()é–¢æ•°ã€ã¨åŒã˜ã«ã™ã‚‹å¿…è¦ã‚ã‚Š
 	D3DXMATRIX mRot, mYaw, mPitch, mRoll;
-	//Y²‰ñ“]s—ñì¬
+	//Yè»¸å›è»¢è¡Œåˆ—ä½œæˆ
 	D3DXMatrixRotationY(&mYaw, m_vRotation.y);
-	//X²‰ñ“]s—ñì¬
+	//Xè»¸å›è»¢è¡Œåˆ—ä½œæˆ
 	D3DXMatrixRotationX(&mPitch, m_vRotation.x);
-	//Z²‰ñ“]s—ñì¬
+	//Zè»¸å›è»¢è¡Œåˆ—ä½œæˆ
 	D3DXMatrixRotationZ(&mRoll, m_vRotation.z);
-	//‰ñ“]s—ñ‚ğì¬
+	//å›è»¢è¡Œåˆ—ã‚’ä½œæˆ
 	mRot = mYaw * mPitch * mRoll;
 
-	//Šgkˆ—
+	//æ‹¡ç¸®å‡¦ç†
 	D3DXMATRIX mScale;
 	D3DXMatrixScaling(&mScale, m_vScale.x, m_vScale.y, m_vScale.z);
 
-	//ƒ[ƒ‹ƒhs—ñŒvZ
-	//Šgk~‰ñ“]~ˆÚ“®@¦‡”Ô‚ª‚Æ‚Ä‚à‘åØII
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—è¨ˆç®—
+	//æ‹¡ç¸®Ã—å›è»¢Ã—ç§»å‹•ã€€â€»é †ç•ªãŒã¨ã¦ã‚‚å¤§åˆ‡ï¼ï¼
 	mWorld = mScale * mRot * mTran;
 
-	//‹ts—ñ‚ğ‹‚ß‚é
+	//é€†è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹
 	D3DXMatrixInverse(&mInverseWorld, nullptr, &mWorld);
-	//ƒŒƒC‚Ìn“_AI“_‚É”½‰f
+	//ãƒ¬ã‚¤ã®å§‹ç‚¹ã€çµ‚ç‚¹ã«åæ˜ 
 	D3DXVec3TransformCoord(&StartPoint, &StartPoint, &mInverseWorld);
 	D3DXVec3TransformCoord(&EndPoint, &EndPoint, &mInverseWorld);
 
-	//Œü‚«‚Æ’·‚³i‘å‚«‚³j‚ğ‹‚ß‚é
+	//å‘ãã¨é•·ã•ï¼ˆå¤§ãã•ï¼‰ã‚’æ±‚ã‚ã‚‹
 	D3DXVECTOR3 vDirection = EndPoint - StartPoint;
 
-	BOOL bHit = FALSE;		//–½’†ƒtƒ‰ƒO
-	DWORD dwIndex = 0;		//ƒCƒ“ƒfƒbƒNƒX”Ô†
-	D3DXVECTOR3 Vertex[3];	//’¸“_À•W
-	FLOAT U = 0, V = 0;		//dSƒqƒbƒgÀ•W
+	BOOL bHit = FALSE;		//å‘½ä¸­ãƒ•ãƒ©ã‚°
+	DWORD dwIndex = 0;		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+	D3DXVECTOR3 Vertex[3];	//é ‚ç‚¹åº§æ¨™
+	FLOAT U = 0, V = 0;		//é‡å¿ƒãƒ’ãƒƒãƒˆåº§æ¨™
 
-	//ƒƒbƒVƒ…‚ÆƒŒƒC‚ÌŒğ·‚ğ’²‚×‚é
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã¨ãƒ¬ã‚¤ã®äº¤å·®ã‚’èª¿ã¹ã‚‹
 	D3DXIntersect(
-		m_pMesh->GetMeshForRay(),	//‘ÎÛƒƒbƒVƒ…
-		&StartPoint,				//ƒŒƒC‚Ìn“_
-		&vDirection,				//ƒŒƒC‚ÌŒü‚«‚Æ’·‚³i‘å‚«‚³j
-		&bHit,						//(out)”»’èŒ‹‰Ê
-		&dwIndex,	//(out)bHit‚ªTRUE‚ÌAƒŒƒC‚Ìn“_‚ÉÅ‚à‹ß‚¢–Ê‚ÌƒCƒ“ƒfƒbƒNƒX’l‚Ö‚Ìƒ|ƒCƒ“ƒ^
-		&U, &V,						//(out)dSƒqƒbƒgÀ•W
-		pDistance,					//(out)ƒƒbƒVƒ…‚Æ‚Ì‹——£
+		m_pMesh->GetMeshForRay(),	//å¯¾è±¡ãƒ¡ãƒƒã‚·ãƒ¥
+		&StartPoint,				//ãƒ¬ã‚¤ã®å§‹ç‚¹
+		&vDirection,				//ãƒ¬ã‚¤ã®å‘ãã¨é•·ã•ï¼ˆå¤§ãã•ï¼‰
+		&bHit,						//(out)åˆ¤å®šçµæœ
+		&dwIndex,	//(out)bHitãŒTRUEã®æ™‚ã€ãƒ¬ã‚¤ã®å§‹ç‚¹ã«æœ€ã‚‚è¿‘ã„é¢ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å€¤ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+		&U, &V,						//(out)é‡å¿ƒãƒ’ãƒƒãƒˆåº§æ¨™
+		pDistance,					//(out)ãƒ¡ãƒƒã‚·ãƒ¥ã¨ã®è·é›¢
 		nullptr, nullptr);
 
-	//–³ŒÀ‚ÉL‚Ñ‚éƒŒƒC‚Ì‚Ç‚±‚©‚ÅƒƒbƒVƒ…‚ª“–‚½‚Á‚Ä‚¢‚½‚ç
+	//ç„¡é™ã«ä¼¸ã³ã‚‹ãƒ¬ã‚¤ã®ã©ã“ã‹ã§ãƒ¡ãƒƒã‚·ãƒ¥ãŒå½“ãŸã£ã¦ã„ãŸã‚‰
 	if (bHit == TRUE)
 	{
-		//–½’†‚µ‚½‚Æ‚«
+		//å‘½ä¸­ã—ãŸã¨ã
 		FindVerticesOnPoly(
 			m_pMesh->GetMeshForRay(), dwIndex, Vertex);
 
-		//dSÀ•W‚©‚çŒğ“_‚ğZo
-		//ƒ[ƒJƒ‹Œğ“_‚Í v0 + U*(v1-v0) + V*(v2-v0) ‚Å‹‚Ü‚é
+		//é‡å¿ƒåº§æ¨™ã‹ã‚‰äº¤ç‚¹ã‚’ç®—å‡º
+		//ãƒ­ãƒ¼ã‚«ãƒ«äº¤ç‚¹ã¯ v0 + U*(v1-v0) + V*(v2-v0) ã§æ±‚ã¾ã‚‹
 		*pIntersect =
 			Vertex[0] + U * (Vertex[1] - Vertex[0]) + V * (Vertex[2] - Vertex[0]);
 
-		//ƒ‚ƒfƒ‹ƒf[ƒ^‚ªuŠgkvu‰ñ“]vuˆÚ“®v‚µ‚Ä‚¢‚ê‚Îs—ñ‚ª•K—v
+		//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ãŒã€Œæ‹¡ç¸®ã€ã€Œå›è»¢ã€ã€Œç§»å‹•ã€ã—ã¦ã„ã‚Œã°è¡Œåˆ—ãŒå¿…è¦
 		D3DXVec3TransformCoord(pIntersect, pIntersect, &mWorld);
 
-		//–@ü‚Ìo—Í—v‹‚ª‚ ‚ê‚Î
+		//æ³•ç·šã®å‡ºåŠ›è¦æ±‚ãŒã‚ã‚Œã°
 		if (pNormal != nullptr)
 		{
 			D3DXPLANE p;
-			//‚»‚Ì’¸“_(3“_)‚©‚çu•½–Ê‚Ì•û’ö®v‚ğ“¾‚é
+			//ãã®é ‚ç‚¹(3ç‚¹)ã‹ã‚‰ã€Œå¹³é¢ã®æ–¹ç¨‹å¼ã€ã‚’å¾—ã‚‹
 			D3DXPlaneFromPoints(&p, &Vertex[0], &Vertex[1], &Vertex[2]);
-			//u•½–Ê‚Ì•û’ö®v‚ÌŒW”‚ª–@ü‚Ì¬•ª
+			//ã€Œå¹³é¢ã®æ–¹ç¨‹å¼ã€ã®ä¿‚æ•°ãŒæ³•ç·šã®æˆåˆ†
 			*pNormal = D3DXVECTOR3(p.a, p.b, p.c);
 
-			//–@ü‚ÍˆÚ“®—ÊZo‚Ég—p‚·‚é‚Ì‚Å‰ñ“]‚Ì‚İˆ—‚·‚é
+			//æ³•ç·šã¯ç§»å‹•é‡ç®—å‡ºã«ä½¿ç”¨ã™ã‚‹ã®ã§å›è»¢ã®ã¿å‡¦ç†ã™ã‚‹
 			D3DXVec3TransformCoord(pNormal, pNormal, &mRot);
 		}
 
-		//EndPoint‚©‚çŒ©‚½‹——£‚Å1.f‚æ‚è¬‚³‚¯‚ê‚Î“–‚½‚Á‚Ä‚¢‚é
+		//EndPointã‹ã‚‰è¦‹ãŸè·é›¢ã§1.fã‚ˆã‚Šå°ã•ã‘ã‚Œã°å½“ãŸã£ã¦ã„ã‚‹
 		if (*pDistance < 1.f) {
-			return true;	//–½’†‚µ‚Ä‚¢‚é
+			return true;	//å‘½ä¸­ã—ã¦ã„ã‚‹
 		}
 	}
-	return false;	//ŠO‚ê‚Ä‚¢‚é
+	return false;	//å¤–ã‚Œã¦ã„ã‚‹
 }
 
-//•Ç‚©‚ç‚ÌˆÊ’u‚ğŒvZ‚·‚é
+//å£ã‹ã‚‰ã®ä½ç½®ã‚’è¨ˆç®—ã™ã‚‹
 void CStaticMeshObject::CalculatePositionFromWall(CROSSRAY* pCrossRay)
 {
 #if 1
-	static constexpr float WSPACE = 0.3f;	//•Ç‚Æ‚ÌŒÀŠE‹——£
+	static constexpr float WSPACE = 0.3f;	//å£ã¨ã®é™ç•Œè·é›¢
 
-	FLOAT Distance;			//ƒŒƒC‚Ì‹——£
-	D3DXVECTOR3 Intersect;	//ƒŒƒC‚ÌŒğ·“_
+	FLOAT Distance;			//ãƒ¬ã‚¤ã®è·é›¢
+	D3DXVECTOR3 Intersect;	//ãƒ¬ã‚¤ã®äº¤å·®ç‚¹
 
 	D3DXVECTOR3 vNormal;
 	D3DXVECTOR3 vOffset = D3DXVECTOR3(0.f, 0.f, 0.f);
 
-	//ƒŒƒC‚ÌŒü‚«‚É‚æ‚è“–‚½‚é•Ç‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚éi‘OŒã¶‰Ej
+	//ãƒ¬ã‚¤ã®å‘ãã«ã‚ˆã‚Šå½“ãŸã‚‹å£ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹ï¼ˆå‰å¾Œå·¦å³ï¼‰
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		if (IsHitForRay(pCrossRay->Ray[dir], &Distance, &Intersect, &vNormal))
 		{
 			if (Distance <= WSPACE)
 			{
-				//–@ü‚Í•Ç‚©‚ç^‚Á‚·‚®‚Éo‚Ä‚¢‚é‚Ì‚ÅA–@ü‚Æ‚©‚¯‡‚í‚¹‚ÄA‘ÎÛ‚ğ“®‚©‚·ƒxƒNƒgƒ‹‚ª“¾‚ç‚ê‚é
+				//æ³•ç·šã¯å£ã‹ã‚‰çœŸã£ã™ãã«å‡ºã¦ã„ã‚‹ã®ã§ã€æ³•ç·šã¨ã‹ã‘åˆã‚ã›ã¦ã€å¯¾è±¡ã‚’å‹•ã‹ã™ãƒ™ã‚¯ãƒˆãƒ«ãŒå¾—ã‚‰ã‚Œã‚‹
 				vOffset = vNormal * (WSPACE - Distance);
 
-				//ƒŒƒC‚ÌˆÊ’u‚ğXV
+				//ãƒ¬ã‚¤ã®ä½ç½®ã‚’æ›´æ–°
 				for (int i = 0; i < CROSSRAY::max; i++)
 				{
 					pCrossRay->Ray[i].Position += vOffset;
@@ -223,151 +223,151 @@ void CStaticMeshObject::CalculatePositionFromWall(CROSSRAY* pCrossRay)
 	}
 
 #else
-	FLOAT Distance[CROSSRAY::max];			//ŠeƒŒƒC‚²‚Æ‚Ì‹——£
-	D3DXVECTOR3 Intersect[CROSSRAY::max];	//ŠeƒŒƒC‚²‚Æ‚ÌŒğ·“_
+	FLOAT Distance[CROSSRAY::max];			//å„ãƒ¬ã‚¤ã”ã¨ã®è·é›¢
+	D3DXVECTOR3 Intersect[CROSSRAY::max];	//å„ãƒ¬ã‚¤ã”ã¨ã®äº¤å·®ç‚¹
 
-	//ƒŒƒC‚ÌŒü‚«‚É‚æ‚è“–‚½‚é•Ç‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚éi‘OŒã¶‰Ej
+	//ãƒ¬ã‚¤ã®å‘ãã«ã‚ˆã‚Šå½“ãŸã‚‹å£ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹ï¼ˆå‰å¾Œå·¦å³ï¼‰
 	for (int dir = 0; dir < CROSSRAY::max; dir++)
 	{
 		IsHitForRay(pCrossRay->Ray[dir], &Distance[dir], &Intersect[dir]);
 	}
 
-	float RotY;	//Y²‰ñ“]’l
-	//‰ñ“]î•ñ‚Í‘S‚Ä‚ÌƒŒƒC‚Å“¯‚¶‚Í‚¸‚È‚Ì‚ÅXL‚ğg—p‚·‚é
-	RotY = fabsf(pCrossRay->Ray[CROSSRAY::XL].RotationY);	//fabsfŠÖ”:â‘Î’l(float”Å)
-	ClampDirection(&RotY);	//0`2ƒÎ‚ÌŠÔ‚Éû‚ß‚é
+	float RotY;	//Yè»¸å›è»¢å€¤
+	//å›è»¢æƒ…å ±ã¯å…¨ã¦ã®ãƒ¬ã‚¤ã§åŒã˜ã¯ãšãªã®ã§XLã‚’ä½¿ç”¨ã™ã‚‹
+	RotY = fabsf(pCrossRay->Ray[CROSSRAY::XL].RotationY);	//fabsfé–¢æ•°:çµ¶å¯¾å€¤(floatç‰ˆ)
+	ClampDirection(&RotY);	//0ï½2Ï€ã®é–“ã«åã‚ã‚‹
 
 	//-----------------------------------
-	// ’è”éŒ¾
+	// å®šæ•°å®£è¨€
 	//-----------------------------------
-	static const float WSPACE = 0.8f;	//•Ç‚Æ‚ÌŒÀŠE‹——£
+	static const float WSPACE = 0.8f;	//å£ã¨ã®é™ç•Œè·é›¢
 	static const float DEG45	= D3DXToRadian( 45.f);	//0.785f
 	static const float DEG135	= D3DXToRadian(135.f);	//2.355f
 	static const float DEG225	= D3DXToRadian(225.f);	//3.925f
 	static const float DEG315	= D3DXToRadian(315.f);	//5.496f
 
-	float Dis = 0.f;	//ˆêg—p‚ÅéŒ¾
+	float Dis = 0.f;	//ä¸€æ™‚ä½¿ç”¨ã§å®£è¨€
 	float TrgRotY = pCrossRay->Ray[CROSSRAY::XL].RotationY;
 	D3DXVECTOR3 TrgPos = pCrossRay->Ray[CROSSRAY::XL].Position;
 
-	//‘O‚ª•Ç‚ÉÚ‹ß
+	//å‰ãŒå£ã«æ¥è¿‘
 	Dis = Distance[CROSSRAY::ZF];
 	if (0.01f < Dis && Dis < WSPACE) {
-		//Œv‰ñ‚è
+		//æ™‚è¨ˆå›ã‚Š
 		if (TrgRotY < 0.f)
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.x += WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.z += WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.x -= WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.z -= WSPACE - Dis; }
 		}
-		//”½Œv‰ñ‚è
+		//åæ™‚è¨ˆå›ã‚Š
 		else
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.x -= WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.z += WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.x += WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.z -= WSPACE - Dis; }
 		}
 	}
 
-	//Œã‚ë‚ª•Ç‚ÉÚ‹ß
+	//å¾Œã‚ãŒå£ã«æ¥è¿‘
 	Dis = Distance[CROSSRAY::ZB];
 	if (0.01f < Dis && Dis < WSPACE) {
-		//Œv‰ñ‚è
+		//æ™‚è¨ˆå›ã‚Š
 		if (TrgRotY < 0.f)
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.x -= WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.z -= WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.x += WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.z += WSPACE - Dis; }
 		}
-		//”½Œv‰ñ‚è
+		//åæ™‚è¨ˆå›ã‚Š
 		else
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.x += WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.z -= WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.x -= WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.z += WSPACE - Dis; }
 		}
 	}
 
-	//‰E‚ª•Ç‚ÉÚ‹ß
+	//å³ãŒå£ã«æ¥è¿‘
 	Dis = Distance[CROSSRAY::XR];
 	if (0.01f < Dis && Dis < WSPACE) {
-		//Œv‰ñ‚è
+		//æ™‚è¨ˆå›ã‚Š
 		if (TrgRotY < 0.f)
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.z -= WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.x += WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.z += WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.x -= WSPACE - Dis; }
 		}
-		//”½Œv‰ñ‚è
+		//åæ™‚è¨ˆå›ã‚Š
 		else
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.z += WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.x += WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.z -= WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.x -= WSPACE - Dis; }
 		}
 	}
 
-	//¶‚ª•Ç‚ÉÚ‹ß
+	//å·¦ãŒå£ã«æ¥è¿‘
 	Dis = Distance[CROSSRAY::XL];
 	if (0.01f < Dis && Dis < WSPACE) {
-		//Œv‰ñ‚è
+		//æ™‚è¨ˆå›ã‚Š
 		if (TrgRotY < 0.f)
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.z += WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.x -= WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.z -= WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.x += WSPACE - Dis; }
 		}
-		//”½Œv‰ñ‚è
+		//åæ™‚è¨ˆå›ã‚Š
 		else
 		{
-			//‰E‚©‚ç
+			//å³ã‹ã‚‰
 			if( DEG45 <= RotY && RotY < DEG135)			{ TrgPos.z -= WSPACE - Dis; }
-			//‘O‚©‚ç
+			//å‰ã‹ã‚‰
 			else if( DEG135 <= RotY && RotY < DEG225)	{ TrgPos.x -= WSPACE - Dis; }
-			//¶‚©‚ç
+			//å·¦ã‹ã‚‰
 			else if( DEG225 <= RotY && RotY < DEG315)	{ TrgPos.z += WSPACE - Dis; }
-			//‰œ‚©‚ç
+			//å¥¥ã‹ã‚‰
 			else										{ TrgPos.x += WSPACE - Dis; }
 		}
 	}
 
 
-	//ÅI“I‚ÈÀ•W‚ğƒŒƒC‚É•Ô‚·
+	//æœ€çµ‚çš„ãªåº§æ¨™ã‚’ãƒ¬ã‚¤ã«è¿”ã™
 	for (int dir = 0; dir < CROSSRAY::max; dir++) {
 		pCrossRay->Ray[dir].Position = TrgPos;
 	}
@@ -403,12 +403,12 @@ void CStaticMeshObject::ScaleAnim(float dt, float speed)
 {
 	m_ScaleAnimTime += dt * speed;
 
-	// Še²‚ÉˆÙ‚È‚éƒ‰ƒ“ƒ_ƒ€‚Èü”g”‚ğg—p‚µ‚Äƒ‚[ƒtƒBƒ“ƒOŒø‰Ê‚ğì¬
+	// å„è»¸ã«ç•°ãªã‚‹ãƒ©ãƒ³ãƒ€ãƒ ãªå‘¨æ³¢æ•°ã‚’ä½¿ç”¨ã—ã¦ãƒ¢ãƒ¼ãƒ•ã‚£ãƒ³ã‚°åŠ¹æœã‚’ä½œæˆ
 	float scaleOffsetX = sinf(m_ScaleAnimTime * 1.0f) * 0.1f;
 	float scaleOffsetY = sinf(m_ScaleAnimTime * 1.3f) * 0.1f;
 	float scaleOffsetZ = sinf(m_ScaleAnimTime * 0.8f) * 0.1f;
 
-	// ƒx[ƒXƒXƒP[ƒ‹ + ƒ‰ƒ“ƒ_ƒ€ƒIƒtƒZƒbƒg
+	// ãƒ™ãƒ¼ã‚¹ã‚¹ã‚±ãƒ¼ãƒ« + ãƒ©ãƒ³ãƒ€ãƒ ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	m_vScale.x = 1.0f + scaleOffsetX;
 	m_vScale.y = 1.0f + scaleOffsetY;
 	m_vScale.z = 1.0f + scaleOffsetZ;
@@ -416,91 +416,91 @@ void CStaticMeshObject::ScaleAnim(float dt, float speed)
 
 void CStaticMeshObject::ScaleMorphAnim(float dt, float amp, float speed)
 {
-	// ŠÔƒx[ƒX‚Ìƒ‰ƒ“ƒ_ƒ€‚Èƒ‚[ƒtƒBƒ“ƒO
+	// æ™‚é–“ãƒ™ãƒ¼ã‚¹ã®ãƒ©ãƒ³ãƒ€ãƒ ãªãƒ¢ãƒ¼ãƒ•ã‚£ãƒ³ã‚°
 	m_ScaleMorphAnimTime += dt * speed;
 
-	// •¡”‚Ì³Œ·”g‚ğ‘g‚İ‡‚í‚¹‚Ä•¡G‚Èƒ‚[ƒtƒBƒ“ƒOŒø‰Ê‚ğì¬
+	// è¤‡æ•°ã®æ­£å¼¦æ³¢ã‚’çµ„ã¿åˆã‚ã›ã¦è¤‡é›‘ãªãƒ¢ãƒ¼ãƒ•ã‚£ãƒ³ã‚°åŠ¹æœã‚’ä½œæˆ
 	float morphX = sinf(m_ScaleMorphAnimTime * 1.0f) + cosf(m_ScaleMorphAnimTime * 2.3f) * 0.5f;
 	float morphY = sinf(m_ScaleMorphAnimTime * 1.5f) + cosf(m_ScaleMorphAnimTime * 1.8f) * 0.5f;
 	float morphZ = sinf(m_ScaleMorphAnimTime * 0.9f) + cosf(m_ScaleMorphAnimTime * 2.1f) * 0.5f;
 
-	// U•‚ğ“K—p‚µ‚ÄƒXƒP[ƒ‹‚ğİ’è
+	// æŒ¯å¹…ã‚’é©ç”¨ã—ã¦ã‚¹ã‚±ãƒ¼ãƒ«ã‚’è¨­å®š
 	m_vScale.x += (morphX * amp * 0.1f);
 	m_vScale.y += (morphY * amp * 0.1f);
 	m_vScale.z += (morphZ * amp * 0.1f);
 
-	// ƒXƒP[ƒ‹‚ª•‰‚É‚È‚ç‚È‚¢‚æ‚¤‚É§ŒÀ
+	// ã‚¹ã‚±ãƒ¼ãƒ«ãŒè² ã«ãªã‚‰ãªã„ã‚ˆã†ã«åˆ¶é™
 	m_vScale.x = max(0.1f, m_vScale.x);
 	m_vScale.y = max(0.1f, m_vScale.y);
 	m_vScale.z = max(0.1f, m_vScale.z);
 }
 
-//Œğ·ˆÊ’u‚Ìƒ|ƒŠƒSƒ“‚Ì’¸“_‚ğŒ©‚Â‚¯‚é
-//¦’¸“_À•W‚Íƒ[ƒJƒ‹À•W
+//äº¤å·®ä½ç½®ã®ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ã‚’è¦‹ã¤ã‘ã‚‹
+//â€»é ‚ç‚¹åº§æ¨™ã¯ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™
 HRESULT CStaticMeshObject::FindVerticesOnPoly(
 	LPD3DXMESH pMesh, DWORD dwPolyIndex, D3DXVECTOR3* pVertices)
 {
-	//’¸“_‚²‚Æ‚ÌƒoƒCƒg”‚ğæ“¾
+	//é ‚ç‚¹ã”ã¨ã®ãƒã‚¤ãƒˆæ•°ã‚’å–å¾—
 	DWORD dwStride = pMesh->GetNumBytesPerVertex();
-	//’¸“_”‚ğæ“¾
+	//é ‚ç‚¹æ•°ã‚’å–å¾—
 	DWORD dwVertexAmt = pMesh->GetNumVertices();
-	//–Ê”‚ğæ“¾
+	//é¢æ•°ã‚’å–å¾—
 	DWORD dwPolyAmt = pMesh->GetNumFaces();
 
 	WORD* pwPoly = nullptr;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒƒbƒNi“Ç‚İ‚İƒ‚[ƒhj
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ­ãƒƒã‚¯ï¼ˆèª­ã¿è¾¼ã¿ãƒ¢ãƒ¼ãƒ‰ï¼‰
 	pMesh->LockIndexBuffer(
 		D3DLOCK_READONLY,
 		reinterpret_cast<VOID**>(&pwPoly));
 
-	BYTE* pbVertices = nullptr;	//’¸“_iƒoƒCƒgŒ^j
-	FLOAT* pfVertices = nullptr;//’¸“_iFLOATŒ^j
-	LPDIRECT3DVERTEXBUFFER9 VB = nullptr;	//’¸“_ƒoƒbƒtƒ@
+	BYTE* pbVertices = nullptr;	//é ‚ç‚¹ï¼ˆãƒã‚¤ãƒˆå‹ï¼‰
+	FLOAT* pfVertices = nullptr;//é ‚ç‚¹ï¼ˆFLOATå‹ï¼‰
+	LPDIRECT3DVERTEXBUFFER9 VB = nullptr;	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 
-	//’¸“_î•ñ‚Ìæ“¾
+	//é ‚ç‚¹æƒ…å ±ã®å–å¾—
 	pMesh->GetVertexBuffer(&VB);
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	if (SUCCEEDED(
 		VB->Lock(0, 0, reinterpret_cast<VOID**>(&pbVertices), 0)))
 	{
-		//ƒ|ƒŠƒSƒ“‚Ì’¸“_‚P‚Â–Ú‚ğæ“¾
+		//ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ï¼‘ã¤ç›®ã‚’å–å¾—
 		pfVertices = reinterpret_cast<FLOAT*>(&pbVertices[dwStride * pwPoly[dwPolyIndex * 3]]);
 		pVertices[0].x = pfVertices[0];
 		pVertices[0].y = pfVertices[1];
 		pVertices[0].z = pfVertices[2];
-		//ƒ|ƒŠƒSƒ“‚Ì’¸“_‚Q‚Â–Ú‚ğæ“¾
+		//ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ï¼’ã¤ç›®ã‚’å–å¾—
 		pfVertices = reinterpret_cast<FLOAT*>(&pbVertices[dwStride * pwPoly[dwPolyIndex * 3 + 1]]);
 		pVertices[1].x = pfVertices[0];
 		pVertices[1].y = pfVertices[1];
 		pVertices[1].z = pfVertices[2];
-		//ƒ|ƒŠƒSƒ“‚Ì’¸“_‚R‚Â–Ú‚ğæ“¾
+		//ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ï¼“ã¤ç›®ã‚’å–å¾—
 		pfVertices = reinterpret_cast<FLOAT*>(&pbVertices[dwStride * pwPoly[dwPolyIndex * 3 + 2]]);
 		pVertices[2].x = pfVertices[0];
 		pVertices[2].y = pfVertices[1];
 		pVertices[2].z = pfVertices[2];
 
-		pMesh->UnlockIndexBuffer();	//ƒƒbƒN‰ğœ
-		VB->Unlock();	//ƒƒbƒN‰ğœ
+		pMesh->UnlockIndexBuffer();	//ãƒ­ãƒƒã‚¯è§£é™¤
+		VB->Unlock();	//ãƒ­ãƒƒã‚¯è§£é™¤
 	}
-	VB->Release();	//•s—v‚É‚È‚Á‚½‚Ì‚Å‰ğ•ú
+	VB->Release();	//ä¸è¦ã«ãªã£ãŸã®ã§è§£æ”¾
 
 	return S_OK;
 }
 
-//‰ñ“]’l’²®i‚PüˆÈã‚µ‚Ä‚¢‚é‚Ì’²®j
+//å›è»¢å€¤èª¿æ•´ï¼ˆï¼‘å‘¨ä»¥ä¸Šã—ã¦ã„ã‚‹æ™‚ã®èª¿æ•´ï¼‰
 void CStaticMeshObject::ClampDirection(float* dir)
 {
 	if (*dir > D3DX_PI * 2.f)
 	{
-		//1üˆÈã‚µ‚Ä‚¢‚é
-		*dir -= D3DX_PI * 2.f;	//2ƒÎ(360‹)•ªˆø‚­
+		//1å‘¨ä»¥ä¸Šã—ã¦ã„ã‚‹
+		*dir -= D3DX_PI * 2.f;	//2Ï€(360Â°)åˆ†å¼•ã
 	}
 
 	if (*dir < -D3DX_PI * 2.f)
 	{
-		//Ä‹AŠÖ”
+		//å†å¸°é–¢æ•°
 		*dir += D3DX_PI * 2.f;
 	}
 }

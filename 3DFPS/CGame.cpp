@@ -1,4 +1,4 @@
-#include "CGame.h"
+﻿#include "CGame.h"
 #include "CSpider.h"
 #include "CLaserShot.h"
 #include "CBoss.h"
@@ -12,9 +12,9 @@ constexpr int ENEMY_COUNT_PER_ROOM = 4;
 constexpr float ENEMY_SHOT_SPEED = 1.8f;
 
 //==================================================================
-// Level data.
-//   These are populated at runtime from the CSV files under Data\CSV\
-//   by CGame::LoadLevelDataFromCSV(). See that method for the mapping.
+// レベルデータ.
+//   これらは Data\CSV\ 以下のCSVファイルから実行時に
+//   CGame::LoadLevelDataFromCSV() によって設定される。対応付けは同メソッドを参照.
 //==================================================================
 static D3DXVECTOR3                            PLAYER_STARTPOS[LEVEL_COUNT];
 static std::vector<CLevel::COLLISION_TRIGGER> COLLISION_TRIGGER_LIST[LEVEL_COUNT];
@@ -39,6 +39,8 @@ CGame::CGame(CDirectX9& pDx9, CDirectX11& pDx11, HWND hWnd, CTime& pTime, CScene
 	, m_pHealthBarUI(nullptr)
 	, m_pPainSprite(nullptr)
 	, m_pPainUI(nullptr)
+	, m_pPauseOverlaySprite(nullptr)
+	, m_pPauseOverlayUI(nullptr)
 
 	, m_pSkybox(nullptr)
 	, m_pGround(nullptr)
@@ -96,8 +98,8 @@ CGame::~CGame()
 
 void CGame::Create()
 {
-	// Load all level data from CSV before anything that depends on it
-	// (e.g. blocked-path allocation below uses BLOCKEDPATH_LIST sizes).
+	// 依存する処理の前に、CSVから全レベルデータを読み込む
+	// （例: 下の封鎖通路の確保で BLOCKEDPATH_LIST のサイズを使用する）.
 	LoadLevelDataFromCSV();
 
 	m_pCamera = new CCamera();
@@ -113,6 +115,8 @@ void CGame::Create()
 	m_pHealthBarUI = new CUIObject();
 	m_pPainSprite = new CSprite2D();
 	m_pPainUI = new CUIObject();
+	m_pPauseOverlaySprite = new CSprite2D();
+	m_pPauseOverlayUI = new CUIObject();
 
 	m_pSkybox = new CSkybox();
 
@@ -157,8 +161,8 @@ void CGame::Create()
 	m_pEnemyPool.reserve(ENEMY_COUNT_MAX);
 	m_pBossShotList.reserve(ENEMY_COUNT_MAX);
 	
-	// Enemy spawn groups are built from Data\CSV\enemyGroups.csv
-	// in LoadLevelDataFromCSV(), called at the top of Create().
+	// 敵のスポーングループは Create() の冒頭で呼ばれる LoadLevelDataFromCSV() 内で
+	// Data\CSV\enemyGroups.csv から構築される.
 
 	for( int i= 0; i < ENEMY_COUNT_MAX; i++)
 	{
@@ -253,10 +257,10 @@ HRESULT CGame::LoadData()
 	hr &= LoadPlayerAsset();
 
 
-//�f�o�b�O�p
+//デバッグ用
 #if _DEBUG
 
-	// Initialize debug collider renderer
+	// デバッグ用コライダー描画の初期化
 	if (m_pDebugColliderRender)
 	{
 		hr &= m_pDebugColliderRender->Init(*m_pDx11);
@@ -309,7 +313,7 @@ HRESULT CGame::LoadData()
 
 void CGame::Release()
 {
-	//Delete�I�u�W�F�N�g���.
+	//オブジェクトの削除.
 	SAFE_DELETE(m_pFont);
 	SAFE_DELETE(m_pStaminaBarSprite);
 	SAFE_DELETE(m_pStaminaBarUI);
@@ -364,20 +368,20 @@ void CGame::Release()
 
 void CGame::Start()
 {
-	//���C�g�ݒ�
+	//ライト設定
 	float lightIntensity	= 1.055f;
 	D3DXVECTOR3 lightDir	= D3DXVECTOR3(0.2f, -1.0f, 0.5f);
-	
-	//�t�H�O�ݒ�
+
+	//フォグ設定
 	bool fog				= false;
 
-	//�J�����ݒ�.
+	//カメラ設定.
 	float fovY				= D3DX_PI / 4.0f;
 	float aspect			= static_cast<float>(WND_W) / static_cast<float>(WND_H);
 	float zn				= 0.1f, 
 		  zf				= 1000.0f;
 
-	//�V�[��������.
+	//シーン初期化.
 	InitScene(fovY, aspect, zn, zf, lightIntensity, lightDir, fog);
 
 	InitUI();
@@ -404,7 +408,16 @@ void CGame::Start()
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_Step2, 3,		m_hWnd, 200);
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_Step3, 3,		m_hWnd, 200);
 	CSoundManager::GetInstance()->CreateVoicePool(CSoundManager::SE_PlayerHit, 1,	m_hWnd, 200);
-	
+
+	//設定のマスター音量を全サウンド・ボイスプールへ反映する.
+	CSoundManager::ApplyMasterVolume();
+
+	//ポーズ状態を初期化する.
+	m_IsPaused = false;
+	m_InPauseSettings = false;
+	m_PauseSelection = PAUSE_RESUME;
+	m_PauseSettingsMenu.Reset();
+
 	CGameStats::Reset();
 }
 
@@ -413,6 +426,22 @@ static bool needToRestart = false;
 
 void CGame::Update()
 {
+	//ESCキーでポーズの切り替えを行う（リスタート待ち中は除く）.
+	if ((GetAsyncKeyState(VK_ESCAPE) & 0x0001) && !needToRestart)
+	{
+		m_IsPaused = !m_IsPaused;
+		m_InPauseSettings = false;
+		m_PauseSelection = PAUSE_RESUME;
+		CSoundManager::PlaySE(CSoundManager::SE_Select);
+	}
+
+	//ポーズ中はゲームの更新を止め、ポーズメニューのみ更新する.
+	if (m_IsPaused)
+	{
+		UpdatePause();
+		return;
+	}
+
 	m_accumulatedTime += 0.016f;
 
 	if (1.0f - m_accumulatedTime <= 1e-5)
@@ -420,7 +449,7 @@ void CGame::Update()
 		m_stageTimer -= 1.0f;
 		m_accumulatedTime = 0.0f;
 	}
-	
+
 	if (CheckRestartStatus())
 	{
 		needToRestart = true;
@@ -483,7 +512,7 @@ void CGame::Update()
 	HandleEnemyShooting();
 	HandleEnemyGroupCleared();
 
-	// Boss level clear: wait for boss death animation to finish, then go to result
+	// ボスステージのクリア: ボスの死亡アニメーションが終わるのを待ってリザルトへ移行する
 	if (CGameStats::LevelSelection == 2)
 	{
 		for (auto pEnemy : m_pEnemyPool)
@@ -576,7 +605,7 @@ void CGame::HandleGameOver()
 {
 	if (m_stageTimer <= 0.f)
 	{
-		// Time's up - handle game over
+		// 制限時間切れ - ゲームオーバー処理
 		SaveStats();
 		CSoundManager::Stop(CSoundManager::BGM_Game);
 		m_pManager->ChangeScene("GAMEOVER");
@@ -594,27 +623,25 @@ void CGame::HandlePlayerDashEffect()
 	{
 		D3DXVECTOR3 playerPos = m_pCamera->GetPosition();
 		D3DXVECTOR3 forward = m_pPlayer->GetForwardVector();
-		//playerPos.y -= 0.02f; // Adjust Y position to be at player's feet
-		//playerPos -= forward * 0.3f; // Offset backward a bit
 
-		//
+		// 前方ベクトルを正規化する
 		D3DXVec3Normalize(&forward, &forward);
 
-		//
+		// 前方ベクトルからY軸回りの角度を求める
 		float angleY = atan2f(forward.x, forward.z);
 
 		if (!CEffect::IsPlaying(dashHandle))
 		{
 			dashHandle = CEffect::Play(CEffect::DashEffect, playerPos);
 			CEffect::SetScale(dashHandle, D3DXVECTOR3(1.0f, 1.0f, 1.0f));
-			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ +angleY);
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), +angleY);
 			CEffect::SetSpeed(dashHandle, 1.0f);
 		}
 		else
 		{
-			// Keep the effect attached and rotated with the current forward
+			// エフェクトを追従させ、現在の前方向に合わせて回転させる
 			CEffect::SetLocation(dashHandle, playerPos);
-			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), /*D3DXToRadian(180)*/ +angleY);
+			CEffect::SetRotation(dashHandle, D3DXVECTOR3(0.f, 1.f, 0.f), +angleY);
 		}
 	}
 	else
@@ -650,6 +677,110 @@ void CGame::Restart()
 #endif
 }
 
+//ポーズメニューの更新.
+void CGame::UpdatePause()
+{
+	//設定画面を表示中の場合.
+	if (m_InPauseSettings)
+	{
+		//共通設定メニューが「戻る」を返したらポーズメニューへ戻る.
+		if (m_PauseSettingsMenu.Update())
+		{
+			m_InPauseSettings = false;
+			m_PauseSelection = PAUSE_SETTINGS;
+		}
+		return;
+	}
+
+	//項目選択（上下）.
+	if (GetAsyncKeyState(VK_UP) & 0x0001)
+	{
+		CSoundManager::PlaySE(CSoundManager::SE_Select);
+		m_PauseSelection--;
+		if (m_PauseSelection < 0) { m_PauseSelection = PAUSE_OPTION_COUNT - 1; }
+	}
+	if (GetAsyncKeyState(VK_DOWN) & 0x0001)
+	{
+		CSoundManager::PlaySE(CSoundManager::SE_Select);
+		m_PauseSelection++;
+		if (m_PauseSelection >= PAUSE_OPTION_COUNT) { m_PauseSelection = 0; }
+	}
+
+	//決定（ENTER）.
+	if (GetAsyncKeyState(VK_RETURN) & 0x0001)
+	{
+		CSoundManager::PlaySE(CSoundManager::SE_Decide);
+		switch (m_PauseSelection)
+		{
+		case PAUSE_RESUME:
+			//ゲームへ戻る.
+			m_IsPaused = false;
+			break;
+		case PAUSE_SETTINGS:
+			//設定画面を開く.
+			m_InPauseSettings = true;
+			m_PauseSettingsMenu.Reset();
+			break;
+		case PAUSE_TO_MENU:
+			//タイトルへ戻る.
+			m_IsPaused = false;
+			CSoundManager::Stop(CSoundManager::BGM_Game);
+			m_pManager->ChangeScene("MENU");
+			break;
+		}
+	}
+}
+
+//ポーズメニューの描画.
+void CGame::DrawPause()
+{
+	m_pDx11->SetDepth(false);
+
+	//背景を暗転させる.
+	if (m_pPauseOverlayUI)
+	{
+		m_pPauseOverlaySprite->SetAlpha(0.6f);
+		m_pPauseOverlayUI->Draw();
+	}
+
+	m_pFont->SetAlpha(1.0f);
+
+	//設定画面を表示中の場合.
+	if (m_InPauseSettings)
+	{
+		m_pFont->SetColor(1.0f, 0.1f, 0.05f);
+		m_pFont->Render(_T("SETTINGS"), WND_W / 2 - 110, 100, 60.f);
+		m_PauseSettingsMenu.Draw(m_pFont, static_cast<float>(WND_H / 2 - 40));
+		m_pDx11->SetDepth(true);
+		return;
+	}
+
+	//タイトル.
+	m_pFont->SetColor(1.0f, 0.1f, 0.05f);
+	m_pFont->Render(_T("PAUSED"), WND_W / 2 - 90, 120, 60.f);
+
+	//各項目.
+	const TCHAR* optionText[PAUSE_OPTION_COUNT];
+	optionText[PAUSE_RESUME]   = _T("> RESUME");
+	optionText[PAUSE_SETTINGS] = _T("> SETTINGS");
+	optionText[PAUSE_TO_MENU]  = _T("> RETURN TO MENU");
+
+	for (int i = 0; i < PAUSE_OPTION_COUNT; ++i)
+	{
+		if (m_PauseSelection == i)
+			m_pFont->SetColor(1.0f, 0.2f, 0.06f);
+		else
+			m_pFont->SetColor(1.0f, 1.0f, 1.0f);
+		m_pFont->Render(optionText[i], WND_W / 2 - 140, WND_H / 2 - 40 + i * 70, 40.f);
+	}
+
+	m_pFont->SetColor(0.7f, 0.7f, 0.7f);
+	m_pFont->Render(_T("UP/DOWN: Select   ENTER: Confirm   ESC: Resume"),
+		WND_W / 2 - 320, WND_H - 60, 26.f);
+
+	m_pDx11->SetDepth(true);
+}
+
 
 void CGame::Draw()
 {
@@ -663,22 +794,15 @@ void CGame::Draw()
 		return;
 	}
 
-	// Render skybox first (before other objects)
+	// 他のオブジェクトより先にスカイボックスを描画する
 	if (m_pSkybox)
 	{
 		m_pSkybox->Render(m_SceneInfo.mView, m_SceneInfo.mProj, m_SceneInfo.Camera.vPosition);
 	}
 
-	//m_pStage->Draw(m_SceneInfo);
-
 	m_pLevelController->Draw(m_SceneInfo);
 
 	m_pPlayerWeapon->Draw(m_SceneInfo);
-
-	if (0)
-	{
-	m_pBoss->RenderStatic(m_SceneInfo);
-	}
 
 	for ( auto pBossShot : m_pBossShotList)
 	{
@@ -726,7 +850,7 @@ void CGame::Draw()
 
 	DrawDecals(mView, mProj);
 
-	//���C�g�j���O�G�t�F�N�g�A�p�^�[���A�j���[�V����.�i�ǂ��ꂽ���p�j
+	//ライトニングエフェクトのパターンアニメーション.（封鎖された通路用）
 	m_pLightningSprite->SetPatternNo(0,(int)(m_pTime->GetTotalTime() * 0.01f) % 11);
 
 	for (auto pBlockedPath : m_pBlockedPathList[CGameStats::LevelSelection])
@@ -754,7 +878,6 @@ void CGame::Draw()
 	{
 		timer = 0.f;
 		prevCombo = m_comboCount;
-		//CSoundManager::PlaySE(CSoundManager::SE_ComboIncrease);
 	}
 	else {
 
@@ -781,7 +904,7 @@ void CGame::Draw()
 
 #if _DEBUG
 
-	// Draw debug colliders for enemies and other objects
+	// 敵やその他オブジェクトのデバッグ用コライダーを描画する
 	DrawDebugColliders();
 
 	auto playerPath = m_pStage->debugPlayerPath;
@@ -804,7 +927,6 @@ void CGame::Draw()
 		
 		m_pSphereMesh->SetPosition(hitPos);
 		m_pSphereMesh->SetScale(D3DXVECTOR3(0.02f, 0.02f, 0.02f));
-		//m_pSphereMesh->Render(mView, mProj, globalLight, camPos, fog, pSpotLightArray, lightCount);
 
 	}
 
@@ -911,6 +1033,12 @@ void CGame::Draw()
 
 #endif
 
+	//ポーズ中はメニューを最前面に描画する.
+	if (m_IsPaused)
+	{
+		DrawPause();
+	}
+
 }
 
 void CGame::DrawUI()
@@ -1006,21 +1134,13 @@ void CGame::DrawEnemyShots()
 			continue;
 		}
 
-		//if (CEffect::IsPlaying(enemyShotEffectHandles[i]))
-		//{
-		//	CEffect::SetLocation(enemyShotEffectHandles[i], m_pEnemyShotList[i]->GetPosition());
-		//}
-		//else
-		//{
-		//	enemyShotEffectHandles[i] = CEffect::Play(CEffect::MagmaEffect, m_pEnemyShotList[i]->GetPosition());
-		//}
 		m_pEnemyShotList[i]->Draw(m_SceneInfo);
 	}
 }
 
 void CGame::HandleEnemyShotLoadAnim(CRobo* pEnemy)
 {
-	//RANGED ENEMY SHOT LOAD ANIMATION
+	//遠距離敵のショット溜めアニメーション
 	if (!pEnemy->IsShot() && pEnemy->IsActive())
 	{
 		float scale = pEnemy->GetAttackCD() * 0.5f;
@@ -1054,10 +1174,9 @@ void CGame::HandleWeapon()
 	D3DXVECTOR3 shotEffPos;
 	D3DXVECTOR3 pistolMuzzleOffset = bulletDir * 0.25f + D3DXVECTOR3(0.f, 0.1f, 0.f);
 	D3DXVECTOR3 shotgunMuzzleOffset = bulletDir * 0.7f + D3DXVECTOR3(0.f, 0.1f, 0.f);
-	//m_pPlayerWeapon->GetPosition() + bulletDir * 0.25f + D3DXVECTOR3(0.f, 0.1f, 0.f)
 	BULLET_IMPACT impact;
 
-	impact.lifeTime = FPS * 1000; // 5 seconds
+	impact.lifeTime = FPS * 1000; // 5秒
 
 	if (m_pPlayer->IsShot())
 	{
@@ -1077,30 +1196,30 @@ void CGame::HandleWeapon()
 		const float SPREAD_ANGLE = D3DXToRadian(10.0f);
 		switch (currWeapon)
 		{
-		case 0: // Pistol
+		case 0: // ピストル
 			shotEffPos = m_pPlayerWeapon->GetPosition() + pistolMuzzleOffset;
 			CSoundManager::PlaySEPoly(CSoundManager::SE_PistolShot1);
 			IsShotHit(shotRay, hitDist, hitPos, normal, impact);
 			m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), camForward, m_pCamera->GetYaw());
 			break;
-		
-		case 1: // Shotgun
+
+		case 1: // ショットガン
 			CSoundManager::PlaySEPoly(CSoundManager::SE_ShotgunShot);
 			shotEffPos = m_pPlayerWeapon->GetPosition() + shotgunMuzzleOffset;
 			for (int i = 0; i < PELLET_COUNT; ++i)
 			{
-				// Generate random spread
+				// ランダムな拡散を生成する
 				float randomX = ((rand() % 200 - 100) / 100.0f) * SPREAD_ANGLE;
 				float randomY = ((rand() % 200 - 100) / 100.0f) * SPREAD_ANGLE;
 
-				// Apply rotation to camera forward vector
+				// カメラの前方ベクトルに回転を適用する
 				D3DXVECTOR3 spreadDir = camForward;
 				D3DXMATRIX rotMatrix;
 				D3DXMatrixRotationYawPitchRoll(&rotMatrix, randomX, randomY, 0.0f);
 				D3DXVec3TransformNormal(&spreadDir, &camForward, &rotMatrix);
 				D3DXVec3Normalize(&spreadDir, &spreadDir);
 
-				// Create ray for each pellet
+				// 各ペレットのレイを作成する
 				RAY pelletRay;
 				pelletRay.Position = m_pPlayer->GetPosition();
 				pelletRay.Axis = spreadDir;
@@ -1110,9 +1229,9 @@ void CGame::HandleWeapon()
 				D3DXVECTOR3 hitPos = D3DXVECTOR3(0.f, 0.f, 0.f);
 				D3DXVECTOR3 normal = D3DXVECTOR3(0.f, 0.f, 0.f);
 
-				// Check for hits
+				// ヒット判定を行う
 				IsShotHit(pelletRay, hitDist, hitPos, normal, impact);
-				// Spawn bullet visual for each pellet
+				// 各ペレットの弾の見た目を生成する
 				m_pBulletList[NextBullet()]->Reload(m_pPlayerWeapon->GetPosition(), spreadDir, m_pCamera->GetYaw());
 				}
 
@@ -1126,9 +1245,9 @@ void CGame::HandleWeapon()
 
 	switch (currWeapon)
 	{
-		case 0: // Pistol
+		case 0: // ピストル
 			CEffect::SetLocation(m_shotHandle, m_pPlayerWeapon->GetPosition() + pistolMuzzleOffset);
-		case 1: // Shotgun
+		case 1: // ショットガン
 			CEffect::SetLocation(m_shotHandle, m_pPlayerWeapon->GetPosition() + shotgunMuzzleOffset);
 		break;
 	}
@@ -1144,19 +1263,19 @@ void CGame::HandleWeaponPos()
 	D3DXVECTOR3 localOffset;
 
 	D3DXVECTOR3 pistolOffset =
-		camRight * 0.25f +   // move to the right
-		camUp * -0.25f +  // move a bit down
-		camForward * 0.65f;     // move a bit forward
+		camRight * 0.25f +   // 右へ移動
+		camUp * -0.25f +  // 少し下へ移動
+		camForward * 0.65f;     // 少し前へ移動
 
 	D3DXVECTOR3 shotgunOffset =
-		camRight * 0.4f +   // move to the right
-		camUp * -0.25f +  // move a bit down
-		camForward * 0.65f;     // move a bit forward
+		camRight * 0.4f +   // 右へ移動
+		camUp * -0.25f +  // 少し下へ移動
+		camForward * 0.65f;     // 少し前へ移動
 	D3DXMATRIX gunRecoilRot, gunOffset, gunScale;
 
 	switch (m_pPlayer->GetCurrentWeapon())
 	{
-		case 0: // Pistol
+		case 0: // ピストル
 			m_pPlayerWeapon->AttachMesh(*m_pPistolMesh);
 
 			D3DXMatrixRotationY(&gunOffset, D3DXToRadian(180.f));
@@ -1164,7 +1283,7 @@ void CGame::HandleWeaponPos()
 			D3DXMatrixScaling(&gunScale,1.f, 1.f, 1.f);
 			localOffset = pistolOffset;
 		break;
-		case 1: // Shotgun
+		case 1: // ショットガン
 			m_pPlayerWeapon->AttachMesh(*m_pShotgunMesh);
 		default:
 			D3DXMatrixRotationY(&gunOffset, D3DXToRadian(0.f));
@@ -1183,8 +1302,8 @@ void CGame::HandleWeaponPos()
 	if (!m_pPlayer->CanShoot())
 	{
 		D3DXMATRIX recoilRot;
-		weaponPos += -camForward * 0.08f; // Recoil effect
-		weaponPos += camUp * 0.04f * 0.5f; // Slight upward kick
+		weaponPos += -camForward * 0.08f; // 反動エフェクト
+		weaponPos += camUp * 0.04f * 0.5f; // わずかに上へ跳ね上げる
 		D3DXMatrixRotationX(&recoilRot, D3DXToRadian(-9.5f));
 		gunRecoilRot += recoilRot * gunRecoilRot;
 		D3DXVECTOR3 prevPos = m_pPlayerWeapon->GetPosition();
@@ -1196,17 +1315,17 @@ void CGame::HandleWeaponPos()
 	{
 		if (playerVelLen > 0.2f)
 		{
-			//Add effects to gun when moving here!!!
-			weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.009); // Bobbing effect when moving
+			//移動時はここに銃のエフェクトを追加する
+			weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.009); // 移動時の上下の揺れ
 		}
 		else
 		{
-			weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.005); // Bobbing effect when moving
+			weaponPos += camUp * 0.005f * sinf(m_pTime->GetTotalTime() * 0.005); // 移動時の上下の揺れ
 		}
 	}
 
 	D3DXMATRIX weaponWorld;
-	// left-handed, row-major: Right, Up, Forward, Position
+	// 左手系・行優先: 右, 上, 前, 位置
 	weaponWorld._11 = camRight.x;   weaponWorld._12 = camRight.y;   weaponWorld._13 = camRight.z;   weaponWorld._14 = 0.f;
 	weaponWorld._21 = camUp.x;      weaponWorld._22 = camUp.y;      weaponWorld._23 = camUp.z;      weaponWorld._24 = 0.f;
 	weaponWorld._31 = camForward.x; weaponWorld._32 = camForward.y; weaponWorld._33 = camForward.z; weaponWorld._34 = 0.f;
@@ -1224,7 +1343,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 	float minDistance = FLT_MAX;
 	CAnimEnemy* hitEnemy = nullptr;
 
-	// Broad-phase: use collider box (preferred) or radius to cull before precise hit
+	// ブロードフェーズ: 精密な判定の前にコライダーのボックス（優先）か半径で絞り込む
 	D3DXVECTOR3 rayDir = shotRay.Axis;
 	D3DXVec3Normalize(&rayDir, &rayDir);
 	float rayLen = shotRay.Length;
@@ -1284,7 +1403,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 					{
 						broadPhaseHit = true;
 						colliderHitPos = shotRay.Position + rayDir * colliderHitDist;
-						// Approximate normal by which face is closest
+						// どの面が最も近いかで法線を近似する
 						D3DXVECTOR3 center = (bmin + bmax) * 0.5f;
 						D3DXVECTOR3 local = colliderHitPos - center;
 						D3DXVECTOR3 halfExtents = (bmax - bmin) * 0.5f;
@@ -1329,7 +1448,7 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		if (!broadPhaseHit)
 			continue;
 
-		// Use collider hit if we already have it, otherwise fall back to mesh ray test
+		// コライダーのヒットが既にあればそれを使い、なければメッシュのレイ判定にフォールバックする
 		if (usedColliderHit)
 		{
 			hitDist = colliderHitDist;
@@ -1357,12 +1476,12 @@ void CGame::IsShotHit(RAY& shotRay, float& hitDist, D3DXVECTOR3& hitPos, D3DXVEC
 		
 		switch (currWeapon)
 		{
-		case 0: // Pistol
+		case 0: // ピストル
 			hitEnemy->ApplyDamage(8.f);
 			enemyHitHandle = CEffect::Play(CEffect::PistolShotEffect, hitPos);
 			CEffect::SetRotation(enemyHitHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
 			break;
-		case 1: // Shotgun
+		case 1: // ショットガン
 			hitEnemy->ApplyDamage(3.f);
 			enemyHitHandle = CEffect::Play(CEffect::ExplosionEffect, hitPos);
 			CEffect::SetRotation(enemyHitHandle, D3DXVECTOR3(0.f, 1.f, 0.f), m_pCamera->GetYaw());
@@ -1401,28 +1520,28 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& dista
 	float radiusA = charaA->GetRadius();
 	float radiusB = charaB->GetRadius();
 
-	// XZ���ʂł̋����v�Z�iY���𖳎��j
+	// XZ平面での距離計算（Y軸を無視）
 	D3DXVECTOR3 diff = posA - posB;
 	diff.y = 0.0f;
 	distance = D3DXVec3Length(&diff);
 	float minDist = radiusA + radiusB;
 
-	// �Փˌ��o
+	// 衝突検出
 	if (distance < minDist && distance > 0.001f)
 	{
-		// �����o���x�N�g�����v�Z
+		// 押し出しベクトルを計算
 		D3DXVECTOR3 pushDir;
 		D3DXVec3Normalize(&pushDir, &diff);
 
 		float overlap = minDist - distance;
-		
-		// Full separation with slight buffer to prevent repeated collision
+
+		// 再衝突を防ぐため、わずかなバッファを加えて完全に分離する
 		float separationBuffer = 0.02f;
 		float totalPush = overlap + separationBuffer;
 
 		if (doubleCollision)
 		{
-			// Both objects move - split the correction
+			// 両方のオブジェクトを動かす - 補正を半分ずつに分ける
 			D3DXVECTOR3 correctionA = pushDir * (totalPush * 0.5f);
 			D3DXVECTOR3 correctionB = -pushDir * (totalPush * 0.5f);
 
@@ -1434,14 +1553,14 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& dista
 			charaA->SetPosition(newPosA);
 			charaB->SetPosition(newPosB);
 
-			// Dampen velocity in collision direction
+			// 衝突方向の速度を減衰させる
 			D3DXVECTOR3 velA = charaA->GetVelocity();
 			D3DXVECTOR3 velB = charaB->GetVelocity();
-			
+
 			float velDotA = D3DXVec3Dot(&velA, &pushDir);
 			float velDotB = D3DXVec3Dot(&velB, &pushDir);
-			
-			// Remove velocity component pushing into each other
+
+			// 互いに押し込む向きの速度成分を取り除く
 			if (velDotA < 0.f)
 			{
 				velA -= pushDir * velDotA * 0.8f;
@@ -1455,13 +1574,13 @@ bool CGame::HandleCollision(CCharacter* charaA, CCharacter* charaB, float& dista
 		}
 		else
 		{
-			// Only charaB moves (enemy pushed away from player)
+			// charaB のみを動かす（敵をプレイヤーから押し離す）
 			D3DXVECTOR3 correction = -pushDir * totalPush;
 			D3DXVECTOR3 newPosB = posB + correction;
 			newPosB.y = posB.y;
 			charaB->SetPosition(newPosB);
 
-			// Dampen enemy velocity toward player
+			// プレイヤーへ向かう敵の速度を減衰させる
 			D3DXVECTOR3 velB = charaB->GetVelocity();
 			float velDot = D3DXVec3Dot(&velB, &pushDir);
 			if (velDot > 0.f)
@@ -1562,22 +1681,22 @@ bool CGame::HandleColliderCollision(CStaticMeshObject* pObjA, CCharacter* pChara
 
 	D3DXVECTOR3 penetration(0, 0, 0);
 	
-	// �R���C�_�[���m�̏Փ˔���
+	// コライダー同士の衝突判定
 	if (pColliderB->CheckCollision(pColliderA, &penetration))
 	{
 		if (resolveForChara)
 		{
-			// �L�����N�^�[�������o��
+			// キャラクターを押し出す
 			D3DXVECTOR3 charaPos = pChara->GetPosition();
 			D3DXVECTOR3 charaVel = pChara->GetVelocity();
 
-			// Y�����̉����o���͖����i���̏Փ˂͕ʏ����j
+			// Y方向の押し出しは無効（床の衝突は別処理）
 			penetration.y = 0.0f;
 
 			charaPos += penetration;
 			pChara->SetPosition(charaPos);
 
-			// �����o�������̑��x���[���ɂ���
+			// 押し出した方向の速度をゼロにする
 			if (fabsf(penetration.x) > 0.001f)
 			{
 				charaVel.x = 0.0f;
@@ -1683,19 +1802,19 @@ void CGame::HandlePlayerEnemyCollision()
 			float distance = 0.f;
 			bool collided = false;
 
-			// �R���C�_�[������ꍇ�̓R���C�_�[�x�[�X�̏Փ˔�����g�p
+			// コライダーがある場合はコライダーベースの衝突判定を使用
 			if (pEnemyCollider)
 			{
 				collided = HandleColliderCollision(pEnemy, m_pPlayer, true);
 			
-			// �����v�Z�i�_���[�W����p�j
+			// 距離計算（ダメージ判定用）
 				D3DXVECTOR3 diff = m_pPlayer->GetPosition() - pEnemy->GetPosition();
 				diff.y = 0.0f;
 				distance = D3DXVec3Length(&diff);
 			}
 			else
 			{
-				// �R���C�_�[���Ȃ��ꍇ�͏]���̋��x�[�X�̏Փ˔���
+				// コライダーがない場合は従来の球ベースの衝突判定
 				if (typeid(*pEnemy) == typeid(CBoss))
 				{
 					collided = HandleCubeCollisions(pEnemy, m_pPlayer);
@@ -1705,7 +1824,7 @@ void CGame::HandlePlayerEnemyCollision()
 				}
 				else
 				{
-					// Push enemy away from player (doubleCollision = false)
+					// 敵をプレイヤーから押し離す（doubleCollision = false）
 					collided = HandleCollision(m_pPlayer, pEnemy, distance, false);
 				}
 			}
@@ -1714,7 +1833,7 @@ void CGame::HandlePlayerEnemyCollision()
 			{
 				hadCollision = true;
 				
-				// �_���[�W���� (only on first iteration to avoid multiple damage)
+				// ダメージ処理（多重ダメージを避けるため最初の反復のみ）
 				if (iteration == 0 && ((pEnemy->GetState() == CAnimEnemy::Attacking) || (pEnemy->GetState() == CAnimEnemy::Jumping)))
 				{
 					float damage = 5.5f;
@@ -1731,7 +1850,7 @@ void CGame::HandlePlayerEnemyCollision()
 			}
 		}
 		
-		// If no collisions this iteration, we're done
+		// この反復で衝突がなければ完了
 		if (!hadCollision) break;
 	}
 }
@@ -1827,7 +1946,7 @@ void CGame::HandleEnemySpawning()
 
 void CGame::HandleEnemyShooting()
 {
-	//BOSS MINION ENEMY SHOOTING
+	//ボスの手下（雑魚）の射撃
 	float playerHeight = m_pPlayer->GetHeight();
 	D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.5f, 0.f) - m_pBoss->GetPosition();
 	D3DXVec3Normalize(&dirToPlayer, &dirToPlayer);
@@ -1838,7 +1957,7 @@ void CGame::HandleEnemyShooting()
 		
 	}
 	
-	//RANGED ENEMY SHOOTING
+	//遠距離敵の射撃
 	for (auto pEnemy : m_pEnemyPool)
 	{
 		D3DXVECTOR3 dirToPlayer = m_pPlayer->GetPosition() + D3DXVECTOR3(0.f, -playerHeight * 0.2f, 0.f) - (pEnemy->GetPosition() + D3DXVECTOR3(0.f, 7.f, 0.f));
@@ -1919,7 +2038,7 @@ void CGame::HandleEnemyGroupCleared()
 
 void CGame::LoadLevelDataFromCSV()
 {
-	// Per-level scalars: start position, goal and timer (one row per level).
+	// レベルごとのスカラー値: 開始位置・ゴール・タイマー（1レベルにつき1行）.
 	std::vector<CDataReader::LEVEL_INFO> levelInfos;
 	CDataReader::LoadLevelData("Data\\CSV\\levelData.csv", levelInfos);
 	for (const auto& info : levelInfos)
@@ -1932,12 +2051,12 @@ void CGame::LoadLevelDataFromCSV()
 		CGameStats::LevelTimer[info.id] = info.timer;
 	}
 
-	// Variable-length per-level lists (bucketed by LEVEL_ID).
+	// レベルごとの可変長リスト（LEVEL_IDごとに振り分け）.
 	CDataReader::LoadEnemySpawns ("Data\\CSV\\enemySpawns.csv",  ENEMY_STARTPOS,         LEVEL_COUNT);
 	CDataReader::LoadBlockedPaths("Data\\CSV\\blockedPaths.csv", BLOCKEDPATH_LIST,       LEVEL_COUNT);
 	CDataReader::LoadTriggers    ("Data\\CSV\\triggers.csv",     COLLISION_TRIGGER_LIST, LEVEL_COUNT);
 
-	// Enemy spawn groups: build the concrete enemy objects from the CSV archetypes.
+	// 敵のスポーングループ: CSVの定義から実際の敵オブジェクトを生成する.
 	std::vector<CDataReader::ENEMY_GROUP_DEF> groupDefs[LEVEL_COUNT];
 	CDataReader::LoadEnemyGroups("Data\\CSV\\enemyGroups.csv", groupDefs, LEVEL_COUNT);
 	for (int level = 0; level < LEVEL_COUNT; ++level)
@@ -2026,7 +2145,7 @@ HRESULT CGame::LoadSceneAssets()
 		return E_FAIL;
 	}
 
-	// Load skybox cubemap texture
+	// スカイボックスのキューブマップテクスチャを読み込む
 	if (FAILED(m_pSkybox->Init(*m_pDx11, L"Data\\Texture\\Skybox\\skybox.dds")))
 	{
 		return E_FAIL;
@@ -2096,7 +2215,18 @@ HRESULT CGame::LoadUIAssets()
 		return E_FAIL;
 	}
 
+	// ポーズ画面用の全画面暗転オーバーレイ.
+	CSprite2D::SPRITE_STATE pauseOverlayState = {};
+	pauseOverlayState.Disp   = { WND_W, WND_H };
+	pauseOverlayState.Base   = { WND_W, WND_H };
+	pauseOverlayState.Stride = { WND_W, WND_H };
+	if (FAILED(m_pPauseOverlaySprite->Init(*m_pDx11, L"Data\\Texture\\Black.png", pauseOverlayState)))
+	{
+		return E_FAIL;
+	}
+
 	m_pPainUI->AttachSprite(*m_pPainSprite);
+	m_pPauseOverlayUI->AttachSprite(*m_pPauseOverlaySprite);
 	m_pHealthBarUI->AttachSprite(*m_pHealthBarSprite);
 	m_pStaminaBarUI->AttachSprite(*m_pStaminaBarSprite);
 	m_pCrossHairUI->AttachSprite(*m_pCrossHairSprite);
@@ -2319,7 +2449,7 @@ void CGame::InitEnemy()
 	const float ROBO_SCALE = 0.01f;
 	const float BOSS_SCALE = 2.f;
 
-	//�G�̔�A�N�e�B�u��.
+	// 敵を非アクティブ化.
 	for (auto pEnemy : m_pEnemyPool)
 	{
 		pEnemy->InitEnemy();
@@ -2427,15 +2557,15 @@ void CGame::HandleDynamicFov(float playerVelLen, float& fovY)
 {
 	if (m_pPlayer->IsDashing() && playerVelLen > 0.1f)
 	{
-		// FOV�g��
+		// FOVを広げる
 		float targetFovY = D3DX_PI / 3.0f; // 
-		fovY += (targetFovY - fovY) * FPS / 1000.f; // �X���[�Y�Ɋg��
+		fovY += (targetFovY - fovY) * FPS / 1000.f; // スムーズに広げる
 	}
 	else
 	{
-		// FOV�ʏ�߂�
+		// FOVを通常に戻す
 		float normalFovY = D3DX_PI / 4.0f;
-		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // �X���[�Y�ɖ߂�
+		fovY += (normalFovY - fovY) * FPS / 1000.f * 1.5; // スムーズに戻す
 	}
 }
 
@@ -2445,10 +2575,10 @@ void CGame::HandleStepSE(float playerVelLen, float& stepTimer)
 	{
 		if (stepTimer <= 0.f)
 		{
-			stepTimer = 800.f - (playerVelLen * 100.f); // ���x�ɉ����đ����̊Ԋu��ς���
+			stepTimer = 800.f - (playerVelLen * 100.f); // 速度に応じて足音の間隔を変える
 			if (stepTimer < 350.f)
 			{
-				stepTimer = 350.f; // �ŏ��Ԋu
+				stepTimer = 350.f; // 最小間隔
 			}
 			float randChoice = distFloat(m_RandomGen);
 			if (randChoice < 0.5f)
@@ -2473,7 +2603,7 @@ void CGame::DrawDebugColliders()
 	D3DXMATRIX& mView = m_SceneInfo.mView;
 	D3DXMATRIX& mProj = m_SceneInfo.mProj;
 
-	// Draw player collider
+	// プレイヤーのコライダーを描画する
 	if (m_pPlayer && m_pPlayer->GetCollider())
 	{
 		CCollider* pCollider = m_pPlayer->GetCollider();
@@ -2481,7 +2611,7 @@ void CGame::DrawDebugColliders()
 		m_pDebugColliderRender->DrawCollider(*m_pDx11, mView, mProj, shape, *pCollider);
 	}
 
-	// Draw enemy colliders
+	// 敵のコライダーを描画する
 	for (auto pEnemy : m_pEnemyPool)
 	{
 		if (!pEnemy || !pEnemy->IsActive() || pEnemy->IsDead())
@@ -2495,7 +2625,7 @@ void CGame::DrawDebugColliders()
 		m_pDebugColliderRender->DrawCollider(*m_pDx11, mView, mProj, shape, *pCollider);
 	}
 
-	// Draw blocked path colliders
+	// 封鎖された通路のコライダーを描画する
 	for (auto pBlockedPath : m_pBlockedPathList[CGameStats::LevelSelection])
 	{
 		if (!pBlockedPath || !pBlockedPath->IsActive())
@@ -2509,7 +2639,7 @@ void CGame::DrawDebugColliders()
 		m_pDebugColliderRender->DrawCollider(*m_pDx11, mView, mProj, shape, *pCollider);
 	}
 
-	// Draw enemy shot colliders
+	// 敵の弾のコライダーを描画する
 	for (auto pEnemyShot : m_pEnemyShotList)
 	{
 		if (!pEnemyShot || !pEnemyShot->IsDisplay())

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 #include <d3dcompiler.h>
 
@@ -19,7 +19,7 @@ public:
 		const D3DXVECTOR3& max,
 		const D3DXVECTOR4& color);
 
-	// OBB•`‰æi‰ñ“]‚ğl—¶‚µ‚½8’¸“_‚ğg—pj
+	// OBBæç”»ï¼ˆå›è»¢ã‚’è€ƒæ…®ã—ãŸ8é ‚ç‚¹ã‚’ä½¿ç”¨ï¼‰
 	void DrawOBB(ID3D11DeviceContext* ctx,
 		const D3DXMATRIX& mView,
 		const D3DXMATRIX& mProj,

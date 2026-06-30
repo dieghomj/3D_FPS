@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <random>
 #include "CScene.h"
 #include "CUIObject.h"
@@ -18,6 +18,7 @@
 #include "CLevelController.h"
 #include "CLevel.h"
 #include "CDebugColliderRender.h"
+#include "CSettingsMenu.h"
 
 
 class CGame :
@@ -61,6 +62,10 @@ public:
 	bool CheckRestartStatus();
 	void Restart();
 
+	// ポーズメニューの更新・描画.
+	void UpdatePause();
+	void DrawPause();
+
 
 private:
 
@@ -97,7 +102,6 @@ private:
 	void HandleStepSE(float playerVelLen, float& stepTimer);
 
 
-	//void HandleWallCollisions(CCharacter* character);
 	void LoadLevelDataFromCSV();
 	void SetupBlockedPath();
 
@@ -115,7 +119,7 @@ private:
 	std::uniform_real_distribution<float> m_AngleDist;
 	std::uniform_real_distribution<float> distFloat;
 
-	//STATS
+	//統計
 
 	CGameStats m_GameStats;
 	int m_enemyKillCount = 0;
@@ -124,63 +128,81 @@ private:
 	int m_highestCombo = 0;
 
 	//----------------
+	//----ポーズ------
+	//----------------
+	enum PAUSE_OPTION
+	{
+		PAUSE_RESUME = 0,	// ゲームに戻る.
+		PAUSE_SETTINGS,		// 設定.
+		PAUSE_TO_MENU,		// タイトルへ戻る.
+		PAUSE_OPTION_COUNT
+	};
+	bool m_IsPaused = false;			// ポーズ中かどうか.
+	bool m_InPauseSettings = false;		// ポーズ中の設定画面を表示中かどうか.
+	int  m_PauseSelection = 0;			// ポーズメニューの選択項目.
+	CSettingsMenu m_PauseSettingsMenu;	// 共通設定メニューUI.
+
+	//----------------
 	//----UI----------
 	//----------------
-	//FONT
+	//フォント
 		CFont* m_pFont;
-	//STAMINAR BAR
+	//スタミナバー
 		CSprite2D* m_pStaminaBarSprite;
 		CUIObject* m_pStaminaBarUI;
-	//CROSSHAIR
+	//クロスヘア
 		CSprite2D* m_pCrossHairSprite;
 		CUIObject* m_pCrossHairUI;
-	//HEALTH BAR
+	//ヘルスバー
 		CSprite2D* m_pHealthBarSprite;
 		CUIObject* m_pHealthBarUI;
-	//HURT EFFECT
+	//ダメージエフェクト
 		CSprite2D* m_pPainSprite;
 		CUIObject* m_pPainUI;
-	//DASH EFFECT
+	//ポーズ画面の暗転オーバーレイ.
+		CSprite2D* m_pPauseOverlaySprite;
+		CUIObject* m_pPauseOverlayUI;
+	//ダッシュエフェクト
 		CSprite2D* m_pDashEffectSprite;
 		CUIObject* m_pDashEffectUI;
 
 	//--------------------
-	//----LEVEL---
+	//----レベル---
 	//--------------------
 		CLevelController* m_pLevelController;
 
 	//--------------------
-	//---SCENE OBJECTS---
+	//---シーンオブジェクト---
 	//--------------------
-	//SKYBOX
+	//スカイボックス
 		CSkybox* m_pSkybox;
-	//GROUND
+	//地面
 		CStaticMesh* m_pGroundMesh;
 		CStaticMeshObject* m_pGround;
-		
-	//STAGE
+
+	//ステージ
 		CStaticMesh* m_pTestStageMesh;
 		CStaticMesh* m_pStageMesh;
 		std::vector<CStaticMesh*> m_pStageMeshes;
 		CStage* m_pStage;
-	//WALL COLLIDER
+	//壁コライダー
 		CStaticMesh* m_pCubeMesh;
-	//GOAL
+	//ゴール
 		CLevel::GOAL m_Goal;
-	//BLOCKED PATH
-		//Sprite
+	//封鎖された通路
+		//スプライト
 		CSprite3D* m_pLightningSprite;
 		CBlockedPath* m_pLightning;
-		//List
+		//リスト
 		std::vector<CBlockedPath*> m_pBlockedPathList[LEVEL_COUNT];
-	//TRIGGERS
+	//トリガー
 		std::vector<CLevel::COLLISION_TRIGGER> m_CollisionTriggerList;
 
-	//TIMER
+	//タイマー
 		float m_stageTimer = 0.0f;
 		float m_accumulatedTime = 0.0f;
 	//----------------
-	//-----ENEMY------
+	//-----敵--------
 	//----------------
 
 		std::vector<ENEMY_GROUP> m_EnemyGroups[LEVEL_COUNT];
@@ -206,15 +228,15 @@ private:
 
 
 	//----------------
-	//-----PLAYER-----
+	//-----プレイヤー-----
 	//----------------
 		CPlayer* m_pPlayer;
-		//WEAPON
+		//武器
 		CStaticMesh* m_pPistolMesh;
 		CStaticMesh* m_pShotgunMesh;
 		CStaticMeshObject* m_pPlayerWeapon;
 
-		//SHOT
+		//弾
 		int m_bulletIndex = 0;
 		::EsHandle m_shotHandle = -1;
 		CStaticMesh* m_pBulletMesh;
@@ -226,7 +248,7 @@ private:
 		CDecal* m_pEnemyHitDecalSprite;
 
 	//----------------
-	//EFFECTS HANDLERS
+	//エフェクトハンドラ
 	//----------------
 		::EsHandle explosionHandle = -1;
 		::EsHandle dashHandle = -1;
@@ -241,8 +263,8 @@ private:
 		::EsHandle bossDeathHandle = -1;
 	
 	//----------------
-	//---ITEMS--------
-	//----------------	
+	//---アイテム--------
+	//----------------
 
 		CStaticMesh* m_pItemMesh;
 		std::vector<CItem*> m_pItemList;
@@ -254,7 +276,7 @@ private:
 		CStaticMesh* m_pDashItemMesh;
 
 	//----------------
-	//---UTILITY------
+	//---ユーティリティ------
 	//----------------
 		int currStage = 0;
 		CStaticMesh* m_pSphereMesh;

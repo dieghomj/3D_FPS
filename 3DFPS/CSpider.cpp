@@ -1,18 +1,18 @@
-#include "CSpider.h"
+﻿#include "CSpider.h"
 #include "CRobo.h"
 
 
-//Anim
-// 1: Walk
+//アニメーション
+// 1: 歩行
 // 2: ?
-// 3: Two arm Attack
-// 4: Pre-Jump
+// 3: 両腕攻撃
+// 4: ジャンプ前
 // 5: ?
-// 6: Jump
-// 7: Nod
-// 8: Die1
-// 9 : Die2
-// 10: One arm attack
+// 6: ジャンプ
+// 7: のけぞり
+// 8: 死亡1
+// 9 : 死亡2
+// 10: 片腕攻撃
 
 static constexpr float ATTACK_CD = 2.0f;
 static constexpr float JUMP_ATTACK_CD = 3.0f;
@@ -54,7 +54,6 @@ void CSpider::Update()
 
 	if (!m_IsAlive && m_State == Dead)
 	{
-		//m_vPosition = D3DXVECTOR3(0.0f, -100.0f, 0.0f);
 		return;
 	}
 	else if (!m_IsAlive)

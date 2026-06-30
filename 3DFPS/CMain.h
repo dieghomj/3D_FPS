@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include <Windows.h>
 #include "CScene.h"
 #include "CSceneManager.h"
 
-//ƒNƒ‰ƒX‚Ì‘O•ûéŒ¾.
+//ã‚¯ãƒ©ã‚¹ã®å‰æ–¹å®£è¨€.
 class CDirectX9;
 class CDirectX11;
 class CMenu;
@@ -13,21 +13,21 @@ class CResultScene;
 class CTest;
 
 /**************************************************
-*	ƒƒCƒ“ƒNƒ‰ƒX.
+*	ãƒ¡ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹.
 **/
 class CMain
 {
 public:
-	CMain();	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
-	~CMain();	//ƒfƒXƒgƒ‰ƒNƒ^.
+	CMain();	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
+	~CMain();	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 
-	void Update();		//XVˆ—.
-	HRESULT Create();	//\’zˆ—.
-	HRESULT LoadData();	//ƒf[ƒ^ƒ[ƒhˆ—.
-	void Release();		//‰ğ•úˆ—.
-	void Loop();		//ƒƒCƒ“ƒ‹[ƒv.
+	void Update();		//æ›´æ–°å‡¦ç†.
+	HRESULT Create();	//æ§‹ç¯‰å‡¦ç†.
+	HRESULT LoadData();	//ãƒ‡ãƒ¼ã‚¿ãƒ­ãƒ¼ãƒ‰å‡¦ç†.
+	void Release();		//è§£æ”¾å‡¦ç†.
+	void Loop();		//ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—.
 
-	//ƒEƒBƒ“ƒhƒE‰Šú‰»ŠÖ”.
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦åˆæœŸåŒ–é–¢æ•°.
 	HRESULT InitWindow(
 		HINSTANCE hInstance,
 		INT x, INT y,
@@ -36,20 +36,20 @@ public:
 private:
 	static void LockCursorToWindow(HWND hwnd);
 	static void UnlockCursor();
-	//ƒEƒBƒ“ƒhƒEŠÖ”iƒƒbƒZ[ƒW–ˆ‚Ìˆ—j.
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦é–¢æ•°ï¼ˆãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ¯ã®å‡¦ç†ï¼‰.
 	static LRESULT CALLBACK MsgProc(
 		HWND hWnd, UINT uMsg,
 		WPARAM wParam, LPARAM lParam );
 
 private:
-	HWND			m_hWnd;	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹.
-	CDirectX9*		m_pDx9;	//DirectX9ƒZƒbƒgƒAƒbƒvƒNƒ‰ƒX
-	CDirectX11*		m_pDx11;//DirectX11ƒZƒbƒgƒAƒbƒvƒNƒ‰ƒX.
+	HWND			m_hWnd;	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«.
+	CDirectX9*		m_pDx9;	//DirectX9ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã‚¯ãƒ©ã‚¹
+	CDirectX11*		m_pDx11;//DirectX11ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã‚¯ãƒ©ã‚¹.
 
-	//ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX.
+	//ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹.
 	CSceneManager*	m_pSceneManager;
 	
-	//ƒV[ƒ“
+	//ã‚·ãƒ¼ãƒ³
 	CScene* 		m_pGameOver;
 	CScene*			m_pTest;
 	CScene*			m_pGame;

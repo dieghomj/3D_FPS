@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CDirectX11.h"
 
 class CStaticMesh;
@@ -27,7 +27,7 @@ public:
 
 	HRESULT CreateSphereForMesh(const CStaticMesh& pMesh);
 	HRESULT CreateBoxForMesh(const CStaticMesh& pMesh);
-	HRESULT CreateColMesh(); // Mesh collider creation not implemented
+	HRESULT CreateColMesh(); // ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ç”Ÿæˆã¯æœªå®Ÿè£…
 
 	void UpdateCollider() { SetPosition(m_vPosition); SetRotation(m_vRotation); SetScale(m_vScale);  }
 
@@ -40,19 +40,19 @@ public:
 	COLLIDER_SHAPE GetShape() const { return m_Shape; }
 	const D3DXMATRIX& GetRotationMatrix() const { return m_mRotation; }
 
-	// Õ“Ë”»’èƒƒ\ƒbƒh
+	// è¡çªåˆ¤å®šãƒ¡ã‚½ãƒƒãƒ‰
 	bool CheckCollision(CCollider* pOther, D3DXVECTOR3* pPenetration = nullptr);
 	
-	// ‹… vs ‹…‚ÌÕ“Ë”»’è
+	// çƒ vs çƒã®è¡çªåˆ¤å®š
 	static bool SphereVsSphere(CBoundingSphere* pSphereA, CBoundingSphere* pSphereB, 
 							   D3DXVECTOR3* pPenetration = nullptr);
 	
-	// ‹… vs OBBi‰ñ“]‘Î‰ƒ{ƒbƒNƒXj‚ÌÕ“Ë”»’è
+	// çƒ vs OBBï¼ˆå›è»¢å¯¾å¿œãƒœãƒƒã‚¯ã‚¹ï¼‰ã®è¡çªåˆ¤å®š
 	static bool SphereVsOBB(CBoundingSphere* pSphere, CBoundingCube* pBox, 
 							const D3DXMATRIX& boxRotation,
 							D3DXVECTOR3* pPenetration = nullptr);
 
-	// ‹… vs AABBi²•½sƒ{ƒbƒNƒXj‚ÌÕ“Ë”»’è
+	// çƒ vs AABBï¼ˆè»¸å¹³è¡Œãƒœãƒƒã‚¯ã‚¹ï¼‰ã®è¡çªåˆ¤å®š
 	static bool SphereVsAABB(CBoundingSphere* pSphere, CBoundingCube* pBox,
 							 D3DXVECTOR3* pPenetration = nullptr);
 
@@ -61,7 +61,7 @@ public:
 
 private:
 
-	// ˆÊ’u/‰ñ“]/ƒXƒP[ƒ‹‚©‚çƒ[ƒ‹ƒh‹«ŠE‚ğÄŒvZ
+	// ä½ç½®/å›è»¢/ã‚¹ã‚±ãƒ¼ãƒ«ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰å¢ƒç•Œã‚’å†è¨ˆç®—
 	void RecalculateWorldBounds();
 
 private:
@@ -80,7 +80,7 @@ private:
 
 	CDebugColliderRender*	m_pDbgCollider;	
 	COLLIDER_SHAPE			m_Shape = COLLIDER_SHAPE_SPHERE;
-	D3DXMATRIX				m_mRotation;	// ‰ñ“]s—ñiOBB—pj
+	D3DXMATRIX				m_mRotation;	// å›è»¢è¡Œåˆ—ï¼ˆOBBç”¨ï¼‰
 
 };
 

@@ -1,4 +1,4 @@
-/***************************************************************************************************
+ï»¿/***************************************************************************************************
 *	SkinMeshCode Version 2.50
 *	LastUpdate	: 2025/06/23.
 **/
@@ -6,7 +6,7 @@
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 
-#include <stdlib.h>	//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š¨Unicode•¶š•ÏŠ·‚Å•K—v.
+#include <stdlib.h>	//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—â†’Unicodeæ–‡å­—å¤‰æ›ã§å¿…è¦.
 #include <locale.h>
 
 #include <crtdbg.h>
@@ -14,7 +14,7 @@
 #include <memory>
 #include <algorithm>
 
-//“ü‚ê‘Ö‚¦ŠÖ”.
+//å…¥ã‚Œæ›¿ãˆé–¢æ•°.
 template <typename T>
 void swap(T& a, T& b)
 {
@@ -22,31 +22,31 @@ void swap(T& a, T& b)
 	a = b;
 	b = temp;
 }
-//”ÍˆÍ“à‚É”[‚ß‚éŠÖ”.
+//ç¯„å›²å†…ã«ç´ã‚ã‚‹é–¢æ•°.
 template <typename T>
 const T& clamp(const T& val, const T& low, const T& high)
 {
 	return val > high ? high : val < low ? low : val;
 }
 
-//ƒVƒF[ƒ_–¼(ƒfƒBƒŒƒNƒgƒŠ‚àŠÜ‚Ş)
+//ã‚·ã‚§ãƒ¼ãƒ€å(ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚‚å«ã‚€)
 const TCHAR SHADER_NAME[] = _T("Data\\Shader\\SkinMesh.hlsl");
 
-//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ğİ’è‚·‚éƒXƒƒbƒg”Ô†.
+//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®šã™ã‚‹ã‚¹ãƒ­ãƒƒãƒˆç•ªå·.
 enum enCBSlot
 {
-	Mesh,		//ƒƒbƒVƒ….
-	Material,	//ƒ}ƒeƒŠƒAƒ‹.
-	Frame,		//ƒtƒŒ[ƒ€.
-	Bones,		//ƒ{[ƒ“.
+	Mesh,		//ãƒ¡ãƒƒã‚·ãƒ¥.
+	Material,	//ãƒãƒ†ãƒªã‚¢ãƒ«.
+	Frame,		//ãƒ•ãƒ¬ãƒ¼ãƒ .
+	Bones,		//ãƒœãƒ¼ãƒ³.
 };
 
 /******************************************************************************************************************************************
 *
-*	ˆÈ~AƒXƒLƒ“ƒƒbƒVƒ…ƒNƒ‰ƒX.
+*	ä»¥é™ã€ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ã‚¯ãƒ©ã‚¹.
 *
 **/
-//ƒRƒ“ƒXƒgƒ‰ƒNƒ^.
+//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 CSkinMesh::CSkinMesh()
 	: m_pDx9(nullptr)
 	, m_pDevice9(nullptr)
@@ -79,10 +79,9 @@ CSkinMesh::CSkinMesh()
 	, m_CamPos()
 	, m_Fog()
 
-	, m_AnimSpeed(0.001)	//ˆêæ‚¸A‚±‚Ì’l.
+	, m_AnimSpeed(0.001)	//ä¸€å…ˆãšã€ã“ã®å€¤.
 	, m_AnimTime()
 
-	//	, m_pReleaseMaterial	( nullptr )
 	, m_pD3dxMesh(nullptr)
 
 	, m_FilePath()
@@ -91,19 +90,19 @@ CSkinMesh::CSkinMesh()
 }
 
 
-//ƒfƒXƒgƒ‰ƒNƒ^.
+//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿.
 CSkinMesh::~CSkinMesh()
 {
-	//‰ğ•úˆ—.
+	//è§£æ”¾å‡¦ç†.
 	Release();
 
-	//ƒVƒF[ƒ_‚âƒTƒ“ƒvƒ‰ŠÖŒW.
+	//ã‚·ã‚§ãƒ¼ãƒ€ã‚„ã‚µãƒ³ãƒ—ãƒ©é–¢ä¿‚.
 	SAFE_RELEASE(m_pSampleLinear);
 	SAFE_RELEASE(m_pVertexShader);
 	SAFE_RELEASE(m_pPixelShader);
 	SAFE_RELEASE(m_pVertexLayout);
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@ŠÖŒW.
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡é–¢ä¿‚.
 	SAFE_RELEASE(m_pCBufferPerBone);
 	SAFE_RELEASE(m_pCBufferPerFrame);
 	SAFE_RELEASE(m_pCBufferPerMaterial);
@@ -111,18 +110,18 @@ CSkinMesh::~CSkinMesh()
 
 	SAFE_RELEASE(m_pD3dxMesh);
 
-	//Dx9 ƒfƒoƒCƒXŠÖŒW.
+	//Dx9 ãƒ‡ãƒã‚¤ã‚¹é–¢ä¿‚.
 	m_pDevice9 = nullptr;
 	m_pDx9 = nullptr;
 
-	//Dx11 ƒfƒoƒCƒXŠÖŒW.
+	//Dx11 ãƒ‡ãƒã‚¤ã‚¹é–¢ä¿‚.
 	m_pContext11 = nullptr;
 	m_pDevice11 = nullptr;
 	m_pDx11 = nullptr;
 }
 
 
-//‰Šú‰».
+//åˆæœŸåŒ–.
 HRESULT CSkinMesh::Init(
 	CDirectX9& pDx9, CDirectX11& pDx11, LPCTSTR FileName)
 {
@@ -133,41 +132,41 @@ HRESULT CSkinMesh::Init(
 	m_pDevice11 = m_pDx11->GetDevice();
 	m_pContext11 = m_pDx11->GetContext();
 
-	//ƒ‚ƒfƒ‹“Ç‚İ‚İ.
+	//ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿.
 	if (FAILED(LoadXMesh(FileName)))
 	{
 		return E_FAIL;
 	}
-	//ƒVƒF[ƒ_‚Ìì¬.
+	//ã‚·ã‚§ãƒ¼ãƒ€ã®ä½œæˆ.
 	if (FAILED(CreateShader()))
 	{
 		return E_FAIL;
 	}
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…‚²‚Æ).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥ã”ã¨).
 	if (FAILED(
 		CreateCBuffer(&m_pCBufferPerMesh, sizeof(CBUFFER_PER_MESH))))
 	{
 		return E_FAIL;
 	}
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…‚²‚Æ).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥ã”ã¨).
 	if (FAILED(
 		CreateCBuffer(&m_pCBufferPerMaterial, sizeof(CBUFFER_PER_MATERIAL))))
 	{
 		return E_FAIL;
 	}
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…‚²‚Æ).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥ã”ã¨).
 	if (FAILED(
 		CreateCBuffer(&m_pCBufferPerFrame, sizeof(CBUFFER_PER_FRAME))))
 	{
 		return E_FAIL;
 	}
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@(ƒƒbƒVƒ…‚²‚Æ).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡(ãƒ¡ãƒƒã‚·ãƒ¥ã”ã¨).
 	if (FAILED(
 		CreateCBuffer(&m_pCBufferPerBone, sizeof(CBUFFER_PER_BONES))))
 	{
 		return E_FAIL;
 	}
-	//ƒeƒNƒXƒ`ƒƒ[—pƒTƒ“ƒvƒ‰[ì¬.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ç”¨ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ä½œæˆ.
 	if (FAILED(CreateSampler(&m_pSampleLinear)))
 	{
 		return E_FAIL;
@@ -177,10 +176,10 @@ HRESULT CSkinMesh::Init(
 }
 
 
-//ƒVƒF[ƒ_‰Šú‰».
+//ã‚·ã‚§ãƒ¼ãƒ€åˆæœŸåŒ–.
 HRESULT	CSkinMesh::CreateShader()
 {
-	//D3D11ŠÖ˜A‚Ì‰Šú‰»
+	//D3D11é–¢é€£ã®åˆæœŸåŒ–
 	ID3DBlob* pCompiledShader = nullptr;
 	ID3DBlob* pErrors = nullptr;
 	UINT	uCompileFlag = 0;
@@ -188,7 +187,7 @@ HRESULT	CSkinMesh::CreateShader()
 	uCompileFlag = D3D10_SHADER_DEBUG | D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif//#ifdef _DEBUG
 
-	//HLSL‚©‚çƒo[ƒeƒbƒNƒXƒVƒF[ƒ_‚Ìƒuƒƒu‚ğì¬.
+	//HLSLã‹ã‚‰ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ–ãƒ­ãƒ–ã‚’ä½œæˆ.
 	if (FAILED(
 		D3DX11CompileFromFile(
 			SHADER_NAME, nullptr, nullptr,
@@ -196,12 +195,12 @@ HRESULT	CSkinMesh::CreateShader()
 			uCompileFlag, 0, nullptr,
 			&pCompiledShader, &pErrors, nullptr)))
 	{
-		_ASSERT_EXPR(false, L"hlsl“Ç‚İ‚İ¸”s");
+		_ASSERT_EXPR(false, L"hlslèª­ã¿è¾¼ã¿å¤±æ•—");
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pErrors);
 
-	//ã‹L‚Åì¬‚µ‚½ƒuƒƒu‚©‚çƒo[ƒeƒbƒNƒXƒVƒF[ƒ_‚ğì¬.
+	//ä¸Šè¨˜ã§ä½œæˆã—ãŸãƒ–ãƒ­ãƒ–ã‹ã‚‰ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreateVertexShader(
 			pCompiledShader->GetBufferPointer(),
@@ -209,10 +208,10 @@ HRESULT	CSkinMesh::CreateShader()
 			nullptr, &m_pVertexShader)))
 	{
 		SAFE_RELEASE(pCompiledShader);
-		_ASSERT_EXPR(false, L"ƒo[ƒeƒbƒNƒXƒVƒF[ƒ_ì¬¸”s");
+		_ASSERT_EXPR(false, L"ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—");
 		return E_FAIL;
 	}
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğ’è‹`	
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’å®šç¾©	
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0,							  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -223,19 +222,19 @@ HRESULT	CSkinMesh::CreateShader()
 	};
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğì¬
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ä½œæˆ
 	if (FAILED(
 		m_pDevice11->CreateInputLayout(
 			layout, numElements, pCompiledShader->GetBufferPointer(),
 			pCompiledShader->GetBufferSize(), &m_pVertexLayout)))
 	{
-		_ASSERT_EXPR(false, L"’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒgì¬¸”s");
+		_ASSERT_EXPR(false, L"é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆä½œæˆå¤±æ•—");
 		return E_FAIL;
 	}
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğƒZƒbƒg
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ã‚»ãƒƒãƒˆ
 	m_pContext11->IASetInputLayout(m_pVertexLayout);
 
-	//HLSL‚©‚çƒsƒNƒZƒ‹ƒVƒF[ƒ_‚Ìƒuƒƒu‚ğì¬.
+	//HLSLã‹ã‚‰ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒ–ãƒ­ãƒ–ã‚’ä½œæˆ.
 	if (FAILED(
 		D3DX11CompileFromFile(
 			SHADER_NAME, nullptr, nullptr,
@@ -243,11 +242,11 @@ HRESULT	CSkinMesh::CreateShader()
 			uCompileFlag, 0, nullptr,
 			&pCompiledShader, &pErrors, nullptr)))
 	{
-		_ASSERT_EXPR(false, L"hlsl“Ç‚İ‚İ¸”s");
+		_ASSERT_EXPR(false, L"hlslèª­ã¿è¾¼ã¿å¤±æ•—");
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pErrors);
-	//ã‹L‚Åì¬‚µ‚½ƒuƒƒu‚©‚çƒsƒNƒZƒ‹ƒVƒF[ƒ_‚ğì¬.
+	//ä¸Šè¨˜ã§ä½œæˆã—ãŸãƒ–ãƒ­ãƒ–ã‹ã‚‰ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã‚’ä½œæˆ.
 	if (FAILED(
 		m_pDevice11->CreatePixelShader(
 			pCompiledShader->GetBufferPointer(),
@@ -255,7 +254,7 @@ HRESULT	CSkinMesh::CreateShader()
 			nullptr, &m_pPixelShader)))
 	{
 		SAFE_RELEASE(pCompiledShader);
-		_ASSERT_EXPR(false, L"ƒsƒNƒZƒ‹ƒVƒF[ƒ_ì¬¸”s");
+		_ASSERT_EXPR(false, L"ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ä½œæˆå¤±æ•—");
 		return E_FAIL;
 	}
 	SAFE_RELEASE(pCompiledShader);
@@ -263,28 +262,28 @@ HRESULT	CSkinMesh::CreateShader()
 	return S_OK;
 }
 
-//Xƒtƒ@ƒCƒ‹‚©‚çƒXƒLƒ“ŠÖ˜A‚Ìî•ñ‚ğ“Ç‚İo‚·ŠÖ”.
+//Xãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã‚¹ã‚­ãƒ³é–¢é€£ã®æƒ…å ±ã‚’èª­ã¿å‡ºã™é–¢æ•°.
 HRESULT CSkinMesh::ReadSkinInfo(
 	MYMESHCONTAINER* pContainer, VERTEX* pVB, SKIN_PARTS_MESH* pParts)
 {
-	//Xƒtƒ@ƒCƒ‹‚©‚ç’Šo‚·‚×‚«î•ñ‚ÍA
-	//u’¸“_‚²‚Æ‚Ìƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒXvu’¸“_‚²‚Æ‚Ìƒ{[ƒ“ƒEƒFƒCƒgv.
-	//uƒoƒCƒ“ƒhs—ñvuƒ|[ƒYs—ñv‚Ì4€–Ú.
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æŠ½å‡ºã™ã¹ãæƒ…å ±ã¯ã€
+	//ã€Œé ‚ç‚¹ã”ã¨ã®ãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã€ã€Œé ‚ç‚¹ã”ã¨ã®ãƒœãƒ¼ãƒ³ã‚¦ã‚§ã‚¤ãƒˆã€.
+	//ã€Œãƒã‚¤ãƒ³ãƒ‰è¡Œåˆ—ã€ã€Œãƒãƒ¼ã‚ºè¡Œåˆ—ã€ã®4é …ç›®.
 
-	int i, k, m, n;			//Šeíƒ‹[ƒv•Ï”.
-	int NumVertex = 0;	//’¸“_”.
-	int NumBone = 0;	//ƒ{[ƒ“”.
+	int i, k, m, n;			//å„ç¨®ãƒ«ãƒ¼ãƒ—å¤‰æ•°.
+	int NumVertex = 0;	//é ‚ç‚¹æ•°.
+	int NumBone = 0;	//ãƒœãƒ¼ãƒ³æ•°.
 
-	//’¸“_”.
+	//é ‚ç‚¹æ•°.
 	NumVertex = m_pD3dxMesh->GetNumVertices(pContainer);
-	//ƒ{[ƒ“”.
+	//ãƒœãƒ¼ãƒ³æ•°.
 	NumBone = m_pD3dxMesh->GetNumBones(pContainer);
 
-	//‚»‚ê‚¼‚ê‚Ìƒ{[ƒ“‚É‰e‹¿‚ğó‚¯‚é’¸“_‚ğ’²‚×‚é.
-	//‚»‚±‚©‚ç‹t‚ÉA’¸“_ƒx[ƒX‚Åƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒXEd‚İ‚ğ®“Ú‚·‚é.
+	//ãã‚Œãã‚Œã®ãƒœãƒ¼ãƒ³ã«å½±éŸ¿ã‚’å—ã‘ã‚‹é ‚ç‚¹ã‚’èª¿ã¹ã‚‹.
+	//ãã“ã‹ã‚‰é€†ã«ã€é ‚ç‚¹ãƒ™ãƒ¼ã‚¹ã§ãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ»é‡ã¿ã‚’æ•´é “ã™ã‚‹.
 	for (i = 0; i < NumBone; i++)
 	{
-		//‚±‚Ìƒ{[ƒ“‚É‰e‹¿‚ğó‚¯‚é’¸“_”.
+		//ã“ã®ãƒœãƒ¼ãƒ³ã«å½±éŸ¿ã‚’å—ã‘ã‚‹é ‚ç‚¹æ•°.
 		auto NumIndex = m_pD3dxMesh->GetNumBoneVertices(pContainer, i);
 
 		auto pIndex = std::make_unique<int[]>(NumIndex);
@@ -296,15 +295,15 @@ HRESULT CSkinMesh::ReadSkinInfo(
 			pWeight[k] = m_pD3dxMesh->GetBoneVerticesWeights(pContainer, i, k);
 		}
 
-		//’¸“_‘¤‚©‚çƒCƒ“ƒfƒbƒNƒX‚ğ‚½‚Ç‚Á‚ÄA’¸“_ƒTƒCƒh‚Å®—‚·‚é.
+		//é ‚ç‚¹å´ã‹ã‚‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ãŸã©ã£ã¦ã€é ‚ç‚¹ã‚µã‚¤ãƒ‰ã§æ•´ç†ã™ã‚‹.
 		for (k = 0; k < NumIndex; k++)
 		{
-			//Xƒtƒ@ƒCƒ‹‚âCGƒ\ƒtƒg‚ªƒ{[ƒ“4–{ˆÈ“à‚Æ‚ÍŒÀ‚ç‚È‚¢.
-			//5–{ˆÈã‚Ìê‡‚ÍAd‚İ‚Ì‘å‚«‚¢‡‚É4–{‚Éi‚é.
+			//Xãƒ•ã‚¡ã‚¤ãƒ«ã‚„CGã‚½ãƒ•ãƒˆãŒãƒœãƒ¼ãƒ³4æœ¬ä»¥å†…ã¨ã¯é™ã‚‰ãªã„.
+			//5æœ¬ä»¥ä¸Šã®å ´åˆã¯ã€é‡ã¿ã®å¤§ãã„é †ã«4æœ¬ã«çµã‚‹.
 
 			VERTEX* pV = &pVB[pIndex[k]];
 
-			//ƒEƒFƒCƒg‚Ì‘å‚«‚³‡‚Éƒ\[ƒg(ƒoƒuƒ‹ƒ\[ƒg).
+			//ã‚¦ã‚§ã‚¤ãƒˆã®å¤§ãã•é †ã«ã‚½ãƒ¼ãƒˆ(ãƒãƒ–ãƒ«ã‚½ãƒ¼ãƒˆ).
 			for (m = 4; m > 1; m--)
 			{
 				for (n = 1; n < m; n++)
@@ -316,7 +315,7 @@ HRESULT CSkinMesh::ReadSkinInfo(
 					}
 				}
 			}
-			//ƒ\[ƒgŒã‚ÍAÅŒã‚Ì—v‘f‚Éˆê”Ô¬‚³‚¢ƒEƒFƒCƒg‚ª“ü‚Á‚Ä‚é‚Í‚¸.
+			//ã‚½ãƒ¼ãƒˆå¾Œã¯ã€æœ€å¾Œã®è¦ç´ ã«ä¸€ç•ªå°ã•ã„ã‚¦ã‚§ã‚¤ãƒˆãŒå…¥ã£ã¦ã‚‹ã¯ãš.
 			bool flag = false;
 			for (m = 0; m < 4; m++)
 			{
@@ -338,10 +337,10 @@ HRESULT CSkinMesh::ReadSkinInfo(
 	}
 
 
-	//ƒ{[ƒ“¶¬.
+	//ãƒœãƒ¼ãƒ³ç”Ÿæˆ.
 	pParts->NumBone = NumBone;
 	pParts->pBoneArray = new BONE[NumBone]();
-	//ƒ|[ƒYs—ñ‚ğ“¾‚é(‰Šúƒ|[ƒY).
+	//ãƒãƒ¼ã‚ºè¡Œåˆ—ã‚’å¾—ã‚‹(åˆæœŸãƒãƒ¼ã‚º).
 	for (i = 0; i < pParts->NumBone; i++)
 	{
 		pParts->pBoneArray[i].mBindPose
@@ -351,26 +350,26 @@ HRESULT CSkinMesh::ReadSkinInfo(
 	return S_OK;
 }
 
-//X‚©‚çƒXƒLƒ“ƒƒbƒVƒ…‚ğì¬‚·‚é.
-//	’ˆÓj‘fŞiX)‚Ì‚Ù‚¤‚ÍAOŠpƒ|ƒŠƒSƒ“‚É‚·‚é‚±‚Æ.
+//Xã‹ã‚‰ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã™ã‚‹.
+//	æ³¨æ„ï¼‰ç´ æï¼ˆX)ã®ã»ã†ã¯ã€ä¸‰è§’ãƒãƒªã‚´ãƒ³ã«ã™ã‚‹ã“ã¨.
 HRESULT CSkinMesh::LoadXMesh(LPCTSTR FileName)
 {
-	//ƒtƒ@ƒCƒ‹–¼‚ğƒpƒX‚²‚Ææ“¾.
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ãƒ‘ã‚¹ã”ã¨å–å¾—.
 	lstrcpy(m_FilePath, FileName);
 
-	//Xƒtƒ@ƒCƒ‹“Ç‚İ‚İ.
+	//Xãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿.
 	m_pD3dxMesh = new D3DXPARSER();
 	m_pD3dxMesh->LoadMeshFromX(m_pDevice9, FileName);
 
 
-	//‘S‚Ä‚ÌƒƒbƒVƒ…‚ğì¬‚·‚é.
+	//å…¨ã¦ã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã™ã‚‹.
 	BuildAllMesh(m_pD3dxMesh->m_pFrameRoot);
 
 	return S_OK;
 }
 
 
-//Direct3D‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@[ì¬.
+//Direct3Dã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒ¼ä½œæˆ.
 HRESULT CSkinMesh::CreateIndexBuffer(
 	DWORD Size, int* pIndex, ID3D11Buffer** ppIndexBuffer)
 {
@@ -396,7 +395,7 @@ HRESULT CSkinMesh::CreateIndexBuffer(
 }
 
 
-//ƒŒƒ“ƒ_ƒŠƒ“ƒO.
+//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°.
 void CSkinMesh::Render(
 	const D3DXMATRIX& mView, const D3DXMATRIX& mProj,
 	const LIGHT& Light, const D3DXVECTOR3& CamPos,
@@ -431,7 +430,7 @@ void CSkinMesh::Render(
 }
 
 
-//‘S‚Ä‚ÌƒƒbƒVƒ…‚ğì¬‚·‚é.
+//å…¨ã¦ã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã™ã‚‹.
 void CSkinMesh::BuildAllMesh(D3DXFRAME* pFrame)
 {
 	if (pFrame && pFrame->pMeshContainer)
@@ -439,7 +438,7 @@ void CSkinMesh::BuildAllMesh(D3DXFRAME* pFrame)
 		CreateAppMeshFromD3DXMesh(pFrame);
 	}
 
-	//Ä‹AŠÖ”.
+	//å†å¸°é–¢æ•°.
 	if (pFrame->pFrameSibling != nullptr)
 	{
 		BuildAllMesh(pFrame->pFrameSibling);
@@ -450,89 +449,88 @@ void CSkinMesh::BuildAllMesh(D3DXFRAME* pFrame)
 	}
 }
 
-//ƒƒbƒVƒ…ì¬.
+//ãƒ¡ãƒƒã‚·ãƒ¥ä½œæˆ.
 HRESULT CSkinMesh::CreateAppMeshFromD3DXMesh(LPD3DXFRAME p)
 {
 	MYFRAME* pFrame = reinterpret_cast<MYFRAME*>(p);
 
-	//	LPD3DXMESH pD3DXMesh = pFrame->pMeshContainer->MeshData.pMesh;//D3DXƒƒbƒVƒ…(‚±‚±‚©‚çEEE).
 	MYMESHCONTAINER* pContainer = reinterpret_cast<MYMESHCONTAINER*>(pFrame->pMeshContainer);
 
-	//ƒAƒvƒŠƒƒbƒVƒ…(EEE‚±‚±‚ÉƒƒbƒVƒ…ƒf[ƒ^‚ğƒRƒs[‚·‚é).
+	//ã‚¢ãƒ—ãƒªãƒ¡ãƒƒã‚·ãƒ¥(ãƒ»ãƒ»ãƒ»ã“ã“ã«ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹).
 	SKIN_PARTS_MESH* pAppMesh = new SKIN_PARTS_MESH();
 	pAppMesh->EnableTexture = false;
 
-	//–‘O‚É’¸“_”Aƒ|ƒŠƒSƒ“”“™‚ğ’²‚×‚é.
+	//äº‹å‰ã«é ‚ç‚¹æ•°ã€ãƒãƒªã‚´ãƒ³æ•°ç­‰ã‚’èª¿ã¹ã‚‹.
 	pAppMesh->NumVert = m_pD3dxMesh->GetNumVertices(pContainer);
 	pAppMesh->NumFace = m_pD3dxMesh->GetNumFaces(pContainer);
 	pAppMesh->NumUV = m_pD3dxMesh->GetNumUVs(pContainer);
-	//Direct3D‚Å‚ÍUV‚Ì”‚¾‚¯’¸“_‚ª•K—v.
+	//Direct3Dã§ã¯UVã®æ•°ã ã‘é ‚ç‚¹ãŒå¿…è¦.
 	if (pAppMesh->NumVert < pAppMesh->NumUV) {
-		//‹¤—L’¸“_“™‚ÅA’¸“_‚ª‘«‚è‚È‚¢‚Æ‚«.
+		//å…±æœ‰é ‚ç‚¹ç­‰ã§ã€é ‚ç‚¹ãŒè¶³ã‚Šãªã„ã¨ã.
 		_ASSERT_EXPR(false,
-			L"Direct3D‚ÍAUV‚Ì”‚¾‚¯’¸“_‚ª•K—v‚Å‚·(UV‚ğ’u‚­êŠ‚ª•K—v‚Å‚·)ƒeƒNƒXƒ`ƒƒ‚Í³‚µ‚­“\‚ç‚ê‚È‚¢‚Æv‚í‚ê‚Ü‚·");
+			L"Direct3Dã¯ã€UVã®æ•°ã ã‘é ‚ç‚¹ãŒå¿…è¦ã§ã™(UVã‚’ç½®ãå ´æ‰€ãŒå¿…è¦ã§ã™)ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯æ­£ã—ãè²¼ã‚‰ã‚Œãªã„ã¨æ€ã‚ã‚Œã¾ã™");
 		return E_FAIL;
 	}
-	//ˆê“I‚Èƒƒ‚ƒŠŠm•Û(’¸“_ƒoƒbƒtƒ@‚ÆƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@).
+	//ä¸€æ™‚çš„ãªãƒ¡ãƒ¢ãƒªç¢ºä¿(é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡).
 	auto pVB = std::make_unique<VERTEX[]>(pAppMesh->NumVert);
 	auto pFaceBuffer = std::make_unique<int[]>(pAppMesh->NumFace * 3);
-	//3’¸“_ƒ|ƒŠƒSƒ“‚È‚Ì‚ÅA1ƒtƒFƒCƒX=3’¸“_(3ƒCƒ“ƒfƒbƒNƒX).
+	//3é ‚ç‚¹ãƒãƒªã‚´ãƒ³ãªã®ã§ã€1ãƒ•ã‚§ã‚¤ã‚¹=3é ‚ç‚¹(3ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹).
 
-	//’¸“_“Ç‚İ‚İ.
+	//é ‚ç‚¹èª­ã¿è¾¼ã¿.
 	for (DWORD i = 0; i < pAppMesh->NumVert; i++) {
 		pVB[i].Position = m_pD3dxMesh->GetVertexCoord(pContainer, i);
 	}
-	//ƒ|ƒŠƒSƒ“î•ñ(’¸“_ƒCƒ“ƒfƒbƒNƒX)“Ç‚İ‚İ.
+	//ãƒãƒªã‚´ãƒ³æƒ…å ±(é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹)èª­ã¿è¾¼ã¿.
 	for (DWORD i = 0; i < pAppMesh->NumFace * 3; i++) {
 		pFaceBuffer[i] = m_pD3dxMesh->GetIndex(pContainer, i);
 	}
-	//–@ü“Ç‚İ‚İ.
+	//æ³•ç·šèª­ã¿è¾¼ã¿.
 	for (DWORD i = 0; i < pAppMesh->NumVert; i++) {
 		pVB[i].vNormal = m_pD3dxMesh->GetNormal(pContainer, i);
 	}
-	//ƒeƒNƒXƒ`ƒƒÀ•W“Ç‚İ‚İ.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™èª­ã¿è¾¼ã¿.
 	for (DWORD i = 0; i < pAppMesh->NumVert; i++) {
 		pVB[i].Texture = m_pD3dxMesh->GetUV(pContainer, i);
 	}
 
-	//ƒ}ƒeƒŠƒAƒ‹“Ç‚İ‚İ.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«èª­ã¿è¾¼ã¿.
 	pAppMesh->NumMaterial = m_pD3dxMesh->GetNumMaterials(pContainer);
 	pAppMesh->pMaterial = new MY_SKINMATERIAL[pAppMesh->NumMaterial]();
 
-	//ƒ}ƒeƒŠƒAƒ‹‚Ì”‚¾‚¯ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğì¬.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ã®æ•°ã ã‘ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ.
 	pAppMesh->ppIndexBuffer = new ID3D11Buffer * [pAppMesh->NumMaterial]();
-	//Š|‚¯Z‚Å‚Í‚È‚­uID3D11Buffer*v‚Ì”z—ñ‚Æ‚¢‚¤ˆÓ–¡.
+	//æ›ã‘ç®—ã§ã¯ãªãã€ŒID3D11Buffer*ã€ã®é…åˆ—ã¨ã„ã†æ„å‘³.
 	for (DWORD i = 0; i < pAppMesh->NumMaterial; i++)
 	{
-		//ŠÂ‹«Œõ(ƒAƒ“ƒrƒGƒ“ƒg).
+		//ç’°å¢ƒå…‰(ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆ).
 		pAppMesh->pMaterial[i].Ambient = m_pD3dxMesh->GetAmbient(pContainer, i);
-		//ŠgU”½ËŒõ(ƒfƒBƒtƒ…[ƒY).
+		//æ‹¡æ•£åå°„å…‰(ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚º).
 		pAppMesh->pMaterial[i].Diffuse = m_pD3dxMesh->GetDiffuse(pContainer, i);
-		//‹¾–Ê”½ËŒõ(ƒXƒyƒLƒ…ƒ‰).
+		//é¡é¢åå°„å…‰(ã‚¹ãƒšã‚­ãƒ¥ãƒ©).
 		pAppMesh->pMaterial[i].Specular = m_pD3dxMesh->GetSpecular(pContainer, i);
-		//©ŒÈ”­Œõ(ƒGƒ~ƒbƒVƒu).
+		//è‡ªå·±ç™ºå…‰(ã‚¨ãƒŸãƒƒã‚·ãƒ–).
 		pAppMesh->pMaterial[i].Emissive = m_pD3dxMesh->GetEmissive(pContainer, i);
-		//ƒXƒyƒLƒ…ƒ‰ƒpƒ[.
+		//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ‘ãƒ¯ãƒ¼.
 		pAppMesh->pMaterial[i].SpecularPower = m_pD3dxMesh->GetSpecularPower(pContainer, i);
 
-		//ƒAƒ“ƒrƒGƒ“ƒg‚ª0‚¾‚ÆŒõŒ¹‚©‚ç‚Ì’¼ËŒõ‚ª‘S‚­“–‚½‚ç‚È‚¢‰A‚Ì•”•ª‚Ì–¾‚é‚³‚ªA
-		// ^‚ÁˆÃ‚É‚È‚é‚Ì‚ÅAÅ’á’l‚ÆÅ‚’l‚ğİ’è‚·‚é.
-		float low = 0.3f;	//“K“–‚É0.3‚­‚ç‚¢‚É‚µ‚Ä‚¨‚­.
+		//ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆãŒ0ã ã¨å…‰æºã‹ã‚‰ã®ç›´å°„å…‰ãŒå…¨ãå½“ãŸã‚‰ãªã„é™°ã®éƒ¨åˆ†ã®æ˜ã‚‹ã•ãŒã€
+		// çœŸã£æš—ã«ãªã‚‹ã®ã§ã€æœ€ä½å€¤ã¨æœ€é«˜å€¤ã‚’è¨­å®šã™ã‚‹.
+		float low = 0.3f;	//é©å½“ã«0.3ãã‚‰ã„ã«ã—ã¦ãŠã.
 		float high = 1.0f;
 		pAppMesh->pMaterial[i].Ambient.x = clamp(pAppMesh->pMaterial[i].Ambient.x, low, high);
 		pAppMesh->pMaterial[i].Ambient.y = clamp(pAppMesh->pMaterial[i].Ambient.y, low, high);
 		pAppMesh->pMaterial[i].Ambient.z = clamp(pAppMesh->pMaterial[i].Ambient.z, low, high);
-		//‚È‚¨Ax,y,z(r,g,b)‚Ì‚İ‘Îˆ‚µ‚ÄAw(a)‚Í‚»‚Ì‚Ü‚Üg—p‚·‚é.
+		//ãªãŠã€x,y,z(r,g,b)ã®ã¿å¯¾å‡¦ã—ã¦ã€w(a)ã¯ãã®ã¾ã¾ä½¿ç”¨ã™ã‚‹.
 
 #if 0
-		//ƒeƒNƒXƒ`ƒƒ(ƒfƒBƒtƒ…[ƒYƒeƒNƒXƒ`ƒƒ‚Ì‚İ).
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£(ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã¿).
 #ifdef UNICODE
 		WCHAR TexFilename_w[32] = L"";
-		//ƒeƒNƒXƒ`ƒƒ–¼‚ÌƒTƒCƒY‚ğæ“¾.
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£åã®ã‚µã‚¤ã‚ºã‚’å–å¾—.
 		size_t charSize = strlen(m_pD3dxMesh->GetTexturePath(pContainer, i)) + 1;
-		size_t ret;	//•ÏŠ·‚³‚ê‚½•¶š”.
+		size_t ret;	//å¤‰æ›ã•ã‚ŒãŸæ–‡å­—æ•°.
 
-		//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š‚ÌƒV[ƒPƒ“ƒX‚ğ‘Î‰‚·‚éƒƒCƒh•¶š‚ÌƒV[ƒPƒ“ƒX‚É•ÏŠ·‚µ‚Ü‚·.
+		//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’å¯¾å¿œã™ã‚‹ãƒ¯ã‚¤ãƒ‰æ–‡å­—ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å¤‰æ›ã—ã¾ã™.
 		errno_t err = mbstowcs_s(
 			&ret,
 			TexFilename_w,
@@ -546,10 +544,10 @@ HRESULT CSkinMesh::CreateAppMeshFromD3DXMesh(LPD3DXFRAME p)
 #endif//#ifdef UNICODE
 #endif
 
-		//ƒeƒNƒXƒ`ƒƒ(ƒfƒBƒtƒ…[ƒYƒeƒNƒXƒ`ƒƒ‚Ì‚İ).
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£(ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã¿).
 #ifdef UNICODE
 		WCHAR TextureName_w[32] = L"";
-		//•¶š•ÏŠ·.
+		//æ–‡å­—å¤‰æ›.
 		LPTSTR name = nullptr;
 		LPSTR name_org = m_pD3dxMesh->GetTexturePath(pContainer, i);
 		if (name_org != nullptr) {
@@ -568,64 +566,64 @@ HRESULT CSkinMesh::CreateAppMeshFromD3DXMesh(LPD3DXFRAME p)
 				lstrcpy(path, m_FilePath);
 				path[check + 1] = '\0';
 
-				//ƒpƒX‚ÌƒRƒs[.
+				//ãƒ‘ã‚¹ã®ã‚³ãƒ”ãƒ¼.
 				lstrcpy(pAppMesh->pMaterial[i].TextureName, path);
-				//ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹–¼‚ğ˜AŒ‹.
+				//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«åã‚’é€£çµ.
 				lstrcat(pAppMesh->pMaterial[i].TextureName, name);
 			}
 		}
-		//ƒeƒNƒXƒ`ƒƒ‚ğì¬.
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆ.
 		if (pAppMesh->pMaterial[i].TextureName[0] != 0
 			&& FAILED(
 				D3DX11CreateShaderResourceViewFromFile(
 					m_pDevice11, pAppMesh->pMaterial[i].TextureName,
 					nullptr, nullptr, &pAppMesh->pMaterial[i].pTexture, nullptr)))
 		{
-			_ASSERT_EXPR(false, L"ƒeƒNƒXƒ`ƒƒì¬¸”s");
+			_ASSERT_EXPR(false, L"ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆå¤±æ•—");
 			return E_FAIL;
 		}
-		//‚»‚Ìƒ}ƒeƒŠƒAƒ‹‚Å‚ ‚éƒCƒ“ƒfƒbƒNƒX”z—ñ“à‚ÌŠJnƒCƒ“ƒfƒbƒNƒX‚ğ’²‚×‚é.
-		//‚³‚ç‚ÉƒCƒ“ƒfƒbƒNƒX‚ÌŒÂ”‚ğ’²‚×‚é.
+		//ãã®ãƒãƒ†ãƒªã‚¢ãƒ«ã§ã‚ã‚‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é…åˆ—å†…ã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’èª¿ã¹ã‚‹.
+		//ã•ã‚‰ã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®å€‹æ•°ã‚’èª¿ã¹ã‚‹.
 		int count = 0;
 		auto pIndex = std::make_unique<int[]>(pAppMesh->NumFace * 3);
-		//‚Æ‚è‚ ‚¦‚¸AƒƒbƒVƒ…“à‚Ìƒ|ƒŠƒSƒ“”‚Åƒƒ‚ƒŠŠm•Û.
-		//(‚±‚±‚Ìƒ|ƒŠƒSƒ“ƒOƒ‹[ƒv‚Í•K‚¸‚±‚êˆÈ‰º‚É‚È‚é).
+		//ã¨ã‚Šã‚ãˆãšã€ãƒ¡ãƒƒã‚·ãƒ¥å†…ã®ãƒãƒªã‚´ãƒ³æ•°ã§ãƒ¡ãƒ¢ãƒªç¢ºä¿.
+		//(ã“ã“ã®ãƒãƒªã‚´ãƒ³ã‚°ãƒ«ãƒ¼ãƒ—ã¯å¿…ãšã“ã‚Œä»¥ä¸‹ã«ãªã‚‹).
 
 		for (DWORD k = 0; k < pAppMesh->NumFace; k++)
 		{
-			//‚à‚µ i==k ”Ô–Ú‚Ìƒ|ƒŠƒSƒ“‚Ìƒ}ƒeƒŠƒAƒ‹”Ô†‚È‚ç.
+			//ã‚‚ã— i==k ç•ªç›®ã®ãƒãƒªã‚´ãƒ³ã®ãƒãƒ†ãƒªã‚¢ãƒ«ç•ªå·ãªã‚‰.
 			if (i == m_pD3dxMesh->GeFaceMaterialIndex(pContainer, k))
 			{
-				//k”Ô–Ú‚Ìƒ|ƒŠƒSƒ“‚ğì‚é’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX.
+				//kç•ªç›®ã®ãƒãƒªã‚´ãƒ³ã‚’ä½œã‚‹é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹.
 				pIndex[count]
-					= m_pD3dxMesh->GetFaceVertexIndex(pContainer, k, 0);	//1ŒÂ–Ú.
+					= m_pD3dxMesh->GetFaceVertexIndex(pContainer, k, 0);	//1å€‹ç›®.
 				pIndex[count + 1]
-					= m_pD3dxMesh->GetFaceVertexIndex(pContainer, k, 1);	//2ŒÂ–Ú.
+					= m_pD3dxMesh->GetFaceVertexIndex(pContainer, k, 1);	//2å€‹ç›®.
 				pIndex[count + 2]
-					= m_pD3dxMesh->GetFaceVertexIndex(pContainer, k, 2);	//3ŒÂ–Ú.
+					= m_pD3dxMesh->GetFaceVertexIndex(pContainer, k, 2);	//3å€‹ç›®.
 				count += 3;
 			}
 		}
 		if (count > 0) {
-			//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ì¬.
+			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ä½œæˆ.
 			CreateIndexBuffer(count * sizeof(int),
 				pIndex.get(), &pAppMesh->ppIndexBuffer[i]);
 		}
 		else {
-			//‰ğ•ú‚Ìˆ—‚É•s‹ï‡‚ªo‚½‚½‚ß.
-			//ƒJƒEƒ“ƒg”‚ª0ˆÈ‰º‚Ìê‡‚ÍAƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğ nullptr ‚É‚µ‚Ä‚¨‚­.
+			//è§£æ”¾æ™‚ã®å‡¦ç†ã«ä¸å…·åˆãŒå‡ºãŸãŸã‚.
+			//ã‚«ã‚¦ãƒ³ãƒˆæ•°ãŒ0ä»¥ä¸‹ã®å ´åˆã¯ã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ nullptr ã«ã—ã¦ãŠã.
 			pAppMesh->ppIndexBuffer[i] = nullptr;
 		}
 
-		//‚»‚Ìƒ}ƒeƒŠƒAƒ‹“à‚Ìƒ|ƒŠƒSƒ“”.
+		//ãã®ãƒãƒ†ãƒªã‚¢ãƒ«å†…ã®ãƒãƒªã‚´ãƒ³æ•°.
 		pAppMesh->pMaterial[i].NumFace = count / 3;
 
 	}
 
-	//ƒXƒLƒ“î•ñ‚ ‚éH
+	//ã‚¹ã‚­ãƒ³æƒ…å ±ã‚ã‚‹ï¼Ÿ
 	if (pContainer->pSkinInfo == nullptr) {
 #ifdef _DEBUG
-		//•s–¾‚ÈƒXƒLƒ“‚ ‚ê‚Î‚±‚±‚Å‹³‚¦‚é.•s—v‚È‚çƒRƒƒ“ƒgƒAƒEƒg‚µ‚Ä‚­‚¾‚³‚¢.
+		//ä¸æ˜ãªã‚¹ã‚­ãƒ³ã‚ã‚Œã°ã“ã“ã§æ•™ãˆã‚‹.ä¸è¦ãªã‚‰ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã—ã¦ãã ã•ã„.
 		TCHAR strDbg[128];
 		WCHAR str[64] = L"";
 		ConvertCharaMultiByteToUnicode(str, 64, pContainer->Name);
@@ -635,11 +633,11 @@ HRESULT CSkinMesh::CreateAppMeshFromD3DXMesh(LPD3DXFRAME p)
 		pAppMesh->EnableBones = false;
 	}
 	else {
-		//ƒXƒLƒ“î•ñ(ƒWƒ‡ƒCƒ“ƒgAƒEƒFƒCƒg)“Ç‚İ‚İ.
+		//ã‚¹ã‚­ãƒ³æƒ…å ±(ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆã€ã‚¦ã‚§ã‚¤ãƒˆ)èª­ã¿è¾¼ã¿.
 		ReadSkinInfo(pContainer, pVB.get(), pAppMesh);
 	}
 
-	//ƒo[ƒeƒbƒNƒXƒoƒbƒtƒ@‚ğì¬.
+	//ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ.
 	D3D11_BUFFER_DESC bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(VERTEX) * (pAppMesh->NumVert);
@@ -658,30 +656,30 @@ HRESULT CSkinMesh::CreateAppMeshFromD3DXMesh(LPD3DXFRAME p)
 		hRslt = E_FAIL;
 	}
 
-	//ƒp[ƒcƒƒbƒVƒ…‚Éİ’è.
+	//ãƒ‘ãƒ¼ãƒ„ãƒ¡ãƒƒã‚·ãƒ¥ã«è¨­å®š.
 	pFrame->pPartsMesh = pAppMesh;
 
 	return hRslt;
 }
 
 
-//ƒ{[ƒ“‚ğŸ‚Ìƒ|[ƒYˆÊ’u‚ÉƒZƒbƒg‚·‚éŠÖ”.
+//ãƒœãƒ¼ãƒ³ã‚’æ¬¡ã®ãƒãƒ¼ã‚ºä½ç½®ã«ã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°.
 void CSkinMesh::SetNewPoseMatrices(
 	SKIN_PARTS_MESH* pParts, int Frame, MYMESHCONTAINER* pContainer)
 {
-	//–]‚ŞƒtƒŒ[ƒ€‚ÅUpdate‚·‚é‚±‚Æ.
-	//‚µ‚È‚¢‚Æs—ñ‚ªXV‚³‚ê‚È‚¢.
+	//æœ›ã‚€ãƒ•ãƒ¬ãƒ¼ãƒ ã§Updateã™ã‚‹ã“ã¨.
+	//ã—ãªã„ã¨è¡Œåˆ—ãŒæ›´æ–°ã•ã‚Œãªã„.
 	//m_pD3dxMesh->UpdateFrameMatrices(
-	// m_pD3dxMesh->m_pFrameRoot)‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÉÀs‚·‚é‚±‚Æ.
+	// m_pD3dxMesh->m_pFrameRoot)ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æ™‚ã«å®Ÿè¡Œã™ã‚‹ã“ã¨.
 
-	//‚Ü‚½AƒAƒjƒ[ƒVƒ‡ƒ“ŠÔ‚ÉŒ©‡‚Á‚½s—ñ‚ğXV‚·‚é‚Ì‚ÍD3DXMESH‚Å‚Í
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ª(— ‚Å)‚â‚Á‚Ä‚­‚ê‚é‚à‚Ì‚È‚Ì‚ÅA
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ğg‚Á‚ÄƒAƒjƒ‚ğis‚³‚¹‚é‚±‚Æ‚à•K—v.
-	//m_pD3dxMesh->m_pAnimController->AdvanceTime(...)‚ğ.
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÉÀs‚·‚é‚±‚Æ.
+	//ã¾ãŸã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ™‚é–“ã«è¦‹åˆã£ãŸè¡Œåˆ—ã‚’æ›´æ–°ã™ã‚‹ã®ã¯D3DXMESHã§ã¯
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãŒ(è£ã§)ã‚„ã£ã¦ãã‚Œã‚‹ã‚‚ã®ãªã®ã§ã€
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã‚’ä½¿ã£ã¦ã‚¢ãƒ‹ãƒ¡ã‚’é€²è¡Œã•ã›ã‚‹ã“ã¨ã‚‚å¿…è¦.
+	//m_pD3dxMesh->m_pAnimController->AdvanceTime(...)ã‚’.
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æ™‚ã«å®Ÿè¡Œã™ã‚‹ã“ã¨.
 
 	if (pParts->NumBone <= 0) {
-		//ƒ{[ƒ“‚ª 0@ˆÈ‰º‚Ìê‡.
+		//ãƒœãƒ¼ãƒ³ãŒ 0ã€€ä»¥ä¸‹ã®å ´åˆ.
 	}
 
 	for (int i = 0; i < pParts->NumBone; i++)
@@ -692,7 +690,7 @@ void CSkinMesh::SetNewPoseMatrices(
 }
 
 
-//Ÿ‚Ì(Œ»İ‚Ì)ƒ|[ƒYs—ñ‚ğ•Ô‚·ŠÖ”.
+//æ¬¡ã®(ç¾åœ¨ã®)ãƒãƒ¼ã‚ºè¡Œåˆ—ã‚’è¿”ã™é–¢æ•°.
 D3DXMATRIX CSkinMesh::GetCurrentPoseMatrix(SKIN_PARTS_MESH* pParts, int Index)
 {
 	D3DXMATRIX ret =
@@ -701,7 +699,7 @@ D3DXMATRIX CSkinMesh::GetCurrentPoseMatrix(SKIN_PARTS_MESH* pParts, int Index)
 }
 
 
-//ƒtƒŒ[ƒ€‚Ì•`‰æ.
+//ãƒ•ãƒ¬ãƒ¼ãƒ ã®æç”».
 VOID CSkinMesh::DrawFrame(LPD3DXFRAME p)
 {
 	MYFRAME* pFrame = reinterpret_cast<MYFRAME*>(p);
@@ -716,13 +714,13 @@ VOID CSkinMesh::DrawFrame(LPD3DXFRAME p)
 			pContainer);
 	}
 
-	//Ä‹AŠÖ”.
-	//(ŒZ’í)
+	//å†å¸°é–¢æ•°.
+	//(å…„å¼Ÿ)
 	if (pFrame->pFrameSibling != nullptr)
 	{
 		DrawFrame(pFrame->pFrameSibling);
 	}
-	//(eq)
+	//(è¦ªå­)
 	if (pFrame->pFrameFirstChild != nullptr)
 	{
 		DrawFrame(pFrame->pFrameFirstChild);
@@ -730,95 +728,95 @@ VOID CSkinMesh::DrawFrame(LPD3DXFRAME p)
 }
 #define SEND_CB_TO_FUNC
 
-//ƒp[ƒcƒƒbƒVƒ…‚ğ•`‰æ.
+//ãƒ‘ãƒ¼ãƒ„ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æç”».
 void CSkinMesh::DrawPartsMesh(
 	SKIN_PARTS_MESH* pMesh, D3DXMATRIX World, MYMESHCONTAINER* pContainer)
 {
-	//ƒ[ƒ‹ƒhs—ñZo.
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ç®—å‡º.
 	CalcWorldMatrix();
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€‚ği‚ß‚é ƒXƒLƒ“‚ğXV.
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’é€²ã‚ã‚‹ ã‚¹ã‚­ãƒ³ã‚’æ›´æ–°.
 	m_Frame++;
 	if (m_Frame >= 3600) {
 		m_Frame = 0;
 	}
 	SetNewPoseMatrices(pMesh, m_Frame, pContainer);
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Éî•ñ‚ğ‘—‚é(ƒ{[ƒ“).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã«æƒ…å ±ã‚’é€ã‚‹(ãƒœãƒ¼ãƒ³).
 	SendCBufferPerBone(pMesh);
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Éî•ñ‚ğİ’è(ƒtƒŒ[ƒ€‚²‚Æ).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã«æƒ…å ±ã‚’è¨­å®š(ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨).
 	SendCBufferPerFrame();
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Éî•ñ‚ğİ’è(ƒƒbƒVƒ…‚²‚Æ).
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã«æƒ…å ±ã‚’è¨­å®š(ãƒ¡ãƒƒã‚·ãƒ¥ã”ã¨).
 	SendCBufferPerMesh();
 
-	//ƒo[ƒeƒbƒNƒXƒoƒbƒtƒ@‚ğƒZƒbƒg.
+	//ãƒãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆ.
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	m_pContext11->IASetVertexBuffers(
 		0, 1, &pMesh->pVertexBuffer, &stride, &offset);
 
-	//g—p‚·‚éƒVƒF[ƒ_‚ÌƒZƒbƒg.
+	//ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ã®ã‚»ãƒƒãƒˆ.
 	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);
 	m_pContext11->PSSetShader(m_pPixelShader, nullptr, 0);
 
-	//’¸“_ƒCƒ“ƒvƒbƒgƒŒƒCƒAƒEƒg‚ğƒZƒbƒg.
+	//é ‚ç‚¹ã‚¤ãƒ³ãƒ—ãƒƒãƒˆãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ã‚»ãƒƒãƒˆ.
 	m_pContext11->IASetInputLayout(m_pVertexLayout);
 
-	//ƒvƒŠƒ~ƒeƒBƒuEƒgƒ|ƒƒW[‚ğƒZƒbƒg.
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ãƒ»ãƒˆãƒãƒ­ã‚¸ãƒ¼ã‚’ã‚»ãƒƒãƒˆ.
 	m_pContext11->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//ƒ}ƒeƒŠƒAƒ‹‚Ì”‚¾‚¯A
-	//‚»‚ê‚¼‚ê‚Ìƒ}ƒeƒŠƒAƒ‹‚ÌƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğ•`‰æ.
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ã®æ•°ã ã‘ã€
+	//ãã‚Œãã‚Œã®ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’æç”».
 	for (DWORD i = 0; i < pMesh->NumMaterial; i++)
 	{
-		//g—p‚³‚ê‚Ä‚¢‚È‚¢ƒ}ƒeƒŠƒAƒ‹‘Îô.
+		//ä½¿ç”¨ã•ã‚Œã¦ã„ãªã„ãƒãƒ†ãƒªã‚¢ãƒ«å¯¾ç­–.
 		if (pMesh->pMaterial[i].NumFace == 0)
 		{
 			continue;
 		}
 
-		//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒZƒbƒg.
+		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆ.
 		stride = sizeof(int);
 		offset = 0;
 		m_pContext11->IASetIndexBuffer(
 			pMesh->ppIndexBuffer[i],
 			DXGI_FORMAT_R32_UINT, 0);
 
-		//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Éî•ñ‚ğİ’èiƒ}ƒeƒŠƒAƒ‹‚²‚Æj
+		//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã«æƒ…å ±ã‚’è¨­å®šï¼ˆãƒãƒ†ãƒªã‚¢ãƒ«ã”ã¨ï¼‰
 		SendCBufferPerMaterial(&pMesh->pMaterial[i]);
 
-		//ƒeƒNƒXƒ`ƒƒ‚ğƒVƒF[ƒ_‚É“n‚·.
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 		SendTexture(&pMesh->pMaterial[i]);
 
-		//•`‰æ.
+		//æç”».
 		m_pContext11->DrawIndexed(pMesh->pMaterial[i].NumFace * 3, 0, 0);
 	}
 }
 
-//ƒ[ƒ‹ƒhs—ñZo.
+//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ç®—å‡º.
 void CSkinMesh::CalcWorldMatrix()
 {
 	D3DXMATRIX	mScale, mYaw, mPitch, mRoll, mTran;
-	//Šgk.
+	//æ‹¡ç¸®.
 	D3DXMatrixScaling(&mScale, m_Scale.x, m_Scale.y, m_Scale.z);
 
-	//‰ñ“].
-	D3DXMatrixRotationY(&mYaw, m_Rotation.y);		//Y²‰ñ“].
-	D3DXMatrixRotationX(&mPitch, m_Rotation.x);	//X²‰ñ“].
-	D3DXMatrixRotationZ(&mRoll, m_Rotation.z);	//Z²‰ñ“].
+	//å›è»¢.
+	D3DXMatrixRotationY(&mYaw, m_Rotation.y);		//Yè»¸å›è»¢.
+	D3DXMatrixRotationX(&mPitch, m_Rotation.x);	//Xè»¸å›è»¢.
+	D3DXMatrixRotationZ(&mRoll, m_Rotation.z);	//Zè»¸å›è»¢.
 	m_mRotation = mYaw * mPitch * mRoll;
 
-	//•½sˆÚ“®.
+	//å¹³è¡Œç§»å‹•.
 	D3DXMatrixTranslation(&mTran,
 		m_Position.x, m_Position.y, m_Position.z);
 
-	//ƒ[ƒ‹ƒhs—ñ.
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—.
 	m_mWorld = mScale * m_mRotation * mTran;
 }
 
-//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@iƒ{[ƒ“j‚ğƒVƒF[ƒ_‚É“n‚·.
+//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ï¼ˆãƒœãƒ¼ãƒ³ï¼‰ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 void CSkinMesh::SendCBufferPerBone(SKIN_PARTS_MESH* pMesh)
 {
 	D3D11_MAPPED_SUBRESOURCE pData;
@@ -845,7 +843,7 @@ void CSkinMesh::SendCBufferPerBone(SKIN_PARTS_MESH* pMesh)
 	m_pContext11->PSSetConstantBuffers(enCBSlot::Bones, 1, &m_pCBufferPerBone);
 }
 
-//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@iƒtƒŒ[ƒ€j‚ğƒVƒF[ƒ_‚É“n‚·.
+//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ï¼ˆãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 void CSkinMesh::SendCBufferPerFrame()
 {
 	D3D11_MAPPED_SUBRESOURCE pData;
@@ -857,21 +855,21 @@ void CSkinMesh::SendCBufferPerFrame()
 	{
 		CBUFFER_PER_FRAME cb;
 
-		//ƒJƒƒ‰ˆÊ’u.
+		//ã‚«ãƒ¡ãƒ©ä½ç½®.
 		cb.CameraPos = D3DXVECTOR4(m_CamPos.x, m_CamPos.y, m_CamPos.z, 0.0f);
-		//----- ƒ‰ƒCƒgî•ñ -----.
-		cb.LightColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f); // White light
-		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.4f, 0.4f, 1.0f); // Dim ambient
-		//ƒ‰ƒCƒg•ûŒü.
+		//----- ãƒ©ã‚¤ãƒˆæƒ…å ± -----.
+		cb.LightColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f); //ç™½è‰²ã®ãƒ©ã‚¤ãƒˆ.
+		cb.AmbientColor = D3DXVECTOR4(0.4f, 0.4f, 0.4f, 1.0f); //å¼±ã„ç’°å¢ƒå…‰.
+		//ãƒ©ã‚¤ãƒˆæ–¹å‘.
 		cb.LightDir = D3DXVECTOR4(m_Light.vDirection.x, m_Light.vDirection.y, m_Light.vDirection.z, 0.0f);
-		//ƒ‰ƒCƒg•ûŒü‚Ì³‹K‰»(ƒm[ƒ}ƒ‰ƒCƒY).
-		//	¦ƒ‚ƒfƒ‹‚©‚çƒ‰ƒCƒg‚ÖŒü‚©‚¤•ûŒü. ƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒg‚Åd—v‚È—v‘f.
+		//ãƒ©ã‚¤ãƒˆæ–¹å‘ã®æ­£è¦åŒ–(ãƒãƒ¼ãƒãƒ©ã‚¤ã‚º).
+		//	â€»ãƒ¢ãƒ‡ãƒ«ã‹ã‚‰ãƒ©ã‚¤ãƒˆã¸å‘ã‹ã†æ–¹å‘. ãƒ‡ã‚£ãƒ¬ã‚¯ã‚·ãƒ§ãƒŠãƒ«ãƒ©ã‚¤ãƒˆã§é‡è¦ãªè¦ç´ .
 		D3DXVec4Normalize(&cb.LightDir, &cb.LightDir);
 
 		cb.FogColor = m_Fog.Color;
-		cb.FogParams = D3DXVECTOR4(m_Fog.Start, m_Fog.End, m_Fog.Density * m_Fog.Enable, (float)m_Fog.Mode); // start, end, density, mode
+		cb.FogParams = D3DXVECTOR4(m_Fog.Start, m_Fog.End, m_Fog.Density * m_Fog.Enable, (float)m_Fog.Mode); //é–‹å§‹, çµ‚äº†, å¯†åº¦, ãƒ¢ãƒ¼ãƒ‰.
 
-		// --- PSX Effects ---
+		// --- PSXã‚¨ãƒ•ã‚§ã‚¯ãƒˆ ---
 		cb.AffineIntensity = AFFINE_INTENSITY;
 		cb.VertexSnapping = VERTEX_SNAPPING;
 
@@ -884,7 +882,7 @@ void CSkinMesh::SendCBufferPerFrame()
 	m_pContext11->PSSetConstantBuffers(enCBSlot::Frame, 1, &m_pCBufferPerFrame);
 }
 
-//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@iƒƒbƒVƒ…j‚ğƒVƒF[ƒ_‚É“n‚·.
+//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ï¼ˆãƒ¡ãƒƒã‚·ãƒ¥ï¼‰ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 void CSkinMesh::SendCBufferPerMesh()
 {
 	D3D11_MAPPED_SUBRESOURCE pDat;
@@ -900,8 +898,8 @@ void CSkinMesh::SendCBufferPerMesh()
 		D3DXMatrixTranspose(&cb.mW, &cb.mW);
 
 		cb.mWVP = m_mWorld * m_mView * m_mProj;
-		D3DXMatrixTranspose(&cb.mWVP, &cb.mWVP);	//s—ñ‚ğ“]’u‚·‚é.
-		//¦s—ñ‚ÌŒvZ•û–@‚ªDirectX‚ÆGPU‚ÅˆÙ‚È‚é‚½‚ß“]’u‚ª•K—v.
+		D3DXMatrixTranspose(&cb.mWVP, &cb.mWVP);	//è¡Œåˆ—ã‚’è»¢ç½®ã™ã‚‹.
+		//â€»è¡Œåˆ—ã®è¨ˆç®—æ–¹æ³•ãŒDirectXã¨GPUã§ç•°ãªã‚‹ãŸã‚è»¢ç½®ãŒå¿…è¦.
 
 		memcpy_s(pDat.pData, pDat.RowPitch,
 			reinterpret_cast<void*>(&cb), sizeof(cb));
@@ -912,7 +910,7 @@ void CSkinMesh::SendCBufferPerMesh()
 	m_pContext11->PSSetConstantBuffers(enCBSlot::Mesh, 1, &m_pCBufferPerMesh);
 }
 
-//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@iƒ}ƒeƒŠƒAƒ‹j‚ğƒVƒF[ƒ_‚É“n‚·.
+//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ï¼ˆãƒãƒ†ãƒªã‚¢ãƒ«ï¼‰ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 void CSkinMesh::SendCBufferPerMaterial(MY_SKINMATERIAL* pMaterial)
 {
 	D3D11_MAPPED_SUBRESOURCE pDat;
@@ -937,7 +935,7 @@ void CSkinMesh::SendCBufferPerMaterial(MY_SKINMATERIAL* pMaterial)
 	m_pContext11->PSSetConstantBuffers(enCBSlot::Material, 1, &m_pCBufferPerMaterial);
 }
 
-//ƒeƒNƒXƒ`ƒƒ‚ğƒVƒF[ƒ_‚É“n‚·.
+//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™.
 void CSkinMesh::SendTexture(MY_SKINMATERIAL* pMaterial)
 {
 	if (pMaterial->TextureName != nullptr)
@@ -952,14 +950,14 @@ void CSkinMesh::SendTexture(MY_SKINMATERIAL* pMaterial)
 	}
 }
 
-//‰ğ•úŠÖ”.
+//è§£æ”¾é–¢æ•°.
 HRESULT CSkinMesh::Release()
 {
 	if (m_pD3dxMesh != nullptr) {
-		//‘S‚Ä‚ÌƒƒbƒVƒ…íœ.
+		//å…¨ã¦ã®ãƒ¡ãƒƒã‚·ãƒ¥å‰Šé™¤.
 		DestroyAllMesh(m_pD3dxMesh->m_pFrameRoot);
 
-		//ƒp[ƒT[ƒNƒ‰ƒX‰ğ•úˆ—.
+		//ãƒ‘ãƒ¼ã‚µãƒ¼ã‚¯ãƒ©ã‚¹è§£æ”¾å‡¦ç†.
 		m_pD3dxMesh->Release();
 		SAFE_DELETE(m_pD3dxMesh);
 	}
@@ -968,7 +966,7 @@ HRESULT CSkinMesh::Release()
 }
 
 
-//‘S‚Ä‚ÌƒƒbƒVƒ…‚ğíœ.
+//å…¨ã¦ã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚’å‰Šé™¤.
 void CSkinMesh::DestroyAllMesh(D3DXFRAME* pFrame)
 {
 	if ((pFrame != nullptr) && (pFrame->pMeshContainer != nullptr))
@@ -976,7 +974,7 @@ void CSkinMesh::DestroyAllMesh(D3DXFRAME* pFrame)
 		DestroyAppMeshFromD3DXMesh(pFrame);
 	}
 
-	//Ä‹AŠÖ”.
+	//å†å¸°é–¢æ•°.
 	if (pFrame->pFrameSibling != nullptr)
 	{
 		DestroyAllMesh(pFrame->pFrameSibling);
@@ -988,14 +986,14 @@ void CSkinMesh::DestroyAllMesh(D3DXFRAME* pFrame)
 }
 
 
-//ƒƒbƒVƒ…‚Ìíœ.
+//ãƒ¡ãƒƒã‚·ãƒ¥ã®å‰Šé™¤.
 HRESULT CSkinMesh::DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p)
 {
 	MYFRAME* pFrame = reinterpret_cast<MYFRAME*>(p);
 
 	MYMESHCONTAINER* pMeshContainerTmp = reinterpret_cast<MYMESHCONTAINER*>(pFrame->pMeshContainer);
 
-	//MYMESHCONTAINER‚Ì’†g‚Ì‰ğ•ú.
+	//MYMESHCONTAINERã®ä¸­èº«ã®è§£æ”¾.
 	if (pMeshContainerTmp != nullptr)
 	{
 		if (pMeshContainerTmp->pBoneBuffer != nullptr)
@@ -1046,9 +1044,9 @@ HRESULT CSkinMesh::DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p)
 
 	pMeshContainerTmp = nullptr;
 
-	//MYMESHCONTAINER‰ğ•úŠ®—¹.
+	//MYMESHCONTAINERè§£æ”¾å®Œäº†.
 
-	//LPD3DXMESHCONTAINER‚Ì‰ğ•ú.
+	//LPD3DXMESHCONTAINERã®è§£æ”¾.
 	if (pFrame->pMeshContainer->pAdjacency != nullptr)
 	{
 		delete[] pFrame->pMeshContainer->pAdjacency;
@@ -1101,8 +1099,8 @@ HRESULT CSkinMesh::DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p)
 
 	if (pFrame->pMeshContainer->pNextMeshContainer != nullptr)
 	{
-		//Ÿ‚ÌƒƒbƒVƒ…ƒRƒ“ƒeƒi[‚Ìƒ|ƒCƒ“ƒ^[‚ğ‚Â‚Ì‚¾‚Æ‚µ‚½‚ç.
-		//new‚Åì‚ç‚ê‚é‚±‚Æ‚Í‚È‚¢‚Í‚¸‚È‚Ì‚ÅA‚±‚ê‚Ås‚¯‚é‚Æv‚¤.
+		//æ¬¡ã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ³ãƒ†ãƒŠãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿ãƒ¼ã‚’æŒã¤ã®ã ã¨ã—ãŸã‚‰.
+		//newã§ä½œã‚‰ã‚Œã‚‹ã“ã¨ã¯ãªã„ã¯ãšãªã®ã§ã€ã“ã‚Œã§è¡Œã‘ã‚‹ã¨æ€ã†.
 		pFrame->pMeshContainer->pNextMeshContainer = nullptr;
 	}
 
@@ -1112,13 +1110,13 @@ HRESULT CSkinMesh::DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p)
 		pFrame->pMeshContainer->pSkinInfo = nullptr;
 	}
 
-	//LPD3DXMESHCONTAINER‚Ì‰ğ•úŠ®—¹.
+	//LPD3DXMESHCONTAINERã®è§£æ”¾å®Œäº†.
 
-	//MYFRAME‚Ì‰ğ•ú.
+	//MYFRAMEã®è§£æ”¾.
 
 	if (pFrame->pPartsMesh != nullptr)
 	{
-		//ƒ{[ƒ“î•ñ‚Ì‰ğ•ú.
+		//ãƒœãƒ¼ãƒ³æƒ…å ±ã®è§£æ”¾.
 		if (pFrame->pPartsMesh->pBoneArray != nullptr)
 		{
 			delete[] pFrame->pPartsMesh->pBoneArray;
@@ -1145,7 +1143,7 @@ HRESULT CSkinMesh::DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p)
 
 		if (pFrame->pPartsMesh->ppIndexBuffer != nullptr)
 		{
-			//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‰ğ•ú.
+			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡è§£æ”¾.
 			for (DWORD i = 0; i < pFrame->pPartsMesh->NumMaterial; i++) {
 				if (pFrame->pPartsMesh->ppIndexBuffer[i] != nullptr) {
 					pFrame->pPartsMesh->ppIndexBuffer[i]->Release();
@@ -1155,25 +1153,25 @@ HRESULT CSkinMesh::DestroyAppMeshFromD3DXMesh(LPD3DXFRAME p)
 			delete[] pFrame->pPartsMesh->ppIndexBuffer;
 		}
 
-		//’¸“_ƒoƒbƒtƒ@ŠJ•ú.
+		//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡é–‹æ”¾.
 		pFrame->pPartsMesh->pVertexBuffer->Release();
 		pFrame->pPartsMesh->pVertexBuffer = nullptr;
 	}
 
-	//ƒp[ƒcƒ}ƒeƒŠƒAƒ‹ŠJ•ú.
+	//ãƒ‘ãƒ¼ãƒ„ãƒãƒ†ãƒªã‚¢ãƒ«é–‹æ”¾.
 	delete[] pFrame->pPartsMesh;
 	pFrame->pPartsMesh = nullptr;
 
-	//SKIN_PARTS_MESH‰ğ•úŠ®—¹.
+	//SKIN_PARTS_MESHè§£æ”¾å®Œäº†.
 
-	//MYFRAME‚ÌSKIN_PARTS_MESHˆÈŠO‚Ìƒƒ“ƒo[ƒ|ƒCƒ“ƒ^[•Ï”‚Í•Ê‚ÌŠÖ”‚Å‰ğ•ú‚³‚ê‚Ä‚¢‚é.
+	//MYFRAMEã®SKIN_PARTS_MESHä»¥å¤–ã®ãƒ¡ãƒ³ãƒãƒ¼ãƒã‚¤ãƒ³ã‚¿ãƒ¼å¤‰æ•°ã¯åˆ¥ã®é–¢æ•°ã§è§£æ”¾ã•ã‚Œã¦ã„ã‚‹.
 
 	return S_OK;
 }
 
 
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦.
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ.
 void CSkinMesh::ChangeAnimSet(int index, LPD3DXANIMATIONCONTROLLER pAC)
 {
 	if (m_pD3dxMesh == nullptr) {
@@ -1183,7 +1181,7 @@ void CSkinMesh::ChangeAnimSet(int index, LPD3DXANIMATIONCONTROLLER pAC)
 }
 
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“ƒZƒbƒg‚ÌØ‚è‘Ö‚¦(ŠJnƒtƒŒ[ƒ€w’è‰Â”\”Å).
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚»ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆ(é–‹å§‹ãƒ•ãƒ¬ãƒ¼ãƒ æŒ‡å®šå¯èƒ½ç‰ˆ).
 void CSkinMesh::ChangeAnimSet_StartPos(int index, double dStartFramePos, LPD3DXANIMATIONCONTROLLER pAC)
 {
 	if (m_pD3dxMesh == nullptr) {
@@ -1193,7 +1191,7 @@ void CSkinMesh::ChangeAnimSet_StartPos(int index, double dStartFramePos, LPD3DXA
 }
 
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“’â~ŠÔ‚ğæ“¾.
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åœæ­¢æ™‚é–“ã‚’å–å¾—.
 double CSkinMesh::GetAnimPeriod(int index)
 {
 	if (m_pD3dxMesh == nullptr) {
@@ -1203,7 +1201,7 @@ double CSkinMesh::GetAnimPeriod(int index)
 }
 
 
-//ƒAƒjƒ[ƒVƒ‡ƒ“”‚ğæ“¾.
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ•°ã‚’å–å¾—.
 int CSkinMesh::GetAnimMax(LPD3DXANIMATIONCONTROLLER pAC)
 {
 	if (m_pD3dxMesh != nullptr) {
@@ -1213,7 +1211,7 @@ int CSkinMesh::GetAnimMax(LPD3DXANIMATIONCONTROLLER pAC)
 }
 
 
-//w’è‚µ‚½ƒ{[ƒ“î•ñ(s—ñ)‚ğæ“¾‚·‚éŠÖ”.
+//æŒ‡å®šã—ãŸãƒœãƒ¼ãƒ³æƒ…å ±(è¡Œåˆ—)ã‚’å–å¾—ã™ã‚‹é–¢æ•°.
 bool CSkinMesh::GetMatrixFromBone(
 	LPCSTR sBoneName, D3DXMATRIX* pOutMat)
 {
@@ -1224,7 +1222,7 @@ bool CSkinMesh::GetMatrixFromBone(
 	}
 	return false;
 }
-//w’è‚µ‚½ƒ{[ƒ“î•ñ(À•W)‚ğæ“¾‚·‚éŠÖ”.
+//æŒ‡å®šã—ãŸãƒœãƒ¼ãƒ³æƒ…å ±(åº§æ¨™)ã‚’å–å¾—ã™ã‚‹é–¢æ•°.
 bool CSkinMesh::GetPosFromBone(
 	LPCSTR sBoneName, D3DXVECTOR3* pOutPos)
 {
@@ -1262,12 +1260,12 @@ bool CSkinMesh::GetDeviaPosFromBone(
 		if (m_pD3dxMesh->GetMatrixFromBone(sBoneName, &mtmp)) {
 			D3DXMATRIX mWorld, mScale, mTran, mDevia;
 			D3DXMATRIX mRot, mYaw, mPitch, mRoll;
-			//‚¨‚»‚ç‚­ƒ{[ƒ“‚Ì‰Šú‚ÌŒü‚«‚ª³ˆÊ’u‚É‚È‚Á‚Ä‚¢‚é‚Í‚¸.
-			//‚¸‚ç‚µ‚½‚¢•ûŒü‚Ìs—ñ‚ğì¬.
+			//ãŠãã‚‰ããƒœãƒ¼ãƒ³ã®åˆæœŸã®å‘ããŒæ­£ä½ç½®ã«ãªã£ã¦ã„ã‚‹ã¯ãš.
+			//ãšã‚‰ã—ãŸã„æ–¹å‘ã®è¡Œåˆ—ã‚’ä½œæˆ.
 			D3DXMatrixTranslation(&mDevia, SpecifiedPos.x, SpecifiedPos.y, SpecifiedPos.z);
-			//ƒ{[ƒ“ˆÊ’us—ñ‚Æ‚¸‚ç‚µ‚½‚¢•ûŒüs—ñ‚ğŠ|‚¯‡‚í‚¹‚é.
+			//ãƒœãƒ¼ãƒ³ä½ç½®è¡Œåˆ—ã¨ãšã‚‰ã—ãŸã„æ–¹å‘è¡Œåˆ—ã‚’æ›ã‘åˆã‚ã›ã‚‹.
 			D3DXMatrixMultiply(&mtmp, &mDevia, &mtmp);
-			//ˆÊ’u‚Ì‚İæ“¾.
+			//ä½ç½®ã®ã¿å–å¾—.
 			D3DXVECTOR3 tmpPos = D3DXVECTOR3(mtmp._41, mtmp._42, mtmp._43);
 
 			D3DXMatrixScaling(&mScale, m_Scale.x, m_Scale.y, m_Scale.z);
@@ -1290,7 +1288,7 @@ bool CSkinMesh::GetDeviaPosFromBone(
 }
 
 
-//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@ì¬ŠÖ”.
+//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ä½œæˆé–¢æ•°.
 HRESULT CSkinMesh::CreateCBuffer(
 	ID3D11Buffer** pConstantBuffer,
 	UINT Size)
@@ -1311,10 +1309,10 @@ HRESULT CSkinMesh::CreateCBuffer(
 	return S_OK;
 }
 
-//ƒTƒ“ƒvƒ‰[ì¬ŠÖ”.
+//ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ä½œæˆé–¢æ•°.
 HRESULT CSkinMesh::CreateSampler(ID3D11SamplerState** pSampler)
 {
-	//ƒeƒNƒXƒ`ƒƒ[—pƒTƒ“ƒvƒ‰[ì¬.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ç”¨ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ä½œæˆ.
 	D3D11_SAMPLER_DESC SamDesc;
 	ZeroMemory(&SamDesc, sizeof(D3D11_SAMPLER_DESC));
 
@@ -1330,17 +1328,17 @@ HRESULT CSkinMesh::CreateSampler(ID3D11SamplerState** pSampler)
 	return S_OK;
 }
 
-//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š‚ğUnicode•¶š‚É•ÏŠ·‚·‚é.
+//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ã‚’Unicodeæ–‡å­—ã«å¤‰æ›ã™ã‚‹.
 void CSkinMesh::ConvertCharaMultiByteToUnicode(
-	WCHAR* Dest,			//(out)•ÏŠ·Œã‚Ì•¶š—ñ(Unicode•¶š—ñ).
-	size_t DestArraySize,	//•ÏŠ·Œã‚Ì•¶š—ñ‚Ì”z—ñ‚Ì—v‘fÅ‘å”.
-	const CHAR* str)		//(in)•ÏŠ·‘O‚Ì•¶š—ñ(ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñ).
+	WCHAR* Dest,			//(out)å¤‰æ›å¾Œã®æ–‡å­—åˆ—(Unicodeæ–‡å­—åˆ—).
+	size_t DestArraySize,	//å¤‰æ›å¾Œã®æ–‡å­—åˆ—ã®é…åˆ—ã®è¦ç´ æœ€å¤§æ•°.
+	const CHAR* str)		//(in)å¤‰æ›å‰ã®æ–‡å­—åˆ—(ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—).
 {
-	//ƒeƒNƒXƒ`ƒƒ–¼‚ÌƒTƒCƒY‚ğæ“¾.
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åã®ã‚µã‚¤ã‚ºã‚’å–å¾—.
 	size_t charSize = strlen(str) + 1;
-	size_t ret;	//•ÏŠ·‚³‚ê‚½•¶š”.
+	size_t ret;	//å¤‰æ›ã•ã‚ŒãŸæ–‡å­—æ•°.
 
-	//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š‚ÌƒV[ƒPƒ“ƒX‚ğ‘Î‰‚·‚éƒƒCƒh•¶š‚ÌƒV[ƒPƒ“ƒX‚É•ÏŠ·‚µ‚Ü‚·.
+	//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’å¯¾å¿œã™ã‚‹ãƒ¯ã‚¤ãƒ‰æ–‡å­—ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å¤‰æ›ã—ã¾ã™.
 	errno_t err = mbstowcs_s(
 		&ret,
 		Dest,

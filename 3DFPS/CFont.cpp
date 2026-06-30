@@ -28,7 +28,7 @@ CFont::~CFont()
 {
 	Release();
 
-	// These are managed elsewhere, just nullify
+	// これらは別の場所で管理されているため、ここではnullに設定するだけ.
 	m_pContext11 = nullptr;
 	m_pDevice11 = nullptr;
 	m_pDx11 = nullptr;
@@ -41,25 +41,25 @@ HRESULT CFont::Init(CDirectX11& pDx11)
 	m_pDevice11 = m_pDx11->GetDevice();
 	m_pContext11 = m_pDx11->GetContext();
 
-	// Create shaders
+	// シェーダ作成.
 	if (FAILED(CreateShader()))
 	{
 		return E_FAIL;
 	}
 
-	// Create geometry
+	// ジオメトリ作成.
 	if (FAILED(CreateModel()))
 	{
 		return E_FAIL;
 	}
 
-	// Load SDF texture atlas
+	// SDFテクスチャアトラス読み込み.
 	if (FAILED(CreateTexture(_T("Data\\Font\\ascii_msdf.png"))))
 	{
 		return E_FAIL;
 	}
 
-	// Create sampler
+	// サンプラー作成.
 	if (FAILED(CreateSampler()))
 	{
 		return E_FAIL;
@@ -115,7 +115,7 @@ HRESULT CFont::CreateShader()
 	}
 	SAFE_RELEASE(pErrors);
 
-	// Create vertex shader
+	// 頂点シェーダ作成.
 	if (FAILED(
 		m_pDevice11->CreateVertexShader(
 			pCompiledShader->GetBufferPointer(),
@@ -127,7 +127,7 @@ HRESULT CFont::CreateShader()
 		return E_FAIL;
 	}
 
-	// Define input layout
+	// 入力レイアウト定義.
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{
@@ -149,7 +149,7 @@ HRESULT CFont::CreateShader()
 	};
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
 
-	// Create input layout
+	// 入力レイアウト作成.
 	if (FAILED(
 		m_pDevice11->CreateInputLayout(
 			layout,
@@ -163,7 +163,7 @@ HRESULT CFont::CreateShader()
 	}
 	SAFE_RELEASE(pCompiledShader);
 
-	// Compile pixel shader (SDF-aware)
+	// ピクセルシェーダのコンパイル（SDF対応）.
 	if (FAILED(
 		D3DX11CompileFromFile(
 			SHADER_NAME,
@@ -183,7 +183,7 @@ HRESULT CFont::CreateShader()
 	}
 	SAFE_RELEASE(pErrors);
 
-	// Create pixel shader
+	// ピクセルシェーダ作成.
 	if (FAILED(
 		m_pDevice11->CreatePixelShader(
 			pCompiledShader->GetBufferPointer(),
@@ -196,7 +196,7 @@ HRESULT CFont::CreateShader()
 	}
 	SAFE_RELEASE(pCompiledShader);
 
-	// Create constant buffer
+	// コンスタントバッファ作成.
 	D3D11_BUFFER_DESC cb;
 	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cb.ByteWidth = sizeof(SHADER_CONSTANT_BUFFER);
@@ -236,9 +236,9 @@ HRESULT CFont::CreateTexture(LPCTSTR lpFileName)
 
 HRESULT CFont::CreateModel()
 {
-	constexpr float ATLAS_W = 320.f;   // -dimensions 320 320
+	constexpr float ATLAS_W = 320.f;   // アトラス生成パラメータ -dimensions 320 320
 	constexpr float ATLAS_H = 320.f;
-	constexpr float BASE_SIZE = 32.f;  // -size 32
+	constexpr float BASE_SIZE = 32.f;  // アトラス生成パラメータ -size 32
 
 	if (FAILED(LoadAtlasCSV(_T("Data\\Font\\atlas.csv"))))
 	{
@@ -306,8 +306,8 @@ HRESULT CFont::CreateSampler()
 {
 	D3D11_SAMPLER_DESC samDesc;
 	ZeroMemory(&samDesc, sizeof(samDesc));
-	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;	// Linear filtering
-	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;		// CLAMP to avoid wrapping
+	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;	// リニアフィルタリング.
+	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;		// 繰り返しを防ぐためCLAMP.
 	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samDesc.MipLODBias = 0.0f;
@@ -334,15 +334,15 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 	constexpr float BASE_SIZE = 32.0f;
 	float scale = FontSize / BASE_SIZE;
 
-	// Build world matrix
+	// ワールド行列を構築.
 	D3DXMatrixScaling(&mScale, scale, scale, 1.0);
 	D3DXMatrixTranslation(&mTrans, x, y, 0.f);
 	mWorld = mScale * mTrans;
 
-	// Update constant buffer
+	// コンスタントバッファを更新.
 	D3D11_MAPPED_SUBRESOURCE pData;
 	SHADER_CONSTANT_BUFFER cb;
-	ZeroMemory(&cb, sizeof(cb));  // Initialize to prevent garbage values
+	ZeroMemory(&cb, sizeof(cb));  // 不定値を防ぐため初期化.
 
 	if (SUCCEEDED(
 		m_pContext11->Map(m_pConstantBuffer,
@@ -365,41 +365,41 @@ void CFont::RenderFont(int FontIndex, float x, float y, float FontSize)
 		m_pContext11->Unmap(m_pConstantBuffer, 0);
 	}
 
-	// Set vertex buffer
+	// 頂点バッファを設定.
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	m_pContext11->IASetVertexBuffers(0, 1,
 		&m_pVertexBuffer[FontIndex], &stride, &offset);
 
-	// Enable alpha blending
+	// アルファブレンドを有効化.
 	m_pDx11->SetAlphaBlend(true);
 
-	// Draw quad
+	// クアッドを描画.
 	m_pContext11->Draw(4, 0);
 
-	// Disable alpha blending
+	// アルファブレンドを無効化.
 	m_pDx11->SetAlphaBlend(false);
 }
 
-// Render text string
+// テキスト文字列を描画.
 void CFont::Render(LPCTSTR text, int x, int y, float FontSize, bool vertical)
 {
-	// Set shaders
+	// シェーダを設定.
 	m_pContext11->VSSetShader(m_pVertexShader, nullptr, 0);
 	m_pContext11->PSSetShader(m_pPixelShader, nullptr, 0);
 
-	// Set constant buffers
+	// コンスタントバッファを設定.
 	m_pContext11->VSSetConstantBuffers(0, 1, &m_pConstantBuffer);
 	m_pContext11->PSSetConstantBuffers(0, 1, &m_pConstantBuffer);
 
-	// Set input layout
+	// 入力レイアウトを設定.
 	m_pContext11->IASetInputLayout(m_pVertexLayout);
 
-	// Set primitive topology
+	// プリミティブトポロジーを設定.
 	m_pContext11->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// Set texture and sampler
+	// テクスチャとサンプラーを設定.
 	m_pContext11->PSSetSamplers(0, 1, &m_pSampleLinear);
 	m_pContext11->PSSetShaderResources(0, 1, &m_pTexture);
 
@@ -409,20 +409,20 @@ void CFont::Render(LPCTSTR text, int x, int y, float FontSize, bool vertical)
 	constexpr float BASE_SIZE = 32.0f;
 	float scale = FontSize / BASE_SIZE;
 
-	// Render each character
+	// 各文字を描画.
 	for (int i = 0; i < lstrlen(text); i++)
 	{
 		TCHAR font = text[i];
-		int index = font - 32;	// ASCII offset
+		int index = font - 32;	// ASCIIオフセット.
 
-		// Bounds check
+		// 範囲チェック.
 		if (index < 0 || index >= SPRITE_MAX)
 			continue;
 
-		// Render glyph
+		// グリフを描画.
 		RenderFont(index, fx, fy, FontSize);
 
-		// Advance position
+		// 位置を進める.
 		if (vertical)
 		{
 			fy += scale * m_Kerning[index];
@@ -436,14 +436,14 @@ void CFont::Render(LPCTSTR text, int x, int y, float FontSize, bool vertical)
 
 
 
-// In CFont.cpp, add a LoadAtlasCSV() method:
+// アトラスCSVを読み込む.
 HRESULT CFont::LoadAtlasCSV(LPCTSTR filePath)
 {
 
-	const int atlasWidth = 320;  // Texture atlas width in pixels
-	const int atlasHeight = 320; // Texture atlas height in pixels
+	const int atlasWidth = 320;  // テクスチャアトラスの幅（ピクセル）.
+	const int atlasHeight = 320; // テクスチャアトラスの高さ（ピクセル）.
 
-	const int atlasLineCount = 95; // Number of lines in the CSV file
+	const int atlasLineCount = 95; // CSVファイルの行数.
 
 	//
 	const char filename[] = "Data\\Font\\atlas.csv";
@@ -471,14 +471,14 @@ HRESULT CFont::LoadAtlasCSV(LPCTSTR filePath)
 		int unicode = 0;
 		float values[10] = { 0 };
 
-		// Parse all columns first
+		// まず全カラムを解析.
 		while (pNext != nullptr && column < 10)
 		{
 			values[column] = static_cast<float>(atof(pNext));
 			pNext = strtok_s(nullptr, delim, &ctx);
 			column++;
 		}
-		// Extract unicode
+		// Unicodeを抽出.
 		unicode = static_cast<int>(values[0]);
 
 		GlyphInfo& glyph = m_GlyphMap[unicode];

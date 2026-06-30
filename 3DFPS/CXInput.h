@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "stdafx.h"
 #include "Windows.h"
 #include "Xinput.h"
@@ -10,35 +10,35 @@ class CXInput
 public:
 
 	//--------------------.
-	//	’è”éŒ¾.
+	//	å®šæ•°å®£è¨€.
 	//--------------------.
-	//ƒgƒŠƒK[“ü—Í”ÍˆÍ.
+	//ãƒˆãƒªã‚¬ãƒ¼å…¥åŠ›ç¯„å›².
 	static const BYTE	TRIGGER_MIN = 0;
 	static const BYTE	TRIGGER_MAX = 255;
-	//ƒXƒeƒBƒbƒN“ü—Í”ÍˆÍ.
+	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯å…¥åŠ›ç¯„å›².
 	static const SHORT	THUMB_MIN = -32768;
 	static const SHORT	THUMB_MAX = 32767;
-	//ƒoƒCƒuƒŒ[ƒVƒ‡ƒ“’l”ÍˆÍ.
+	//ãƒã‚¤ãƒ–ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å€¤ç¯„å›².
 	static const WORD	VIBRATION_MIN = 0;
 	static const WORD	VIBRATION_MAX = 65535;
 
-	//ƒL[—ñ‹“‘Ì.
+	//ã‚­ãƒ¼åˆ—æŒ™ä½“.
 	enum KEY
 	{
-		UP,		//•ûŒüƒpƒbƒh:ã.
-		DOWN,	//•ûŒüƒpƒbƒh:‰º.
-		LEFT,	//•ûŒüƒpƒbƒh:¶.
-		RIGHT,	//•ûŒüƒpƒbƒh:‰E.
-		START,	//ƒ{ƒ^ƒ“:ƒXƒ^[ƒg.
-		BACK,	//ƒ{ƒ^ƒ“:ƒoƒbƒN.
-		LSTICK,	//ƒ{ƒ^ƒ“:¶ƒXƒeƒBƒbƒN.
-		RSTICK,	//ƒ{ƒ^ƒ“:‰EƒXƒeƒBƒbƒN.
-		LB,		//ƒ{ƒ^ƒ“:LB.
-		RB,		//ƒ{ƒ^ƒ“:RB.
-		A,		//ƒ{ƒ^ƒ“:A.
-		B,		//ƒ{ƒ^ƒ“:B.
-		X,		//ƒ{ƒ^ƒ“:X.
-		Y,		//ƒ{ƒ^ƒ“:Y.
+		UP,		//æ–¹å‘ãƒ‘ãƒƒãƒ‰:ä¸Š.
+		DOWN,	//æ–¹å‘ãƒ‘ãƒƒãƒ‰:ä¸‹.
+		LEFT,	//æ–¹å‘ãƒ‘ãƒƒãƒ‰:å·¦.
+		RIGHT,	//æ–¹å‘ãƒ‘ãƒƒãƒ‰:å³.
+		START,	//ãƒœã‚¿ãƒ³:ã‚¹ã‚¿ãƒ¼ãƒˆ.
+		BACK,	//ãƒœã‚¿ãƒ³:ãƒãƒƒã‚¯.
+		LSTICK,	//ãƒœã‚¿ãƒ³:å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯.
+		RSTICK,	//ãƒœã‚¿ãƒ³:å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯.
+		LB,		//ãƒœã‚¿ãƒ³:LB.
+		RB,		//ãƒœã‚¿ãƒ³:RB.
+		A,		//ãƒœã‚¿ãƒ³:A.
+		B,		//ãƒœã‚¿ãƒ³:B.
+		X,		//ãƒœã‚¿ãƒ³:X.
+		Y,		//ãƒœã‚¿ãƒ³:Y.
 
 		MAX,
 		FIRST = UP,
@@ -49,58 +49,58 @@ public:
 	CXInput();
 	CXInput(DWORD padId);
 	~CXInput();
-	//ƒL[“ü—Í‚ÌXV.
+	//ã‚­ãƒ¼å…¥åŠ›ã®æ›´æ–°.
 	bool Update();
-	//I—¹ˆ—.
+	//çµ‚äº†å‡¦ç†.
 	void EndProc();
 
 	//--------------------------------------.
-	//	ƒL[“ü—Í‚Ìó‘Ô‚ğ×‚©‚­æ“¾‚·‚é.
+	//	ã‚­ãƒ¼å…¥åŠ›ã®çŠ¶æ…‹ã‚’ç´°ã‹ãå–å¾—ã™ã‚‹.
 	//--------------------------------------.
-	//‰Ÿ‚µ‚½.
+	//æŠ¼ã—ãŸ.
 	bool IsDown(KEY key, bool Just = false);
-	//—£‚µ‚½.
+	//é›¢ã—ãŸ.
 	bool IsUp(KEY key);
-	//‰Ÿ‚µ‘±‚¯‚Ä‚¢‚é.
+	//æŠ¼ã—ç¶šã‘ã¦ã„ã‚‹.
 	bool IsHold(KEY key);
 
-	//¶ƒgƒŠƒK[æ“¾.
+	//å·¦ãƒˆãƒªã‚¬ãƒ¼å–å¾—.
 	BYTE GetLTrigger() const { return m_state.Gamepad.bLeftTrigger; }
-	//‰EƒgƒŠƒK[æ“¾.
+	//å³ãƒˆãƒªã‚¬ãƒ¼å–å¾—.
 	BYTE GetRTrigger() const { return m_state.Gamepad.bRightTrigger; }
 
-	//¶ƒXƒeƒBƒbƒNX²æ“¾.
+	//å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯Xè»¸å–å¾—.
 	SHORT GetLThumbX() const { return m_state.Gamepad.sThumbLX; }
-	//¶ƒXƒeƒBƒbƒNY²æ“¾.
+	//å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯Yè»¸å–å¾—.
 	SHORT GetLThumbY() const { return m_state.Gamepad.sThumbLY; }
 
-	//‰EƒXƒeƒBƒbƒNX²æ“¾.
+	//å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯Xè»¸å–å¾—.
 	SHORT GetRThumbX() const { return m_state.Gamepad.sThumbRX; }
-	//‰EƒXƒeƒBƒbƒNY²æ“¾.
+	//å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯Yè»¸å–å¾—.
 	SHORT GetRThumbY() const { return m_state.Gamepad.sThumbRY; }
 
-	//U“®İ’è.
+	//æŒ¯å‹•è¨­å®š.
 	bool SetVibration(WORD LMotorSpd, WORD RMotorSpd);
 
-	//Ú‘±ƒ`ƒFƒbƒN.
+	//æ¥ç¶šãƒã‚§ãƒƒã‚¯.
 	bool IsConnect() const { return m_connect; }
-	//ƒpƒbƒh”Ô†æ“¾.
+	//ãƒ‘ãƒƒãƒ‰ç•ªå·å–å¾—.
 	DWORD GetPadID() const { return m_padId; }
 	
 private:
 
-	//ƒL[“ü—Í‚ÌXV.
+	//ã‚­ãƒ¼å…¥åŠ›ã®æ›´æ–°.
 	bool UpdateStatus();
-	//IsDown,IsUp,IsRepeatŠÖ”“à‚Åg—p‚·‚éŠÖ”.
+	//IsDown,IsUp,IsRepeaté–¢æ•°å†…ã§ä½¿ç”¨ã™ã‚‹é–¢æ•°.
 	bool IsKeyCore(WORD GamePad, const XINPUT_STATE& State);
-	//KEY—ñ‹“‘Ì‚ğ‘Î‰‚µ‚½XINPUT_GAMEPAD‚Ì’l‚É•ÏŠ·.
+	//KEYåˆ—æŒ™ä½“ã‚’å¯¾å¿œã—ãŸXINPUT_GAMEPADã®å€¤ã«å¤‰æ›.
 	WORD GenerateGamePadValue(KEY key);
 
-	DWORD               m_padId;		//ƒpƒbƒh”Ô†(0~3).
-	XINPUT_STATE        m_state;		//ƒL[“ü—Íî•ñ.
-	XINPUT_STATE		m_stateOld;		//ƒL[“ü—Íî•ñ(ƒL[ƒXƒgƒ[ƒN”»’è—p).
-	XINPUT_VIBRATION    m_vibration;	//U“®.
-	bool				m_connect;		//Ú‘±”»’è.
+	DWORD               m_padId;		//ãƒ‘ãƒƒãƒ‰ç•ªå·(0~3).
+	XINPUT_STATE        m_state;		//ã‚­ãƒ¼å…¥åŠ›æƒ…å ±.
+	XINPUT_STATE		m_stateOld;		//ã‚­ãƒ¼å…¥åŠ›æƒ…å ±(ã‚­ãƒ¼ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯åˆ¤å®šç”¨).
+	XINPUT_VIBRATION    m_vibration;	//æŒ¯å‹•.
+	bool				m_connect;		//æ¥ç¶šåˆ¤å®š.
 	BYTE				m_keyState[256];
 	BYTE				m_prevKeyState[256];
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CLevel.h"
 
 CLevel::CLevel()
@@ -96,7 +96,7 @@ bool CLevel::IsPlayerInTriggerArea(const COLLISION_TRIGGER& trigger)
 
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
 
-	// AABB collision check
+	// AABBによる当たり判定.
 	return (playerPos.x >= trigger.position.x - trigger.size.x &&
 		playerPos.x <= trigger.position.x + trigger.size.x &&
 		playerPos.y >= trigger.position.y - trigger.size.y &&
@@ -112,7 +112,7 @@ bool CLevel::IsPlayerInTriggerArea(const GOAL& trigger)
 {
 	D3DXVECTOR3 playerPos = m_pPlayer->GetPosition();
 
-	// AABB collision check
+	// AABBによる当たり判定.
 	return (playerPos.x >= trigger.position.x - trigger.size.x &&
 		playerPos.x <= trigger.position.x + trigger.size.x &&
 		playerPos.y >= trigger.position.y - trigger.size.y &&
@@ -139,24 +139,4 @@ void CLevel::UpdateBlockedPaths()
 
 void CLevel::HandleBlockedPath()
 {
-	//if (m_enemyKillCount >= ENEMY_COUNT_PER_ROOM)
-	//{
-	//	for (auto pBlockedPath : m_pBlockedPathList)
-	//	{
-	//		if (pBlockedPath->IsActive() == true)
-	//		{
-	//			pBlockedPath->SetActive(false);
-	//		}
-	//	}
-	//	return;
-	//}
-
-	//if (m_pBlockedPathList[0]->IsActive() == true)
-	//{
-	//	for (int i = 0; i < ENEMY_COUNT_PER_ROOM; i++)
-	//	{
-	//		if (m_pEnemyPool[i]->IsActive() == false)
-	//			m_pEnemyPool[i]->SpawnAt(ENEMY_STARTPOS[i]);
-	//	}
-	//}
 }

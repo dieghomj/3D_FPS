@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <fstream> 
 
 struct CGameStats
@@ -24,17 +24,17 @@ struct CGameStats
 
 	static int EnemiesKilled;
 	static int DeathCounter;
-	static unsigned long RemainingTime;        // total time played in milliseconds
-	static int ComboScore;              // combo bonus score
-	static int HighestCombo;            // highest combo achieved in current run
-	static int Score;                   // total score for current run
-	static int HighestScore;            // highest score ever achieved
+	static unsigned long RemainingTime;        // プレイ時間の合計（ミリ秒）.
+	static int ComboScore;              // コンボボーナススコア.
+	static int HighestCombo;            // 今回のプレイで達成した最高コンボ.
+	static int Score;                   // 今回のプレイの合計スコア.
+	static int HighestScore;            // これまでに達成した最高スコア.
 	static DIFFICULTY Difficulty;
 	static int LevelSelection;
 	static bool UnlockedLevel[LEVEL_COUNT];
 	static float LevelTimer[LEVEL_COUNT];
 
-	// Compute total score with combo bonus
+	// コンボボーナスを含めた合計スコアを計算.
 	static void ComputeScore()
 	{
 		const int perKill = 100;
@@ -42,41 +42,25 @@ struct CGameStats
 		int timeBonusPerSec = 2;
 		int difficultyMultiplier = 1;
 
-		//switch (Difficulty)
-		//{
-		//case DIFF_EASY:
-		//	timeBonusPerSec = 1;
-		//	difficultyMultiplier = 1;
-		//	break;
-		//case DIFF_NORMAL:
-		//	timeBonusPerSec = 2;
-		//	difficultyMultiplier = 2;
-		//	break;
-		//case DIFF_HARD:
-		//	timeBonusPerSec = 3;
-		//	difficultyMultiplier = 3;
-		//	break;
-		//}
-
-		// Calculate remaining time bonus
+		// 残り時間ボーナスを計算.
 		unsigned long remainingMs = GetRemainingTimeMs();
 		int remainingSeconds = static_cast<int>(remainingMs / 1000);
 		int timeBonus = remainingSeconds * timeBonusPerSec;
 
-		// Calculate combo bonus
+		// コンボボーナスを計算.
 		ComboScore = HighestCombo * comboMultiplier;
 
-		// Death penalty
+		// 死亡ペナルティ.
 		int deathPenalty = DeathCounter * 50;
 
-		// Base score calculation
+		// ベーススコアの計算.
 		int baseScore = 1000 + (EnemiesKilled * perKill);
 
-		// Total score
+		// 合計スコア.
 		Score = (baseScore + timeBonus + ComboScore - deathPenalty) * difficultyMultiplier;
 		if (Score < 0) Score = 0;
 
-		// Update highest score if beaten
+		// 上回った場合は最高スコアを更新.
 		if (Score > HighestScore)
 		{
 			HighestScore = Score;
@@ -84,7 +68,7 @@ struct CGameStats
 		}
 	}
 
-	// Get remaining time in milliseconds
+	// 残り時間をミリ秒で取得.
 	static unsigned long GetRemainingTimeMs()
 	{
 		return RemainingTime * 1000;
@@ -100,8 +84,8 @@ struct CGameStats
 		Score = 0;
 	}
 
-	// Load the saved high score at startup (highscore.dat in the working
-	// directory). No file yet -> HighestScore stays 0.
+	// 起動時に保存済みのハイスコアを読み込む（作業ディレクトリの
+	// highscore.dat）。ファイルがまだ無い場合 -> HighestScore は 0 のまま.
 	static void LoadHighScore()
 	{
 		std::ifstream ifs("highscore.dat", std::ios::binary);
@@ -114,7 +98,7 @@ struct CGameStats
 		}
 	}
 
-	// Persist the current high score to disk.
+	// 現在のハイスコアをディスクに永続化.
 	static void SaveHighScore()
 	{
 		std::ofstream ofs("highscore.dat", std::ios::binary | std::ios::trunc);
@@ -128,11 +112,11 @@ struct CGameStats
 
 inline int CGameStats::EnemiesKilled = 0;
 inline int CGameStats::DeathCounter = 0;
-inline unsigned long CGameStats::RemainingTime = 0;        // remaining time seconds
-inline int CGameStats::ComboScore = 0;              // combo bonus score
-inline int CGameStats::HighestCombo = 0;            // highest combo achieved in current run
-inline int CGameStats::Score = 0;                   // total score for current run
-inline int CGameStats::HighestScore = 0;            // highest score ever achieved
+inline unsigned long CGameStats::RemainingTime = 0;        // 残り時間（秒）.
+inline int CGameStats::ComboScore = 0;              // コンボボーナススコア.
+inline int CGameStats::HighestCombo = 0;            // 今回のプレイで達成した最高コンボ.
+inline int CGameStats::Score = 0;                   // 今回のプレイの合計スコア.
+inline int CGameStats::HighestScore = 0;            // これまでに達成した最高スコア.
 inline CGameStats::DIFFICULTY CGameStats::Difficulty = DIFF_NORMAL;
 inline int CGameStats::LevelSelection = 0;
 inline bool CGameStats::UnlockedLevel[CGameStats::LEVEL_COUNT] = { true, false, false, false };

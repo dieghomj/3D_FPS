@@ -1,4 +1,4 @@
-#include "CBlockedPath.h"
+﻿#include "CBlockedPath.h"
 
 CBlockedPath::CBlockedPath()
 	: CStaticMeshObject()
@@ -28,8 +28,6 @@ void CBlockedPath::Draw(SCENE_DATA& sceneData)
 
 #if _DEBUG
 
-	//CStaticMeshObject::Draw(sceneData);
-	
 #endif // _DEBUG
 
 	m_pBlockedPathSprite->SetAlpha(0.8f);

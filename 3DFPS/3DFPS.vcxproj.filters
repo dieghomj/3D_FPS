@@ -315,6 +315,7 @@
     <ClCompile Include="CLaserShot.cpp" />
     <ClCompile Include="CDataReader.cpp" />
     <ClCompile Include="CSettings.cpp" />
+    <ClCompile Include="CSettingsMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMenu.h">
@@ -497,6 +498,7 @@
     <ClInclude Include="CLaserShot.h" />
     <ClInclude Include="CDataReader.h" />
     <ClInclude Include="CSettings.h" />
+    <ClInclude Include="CSettingsMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Data\Shader\DebugText.hlsl">

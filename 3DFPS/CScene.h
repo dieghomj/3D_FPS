@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CDirectX9.h"
 #include "CDirectX11.h"
 #include "CTime.h"
@@ -10,7 +10,7 @@
 #include "CGameStats.h"
 
 /********************************************************************************
-*	ƒQ[ƒ€ƒV[ƒ“ƒNƒ‰ƒX.
+*	ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã‚¯ãƒ©ã‚¹.
 **/
 class CScene
 {
@@ -42,7 +42,7 @@ private :
 protected:
 	CDirectX9*		m_pDx9;
 	CDirectX11*		m_pDx11;
-	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹.
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«.
 	HWND			m_hWnd;
 	CTime*			m_pTime;
 	CSceneManager*	m_pManager;
@@ -60,7 +60,7 @@ protected:
 
 	bool			m_IsPause = false;
 
-	//mouse“ü—Í
+	//ãƒã‚¦ã‚¹å…¥åŠ›
 	POINT			m_mousePos;
 	POINT			m_mouseSeudoPos;
 	POINT			m_mouseBeforePos;
@@ -68,9 +68,9 @@ protected:
 	float			m_mouseSense;
 
 private:
-	//=deleteuíœ’è‹`v‚ÆŒÄ‚Î‚ê‚é‹@”\.
-	//w’è‚³‚ê‚½ê‡A‚»‚ÌŠÖ”‚ÍŒÄ‚Ño‚¹‚È‚­‚È‚é.
-	CScene() = delete;	//ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^‹Ö~.
+	//=deleteã€Œå‰Šé™¤å®šç¾©ã€ã¨å‘¼ã°ã‚Œã‚‹æ©Ÿèƒ½.
+	//æŒ‡å®šã•ã‚ŒãŸå ´åˆã€ãã®é–¢æ•°ã¯å‘¼ã³å‡ºã›ãªããªã‚‹.
+	CScene() = delete;	//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ç¦æ­¢.
 	CScene(const CScene&) = delete;
 	CScene& operator = (const CScene& rhs) = delete;
 };
